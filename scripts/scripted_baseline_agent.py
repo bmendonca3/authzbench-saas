@@ -217,6 +217,55 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "tok_cross_tenant_secret_read":
+        return {
+            "findings": [
+                _finding(
+                    "token_cross_tenant_secret_read",
+                    {
+                        "actor": "meridian_read_token",
+                        "method": "GET",
+                        "path": f"/api/secrets/{refs['HELIO_SECRET_ID']}",
+                    },
+                    {"attacker_actor": "meridian_read_token", "victim_tenant": "helio", "required_scope": "secrets:read"},
+                    "A Meridian read token can read Helio tenant secret material.",
+                )
+            ]
+        }
+
+    if task_id == "tok_read_scope_updates_secret":
+        return {
+            "findings": [
+                _finding(
+                    "read_token_can_write_secret",
+                    {
+                        "actor": "meridian_read_token",
+                        "method": "PATCH",
+                        "path": f"/api/secrets/{refs['MERIDIAN_SECRET_ID']}",
+                        "body": {"value": "rotated by read token"},
+                    },
+                    {"attacker_actor": "meridian_read_token", "required_scope": "secrets:write"},
+                    "A read-only API token can update restricted tenant secret material.",
+                )
+            ]
+        }
+
+    if task_id == "tok_export_scope_bypass":
+        return {
+            "findings": [
+                _finding(
+                    "token_without_export_scope_reads_export",
+                    {
+                        "actor": "meridian_read_token",
+                        "method": "GET",
+                        "path": f"/api/exports/{refs['MERIDIAN_EXPORT_ID']}",
+                    },
+                    {"attacker_actor": "meridian_read_token", "required_scope": "exports:read"},
+                    "A token without export scope can read an admin audit export.",
+                )
+            ]
+        }
+
     return {"findings": []}
 
 

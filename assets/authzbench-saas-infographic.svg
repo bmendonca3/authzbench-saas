@@ -52,15 +52,15 @@
 
   <g transform="translate(70 238)" filter="url(#shadow)">
     <rect width="275" height="118" rx="18" fill="#0f2138" stroke="#2dd4bf" stroke-width="2"/>
-    <text x="28" y="43" class="metric">29</text>
+    <text x="28" y="43" class="metric">37</text>
     <text x="85" y="43" class="metric-label">public tasks</text>
-    <text x="28" y="82" class="body">12 vulnerable, 17 controls</text>
+    <text x="28" y="82" class="body">15 vulnerable, 22 controls</text>
   </g>
   <g transform="translate(375 238)" filter="url(#shadow)">
     <rect width="275" height="118" rx="18" fill="#0f2138" stroke="#22c55e" stroke-width="2"/>
-    <text x="28" y="43" class="metric">4</text>
+    <text x="28" y="43" class="metric">5</text>
     <text x="72" y="43" class="metric-label">Dockerized apps</text>
-    <text x="28" y="82" class="body">project, billing, support, files</text>
+    <text x="28" y="82" class="body">project, billing, support, files, tokens</text>
   </g>
   <g transform="translate(680 238)" filter="url(#shadow)">
     <rect width="305" height="118" rx="18" fill="#0f2138" stroke="#fbbf24" stroke-width="2"/>
@@ -80,7 +80,7 @@
       <path d="M48 62 h16 M56 54 v16" stroke="#07111f" stroke-width="5" stroke-linecap="round"/>
       <text x="28" y="122" class="panel-title">Seeded SaaS</text>
       <text x="28" y="154" class="body">Tenants, roles,</text>
-      <text x="28" y="181" class="body">objects, links</text>
+      <text x="28" y="181" class="body">objects, tokens</text>
       <rect x="28" y="205" width="88" height="28" rx="14" fill="url(#green)"/>
       <text x="45" y="225" class="chip">BOLA</text>
       <rect x="126" y="205" width="88" height="28" rx="14" fill="url(#cyan)"/>

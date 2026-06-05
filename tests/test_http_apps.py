@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+from apps.api_tokens import app as api_tokens
 from apps.billing import app as billing
 from apps.file_sharing import app as file_sharing
 from apps.project_mgmt import app as project_mgmt
@@ -35,6 +36,25 @@ def _request(
     data = None
     request_headers = {"x-authzbench-actor": actor}
     request_headers.update(headers or {})
+    if body is not None:
+        data = json.dumps(body).encode()
+        request_headers["content-type"] = "application/json"
+    request = urllib.request.Request(url, data=data, headers=request_headers, method=method)
+    try:
+        with urllib.request.urlopen(request, timeout=3) as response:
+            return response.status, json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        return exc.code, json.loads(exc.read())
+
+
+def _request_with_headers(
+    url: str,
+    headers: dict[str, str],
+    method: str = "GET",
+    body: dict[str, Any] | None = None,
+) -> tuple[int, dict[str, Any]]:
+    data = None
+    request_headers = dict(headers)
     if body is not None:
         data = json.dumps(body).encode()
         request_headers["content-type"] = "application/json"
@@ -370,6 +390,103 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(wrong_share_method_status, 405)
         self.assertEqual(wrong_share_method_body["error"], "method_not_allowed")
+
+    def test_api_tokens_http_vulnerable_and_secure_paths(self) -> None:
+        server, base_url = _serve(api_tokens.Handler)
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        refs = api_tokens.public_refs(api_tokens.Handler.state)
+        actors = api_tokens.public_actors(api_tokens.Handler.state)
+
+        cross_tenant_status, cross_tenant_body = _request(
+            f"{base_url}/api/secrets/{refs['HELIO_SECRET_ID']}",
+            "meridian_read_token",
+        )
+        self.assertEqual(cross_tenant_status, 200)
+        self.assertEqual(cross_tenant_body["secret"]["tenant_id"], refs["HELIO_TENANT_ID"])
+        self.assertEqual(cross_tenant_body["token"]["tenant_id"], refs["MERIDIAN_TENANT_ID"])
+
+        bearer_status, bearer_body = _request_with_headers(
+            f"{base_url}/api/secrets/{refs['HELIO_SECRET_ID']}",
+            {"Authorization": f"Bearer {actors['meridian_read_token']['token']}"},
+        )
+        self.assertEqual(bearer_status, 200)
+        self.assertEqual(bearer_body["token"]["actor"], "meridian_read_token")
+
+        secure_cross_status, secure_cross_body = _request(
+            f"{base_url}/api/secure/secrets/{refs['HELIO_SECRET_ID']}",
+            "meridian_read_token",
+        )
+        self.assertEqual(secure_cross_status, 403)
+        self.assertEqual(secure_cross_body["error"], "forbidden")
+
+        read_write_status, read_write_body = _request(
+            f"{base_url}/api/secrets/{refs['MERIDIAN_SECRET_ID']}",
+            "meridian_read_token",
+            method="PATCH",
+            body={"value": "rotated by read token"},
+        )
+        self.assertEqual(read_write_status, 200)
+        self.assertEqual(read_write_body["secret"]["updated_by"], "meridian_read_token")
+        self.assertEqual(read_write_body["secret"]["value"], "rotated by read token")
+
+        secure_read_write_status, secure_read_write_body = _request(
+            f"{base_url}/api/secure/secrets/{refs['MERIDIAN_SECRET_ID']}",
+            "meridian_read_token",
+            method="PATCH",
+            body={"value": "rotated by read token"},
+        )
+        self.assertEqual(secure_read_write_status, 403)
+        self.assertEqual(secure_read_write_body["error"], "forbidden")
+
+        export_status, export_body = _request(
+            f"{base_url}/api/exports/{refs['MERIDIAN_EXPORT_ID']}",
+            "meridian_read_token",
+        )
+        self.assertEqual(export_status, 200)
+        self.assertEqual(export_body["export"]["classification"], "admin")
+
+        secure_export_status, secure_export_body = _request(
+            f"{base_url}/api/secure/exports/{refs['MERIDIAN_EXPORT_ID']}",
+            "meridian_read_token",
+        )
+        self.assertEqual(secure_export_status, 403)
+        self.assertEqual(secure_export_body["error"], "forbidden")
+
+        write_token_status, write_token_body = _request(
+            f"{base_url}/api/secure/secrets/{refs['MERIDIAN_SECRET_ID']}",
+            "meridian_write_token",
+            method="PATCH",
+            body={"value": "rotated by write token"},
+        )
+        self.assertEqual(write_token_status, 200)
+        self.assertEqual(write_token_body["secret"]["value"], "rotated by write token")
+        self.assertEqual(write_token_body["secret"]["updated_by"], "meridian_write_token")
+
+        export_token_status, export_token_body = _request(
+            f"{base_url}/api/secure/exports/{refs['MERIDIAN_EXPORT_ID']}",
+            "meridian_export_token",
+        )
+        self.assertEqual(export_token_status, 200)
+        self.assertEqual(export_token_body["token"]["actor"], "meridian_export_token")
+
+        wrong_method_status, wrong_method_body = _request(
+            f"{base_url}/api/exports/{refs['MERIDIAN_EXPORT_ID']}",
+            "meridian_export_token",
+            method="PATCH",
+            body={},
+        )
+        self.assertEqual(wrong_method_status, 405)
+        self.assertEqual(wrong_method_body["error"], "method_not_allowed")
+
+        invalid_status, invalid_body = _raw_request(
+            f"{base_url}/api/secure/secrets/{refs['MERIDIAN_SECRET_ID']}",
+            "meridian_write_token",
+            method="PATCH",
+            body=b"{bad json",
+        )
+        self.assertEqual(invalid_status, 400)
+        self.assertEqual(invalid_body["error"], "invalid_json")
 
 
 if __name__ == "__main__":

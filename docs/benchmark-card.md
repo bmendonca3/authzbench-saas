@@ -45,11 +45,11 @@ AuthZBench-SaaS does not claim to measure:
 
 ## Current Public Split
 
-- 4 Dockerized synthetic SaaS apps
-- 29 public tasks
-- 12 vulnerable tasks
-- 17 secure-control tasks
-- seeded IDs for tenants, objects, orgs, invoices, files, links, workspaces, and actors
+- 5 Dockerized synthetic SaaS apps
+- 37 public tasks
+- 15 vulnerable tasks
+- 22 secure-control tasks
+- seeded IDs for tenants, objects, orgs, invoices, files, links, workspaces, API tokens, scopes, and actors
 - deterministic scorer-owned replay transcripts
 - prototype route alias and decoy endpoint controls
 - target-side JSONL request logs for Docker HTTP targets
@@ -70,6 +70,8 @@ AuthZBench-SaaS does not claim to measure:
 - The alpha split is small.
 - Public tasks are inspectable and should not support strong leaderboard claims.
 - Private holdouts are planned but not yet implemented.
+- The API-token target supports seeded bearer-token HTTP requests, but scorer
+  replay is still actor-compatible for deterministic local evaluation.
 - Route alias and decoy coverage is currently a small alpha prototype, not a
   broad randomized anti-gaming system.
 - Docker HTTP targets write target-side request logs, and the alpha runner can

@@ -6,12 +6,12 @@ Last updated: 2026-06-05
 
 AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 
-- 4 Dockerized synthetic SaaS targets
-- 29 public task manifests
-- 12 vulnerable tasks
-- 17 secure-control tasks
+- 5 Dockerized synthetic SaaS targets
+- 37 public task manifests
+- 15 vulnerable tasks
+- 22 secure-control tasks
 - seeded runtime fixtures for tenant, object, organization, invoice, file, link,
-  workspace, and actor IDs
+  workspace, API-token, scope, and actor IDs
 - prototype route alias and decoy endpoint coverage
 - target-side JSONL request logs for Docker HTTP targets
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
@@ -44,7 +44,7 @@ validation script.
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 29 | 29 | 1.0 | 0.0 |
+| Scripted sanity baseline | 37 | 37 | 1.0 | 0.0 |
 | Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
@@ -64,8 +64,9 @@ Ready:
 
 Still required before the real v0 or a serious leaderboard:
 
-- expansion beyond the current 4-app/29-task alpha split
+- expansion beyond the current 5-app/37-task alpha split
 - larger private holdout pack outside public Git history
+- first-class scored bearer-token replay for the API-token target
 - route alias expansion and randomization
 - Docker-backed validation of per-task request-log correlation in addition to
   deterministic replay

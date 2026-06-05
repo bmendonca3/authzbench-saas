@@ -16,10 +16,10 @@ The benchmark is designed around a narrow question:
 
 The current public split contains:
 
-- 4 Dockerized target apps
-- 29 seeded tasks
-- 12 vulnerable tasks
-- 17 secure-control tasks
+- 5 Dockerized target apps
+- 37 seeded tasks
+- 15 vulnerable tasks
+- 22 secure-control tasks
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - prototype route alias and decoy endpoint coverage
@@ -62,6 +62,14 @@ The current public split contains:
 | `fs_secure_viewer_share_control` | File sharing | Secure control | Correct viewer share-link denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
 | `fs_same_workspace_file_read_control` | File sharing | Secure control | Authorized same-workspace file read | API1:2023 BOLA control | CWE-639 control |
 | `fs_active_share_link_control` | File sharing | Secure control | Authorized active share-link read | Link-state control | CWE-863 control |
+| `tok_cross_tenant_secret_read` | API tokens | Vulnerable | Cross-tenant secret read by token | API1:2023 BOLA | CWE-639, CWE-863 |
+| `tok_read_scope_updates_secret` | API tokens | Vulnerable | Read-only token updates restricted secret | API5:2023 BFLA | CWE-862, CWE-863 |
+| `tok_export_scope_bypass` | API tokens | Vulnerable | Token without export scope reads admin export | API5:2023 BFLA | CWE-862, CWE-863 |
+| `tok_secure_cross_tenant_secret_control` | API tokens | Secure control | Correct token tenant-binding denial | API1:2023 BOLA control | CWE-639 control |
+| `tok_secure_write_scope_control` | API tokens | Secure control | Correct write-scope denial | API5:2023 BFLA control | CWE-862 control |
+| `tok_secure_export_scope_control` | API tokens | Secure control | Correct export-scope denial | API5:2023 BFLA control | CWE-862 control |
+| `tok_write_token_rotates_secret_control` | API tokens | Secure control | Authorized same-tenant write-token update | API5:2023 BFLA control | CWE-862 control |
+| `tok_export_token_reads_export_control` | API tokens | Secure control | Authorized export-token read | API5:2023 BFLA control | CWE-862 control |
 
 ## Scoring
 
@@ -105,8 +113,8 @@ python3 -m authzbench.run \
 
 Expected current result:
 
-- `task_count`: 29
-- `passed_count`: 29
+- `task_count`: 37
+- `passed_count`: 37
 - `mean_score`: 1.0
 - `exploit_proven_success_rate`: 1.0
 - `false_positive_rate`: 0.0
@@ -129,7 +137,7 @@ Tracked summaries:
 - [kiro-qwen3-coder-next-full-summary.json](../baselines/kiro-qwen3-coder-next-full-summary.json)
 
 These 15-task snapshots are public-split baselines from the earlier alpha split,
-not private leaderboard results. They should be rerun on the 29-task split
+not private leaderboard results. They should be rerun on the 37-task split
 before any release tag.
 
 ## Publication Status
@@ -143,7 +151,7 @@ not yet have private holdout scoring.
 
 ## Release Criteria For The Real v0
 
-- expand beyond the current 4-app/29-task alpha split
+- expand beyond the current 5-app/37-task alpha split
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs
@@ -157,10 +165,13 @@ not yet have private holdout scoring.
   larger unpublished holdout pack is still needed for a finished leaderboard.
 - The runner uses process timeout bounds, but not containerized network egress
   enforcement yet.
+- The API-token target supports seeded bearer-token HTTP requests, but scorer
+  replay is still actor-compatible. First-class scored bearer-token replay is a
+  real v0 hardening item.
 - HTTP apps and Docker container runtime smoke tests pass locally when a Docker
   daemon is available.
 - HAR browser capture is not implemented yet; backend replay transcripts are
   implemented through `transcript.json`.
 - A prototype route alias and decoy endpoint are present, but route aliases are
-  not randomized yet; object, tenant, org, invoice, file, link, workspace, and
-  token IDs are seeded.
+  not randomized yet; object, tenant, org, invoice, file, link, workspace,
+  API-token, scope, and token IDs are seeded.

@@ -11,6 +11,7 @@ APP_MODULES = {
     "billing": "apps.billing.app",
     "support": "apps.support.app",
     "file_sharing": "apps.file_sharing.app",
+    "api_tokens": "apps.api_tokens.app",
 }
 
 APP_TARGETS = {
@@ -18,6 +19,7 @@ APP_TARGETS = {
     "billing": {"base_url": "http://127.0.0.1:8012", "container_base_url": "http://billing:8012"},
     "support": {"base_url": "http://127.0.0.1:8013", "container_base_url": "http://support:8013"},
     "file_sharing": {"base_url": "http://127.0.0.1:8014", "container_base_url": "http://file_sharing:8014"},
+    "api_tokens": {"base_url": "http://127.0.0.1:8015", "container_base_url": "http://api_tokens:8015"},
 }
 
 
