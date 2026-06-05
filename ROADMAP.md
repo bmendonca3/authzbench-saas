@@ -148,7 +148,8 @@ inspection.
 - [ ] Preserve exact model labels, harness settings, commands, commit SHA, and
       result bundles.
 - [ ] Add variance or confidence notes when runs are repeated.
-- [ ] Add leaderboard examples that do not rank by blended score alone.
+- [x] Add a machine-validated leaderboard submission example that is explicitly
+      schema-valid evidence but not leaderboard eligible.
 - [ ] Preserve one public baseline report per serious model/agent family.
 - [ ] Re-run legacy model baselines after task-set changes before release tags.
 - [x] Add a baseline registry validator that labels harness checks, legacy

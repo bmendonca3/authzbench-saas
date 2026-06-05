@@ -212,6 +212,9 @@ returns no findings.
   what must be true before `v0`.
 - v0 task build matrix with public and private allocations per app.
 - Leaderboard schema.
+- Leaderboard submission validator with at least one public example that is
+  schema-valid but explicitly not leaderboard eligible when it is only a harness
+  check or public-split development run.
 - Baseline report with commands and exact result files.
 - Baseline registry that marks each run as a harness check, model baseline, tool
   agent baseline, current public split, or legacy snapshot.
@@ -253,6 +256,10 @@ Do not tag the real `v0` until all required gates pass:
   excluding scripted/live-scripted harness checks
 - at least one baseline uses a tool-equipped agent harness
 - baseline registry validation passes and reports `v0_baseline_ready: true`
+- leaderboard submission validation passes for all tracked examples and any
+  release-candidate private-holdout submission files
+- combined public/private leaderboard rows remain ineligible until the schema
+  includes private-only rates and validates eligibility against those rates
 - route alias support is implemented and exercised by at least one task
 - at least one decoy endpoint is present and covered by a secure control
 - private holdout validation reports sufficient route and decoy variant metadata

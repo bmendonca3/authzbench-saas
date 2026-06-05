@@ -83,6 +83,8 @@ AuthZBench-SaaS does not claim to measure:
 - Baseline registry validation is present, but the registry intentionally reports
   that v0 baseline evidence is not ready yet because current repeated model
   families and a tool-agent baseline are still missing.
+- Leaderboard submission validation is present for tracked examples, but no
+  current tracked example is leaderboard eligible.
 
 ## Ethical And Safety Notes
 

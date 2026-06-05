@@ -9,6 +9,7 @@ intended public host is the public `github.com` account.
 - [ ] `python3 -Wd -m unittest discover -s tests`
 - [ ] `python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'`
 - [ ] `python3 scripts/validate_baseline_registry.py`
+- [ ] `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`
 - [ ] `python3 -m compileall -q authzbench apps tests scripts`
 - [ ] `docker compose config`
 - [ ] `python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted`
@@ -53,6 +54,7 @@ Release notes:
 - secure-control tasks for false-positive measurement
 - scripted baseline and two initial model baselines
 - baseline registry that labels legacy snapshots and current release readiness
+- leaderboard submission validator and ineligible public harness-check example
 - draft launch methodology and leaderboard schema
 
 Do not use the plain `v0` label until the release gates in

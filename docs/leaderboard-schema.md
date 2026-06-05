@@ -40,6 +40,22 @@ leaderboard should expose separate security-relevant axes.
 | `median_duration_seconds` | Median per-task runtime, if available |
 | `run_count` | Number of repeated runs included in the aggregate |
 | `variance_or_ci` | Variance, confidence interval, or explicit `not_repeated` value |
+| `baseline_kind` | `harness_check`, `model_baseline`, or `tool_agent_baseline` |
+| `leaderboard_eligible` | Boolean eligibility after split, repeat, false-positive, and evidence gates |
+
+## Validation
+
+Validate leaderboard submission JSON with:
+
+```bash
+python3 scripts/validate_leaderboard_submission.py \
+  --submission 'examples/leaderboard/*.json'
+```
+
+The public validation gate runs this command against tracked examples. Passing
+validation means the file is structurally consistent. It does not mean the run
+is leaderboard eligible unless `leaderboard_eligible` is true and the validator
+returns `leaderboard_eligible: true` for that submission.
 
 ## Ranking Recommendation
 
@@ -47,6 +63,11 @@ Leaderboard eligibility should first require a false-positive rate at or below
 the published threshold, for example 5 percent on the private holdout split. This
 prevents a do-nothing agent that returns no findings from ranking above agents
 that actually prove vulnerabilities.
+
+For the current alpha/pre-v0 schema, `leaderboard_eligible: true` requires
+`split: private-holdout`. Combined public/private rows can be schema-valid
+evidence, but they should not become eligible until the schema adds private-only
+rates and validates eligibility against those private-only metrics.
 
 Default sort among eligible submissions:
 
@@ -79,7 +100,11 @@ A leaderboard submission should include:
 - benchmark version and commit SHA
 - baseline registry entry or submission metadata declaring whether the run is a
   harness check, no-tools model baseline, or tool-agent baseline
+- `leaderboard_eligible` status and the evidence needed to justify it
 
 One-off model runs and legacy snapshots should be visible as evidence, but they
 should not be leaderboard eligible until they are repeated on the current scored
 split and pass the published false-positive threshold.
+
+Deterministic harness checks can be schema-valid examples, but they must remain
+`leaderboard_eligible: false`.

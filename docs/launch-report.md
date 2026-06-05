@@ -157,6 +157,12 @@ consistency checks but intentionally reports `v0_baseline_ready: false` because
 the current public split still lacks repeated real model families and a
 tool-agent baseline.
 
+Leaderboard submission shape is now validated by
+`python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`.
+The tracked public scripted example is schema-valid evidence, but it is
+explicitly not leaderboard eligible because deterministic harness checks and
+public-split examples are not serious leaderboard results.
+
 ## Publication Status
 
 The repository is an alpha public scaffold, not a finished public leaderboard.
@@ -172,6 +178,7 @@ snapshots, but does not yet have private holdout scoring.
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs
 - make the baseline registry `v0_baseline_ready: true`
+- validate release-candidate leaderboard submission files
 - preserve at least five agent/model baseline summaries or linked result bundles
 - update launch report and README to reflect verified release evidence
 - pass the publish checklist from a fresh public clone

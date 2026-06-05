@@ -75,6 +75,25 @@ class ValidatePublicScriptTests(unittest.TestCase):
         commands = [call.args[0] for call in run.call_args_list]
         self.assertIn([validate_public.sys.executable, "scripts/validate_baseline_registry.py"], commands)
 
+    def test_validate_runs_leaderboard_submission_gate(self) -> None:
+        with (
+            patch.object(validate_public, "run") as run,
+            patch.object(validate_public, "scan_privacy"),
+            patch.object(validate_public, "run_container_smoke"),
+        ):
+            validate_public.validate(validate_public.ROOT, include_scripted_baseline=False, include_container_smoke=False)
+
+        commands = [call.args[0] for call in run.call_args_list]
+        self.assertIn(
+            [
+                validate_public.sys.executable,
+                "scripts/validate_leaderboard_submission.py",
+                "--submission",
+                "examples/leaderboard/*.json",
+            ],
+            commands,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

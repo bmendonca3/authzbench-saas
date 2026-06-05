@@ -29,6 +29,8 @@
   metadata checks and behavioral public-task structural-copy detection.
 - Added a baseline registry and validator so legacy snapshots, harness checks,
   repeated runs, and leaderboard eligibility are machine-checkable.
+- Added leaderboard submission validation plus a schema-valid public harness
+  example that is explicitly not leaderboard eligible.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

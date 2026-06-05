@@ -95,6 +95,7 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
     run([sys.executable, "-Wd", "-m", "unittest", "discover", "-s", "tests"], cwd)
     run([sys.executable, "-m", "authzbench.validate_manifests", "--task", "tasks/*/*.json"], cwd)
     run([sys.executable, "scripts/validate_baseline_registry.py"], cwd)
+    run([sys.executable, "scripts/validate_leaderboard_submission.py", "--submission", "examples/leaderboard/*.json"], cwd)
     run([sys.executable, "-m", "compileall", "-q", "authzbench", "apps", "tests", "scripts"], cwd)
     run(["docker", "compose", "config"], cwd)
     scan_privacy(cwd)
