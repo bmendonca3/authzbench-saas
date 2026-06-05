@@ -129,6 +129,8 @@ The baseline registry lives at
 | --- | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 44 | 44 | 1.0 | 0.0 |
 | Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 |
+| Kiro `claude-opus-4.6` current run 1 | 44 | 27 | 0.6667 | 0.0 |
+| Kiro `claude-opus-4.6` current run 2 | 44 | 27 | 0.6667 | 0.0 |
 | Kiro `claude-sonnet-4.6` current run 1 | 44 | 29 | 0.7778 | 0.0 |
 | Kiro `claude-sonnet-4.6` current run 2 | 44 | 29 | 0.7778 | 0.0 |
 | Kiro `claude-haiku-4.5` current run 1 | 44 | 26 | 0.2222 | 0.0 |
@@ -143,7 +145,7 @@ public-split evidence only; they are not private-holdout or leaderboard results.
 
 Current registry status:
 
-- 4 of 5 required repeated model/agent families
+- 5 of 5 required repeated model/agent families
 - no accepted tool-agent baseline yet
 - `v0_baseline_ready: false`
 
@@ -176,7 +178,6 @@ benchmark until the strict release gate passes.
 
 Remaining major gaps:
 
-- one more repeated current model/agent family
 - one real live HTTP tool-agent baseline
 - artifact-backed leaderboard submissions
 - stronger live-target proof across vulnerable and control tasks

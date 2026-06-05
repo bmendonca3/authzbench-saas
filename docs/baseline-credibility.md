@@ -84,14 +84,14 @@ passed all 26 controls and proved 14 of 18 vulnerable exploit replays, but only
 `0.1667`. They kept a zero false-positive rate on controls and improve
 model-baseline credibility while still leaving three repeated model/agent
 families, a true tool-agent baseline, and private-holdout leaderboard
-submissions missing.
+submissions missing at that checkpoint.
 
 The third repeated current model family is DeepSeek through Kiro. The two
 `deepseek-3.2` no-tools runs are also public-split baselines only: both passed
 26 of 44 tasks by staying quiet on controls, kept a zero false-positive rate,
 and proved no vulnerable exploits. They improve baseline breadth while still
 leaving two repeated model/agent families, a true tool-agent baseline, and
-private-holdout leaderboard submissions missing.
+private-holdout leaderboard submissions missing at that checkpoint.
 
 The fourth repeated current model family is Haiku through Kiro. The two
 `claude-haiku-4.5` no-tools runs are also public-split baselines only: both
@@ -99,4 +99,12 @@ passed 26 of 44 tasks, proved 4 of 18 vulnerable replays, kept a zero
 false-positive rate, and had no full vulnerable-task passes because boundary
 reasoning was `0.0`. They improve baseline breadth while still leaving one
 repeated model/agent family, a true tool-agent baseline, and private-holdout
+leaderboard submissions missing at that checkpoint.
+
+The fifth repeated current model family is Opus through Kiro. The two
+`claude-opus-4.6` no-tools runs are also public-split baselines only: both
+passed 27 of 44 tasks, proved 12 of 18 vulnerable replays, kept a zero
+false-positive rate, and fully passed 1 vulnerable task because boundary
+reasoning remained weak at `0.0556`. They satisfy the repeated public model
+family count while still leaving a true tool-agent baseline and private-holdout
 leaderboard submissions missing.
