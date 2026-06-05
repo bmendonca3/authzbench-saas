@@ -314,8 +314,8 @@ python3 scripts/validate_v0_release.py --allow-incomplete
 ```
 
 `--allow-incomplete` is not a release waiver. It exists so the repository can
-continuously publish a machine-readable account of why `v0_ready` is still
-false.
+continuously publish a machine-readable readiness account during alpha and
+release-candidate checkpoints.
 
 Version labels:
 

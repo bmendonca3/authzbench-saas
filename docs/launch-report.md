@@ -215,8 +215,8 @@ Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
 consistency checks and reports `v0_baseline_ready: true` for the baseline
-sub-gate. The full strict v0 release gate still reports `v0_ready: false` until
-release evidence and final review are complete.
+sub-gate. The full strict v0 release gate now depends on release evidence and
+sectional review status rather than baseline evidence alone.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

@@ -28,13 +28,15 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
   current public split summaries, and leaderboard eligibility
 - current 44-task live HTTP scripted harness check against Docker targets, with
   target request-log correlation for the 18 vulnerable tasks
-- v0 release-gate audit script that reports `v0_ready: false` with explicit
-  unmet gates while the repo is still alpha/pre-v0
+- v0 release-gate audit script that reports strict readiness from the current
+  evidence state, including explicit unmet gates when a section is incomplete
 - release evidence registry for local validation, fresh-clone validation, remote
   CI, Docker smoke, privacy scan, release-note separation, and protected
   private-holdout execution
 - repeated protected-private redacted evidence validation, including a no-tools
   private run and a live tool-agent private run with target-request coverage
+- validated private-holdout release-candidate leaderboard evidence summarized at
+  aggregate level only
 - leaderboard submission validation with a tracked public harness-check example
   that is schema-valid, cross-checked against a source run summary, and not
   leaderboard eligible
@@ -44,13 +46,15 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 
 ## Verified Locally
 
-The following checks have been run successfully on the current local scaffold:
+The following checks have been run successfully on the current local scaffold or
+release-candidate checkpoint:
 
 ```bash
 python3 -Wd -m unittest discover -s tests
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
 python3 scripts/validate_baseline_registry.py
 python3 scripts/validate_v0_release.py --allow-incomplete
+python3 scripts/validate_v0_release.py
 python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
 python3 -m compileall -q authzbench apps tests scripts
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
@@ -59,10 +63,10 @@ python3 scripts/validate_public.py --include-scripted-baseline --include-contain
 ```
 
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
-should be rerun before any tagged release. Docker runtime smoke requires a
-Docker daemon; the `--include-container-smoke` path validates Docker Compose
-config, starts the target stack, checks request logs, and is covered by the
-GitHub Actions public-validation workflow.
+are retained only as historical context. Docker runtime smoke requires a Docker
+daemon; the `--include-container-smoke` path validates Docker Compose config,
+starts the target stack, checks request logs, and is covered by the GitHub
+Actions public-validation workflow.
 The live HTTP scripted baseline has been rerun on the current 44-task public
 split, but its target request-log coverage is 18/44 because the deterministic
 agent only exercises vulnerable proof requests before submitting.
@@ -107,12 +111,10 @@ Ready:
   target-request correlation plus per-task model-tool plans and tool-probe
   artifacts
 - v0 release-gate audit exists and is run in public validation with
-  `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
-  still fails honestly
+  `--allow-incomplete`, so alpha validation can pass even when a future section
+  is intentionally open
 - strict v0 readiness also depends on `docs/release-evidence.json`; the release
-  evidence checks now pass for the current alpha/pre-v0 checkpoint, while the
-  remaining anti-gaming and final release-readiness review sections still keep
-  strict v0 false
+  evidence checks now pass for the current release-candidate checkpoint
 - the task-realism and vulnerable/control-mix review section is now v0-ready
   based on final task-mix panel review and aggregate validator evidence
 - leaderboard submission validator exists and is part of public validation
@@ -139,22 +141,16 @@ Ready:
   agent workspace
 - two redacted protected-private execution summaries validate as repeated
   aggregate evidence without publishing private task rows or raw result bundles
+- final holdout anti-gaming and final release-readiness review summaries exist
+  and mark all required review-registry sections v0-candidate ready
 - local-status paths and personal filesystem references have been removed from this document
 
-Still required before the real v0 or a serious leaderboard:
+Still required before a tagged release or hosted public leaderboard:
 
-- final holdout/anti-gaming review over the real non-public holdout pack
-- multi-seed private holdout scoring evidence
-- route-alias/decoy variation evidence for private holdouts remains part of the
-  anti-gaming sign-off, even though the current private-pack validator reports
-  aggregate route and decoy variant counts
-- decision on whether v0-candidate metrics become the default tagged-release
-  scoring profile
-- containerized or otherwise isolated model/agent execution for leaderboard runs
 - remote CI status must stay explicit and passing before any real v0 tag
 - keep `docs/release-evidence.json` tied to exact command, commit, CI, and
   artifact evidence as later release checks are rerun
-- private live/tool-agent holdout execution now has single-run target-request
-  correlation evidence, but serious leaderboard claims still need multi-seed
-  private scoring and final anti-gaming review
 - post-push clone check from public `github.com` before tags or releases
+- hosted or fully containerized leaderboard execution if third-party submissions
+  will be accepted at scale
+- rotating multi-pack private holdouts for v1-scale anti-gaming hardening

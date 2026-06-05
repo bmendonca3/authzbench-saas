@@ -2,8 +2,8 @@
   "schema_version": "release-evidence-v1",
   "release_candidate": {
     "version_label": "alpha/pre-v0",
-    "commit_sha": "5d30f48c83ae43d9931b88c2de898ed4ea4e35f5",
-    "notes": "Current public repository is still alpha/pre-v0. Required release-evidence checks now pass for this checkpoint, but remaining sectional reviews are still incomplete."
+    "commit_sha": "3352e4abb2b71357ac73106217145f14ad1c80f4",
+    "notes": "Current public repository is a v0 release candidate under review. Required release-evidence checks pass for this checkpoint, but no v0 release tag is authorized by this evidence file."
   },
   "required_for_v0": {
     "local_public_validation_passed": true,
@@ -18,9 +18,9 @@
     "local_public_validation_command": "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
     "fresh_clone_validation_command": "python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline",
     "strict_v0_audit_command": "python3 scripts/validate_v0_release.py",
-    "latest_remote_ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27032485748",
-    "latest_remote_ci_run_id": "27032485748",
-    "privacy_scan_source": "validate_public.py tracked-file scan plus staged diff scans before commit c756e64e53ac43b4c8b028f0ae7683df1bd4ea4a",
+    "latest_remote_ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27036007021",
+    "latest_remote_ci_run_id": "27036007021",
+    "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on commit 3352e4abb2b71357ac73106217145f14ad1c80f4",
     "docker_container_smoke_source": "local validate_public run with --include-container-smoke passed and docker compose project authzbench-public-smoke-83191 was torn down",
     "protected_private_holdout_execution_source": "docs/protected-private-execution-2026-06-05.redacted.json and docs/protected-private-live-kiro-sonnet-2026-06-05.redacted.json plus ignored raw bundles; agents ran from temporary empty workspaces, received rendered context only, and the live tool-agent run has target-side request-log correlation",
     "release_notes_source": [
@@ -30,6 +30,6 @@
       "docs/launch-report.md",
       "CHANGELOG.md"
     ],
-    "notes": "Alpha validation may pass with --allow-incomplete; strict v0 still remains false until all required sectional reviews pass."
+    "notes": "Strict v0 readiness depends on this evidence plus the review registry. This file records the latest reviewed commit and CI at the time of the release-candidate review; refresh it again before any release tag."
   }
 }

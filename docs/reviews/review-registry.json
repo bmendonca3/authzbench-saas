@@ -62,26 +62,28 @@
     {
       "id": "holdout_contamination_anti_gaming",
       "required_for_v0": true,
-      "v0_ready": false,
+      "v0_ready": true,
       "summary_paths": [
         "2026-06-05-holdout-rehearsal-panel-summary.md",
         "2026-06-05-holdout-anti-gaming-panel-summary.md",
         "2026-06-05-route-alias-decoy-panel-summary.md",
         "2026-06-05-private-holdout-summary-panel-summary.md",
         "2026-06-05-protected-private-execution-panel-summary.md",
-        "2026-06-05-private-live-tool-agent-panel-summary.md"
+        "2026-06-05-private-live-tool-agent-panel-summary.md",
+        "2026-06-05-final-holdout-anti-gaming-release-summary.md"
       ],
-      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, protected execution, and single-run private live tool-agent evidence have alpha review. This section remains not v0-ready until multi-seed scoring coverage, route-alias/decoy variations, and final anti-gaming review are complete."
+      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, protected execution, private live tool-agent evidence, route/decoy variant counts, and final anti-gaming release review now have evidence-backed coverage. Rotating multi-pack private holdouts and fully hosted/containerized leaderboard execution remain post-v0 hardening items."
     },
     {
       "id": "privacy_packaging_final_release_readiness",
       "required_for_v0": true,
-      "v0_ready": false,
+      "v0_ready": true,
       "summary_paths": [
         "2026-06-05-ci-validation-panel-summary.md",
-        "2026-06-05-v0-release-gate-audit-panel-summary.md"
+        "2026-06-05-v0-release-gate-audit-panel-summary.md",
+        "2026-06-05-final-release-readiness-panel-summary.md"
       ],
-      "notes": "CI, privacy scan, release evidence, baseline gates, and local private-holdout gates now pass in the current evidence context, but this section still needs final release-readiness review after the remaining sectional blockers are resolved."
+      "notes": "CI, privacy scan, release evidence, baseline gates, local private-holdout gates, stale-doc cleanup, and final release-readiness review now have evidence-backed coverage. This marks a v0 release-candidate state, not a tagged release or hosted public leaderboard."
     }
   ]
 }

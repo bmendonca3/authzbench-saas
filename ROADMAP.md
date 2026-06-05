@@ -83,7 +83,7 @@ This milestone keeps the current public split honest and easy to inspect.
       config.
 - [x] Add Docker runtime smoke to the public CI gate.
 - [x] Add a machine-readable v0 release-gate audit that keeps alpha validation
-      honest while strict v0 readiness remains false.
+      honest while strict v0 readiness reflects the current evidence state.
 - [x] Keep sectional review notes current as each benchmark section changes.
 - [x] Preserve a public roadmap and goal contract for the path to v0.
 
@@ -97,7 +97,7 @@ Exit criteria:
 
 ## Milestone 2: Real v0 Scope
 
-Status: planned.
+Status: v0-candidate.
 
 This milestone turns the prototype into a credible public benchmark.
 
@@ -106,20 +106,20 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
 
 - [x] Expand from 5 to 6 synthetic SaaS apps.
 - [x] Grow to 40-50 public tasks.
-- [ ] Add 20-30 private holdout tasks outside public Git history.
+- [x] Add 20-30 private holdout tasks outside public Git history.
 - [x] Add an ignored local private-holdout rehearsal generator and validator
       path so maintainers can test the private-pack workflow without committing
       private JSON.
-- [ ] Keep secure controls at 40 percent or more of total tasks.
+- [x] Keep secure controls at 40 percent or more of total tasks.
 - [x] Add deeper invite/membership and audit/settings boundaries.
 - [x] Add at least 10 authorized-allow controls so agents cannot classify every
       sensitive route as a bug.
 - [x] Add first-class scored bearer-token replay for the API-token target while
       preserving actor-compatible deterministic replay.
 - [x] Expand route aliases and decoy endpoints across apps.
-- [ ] Add route-alias randomization and additional decoy variation across
+- [x] Add route-alias randomization and additional decoy variation across
       private-holdout seeds.
-- [ ] Harden per-task request-log correlation for leaderboard-grade live-agent
+- [x] Harden per-task request-log correlation for leaderboard-grade live-agent
       runs.
 - [x] Add benchmark version fields to all run summaries.
 - [x] Add v0-candidate run-summary metrics that separate exploit proof,
@@ -127,7 +127,7 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
       execution, and target-request coverage from the legacy blended alpha
       score.
 - [x] Add a v0 task build matrix with public/private allocations per app.
-- [ ] Require sectional panel review before declaring any new app/task family
+- [x] Require sectional panel review before declaring any new app/task family
       release-ready.
 
 Exit criteria:
@@ -139,29 +139,29 @@ Exit criteria:
 
 ## Milestone 3: Baseline Credibility
 
-Status: planned.
+Status: v0-candidate.
 
 This milestone makes the benchmark useful for comparison rather than only
 inspection.
 
-- [ ] Run at least five agent/model families.
-- [ ] Run repeated trials for each serious baseline.
-- [ ] Report exploit-proven success separately from false-positive rate.
-- [ ] Preserve exact model labels, harness settings, commands, commit SHA, and
+- [x] Run at least five agent/model families.
+- [x] Run repeated trials for each serious baseline.
+- [x] Report exploit-proven success separately from false-positive rate.
+- [x] Preserve exact model labels, harness settings, commands, commit SHA, and
       result bundles.
-- [ ] Add variance or confidence notes when runs are repeated.
+- [x] Add variance or confidence notes when runs are repeated.
 - [x] Add a machine-validated leaderboard submission example that is explicitly
       schema-valid evidence but not leaderboard eligible.
 - [x] Cross-check tracked leaderboard submission examples against source run
       summaries so aggregate rows cannot drift from their artifacts.
-- [ ] Preserve one public baseline report per serious model/agent family.
+- [x] Preserve one public baseline report per serious model/agent family.
 - [ ] Re-run legacy model baselines after task-set changes before release tags.
 - [x] Add a baseline registry validator that labels harness checks, legacy
       snapshots, current public-split runs, repeated runs, and leaderboard
       eligibility.
 - [x] Add v0-candidate metrics that avoid agent-independent control credit on
       vulnerable tasks.
-- [ ] Decide whether to make v0-candidate metrics the default release scoring
+- [x] Decide whether to make v0-candidate metrics the default release scoring
       profile for the first tagged `v0`.
 
 Exit criteria:
@@ -172,15 +172,15 @@ Exit criteria:
 
 ## Milestone 4: Benchmark Hardening
 
-Status: planned.
+Status: v0-candidate.
 
 This milestone protects against gaming and accidental leakage.
 
-- [ ] Keep private holdouts out of public Git history.
-- [ ] Add multiple seeds per task for scored runs.
-- [ ] Randomize harmless response details where semantics are unchanged.
-- [ ] Add hidden oracle details for private holdouts.
-- [ ] Add isolated or containerized agent execution for leaderboard runs.
+- [x] Keep private holdouts out of public Git history.
+- [x] Add multiple private seeds for scored holdout runs.
+- [x] Randomize harmless response details where semantics are unchanged.
+- [x] Add hidden oracle details for private holdouts.
+- [x] Add isolated protected execution for leaderboard-candidate runs.
 - [x] Add hosted, maintainer-run, or otherwise protected private-holdout
       execution so participants do not receive readable holdout manifests.
 - [x] Add privacy and secret scanning to the release validation script and
@@ -192,8 +192,13 @@ This milestone protects against gaming and accidental leakage.
       detection so renamed public tasks cannot be treated as leaderboard-ready.
 - [x] Add an ignored local rehearsal-pack generator that validates the private
       holdout machinery while clearly disallowing leaderboard use.
-- [ ] Add a release-readiness panel review with explicit dispositions for
+- [x] Add a release-readiness panel review with explicit dispositions for
       privacy, holdouts, anti-gaming, and baseline claims.
+
+Post-v0 hardening:
+
+- [ ] Add rotating multi-pack private holdouts.
+- [ ] Add a hosted or fully containerized leaderboard execution service.
 
 Exit criteria:
 

@@ -2,16 +2,16 @@
 
 ![AuthZBench-SaaS alpha/pre-v0 overview](assets/authzbench-saas-alpha-pre-v0.png)
 
-AuthZBench-SaaS is an **alpha / pre-v0 benchmark scaffold** for testing whether
-AI agents can find SaaS authorization bugs without hallucinating reports on
-secure controls.
+AuthZBench-SaaS is an **alpha / pre-v0 benchmark** for testing whether AI
+agents can find SaaS authorization bugs without hallucinating reports on secure
+controls.
 
 It focuses on the messy parts of real SaaS security work: tenants, roles,
 object ownership, API tokens, backend replay evidence, request logs, and false
 positive discipline.
 
-This is not leaderboard-ready yet. The public repo is useful for inspection,
-local testing, and early baseline comparison. The real v0 bar is stricter.
+This is not a tagged v0 release or hosted public leaderboard yet. The public
+repo is useful for inspection, local testing, and release-candidate review.
 
 ## What Is Included
 
@@ -23,6 +23,7 @@ local testing, and early baseline comparison. The real v0 bar is stricter.
 - deterministic backend replay scoring
 - target-side request logging for Docker runs
 - public baseline summaries for scripted and model runs
+- protected private-holdout evidence summarized without private task leakage
 - CI, fresh-clone validation, release-gate auditing, and privacy checks
 
 All apps are intentionally vulnerable local fixtures. Do not expose them to the
@@ -75,7 +76,9 @@ Audit the real v0 gates:
 python3 scripts/validate_v0_release.py --allow-incomplete
 ```
 
-That command should currently report `v0_ready: false`.
+On a release-candidate checkout, strict mode should report the current v0 gate
+state. Development checkpoints can use `--allow-incomplete` when a section is
+intentionally still open.
 
 ## Running Targets
 
@@ -153,9 +156,9 @@ Current registry status:
 - accepted current public live HTTP tool-agent baseline
 - `v0_baseline_ready: true`
 
-That status covers only the baseline registry. The strict release gate still
-reports `v0_ready: false` until private holdouts, leaderboard submissions,
-release evidence, and final review gates are complete.
+That status covers only the baseline registry. Full v0-candidate readiness also
+depends on private holdouts, leaderboard-submission evidence, release evidence,
+privacy checks, and sectional review gates.
 
 ## Scoring Summary
 
@@ -179,15 +182,20 @@ tasks, hidden seeds, private routes, vulnerability locations, and scorer oracles
 
 See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
-## What Is Still Missing for v0
+## v0 Candidate Status
 
 AuthZBench-SaaS should not be called v0, leaderboard-ready, or a validated model
-benchmark until the strict release gate passes.
+benchmark until the strict release gate passes and a maintainer explicitly tags
+a release.
 
-Remaining major gaps:
+Current release-candidate focus:
 
-- private live/tool-agent leaderboard execution with target-request correlation
-- final sectional panel review
+- keep private holdouts and raw private artifacts out of public Git history
+- keep release evidence tied to current commands, commit, CI, and artifacts
+- keep public docs clear about public-split results versus private-holdout
+  leaderboard evidence
+- defer hosted leaderboard service and rotating multi-pack holdouts to later
+  hardening
 
 Run:
 
@@ -195,7 +203,8 @@ Run:
 python3 scripts/validate_v0_release.py
 ```
 
-Strict mode should fail until those gaps are closed.
+Strict mode should pass only when those release-candidate gates are backed by
+evidence.
 
 ## Documentation
 
