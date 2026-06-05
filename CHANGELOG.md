@@ -33,6 +33,10 @@
   example that is explicitly not leaderboard eligible.
 - Added artifact-backed leaderboard validation so tracked examples can be
   checked against source run summaries instead of trusting hand-entered rows.
+- Added a v0 release-gate audit script and review registry so the repository can
+  report `v0_ready: false` with explicit unmet gates during alpha/pre-v0 work.
+- Added a release evidence registry and release-candidate leaderboard submission
+  gate so strict v0 readiness cannot pass from public examples alone.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

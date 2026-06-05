@@ -82,6 +82,8 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
 - [x] Add Docker runtime smoke to the public CI gate.
+- [x] Add a machine-readable v0 release-gate audit that keeps alpha validation
+      honest while strict v0 readiness remains false.
 - [x] Keep sectional review notes current as each benchmark section changes.
 - [x] Preserve a public roadmap and goal contract for the path to v0.
 

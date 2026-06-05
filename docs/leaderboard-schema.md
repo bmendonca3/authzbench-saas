@@ -61,6 +61,12 @@ claims to summarize. It does not mean the run is leaderboard eligible unless
 `leaderboard_eligible` is true and the validator returns
 `leaderboard_eligible: true` for that submission.
 
+Tracked public examples are expected to remain non-eligible unless they are real
+private-holdout release-candidate rows. Put future release-candidate submissions
+under `leaderboard_submissions/**/*.json` or in an equivalent protected
+submission bundle; do not turn public harness-check examples into eligible rows
+just to satisfy a release gate.
+
 The validator compares each submission against its source summary for overlapping
 identity and aggregate fields, including agent, model, harness type, benchmark
 version, commit SHA, task counts, v0 metrics, false-positive metrics, and

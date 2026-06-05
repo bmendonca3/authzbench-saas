@@ -26,6 +26,11 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - v0 task build matrix documentation
 - baseline registry validation that separates harness checks, legacy snapshots,
   current public split summaries, and leaderboard eligibility
+- v0 release-gate audit script that reports `v0_ready: false` with explicit
+  unmet gates while the repo is still alpha/pre-v0
+- release evidence registry that keeps local validation, fresh-clone validation,
+  remote CI, Docker smoke, privacy scan, release-note separation, and protected
+  private-holdout execution false until a real v0 candidate satisfies them
 - leaderboard submission validation with a tracked public harness-check example
   that is schema-valid, cross-checked against a source run summary, and not
   leaderboard eligible
@@ -41,6 +46,7 @@ The following checks have been run successfully on the current local scaffold:
 python3 -Wd -m unittest discover -s tests
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
 python3 scripts/validate_baseline_registry.py
+python3 scripts/validate_v0_release.py --allow-incomplete
 python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
 python3 -m compileall -q authzbench apps tests scripts
 docker compose config
@@ -70,6 +76,11 @@ Ready:
 - tracked baseline summaries exist
 - baseline registry exists and passes consistency validation while explicitly
   reporting `v0_baseline_ready: false`
+- v0 release-gate audit exists and is run in public validation with
+  `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
+  still fails honestly
+- strict v0 readiness also depends on `docs/release-evidence.json`, which is
+  intentionally unsatisfied for the current alpha/pre-v0 state
 - leaderboard submission validator exists and is part of public validation
 - tracked leaderboard examples are cross-checked against source run summaries
   instead of trusting hand-entered aggregate rows
@@ -102,5 +113,7 @@ Still required before the real v0 or a serious leaderboard:
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs
 - remote CI status must stay explicit and passing before any real v0 tag
+- `docs/release-evidence.json` must be updated with true evidence only after
+  the corresponding checks pass for a real v0 release candidate
 - repeated remote Docker runtime smoke on release-candidate commits
 - post-push clone check from public `github.com` before tags or releases

@@ -91,8 +91,9 @@ python3 scripts/validate_public.py --include-scripted-baseline
 ```
 
 The validation script runs unit tests, manifest validation, baseline-registry
-validation, artifact-backed leaderboard-submission example validation, compile
-checks, Docker Compose config validation, a Git-tracked privacy scan, and the
+validation, v0 release-gate auditing in explicit incomplete mode,
+artifact-backed leaderboard-submission example validation, compile checks,
+Docker Compose config validation, a Git-tracked privacy scan, and the
 deterministic scripted baseline. Add
 `--include-container-smoke` when a Docker daemon is available and you want the
 release-grade runtime gate:
@@ -115,6 +116,25 @@ The repository also includes a GitHub Actions public-validation workflow for
 pushes, pull requests, and manual dispatch. That workflow runs the scripted
 baseline and Docker container smoke gate. Remote CI status should still be
 checked before any release tag.
+
+Audit the real v0 release gates:
+
+```bash
+python3 scripts/validate_v0_release.py --allow-incomplete
+```
+
+That command should currently report `v0_ready: false`. Strict mode intentionally
+fails until private holdouts, protected execution, repeated real baselines,
+eligible release-candidate leaderboard submissions, release evidence, and final
+section reviews are complete:
+
+```bash
+python3 scripts/validate_v0_release.py
+```
+
+The release evidence registry is
+[`docs/release-evidence.json`](docs/release-evidence.json). It is intentionally
+false for the current alpha/pre-v0 repository.
 
 Run the deterministic scripted baseline:
 

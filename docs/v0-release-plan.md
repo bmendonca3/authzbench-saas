@@ -215,12 +215,20 @@ returns no findings.
 - Leaderboard submission validator with at least one public example that is
   schema-valid but explicitly not leaderboard eligible when it is only a harness
   check or public-split development run.
+- Release-candidate leaderboard submissions stored separately under
+  `leaderboard_submissions/**/*.json` or in an equivalent protected submission
+  bundle, so public examples do not have to pretend to be private-holdout
+  leaderboard rows.
 - Artifact-backed leaderboard validation that cross-checks submitted rows
   against `summary.json` and recomputes aggregate metrics from per-task rows when
   those rows are present.
 - Baseline report with commands and exact result files.
 - Baseline registry that marks each run as a harness check, model baseline, tool
   agent baseline, current public split, or legacy snapshot.
+- Release evidence registry in `docs/release-evidence.json` that records whether
+  local validation, fresh-clone validation, remote CI, Docker smoke, privacy
+  scan, release-note separation, and protected private-holdout execution are
+  satisfied for a real v0 candidate.
 - Publish checklist with validation commands and privacy checks.
 - Changelog or release notes for task/scorer changes.
 
@@ -261,6 +269,8 @@ Do not tag the real `v0` until all required gates pass:
 - baseline registry validation passes and reports `v0_baseline_ready: true`
 - leaderboard submission validation passes for all tracked examples and any
   release-candidate private-holdout submission files
+- `docs/release-evidence.json` marks every required v0 evidence field true for
+  the release candidate
 - leaderboard submissions trace to source run summaries, and source summaries
   with task rows recompute cleanly from those rows
 - leaderboard-eligible rows include both vulnerable tasks and secure controls,
@@ -288,6 +298,24 @@ Do not tag the real `v0` until all required gates pass:
 - Docker smoke passes from a clean checkout or remote CI runner with Docker
 - release notes clearly say which results are public-split and which are private
   holdout results
+
+Machine audit:
+
+```bash
+python3 scripts/validate_v0_release.py
+```
+
+Strict mode should return success only when the real v0 gates are satisfied.
+During alpha/pre-v0 development, public validation runs the same gate in
+explicit audit mode:
+
+```bash
+python3 scripts/validate_v0_release.py --allow-incomplete
+```
+
+`--allow-incomplete` is not a release waiver. It exists so the repository can
+continuously publish a machine-readable account of why `v0_ready` is still
+false.
 
 Version labels:
 

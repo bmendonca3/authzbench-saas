@@ -1,0 +1,24 @@
+{
+  "schema_version": "release-evidence-v1",
+  "release_candidate": {
+    "version_label": "alpha/pre-v0",
+    "commit_sha": null,
+    "notes": "Current public repository is not a v0 release candidate."
+  },
+  "required_for_v0": {
+    "local_public_validation_passed": false,
+    "fresh_clone_validation_passed": false,
+    "remote_ci_passed": false,
+    "docker_container_smoke_passed": false,
+    "privacy_scan_passed": false,
+    "release_notes_separate_public_and_private_results": false,
+    "protected_private_holdout_execution_available": false
+  },
+  "evidence": {
+    "local_public_validation_command": "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
+    "fresh_clone_validation_command": "python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline --include-container-smoke",
+    "strict_v0_audit_command": "python3 scripts/validate_v0_release.py",
+    "latest_remote_ci_run_url": null,
+    "notes": "Alpha validation may pass with --allow-incomplete; strict v0 evidence is intentionally false until a real v0 release candidate exists."
+  }
+}

@@ -9,6 +9,8 @@ intended public host is the public `github.com` account.
 - [ ] `python3 -Wd -m unittest discover -s tests`
 - [ ] `python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'`
 - [ ] `python3 scripts/validate_baseline_registry.py`
+- [ ] `python3 scripts/validate_v0_release.py --allow-incomplete` for
+      alpha/pre-v0 status reporting
 - [ ] `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary`
 - [ ] `python3 -m compileall -q authzbench apps tests scripts`
 - [ ] `docker compose config`
@@ -16,8 +18,17 @@ intended public host is the public `github.com` account.
 - [ ] scripted baseline summary in `baselines/` matches the latest verified run
 - [ ] tracked leaderboard example rows point to source run summaries and validate
       against them
+- [ ] release-candidate eligible leaderboard rows live under
+      `leaderboard_submissions/**/*.json` or an equivalent protected submission
+      bundle, not as repurposed public harness-check examples
 - [ ] baseline registry reports `v0_baseline_ready: true` before any real `v0`
       tag; alpha tags may keep it false if the docs clearly say why
+- [ ] for any real `v0` tag, rerun strict
+      `python3 scripts/validate_v0_release.py` and require `v0_ready: true`
+- [ ] for any real `v0` tag, update `docs/release-evidence.json` only after the
+      matching local validation, fresh-clone validation, remote CI, Docker smoke,
+      privacy scan, release-note separation, and protected holdout execution
+      evidence is actually available
 - [ ] if a private pack exists locally, `python3 scripts/validate_holdout_pack.py`
       passes and no private manifests are staged
 - [ ] private holdout validation reports `leaderboard_suitable: true` for any
