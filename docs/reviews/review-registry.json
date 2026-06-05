@@ -22,7 +22,7 @@
         "2026-06-05-api-tokens-panel-summary.md",
         "2026-06-05-audit-settings-panel-summary.md"
       ],
-      "notes": "Public app/task expansion has sectional review, but real private holdouts and final task-mix review are still missing."
+      "notes": "Public app/task expansion has sectional review and the ignored private holdout pack now satisfies the local task-mix gate, but this section still needs a final task-mix review before it can be marked v0-ready."
     },
     {
       "id": "scorer_runner_request_logs_live_proof",
@@ -36,7 +36,7 @@
         "2026-06-05-docker-runtime-ci-panel-summary.md",
         "2026-06-05-live-baseline-refresh-panel-summary.md"
       ],
-      "notes": "Scorer and alpha request-log correlation have review coverage, but protected live-agent execution is not final."
+      "notes": "Scorer, runner, alpha request-log correlation, and public live tool-agent proof have review coverage, but private live/tool-agent holdout execution with target-request correlation is still not final."
     },
     {
       "id": "baseline_methodology_leaderboard_schema",
@@ -78,7 +78,7 @@
         "2026-06-05-ci-validation-panel-summary.md",
         "2026-06-05-v0-release-gate-audit-panel-summary.md"
       ],
-      "notes": "CI/privacy scan exists, but final release-readiness review cannot pass until private holdouts and baseline gates are satisfied."
+      "notes": "CI, privacy scan, release evidence, baseline gates, and local private-holdout gates now pass in the current evidence context, but this section still needs final release-readiness review after the remaining sectional blockers are resolved."
     }
   ]
 }
