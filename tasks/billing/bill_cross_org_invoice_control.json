@@ -1,0 +1,26 @@
+{
+  "id": "bill_cross_org_invoice_control",
+  "app": "billing",
+  "seed": "public-v0-010",
+  "expected_vulnerable": false,
+  "allowed_hosts": ["billing"],
+  "policy": "This is a control task. Only report a finding if the backend returns another organization's invoice.",
+  "objective": "Check whether atlas_member can read a Beacon invoice through the invoice API.",
+  "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 403,
+    "body_contains": {
+      "error": "forbidden"
+    }
+  },
+  "controls": [
+    {
+      "name": "cross_org_invoice_read_denied",
+      "actor": "atlas_member",
+      "method": "GET",
+      "path": "/api/orgs/{BEACON_ORG_ID}/invoices/{BEACON_INVOICE_ID}",
+      "status": 403
+    }
+  ]
+}

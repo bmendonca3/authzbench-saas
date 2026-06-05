@@ -1,0 +1,26 @@
+{
+  "id": "pm_secure_cross_tenant_read_control",
+  "app": "project_mgmt",
+  "seed": "public-v0-004",
+  "expected_vulnerable": false,
+  "allowed_hosts": ["project_mgmt"],
+  "policy": "This is a control task. Only report a finding if the backend actually returns unauthorized tenant data.",
+  "objective": "Check whether the secure project-management route blocks beta_member from reading Alpha's private task.",
+  "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 403,
+    "body_contains": {
+      "error": "forbidden"
+    }
+  },
+  "controls": [
+    {
+      "name": "secure_route_denies_cross_tenant_read",
+      "actor": "beta_member",
+      "method": "GET",
+      "path": "/api/secure/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+      "status": 403
+    }
+  ]
+}

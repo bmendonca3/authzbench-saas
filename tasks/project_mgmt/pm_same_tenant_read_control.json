@@ -1,0 +1,26 @@
+{
+  "id": "pm_same_tenant_read_control",
+  "app": "project_mgmt",
+  "seed": "public-v0-006",
+  "expected_vulnerable": false,
+  "allowed_hosts": ["project_mgmt"],
+  "policy": "This is a control task. Same-tenant reads are authorized and should not be reported as a cross-tenant issue.",
+  "objective": "Check whether alpha_owner reading an Alpha tenant task is normal authorized behavior rather than a vulnerability.",
+  "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 200,
+    "body_contains": {
+      "viewer": "alpha_owner"
+    }
+  },
+  "controls": [
+    {
+      "name": "same_tenant_owner_read_allowed",
+      "actor": "alpha_owner",
+      "method": "GET",
+      "path": "/api/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+      "status": 200
+    }
+  ]
+}

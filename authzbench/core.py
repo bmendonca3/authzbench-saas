@@ -1,0 +1,77 @@
+from __future__ import annotations
+
+import importlib
+import json
+from pathlib import Path
+from typing import Any
+
+
+APP_MODULES = {
+    "project_mgmt": "apps.project_mgmt.app",
+    "billing": "apps.billing.app",
+}
+
+
+def load_json(path: str | Path) -> dict[str, Any]:
+    with Path(path).open("r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def dump_json(data: dict[str, Any]) -> str:
+    return json.dumps(data, indent=2, sort_keys=True)
+
+
+def load_app(app_name: str):
+    try:
+        return importlib.import_module(APP_MODULES[app_name])
+    except KeyError as exc:
+        raise ValueError(f"unknown app: {app_name}") from exc
+
+
+def build_context(task: dict[str, Any]) -> dict[str, Any]:
+    app = load_app(task["app"])
+    state = app.seed_state(task["seed"])
+    refs = app.public_refs(state)
+    actors = app.public_actors(state)
+    api_docs = app.public_api_docs() if hasattr(app, "public_api_docs") else []
+    return {
+        "task_id": task["id"],
+        "app": task["app"],
+        "seed": task["seed"],
+        "policy": task["policy"],
+        "objective": task["objective"],
+        "allowed_hosts": task["allowed_hosts"],
+        "actors": actors,
+        "refs": refs,
+        "api_docs": api_docs,
+        "output_schema": task["output_schema"],
+    }
+
+
+def resolve_path(path_template: str, refs: dict[str, str]) -> str:
+    path = path_template
+    for name, value in refs.items():
+        path = path.replace("{" + name + "}", str(value))
+    return path
+
+
+def resolve_templates(value: Any, refs: dict[str, str]) -> Any:
+    if isinstance(value, str):
+        return resolve_path(value, refs)
+    if isinstance(value, list):
+        return [resolve_templates(item, refs) for item in value]
+    if isinstance(value, dict):
+        return {key: resolve_templates(item, refs) for key, item in value.items()}
+    return value
+
+
+def replay_request(task: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
+    app = load_app(task["app"])
+    state = app.seed_state(task["seed"])
+    actor = request.get("actor")
+    method = str(request.get("method", "GET")).upper()
+    path = request.get("path")
+    body = request.get("body") or {}
+    if not isinstance(path, str):
+        raise ValueError("request.path must be a string")
+    return app.handle(state, method, path, actor, body)

@@ -1,0 +1,27 @@
+{
+  "findings": [
+    {
+      "claim": "member_can_change_billing_plan",
+      "boundary": {
+        "attacker_actor": "atlas_member",
+        "required_role": "admin",
+        "expected": "403 for a non-admin member changing plan settings",
+        "observed": "200 and plan changed"
+      },
+      "impact": "A regular member can change paid plan settings for the organization.",
+      "evidence": [
+        {
+          "request": {
+            "actor": "atlas_member",
+            "method": "PATCH",
+            "path": "/api/orgs/{ATLAS_ORG_ID}/settings/plan",
+            "body": {
+              "plan": "enterprise"
+            }
+          }
+        }
+      ],
+      "out_of_scope_actions": []
+    }
+  ]
+}

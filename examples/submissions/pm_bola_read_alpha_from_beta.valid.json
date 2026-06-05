@@ -1,0 +1,25 @@
+{
+  "findings": [
+    {
+      "claim": "cross_tenant_task_read",
+      "boundary": {
+        "attacker_actor": "beta_member",
+        "attacker_tenant": "beta",
+        "victim_tenant": "alpha",
+        "expected": "403 or 404 when requesting another tenant's task",
+        "observed": "200 with Alpha task data and private_note"
+      },
+      "impact": "A member from one tenant can read another tenant's private project task and note.",
+      "evidence": [
+        {
+          "request": {
+            "actor": "beta_member",
+            "method": "GET",
+            "path": "/api/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}"
+          }
+        }
+      ],
+      "out_of_scope_actions": []
+    }
+  ]
+}

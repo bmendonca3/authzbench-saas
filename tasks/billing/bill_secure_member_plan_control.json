@@ -1,0 +1,26 @@
+{
+  "id": "bill_secure_member_plan_control",
+  "app": "billing",
+  "seed": "public-v0-009",
+  "expected_vulnerable": false,
+  "allowed_hosts": ["billing"],
+  "policy": "This is a control task. Only report a finding if the secure endpoint actually allows a member to reach billing plan settings.",
+  "objective": "Check whether atlas_member is denied on the secure billing-plan settings endpoint.",
+  "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 403,
+    "body_contains": {
+      "error": "forbidden"
+    }
+  },
+  "controls": [
+    {
+      "name": "secure_route_denies_member_plan_access",
+      "actor": "atlas_member",
+      "method": "GET",
+      "path": "/api/secure/orgs/{ATLAS_ORG_ID}/settings/plan",
+      "status": 403
+    }
+  ]
+}

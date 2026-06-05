@@ -1,0 +1,14 @@
+services:
+  project_mgmt:
+    build:
+      context: .
+      dockerfile: apps/project_mgmt/Dockerfile
+    ports:
+      - "8011:8011"
+  billing:
+    build:
+      context: .
+      dockerfile: apps/billing/Dockerfile
+    ports:
+      - "8012:8012"
+
