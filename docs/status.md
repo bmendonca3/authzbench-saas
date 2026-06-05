@@ -108,8 +108,11 @@ Ready:
   `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
   still fails honestly
 - strict v0 readiness also depends on `docs/release-evidence.json`; the release
-  evidence checks now pass for the current alpha/pre-v0 checkpoint, while
-  sectional reviews still keep strict v0 false
+  evidence checks now pass for the current alpha/pre-v0 checkpoint, while the
+  remaining anti-gaming and final release-readiness review sections still keep
+  strict v0 false
+- the task-realism and vulnerable/control-mix review section is now v0-ready
+  based on final task-mix panel review and aggregate validator evidence
 - leaderboard submission validator exists and is part of public validation
 - tracked leaderboard examples are cross-checked against source run summaries
   instead of trusting hand-entered aggregate rows
@@ -136,13 +139,11 @@ Ready:
 
 Still required before the real v0 or a serious leaderboard:
 
-- larger private holdout pack outside public Git history
-- continued hardening of real non-public holdout tasks; the local rehearsal
-  generator is only a workflow test
-- actual route-alias randomization and additional private-holdout decoy
-  variation implemented in a real non-public holdout pack
-- multi-seed private holdout scoring evidence and route-alias/decoy variations
-  in a real non-public holdout pack
+- final holdout/anti-gaming review over the real non-public holdout pack
+- multi-seed private holdout scoring evidence
+- route-alias/decoy variation evidence for private holdouts remains part of the
+  anti-gaming sign-off, even though the current private-pack validator reports
+  aggregate route and decoy variant counts
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs

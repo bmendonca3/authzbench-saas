@@ -15,14 +15,15 @@
     {
       "id": "task_realism_vulnerability_control_mix",
       "required_for_v0": true,
-      "v0_ready": false,
+      "v0_ready": true,
       "summary_paths": [
         "2026-06-05-support-expansion-panel-summary.md",
         "2026-06-05-file-sharing-panel-summary.md",
         "2026-06-05-api-tokens-panel-summary.md",
-        "2026-06-05-audit-settings-panel-summary.md"
+        "2026-06-05-audit-settings-panel-summary.md",
+        "2026-06-05-final-task-mix-panel-summary.md"
       ],
-      "notes": "Public app/task expansion has sectional review and the ignored private holdout pack now satisfies the local task-mix gate, but this section still needs a final task-mix review before it can be marked v0-ready."
+      "notes": "Public app/task expansion, private holdout aggregate counts, and the combined vulnerable/control mix have final task-mix review coverage. This section is v0-ready; overall v0 remains blocked by anti-gaming and final release-readiness sections."
     },
     {
       "id": "scorer_runner_request_logs_live_proof",
