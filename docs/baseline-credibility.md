@@ -85,3 +85,10 @@ passed all 26 controls and proved 14 of 18 vulnerable exploit replays, but only
 model-baseline credibility while still leaving three repeated model/agent
 families, a true tool-agent baseline, and private-holdout leaderboard
 submissions missing.
+
+The third repeated current model family is DeepSeek through Kiro. The two
+`deepseek-3.2` no-tools runs are also public-split baselines only: both passed
+26 of 44 tasks by staying quiet on controls, kept a zero false-positive rate,
+and proved no vulnerable exploits. They improve baseline breadth while still
+leaving two repeated model/agent families, a true tool-agent baseline, and
+private-holdout leaderboard submissions missing.

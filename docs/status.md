@@ -76,6 +76,8 @@ agent only exercises vulnerable proof requests before submitting.
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | not tracked | 0.1111 | not tracked |
 | Kiro `claude-sonnet-4.6` no-tools current run 1 | 44 | 29 | 0.7778 | 0.1667 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools current run 2 | 44 | 29 | 0.7778 | 0.1667 | 0.0 | 1.0 |
+| Kiro `deepseek-3.2` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
+| Kiro `deepseek-3.2` no-tools current run 2 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools current run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 | 1.0 |
 
@@ -92,8 +94,9 @@ Ready:
 - a heuristic live HTTP prober now provides 44/44 target-request correlation
   across vulnerable and control public tasks, but it is classified as a harness
   check rather than a v0 tool-agent baseline
-- two repeated current public model families exist: Kiro `claude-sonnet-4.6`
-  and `qwen3-coder-next` no-tools, each with two distinct 44-task run summaries
+- three repeated current public model families exist: Kiro `claude-sonnet-4.6`,
+  `deepseek-3.2`, and `qwen3-coder-next` no-tools, each with two distinct
+  44-task run summaries
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
   still fails honestly
@@ -125,8 +128,7 @@ Still required before the real v0 or a serious leaderboard:
   variation implemented in a real non-public holdout pack
 - leaderboard-grade live-agent validation of per-task request-log correlation in
   addition to deterministic replay and CI smoke checks
-- repeated model baselines on the current 44-task public split
-- three additional repeated current model or agent families
+- two additional repeated current model or agent families
 - at least one current public tool-agent baseline
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile

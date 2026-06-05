@@ -39,6 +39,11 @@ not that the v0 baseline bar is complete.
   current 44-task public split no-tools Sonnet runs through the Kiro adapter.
   They are public-split model baselines, not private-holdout or
   leaderboard-eligible submissions.
+- `kiro-deepseek-3.2-current-public-44-run1-summary.json` and
+  `kiro-deepseek-3.2-current-public-44-run2-summary.json`: repeated current
+  44-task public split no-tools DeepSeek runs through the Kiro adapter. They are
+  public-split model baselines, not private-holdout or leaderboard-eligible
+  submissions.
 - `kiro-qwen3-coder-next-current-public-44-run1-summary.json` and
   `kiro-qwen3-coder-next-current-public-44-run2-summary.json`: repeated current
   44-task public split no-tools Qwen runs through the Kiro adapter. They are
