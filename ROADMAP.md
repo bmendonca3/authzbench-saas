@@ -6,7 +6,7 @@ authorization bugs without inventing findings.
 
 The benchmark should become known for one thing: realistic authorization
 boundary testing. It should stay focused on users, roles, tenants,
-organizations, objects, API tokens, and backend proof.
+organizations, objects, API tokens, sharing flows, and backend proof.
 
 ## North Star
 
@@ -31,17 +31,29 @@ protected holdouts, live-target proof, repeated baselines, and sectional review.
 
 ## SDLC And Review Rhythm
 
-Changes should land in auditable checkpoints instead of one large release dump:
+Changes should land in auditable checkpoints instead of one large release dump.
+The intended contribution rhythm is:
 
-- design and roadmap updates
-- target-app and task-set additions
-- scorer, runner, logging, and anti-gaming hardening
-- baseline refreshes
-- documentation and release-readiness updates
+1. Scope or design commit for goals, roadmap, release gates, or architecture.
+2. Target-app/task commits for each new benchmark surface.
+3. Scorer, runner, logging, and anti-gaming commits when proof semantics change.
+4. Baseline/status commits after result artifacts or task counts change.
+5. Release-readiness commits after validation, privacy scans, panel review
+   dispositions, and fresh-clone checks.
 
 For material sections, preserve a short review artifact under `docs/reviews/`
 with the review question, evidence packet, accepted findings, rejected findings
 when relevant, and follow-up work. Raw model or CLI logs should not be committed.
+
+Sectional panel review is required before the project claims a section is
+release-ready. The minimum sections are:
+
+- goal, roadmap, and release criteria
+- task realism and vulnerability/control mix
+- scorer, runner, live-target proof, and request-log correlation
+- baseline methodology and leaderboard schema
+- holdout, contamination, and anti-gaming design
+- privacy scan, packaging, and final release readiness
 
 ## Milestone 1: Alpha Preview Stabilization
 
@@ -57,7 +69,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add early model baselines.
 - [x] Reframe the repository as alpha/pre-v0 instead of a finished v0.
 - [x] Add public v0 release criteria.
-- [x] Add a benchmark card.
+- [x] Add a draft benchmark card.
 - [x] Add a changelog for task and scorer changes.
 - [x] Add a prototype route alias and decoy endpoint exercised by public
       controls.
@@ -66,6 +78,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [ ] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
 - [x] Keep sectional review notes current as each benchmark section changes.
+- [x] Preserve a public roadmap and goal contract for the path to v0.
 
 Exit criteria:
 
@@ -73,6 +86,7 @@ Exit criteria:
 - docs avoid overclaiming
 - public clone validates
 - no private or personal data is committed
+- commits are grouped into meaningful SDLC checkpoints
 
 ## Milestone 2: Real v0 Scope
 
@@ -83,7 +97,7 @@ This milestone turns the prototype into a credible public benchmark.
 Milestones 2, 3, and 4 are all prerequisites for the real `v0` release tag.
 Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
 
-- [ ] Expand from 5 to 5-6 synthetic SaaS apps.
+- [ ] Expand from 5 to 6 synthetic SaaS apps.
 - [ ] Grow to 40-50 public tasks.
 - [ ] Add 20-30 private holdout tasks outside public Git history.
 - [ ] Keep secure controls at 40 percent or more of total tasks.
@@ -95,6 +109,8 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
       runs and Docker CI.
 - [ ] Add benchmark version fields to all run summaries.
 - [x] Add a v0 task build matrix with public/private allocations per app.
+- [ ] Require sectional panel review before declaring any new app/task family
+      release-ready.
 
 Exit criteria:
 
@@ -117,6 +133,8 @@ inspection.
       result bundles.
 - [ ] Add variance or confidence notes when runs are repeated.
 - [ ] Add leaderboard examples that do not rank by blended score alone.
+- [ ] Preserve one public baseline report per serious model/agent family.
+- [ ] Re-run legacy model baselines after task-set changes before release tags.
 
 Exit criteria:
 
@@ -140,6 +158,8 @@ This milestone protects against gaming and accidental leakage.
 - [x] Add privacy and secret scanning to the release validation script and
       checklist.
 - [x] Add a reproducible fresh-clone validation script.
+- [ ] Add a release-readiness panel review with explicit dispositions for
+      privacy, holdouts, anti-gaming, and baseline claims.
 
 Exit criteria:
 
@@ -156,7 +176,7 @@ used seriously.
 
 - [ ] At least 100 total tasks across public and private splits.
 - [ ] Independent external review of task design and scoring.
-- [ ] Public benchmark card with limitations and intended use.
+- [ ] External-review-ready benchmark card with limitations and intended use.
 - [ ] Stable leaderboard submission schema.
 - [ ] Documented policy for task additions, removals, and deprecated scores.
 - [ ] At least one third-party agent or researcher run.

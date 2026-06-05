@@ -25,18 +25,23 @@ version: keep the current repo honest as alpha/pre-v0, then earn the `v0` label
 by adding scale, private holdouts, live-target proof, repeated baselines,
 sectional review, and clean release validation.
 
+The release process should also be auditable from Git history. Major work should
+land as coherent SDLC checkpoints: design and roadmap changes, target/task
+expansions, scorer/harness hardening, baseline refreshes, and release-readiness
+updates.
+
 ## Scope Target
 
 | Area | Alpha preview | v0 target |
 | --- | ---: | ---: |
-| Synthetic SaaS apps | 5 | 5-6 |
+| Synthetic SaaS apps | 5 | 6 |
 | Public tasks | 37 | 40-50 |
 | Private holdout tasks | 0 tracked | 20-30 unpublished |
-| Vulnerability classes | BOLA, BFLA, invite abuse, sharing, API-token scope | BOLA, BFLA, tenant isolation, invite/membership, sharing, API-token scope |
+| Vulnerability classes | BOLA, BFLA, invite abuse, sharing, API-token scope | BOLA, BFLA, tenant isolation, support invites, sharing, API-token scope, audit/settings |
 | Secure controls | 22 | At least 40 percent of all tasks |
 | Model baselines | 2 no-tools runs | 5+ distinct model/agent families plus harness checks, repeated runs |
-| Live-target proof | replayable requests | replayable requests plus target request logs |
-| Anti-gaming | seeded IDs | seeded IDs, route aliases, decoys, private holdouts |
+| Live-target proof | replayable requests plus prototype target logs | replayable requests plus target request logs |
+| Anti-gaming | seeded IDs, prototype route aliases and decoys | seeded IDs, route aliases, decoys, private holdouts |
 
 ## App Expansion Plan
 
@@ -48,7 +53,7 @@ customer data, vendors, or proprietary systems.
 | Project management | Tenant/project/task ownership | Cross-tenant task read/write | Same-tenant read, viewer write denial |
 | Billing | Org role/admin boundary | Member changes plan or reads admin settings | Member denial, admin allow |
 | File sharing | Workspace/file/link visibility | Private file read through guessed ID, stale share link access | Expired link denial, private workspace denial |
-| Invites and membership | Role assignment and invite scope | Member invites admin, cross-org invite accept | Invite expiration, role cap enforcement |
+| Support | Ticket ownership, status writes, and invite scope | Cross-tenant ticket read, unauthorized status change, member invites admin | Ticket read allow, unauthorized ticket update denial, invite role cap enforcement |
 | API tokens | Token scope and tenant binding | Read with wrong tenant token, write beyond token scope | Token scope denial |
 | Audit/settings | Admin-only configuration | Member reads audit log or changes security setting | Admin allow, member denial |
 
@@ -59,7 +64,8 @@ For v0, target about 70 tasks total:
 - 40-50 public tasks for integration, debugging, and transparent methodology.
 - 20-30 private holdout tasks for leaderboard-grade scoring.
 - At least 25 vulnerable tasks.
-- At least 25 secure controls.
+- At least 28 total secure controls, counting both denial controls and
+  authorized-allow controls.
 - At least 10 authorized-allow controls where access should succeed, so agents
   cannot treat every sensitive route as a finding.
 
@@ -81,6 +87,10 @@ Every secure-control task should define:
 - the expected empty finding output
 - the control request and expected response
 - the common false-positive trap the task is meant to catch
+
+Secure controls should be labeled consistently as either denial controls
+(`findings: []` because access is correctly denied) or authorized-allow controls
+(`findings: []` because the actor is correctly allowed).
 
 ## Anti-Gaming Requirements
 
@@ -186,11 +196,34 @@ returns no findings.
 - Methodology document explaining task types, scoring, and limits.
 - Benchmark card describing what the benchmark measures and does not measure.
 - Holdout and contamination policy.
+- Public roadmap and goal contract explaining why the current repo is alpha and
+  what must be true before `v0`.
 - v0 task build matrix with public and private allocations per app.
 - Leaderboard schema.
 - Baseline report with commands and exact result files.
 - Publish checklist with validation commands and privacy checks.
 - Changelog or release notes for task/scorer changes.
+
+## Sectional Review Gates
+
+Each major section should have a concise review artifact under `docs/reviews/`
+before it is treated as release-ready. The artifact should record:
+
+- the question reviewed
+- the files, commands, and evidence packet supplied to reviewers
+- verified reviewers or a clear note when a reviewer was unavailable
+- accepted findings and the follow-up commit or decision
+- rejected findings with the technical reason
+- remaining release risks
+
+Minimum sections:
+
+- goal, roadmap, and release criteria
+- task realism and vulnerability/control mix
+- scorer, runner, request-log correlation, and live-target proof
+- baseline methodology and leaderboard schema
+- holdout, contamination, and anti-gaming design
+- privacy scan, packaging, and final release readiness
 
 ## Release Gates
 
@@ -212,8 +245,11 @@ Do not tag the real `v0` until all required gates pass:
 - at least two seeds are used for each scored private-holdout task
 - at least one independent review of task design, scorer behavior, and
   leaderboard schema is completed with disposition logged
-- sectional review notes exist for roadmap/goal, task design, scoring/harness
-  behavior, baseline methodology, privacy, and release readiness
+- sectional review notes exist for goal, roadmap, and release criteria; task
+  realism and vulnerability/control mix; scorer, runner, request-log
+  correlation, and live-target proof; baseline methodology and leaderboard
+  schema; holdout, contamination, and anti-gaming design; and privacy scan,
+  packaging, and final release readiness
 - no private holdout manifests are committed
 - no secrets, personal emails, personal filesystem paths, cookies, tokens, or
   unrelated local data are committed

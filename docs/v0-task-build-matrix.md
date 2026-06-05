@@ -19,22 +19,23 @@ updated whenever the public or private split changes.
 The v0 public split should land at 40-50 public tasks. The private holdout pack
 should land at 20-30 tasks, with 24 preferred for balanced coverage.
 
-| App | Boundary focus | Public target | Private target |
-| --- | --- | ---: | ---: |
-| Project management | tenant/project/task ownership | 8 | 4 |
-| Billing | organization billing roles and settings | 8 | 4 |
-| Support | ticket ownership, status writes, invites | 8 | 4 |
-| File sharing | workspace files, share links, visibility | 8 | 4 |
-| API tokens | token scopes, tenant binding, write limits | 8 | 4 |
-| Audit/settings | admin logs, security settings, exports | 6 | 4 |
-| **Total** |  | **46** | **24** |
+| App | Boundary focus | Public vuln | Public denial | Public allow | Private vuln | Private denial | Private allow | Total |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Project management | tenant/project/task ownership | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
+| Billing | organization billing roles and settings | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
+| Support | ticket ownership, status writes, invites | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
+| File sharing | workspace files, share links, visibility | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
+| API tokens | token scopes, tenant binding, write limits | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
+| Audit/settings | admin logs, security settings, exports | 3 | 2 | 1 | 2 | 1 | 1 | 10 |
+| **Total** |  | **28** | **12** | **6** | **12** | **6** | **6** | **70** |
 
 ## Required Task Mix
 
 For v0, maintain at least:
 
 - 25 vulnerable tasks across public and private splits
-- 25 secure controls across public and private splits
+- 28 total secure controls across public and private splits, counting denial and
+  authorized-allow controls together
 - 10 authorized-allow controls where access should succeed
 - 8 private BOLA or tenant/object-boundary holdouts
 - 8 private BFLA, invite/membership, token-scope, or role-boundary holdouts
@@ -59,4 +60,4 @@ python3 scripts/validate_holdout_pack.py
 
 The default expects `tasks_private/holdout/**/*.json`, 20-30 private tasks, at
 least 12 vulnerable tasks, and at least 8 controls. The preferred v0 holdout
-count is 24.
+count is 24, with 12 private controls in the target split above.

@@ -32,8 +32,8 @@ idea, run the harness, and compare early agents on a small public split.
 
 The next serious milestone is the real `v0` release. That release needs a larger
 task set, private holdouts, stronger live-target proof, more model baselines, and
-clear release gates. See [`docs/goal.md`](docs/goal.md) and
-[`docs/v0-release-plan.md`](docs/v0-release-plan.md).
+clear release gates. See [`docs/goal.md`](docs/goal.md), [`ROADMAP.md`](ROADMAP.md),
+and [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
 
 ## Why This Exists
 
