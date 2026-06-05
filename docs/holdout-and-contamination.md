@@ -65,10 +65,14 @@ ranking, or a `v0` release claim.
 
 The validator checks the normal task schema, requires `split=private_holdout`,
 rejects public seed prefixes, rejects public task ID and seed reuse, requires
-coverage across all six app families, limits over-concentration in one app, and
-enforces denial-control and authorized-allow-control minimums.
-When rehearsal manifests are present, the validator also reports a rehearsal
-warning and `leaderboard_suitable: false`.
+coverage across all six app families, limits over-concentration in one app,
+enforces denial-control and authorized-allow-control minimums, requires
+non-empty private-only route and decoy variant metadata, and rejects
+non-rehearsal manifests that reuse public task structural fingerprints. A
+manifest is treated as rehearsal only when it carries the generator-style
+rehearsal note plus rehearsal ID and seed prefixes. When rehearsal manifests or
+public-structure fingerprints are present, the validator reports warnings and
+sets `leaderboard_suitable: false`.
 
 Default v0-shape validation requires:
 
@@ -79,6 +83,11 @@ Default v0-shape validation requires:
 - no more than 8 tasks in a single app family
 - at least 4 denial controls
 - at least 4 authorized-allow controls
+- at least 6 non-empty route variants declared through private
+  `holdout_variant` metadata
+- at least 6 non-empty decoy variants declared through private
+  `holdout_variant` metadata
+- no non-rehearsal public task structural copies
 
 ## Holdout Execution Model
 

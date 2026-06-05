@@ -8,8 +8,9 @@ important question:
 
 The current repository is an alpha/pre-v0 public preview. It is useful for
 reviewing the idea, running the harness, and comparing early agents on a
-medium-size public split. It is not yet a finished leaderboard benchmark, and the project
-should not claim the real `v0` label until the release gates below are met.
+medium-size public split. It is not yet a finished leaderboard benchmark, and
+the project should not claim the real `v0` label until the release gates below
+are met.
 
 ## Current Goal Statement
 

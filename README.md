@@ -136,7 +136,9 @@ python3 scripts/validate_holdout_pack.py
 ```
 
 The generated rehearsal pack is ignored by Git and is only a workflow test. It
-is not suitable for private leaderboard scoring.
+is not suitable for private leaderboard scoring. The holdout validator also
+checks non-empty private route/decoy variant metadata and flags renamed
+public-task structure as not leaderboard-suitable.
 
 Run the live HTTP scripted baseline against Docker targets:
 

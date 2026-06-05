@@ -252,6 +252,8 @@ Do not tag the real `v0` until all required gates pass:
 - at least one baseline uses a tool-equipped agent harness
 - route alias support is implemented and exercised by at least one task
 - at least one decoy endpoint is present and covered by a secure control
+- private holdout validation reports sufficient route and decoy variant metadata
+  and zero non-rehearsal public-structure overlaps
 - request logs are captured from the target container or proxy sidecar and
   correlated with scorer replay transcripts
 - at least two seeds are used for each scored private-holdout task

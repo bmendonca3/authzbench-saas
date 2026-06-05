@@ -14,6 +14,8 @@ intended public host is the public `github.com` account.
 - [ ] scripted baseline summary in `baselines/` matches the latest verified run
 - [ ] if a private pack exists locally, `python3 scripts/validate_holdout_pack.py`
       passes and no private manifests are staged
+- [ ] private holdout validation reports `leaderboard_suitable: true` for any
+      real holdout pack; rehearsal packs must remain `leaderboard_suitable: false`
 - [ ] if using the rehearsal generator, confirm it is treated only as a workflow
       test and not as private leaderboard evidence
 - [ ] older model/live baseline snapshots are clearly labeled, or rerun before a

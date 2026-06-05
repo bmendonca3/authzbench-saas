@@ -54,6 +54,10 @@ def _private_rehearsal_copy(task: dict[str, Any], index: int) -> dict[str, Any]:
     private_task["seed"] = _private_seed(index, str(task["id"]))
     private_task["split"] = "private_holdout"
     private_task["leaderboard_suitable"] = False
+    private_task["holdout_variant"] = {
+        "route_variant": f"rehearsal-route-{index:03d}",
+        "decoy_variant": f"rehearsal-decoy-{task['app']}-{index:03d}",
+    }
     private_task["rehearsal_note"] = (
         "Generated from public task structure for local private-pack workflow validation only; "
         "not suitable for private leaderboard scoring."
@@ -161,6 +165,8 @@ def main() -> int:
         max_per_app=8,
         min_denial_controls=4,
         min_authorized_allow_controls=4,
+        min_route_variants=6,
+        min_decoy_variants=6,
     )
     print(dump_json(summary | {"written_count": len(written), "validation": validation}))
     return 0 if validation["passed"] else 1

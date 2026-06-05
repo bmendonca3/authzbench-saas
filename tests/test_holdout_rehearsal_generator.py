@@ -34,6 +34,8 @@ class HoldoutRehearsalGeneratorTests(unittest.TestCase):
                 max_per_app=8,
                 min_denial_controls=4,
                 min_authorized_allow_controls=4,
+                min_route_variants=6,
+                min_decoy_variants=6,
             )
 
         self.assertEqual(len(written), 24)
@@ -43,8 +45,12 @@ class HoldoutRehearsalGeneratorTests(unittest.TestCase):
         self.assertEqual(result["control_count"], 12, result)
         self.assertEqual(len(result["app_counts"]), 6, result)
         self.assertEqual(result["rehearsal_manifest_count"], 24, result)
+        self.assertEqual(result["public_structure_overlap_count"], 24, result)
+        self.assertGreaterEqual(result["route_variant_count"], 6, result)
+        self.assertGreaterEqual(result["decoy_variant_count"], 6, result)
         self.assertEqual(result["leaderboard_suitable"], False, result)
         self.assertTrue(any("rehearsal manifests" in warning for warning in result["warnings"]), result)
+        self.assertTrue(any("structural fingerprints" in warning for warning in result["warnings"]), result)
 
     def test_generator_refuses_public_tasks_output_path(self) -> None:
         tasks = generate_holdout_rehearsal_tasks([str(ROOT / "tasks" / "*" / "*.json")])

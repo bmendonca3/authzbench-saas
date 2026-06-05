@@ -180,6 +180,8 @@ This milestone protects against gaming and accidental leakage.
 - [x] Add a reproducible fresh-clone validation script.
 - [x] Harden private holdout pack validation for app coverage, control subtype
       mix, and public ID/seed overlap.
+- [x] Add private-holdout variant metadata checks and public-structure copy
+      detection so renamed public tasks cannot be treated as leaderboard-ready.
 - [x] Add an ignored local rehearsal-pack generator that validates the private
       holdout machinery while clearly disallowing leaderboard use.
 - [ ] Add a release-readiness panel review with explicit dispositions for

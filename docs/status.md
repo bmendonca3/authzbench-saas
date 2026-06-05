@@ -63,7 +63,8 @@ Ready:
 - tracked baseline summaries exist
 - reproducible fresh-clone validation script exists
 - private holdout pack validator exists for ignored local holdouts, including
-  app coverage, control subtype mix, and public ID/seed overlap checks
+  app coverage, control subtype mix, public ID/seed overlap checks, private
+  route/decoy variant metadata, and behavioral public-structure copy detection
 - ignored local holdout rehearsal generator exists for maintainers to test the
   private-pack workflow without committing private JSON
 - rehearsal manifests and validation output are machine-marked as not suitable
@@ -77,7 +78,8 @@ Still required before the real v0 or a serious leaderboard:
 - larger private holdout pack outside public Git history
 - real non-public holdout tasks and protected execution; the local rehearsal
   generator is only a workflow test
-- route-alias randomization and additional private-holdout decoy variation
+- actual route-alias randomization and additional private-holdout decoy
+  variation implemented in a real non-public holdout pack
 - leaderboard-grade live-agent validation of per-task request-log correlation in
   addition to deterministic replay and CI smoke checks
 - decision on whether v0-candidate metrics become the default tagged-release
