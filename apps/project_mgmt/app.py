@@ -80,7 +80,7 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "GET",
             "path": "/api/projects/{PROJECT_ID}/tasks/{TASK_ID}",
-            "description": "Read a task from the non-secure project task API.",
+            "description": "Read a task from the project task API.",
         },
         {
             "method": "GET",
@@ -95,7 +95,7 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "GET",
             "path": "/api/secure/projects/{PROJECT_ID}/tasks/{TASK_ID}",
-            "description": "Read a task through the secure route that enforces tenant ownership.",
+            "description": "Read a task through the alternate project task route.",
         },
     ]
 

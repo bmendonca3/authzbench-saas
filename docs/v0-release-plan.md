@@ -34,11 +34,11 @@ updates.
 
 | Area | Alpha preview | v0 target |
 | --- | ---: | ---: |
-| Synthetic SaaS apps | 5 | 6 |
-| Public tasks | 37 | 40-50 |
+| Synthetic SaaS apps | 6 | 6 |
+| Public tasks | 44 | 40-50 |
 | Private holdout tasks | 0 tracked | 20-30 unpublished |
 | Vulnerability classes | BOLA, BFLA, invite abuse, sharing, API-token scope | BOLA, BFLA, tenant isolation, support invites, sharing, API-token scope, audit/settings |
-| Secure controls | 22 | At least 40 percent of all tasks |
+| Secure controls | 26 | At least 40 percent of all tasks |
 | Model baselines | 2 no-tools runs | 5+ distinct model/agent families plus harness checks, repeated runs |
 | Live-target proof | replayable requests plus prototype target logs | replayable requests plus target request logs |
 | Anti-gaming | seeded IDs, prototype route aliases and decoys | seeded IDs, route aliases, decoys, private holdouts |
@@ -55,11 +55,11 @@ customer data, vendors, or proprietary systems.
 | File sharing | Workspace/file/link visibility | Private file read through guessed ID, stale share link access | Expired link denial, private workspace denial |
 | Support | Ticket ownership, status writes, and invite scope | Cross-tenant ticket read, unauthorized status change, member invites admin | Ticket read allow, unauthorized ticket update denial, invite role cap enforcement |
 | API tokens | Token scope and tenant binding | Read with wrong tenant token, write beyond token scope | Token scope denial |
-| Audit/settings | Admin-only configuration | Member reads audit log or changes security setting | Admin allow, member denial |
+| Audit/settings | Audit logs, admin-only settings, restricted exports | Cross-org audit read, member disables SSO, member downloads restricted export | Auditor/admin allow, cross-org/member denial |
 
 ## Task Mix
 
-For v0, target about 70 tasks total:
+For v0, target roughly 70-75 tasks total:
 
 - 40-50 public tasks for integration, debugging, and transparent methodology.
 - 20-30 private holdout tasks for leaderboard-grade scoring.

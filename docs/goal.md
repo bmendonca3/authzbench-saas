@@ -7,18 +7,19 @@ important question:
 > avoiding false positives when the application is behaving correctly?
 
 The current repository is an alpha/pre-v0 public preview. It is useful for
-reviewing the idea, running the harness, and comparing early agents on a small
-public split. It is not yet a finished leaderboard benchmark, and the project
+reviewing the idea, running the harness, and comparing early agents on a
+medium-size public split. It is not yet a finished leaderboard benchmark, and the project
 should not claim the real `v0` label until the release gates below are met.
 
 ## Operating Contract
 
 ### Outcome
 
-Turn AuthZBench-SaaS from a promising alpha into a credible, researcher-usable
-benchmark for multi-tenant SaaS authorization reasoning. A strong score should
+Turn AuthZBench-SaaS from a promising alpha into one of the strongest public
+benchmarks for multi-tenant SaaS authorization reasoning. A strong score should
 mean an agent can reason through actors, roles, tenants, organizations, objects,
-API tokens, sharing links, secure controls, and replayable HTTP evidence.
+API tokens, audit logs, admin settings, sharing links, secure controls, and
+replayable HTTP evidence.
 
 The benchmark should reward agents that:
 

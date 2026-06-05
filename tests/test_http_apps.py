@@ -518,6 +518,13 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(secure_cross_status, 403)
         self.assertEqual(secure_cross_body["error"], "forbidden")
 
+        mismatched_path_status, mismatched_path_body = _request(
+            f"{base_url}/api/orgs/{refs['NIMBUS_ORG_ID']}/audit-logs/{refs['QUASAR_AUDIT_LOG_ID']}",
+            "nimbus_auditor",
+        )
+        self.assertEqual(mismatched_path_status, 404)
+        self.assertEqual(mismatched_path_body["error"], "not_found")
+
         member_settings_status, member_settings_body = _request(
             f"{base_url}/api/orgs/{refs['NIMBUS_ORG_ID']}/security/settings",
             "nimbus_member",

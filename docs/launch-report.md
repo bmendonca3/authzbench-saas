@@ -16,11 +16,11 @@ The benchmark is designed around a narrow question:
 
 The current public split contains:
 
-- 5 Dockerized target apps
-- 37 seeded tasks
-- 15 vulnerable tasks
-- 22 secure-control tasks
-- 15 denial controls and 7 authorized-allow controls
+- 6 Dockerized target apps
+- 44 seeded tasks
+- 18 vulnerable tasks
+- 26 secure-control tasks
+- 16 denial controls and 10 authorized-allow controls
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - prototype route alias and decoy endpoint coverage
@@ -71,6 +71,13 @@ The current public split contains:
 | `tok_secure_export_scope_control` | API tokens | Secure control | Correct export-scope denial | API5:2023 BFLA control | CWE-862 control |
 | `tok_write_token_rotates_secret_control` | API tokens | Secure control | Authorized same-tenant write-token update | API5:2023 BFLA control | CWE-862 control |
 | `tok_export_token_reads_export_control` | API tokens | Secure control | Authorized export-token read | API5:2023 BFLA control | CWE-862 control |
+| `aud_bola_nimbus_reads_quasar_audit_log` | Audit/settings | Vulnerable | Cross-org audit-log read | API1:2023 BOLA | CWE-639, CWE-863 |
+| `aud_bfla_member_disables_sso` | Audit/settings | Vulnerable | Member changes admin-only SSO setting | API5:2023 BFLA | CWE-862, CWE-863 |
+| `aud_bfla_member_downloads_audit_export` | Audit/settings | Vulnerable | Member downloads restricted audit export | API5:2023 BFLA | CWE-862, CWE-863 |
+| `aud_secure_cross_org_audit_control` | Audit/settings | Secure control | Correct cross-org audit-log denial | API1:2023 BOLA control | CWE-639 control |
+| `aud_auditor_reads_own_audit_control` | Audit/settings | Secure control | Authorized same-org auditor audit-log read | API1/API5 control | CWE-639, CWE-862 control |
+| `aud_admin_updates_security_settings_control` | Audit/settings | Secure control | Authorized same-org admin settings update | API5:2023 BFLA control | CWE-862 control |
+| `aud_auditor_downloads_export_control` | Audit/settings | Secure control | Authorized same-org auditor export read | API5:2023 BFLA control | CWE-862 control |
 
 ## Scoring
 
@@ -115,8 +122,8 @@ python3 -m authzbench.run \
 
 Expected current result:
 
-- `task_count`: 37
-- `passed_count`: 37
+- `task_count`: 44
+- `passed_count`: 44
 - `mean_score`: 1.0
 - `exploit_proven_success_rate`: 1.0
 - `false_positive_rate`: 0.0
@@ -140,7 +147,7 @@ Tracked summaries:
 - [kiro-qwen3-coder-next-full-summary.json](../baselines/kiro-qwen3-coder-next-full-summary.json)
 
 These 15-task snapshots are public-split baselines from the earlier alpha split,
-not private leaderboard results. They should be rerun on the 37-task split
+not private leaderboard results. They should be rerun on the 44-task split
 before any release tag.
 
 ## Publication Status
@@ -154,7 +161,6 @@ not yet have private holdout scoring.
 
 ## Release Criteria For The Real v0
 
-- expand beyond the current 5-app/37-task alpha split
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs
@@ -171,8 +177,8 @@ not yet have private holdout scoring.
 - The API-token target supports seeded bearer-token HTTP requests, but scorer
   replay is still actor-compatible. First-class scored bearer-token replay is a
   real v0 hardening item.
-- HTTP apps and Docker container runtime smoke tests pass locally when a Docker
-  daemon is available.
+- Docker Compose config validation passes locally. Docker container runtime
+  smoke requires a local Docker daemon and should be rerun before release tags.
 - HAR browser capture is not implemented yet; backend replay transcripts are
   implemented through `transcript.json`.
 - A prototype route alias and decoy endpoint are present, but route aliases are

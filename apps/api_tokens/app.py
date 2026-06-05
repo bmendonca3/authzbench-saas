@@ -114,32 +114,32 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "GET",
             "path": "/api/secrets/{SECRET_ID}",
-            "description": "Read a secret through the non-secure token API.",
+            "description": "Read a secret through the token API.",
         },
         {
             "method": "GET",
             "path": "/api/secure/secrets/{SECRET_ID}",
-            "description": "Read a secret through the protected path that enforces token scope and tenant binding.",
+            "description": "Read a secret through the alternate token API path.",
         },
         {
             "method": "PATCH",
             "path": "/api/secrets/{SECRET_ID}",
-            "description": "Update a secret through the non-secure token API.",
+            "description": "Update a secret through the token API.",
         },
         {
             "method": "PATCH",
             "path": "/api/secure/secrets/{SECRET_ID}",
-            "description": "Update a secret through the protected path that requires secrets:write scope and tenant binding.",
+            "description": "Update a secret through the alternate token API path.",
         },
         {
             "method": "GET",
             "path": "/api/exports/{EXPORT_ID}",
-            "description": "Read an export through the non-secure export API.",
+            "description": "Read an export through the export API.",
         },
         {
             "method": "GET",
             "path": "/api/secure/exports/{EXPORT_ID}",
-            "description": "Read an export through the protected path that requires exports:read scope and tenant binding.",
+            "description": "Read an export through the alternate export API path.",
         },
     ]
 

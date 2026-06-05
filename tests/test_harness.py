@@ -70,6 +70,36 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["score"], 1.0)
 
+    def test_audit_bola_requires_matching_path_org(self) -> None:
+        task = load_json(ROOT / "tasks/audit_settings/aud_bola_nimbus_reads_quasar_audit_log.json")
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "cross_org_audit_log_read",
+                    "boundary": {
+                        "attacker_actor": "nimbus_auditor",
+                        "victim_org": "quasar",
+                        "required_boundary": "same_org",
+                    },
+                    "impact": "A Nimbus auditor can read Quasar audit data.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "nimbus_auditor",
+                                "method": "GET",
+                                "path": f"/api/orgs/{refs['NIMBUS_ORG_ID']}/audit-logs/{refs['QUASAR_AUDIT_LOG_ID']}",
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+
     def test_boundary_mismatch_loses_boundary_reasoning_credit(self) -> None:
         task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json")
         refs = build_context(task)["refs"]

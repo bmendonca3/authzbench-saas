@@ -6,11 +6,11 @@ Last updated: 2026-06-05
 
 AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 
-- 5 Dockerized synthetic SaaS targets
-- 37 public task manifests
-- 15 vulnerable tasks
-- 22 secure-control tasks
-- 15 denial controls and 7 authorized-allow controls
+- 6 Dockerized synthetic SaaS targets
+- 44 public task manifests
+- 18 vulnerable tasks
+- 26 secure-control tasks
+- 16 denial controls and 10 authorized-allow controls
 - seeded runtime fixtures for tenant, object, organization, invoice, file, link,
   workspace, API-token, scope, and actor IDs
 - prototype route alias and decoy endpoint coverage
@@ -45,7 +45,7 @@ validation script.
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 37 | 37 | 1.0 | 0.0 | 1.0 |
+| Scripted sanity baseline | 44 | 44 | 1.0 | 0.0 | 1.0 |
 | Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 | not tracked |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 | not tracked |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 | not tracked |
@@ -65,11 +65,9 @@ Ready:
 
 Still required before the real v0 or a serious leaderboard:
 
-- expansion beyond the current 5-app/37-task alpha split
 - larger private holdout pack outside public Git history
 - first-class scored bearer-token replay for the API-token target
 - route alias expansion and randomization
-- additional authorized-allow controls toward the v0 target of at least 10
 - Docker-backed validation of per-task request-log correlation in addition to
   deterministic replay
 - containerized or otherwise isolated model/agent execution for leaderboard runs

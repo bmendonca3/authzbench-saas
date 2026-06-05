@@ -61,8 +61,8 @@ Status: in progress.
 
 This milestone keeps the current public split honest and easy to inspect.
 
-- [x] Publish five synthetic SaaS target apps.
-- [x] Publish 37 seeded public tasks.
+- [x] Publish six synthetic SaaS target apps.
+- [x] Publish 44 seeded public tasks.
 - [x] Include vulnerable tasks and secure controls.
 - [x] Add deterministic scorer replay transcripts.
 - [x] Add scripted and live HTTP scripted harness baselines.
@@ -97,13 +97,13 @@ This milestone turns the prototype into a credible public benchmark.
 Milestones 2, 3, and 4 are all prerequisites for the real `v0` release tag.
 Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
 
-- [ ] Expand from 5 to 6 synthetic SaaS apps.
-- [ ] Grow to 40-50 public tasks.
+- [x] Expand from 5 to 6 synthetic SaaS apps.
+- [x] Grow to 40-50 public tasks.
 - [ ] Add 20-30 private holdout tasks outside public Git history.
 - [ ] Keep secure controls at 40 percent or more of total tasks.
-- [ ] Add deeper invite/membership and audit/settings boundaries.
-- [ ] Add authorized-allow controls so agents cannot classify every sensitive
-      route as a bug.
+- [x] Add deeper invite/membership and audit/settings boundaries.
+- [x] Add at least 10 authorized-allow controls so agents cannot classify every
+      sensitive route as a bug.
 - [ ] Expand route aliases and decoy endpoints across apps.
 - [ ] Harden per-task request-log correlation for leaderboard-grade live-agent
       runs and Docker CI.
@@ -135,6 +135,8 @@ inspection.
 - [ ] Add leaderboard examples that do not rank by blended score alone.
 - [ ] Preserve one public baseline report per serious model/agent family.
 - [ ] Re-run legacy model baselines after task-set changes before release tags.
+- [ ] Replace alpha compatibility subscores with v0 metrics that avoid
+      agent-independent control credit on vulnerable tasks.
 
 Exit criteria:
 

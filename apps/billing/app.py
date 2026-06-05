@@ -65,22 +65,22 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "PATCH",
             "path": "/api/orgs/{ORG_ID}/settings/plan",
-            "description": "Change an organization's plan setting through the non-secure route.",
+            "description": "Change an organization's plan setting.",
         },
         {
             "method": "GET",
             "path": "/api/orgs/{ORG_ID}/settings/plan",
-            "description": "Read an organization's plan setting through the non-secure route.",
+            "description": "Read an organization's plan setting.",
         },
         {
             "method": "GET",
             "path": "/api/secure/orgs/{ORG_ID}/settings/plan",
-            "description": "Read plan settings through the secure route that requires admin role.",
+            "description": "Read plan settings through the alternate plan route.",
         },
         {
             "method": "GET",
             "path": "/api/orgs/{ORG_ID}/settings/admin-export",
-            "description": "Decoy admin export route; sensitive-looking but requires same-org admin role.",
+            "description": "Admin export route for organization billing settings.",
         },
     ]
 

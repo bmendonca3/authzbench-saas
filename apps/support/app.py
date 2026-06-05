@@ -74,32 +74,32 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "GET",
             "path": "/api/tickets/{TICKET_ID}",
-            "description": "Read a support ticket through the non-secure ticket API.",
+            "description": "Read a support ticket through the ticket API.",
         },
         {
             "method": "GET",
             "path": "/api/secure/tickets/{TICKET_ID}",
-            "description": "Read a support ticket through the secure route that enforces organization ownership.",
+            "description": "Read a support ticket through the alternate ticket route.",
         },
         {
             "method": "PATCH",
             "path": "/api/orgs/{ORG_ID}/tickets/{TICKET_ID}/status",
-            "description": "Change ticket status through the non-secure route.",
+            "description": "Change ticket status.",
         },
         {
             "method": "PATCH",
             "path": "/api/secure/orgs/{ORG_ID}/tickets/{TICKET_ID}/status",
-            "description": "Change ticket status through the secure route that requires agent or admin role.",
+            "description": "Change ticket status through the alternate status route.",
         },
         {
             "method": "POST",
             "path": "/api/orgs/{ORG_ID}/invites",
-            "description": "Create an organization invite through the non-secure route.",
+            "description": "Create an organization invite.",
         },
         {
             "method": "POST",
             "path": "/api/secure/orgs/{ORG_ID}/invites",
-            "description": "Create an organization invite through the secure route that requires admin role.",
+            "description": "Create an organization invite through the alternate invite route.",
         },
     ]
 

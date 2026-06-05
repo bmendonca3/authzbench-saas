@@ -121,17 +121,17 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "GET",
             "path": "/api/files/{FILE_ID}",
-            "description": "Read file metadata and content through the non-secure file API.",
+            "description": "Read file metadata and content through the file API.",
         },
         {
             "method": "GET",
             "path": "/api/secure/files/{FILE_ID}",
-            "description": "Read a file through the secure route that enforces workspace membership.",
+            "description": "Read a file through the alternate file route.",
         },
         {
             "method": "GET",
             "path": "/api/share-links/{LINK_ID}",
-            "description": "Read a file through the non-secure share-link API.",
+            "description": "Read a file through the share-link API.",
         },
         {
             "method": "GET",
@@ -141,12 +141,12 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "POST",
             "path": "/api/workspaces/{WORKSPACE_ID}/files/{FILE_ID}/share-links",
-            "description": "Create a share link through the non-secure route.",
+            "description": "Create a share link.",
         },
         {
             "method": "POST",
             "path": "/api/secure/workspaces/{WORKSPACE_ID}/files/{FILE_ID}/share-links",
-            "description": "Create a share link through the secure route that requires editor or owner role.",
+            "description": "Create a share link through the alternate share-link route.",
         },
     ]
 

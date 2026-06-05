@@ -29,6 +29,10 @@
 - Added a fifth synthetic SaaS target, `api_tokens`, with eight public tasks
   covering token tenant binding, read-scope write bypasses, export-scope
   bypasses, matching secure controls, and authorized-allow controls.
+- Added a sixth synthetic SaaS target, `audit_settings`, with seven public tasks
+  covering cross-organization audit-log reads, member security-setting changes,
+  restricted audit-export downloads, matching secure controls, and
+  authorized-allow controls.
 - Added scorer support for control request bodies so write and invite controls
   can be replayed accurately.
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.

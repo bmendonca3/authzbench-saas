@@ -12,12 +12,13 @@ updated whenever the public or private split changes.
 | Support | 3 | 3 | 6 |
 | File sharing | 3 | 5 | 8 |
 | API tokens | 3 | 5 | 8 |
-| **Total** | **15** | **22** | **37** |
+| Audit/settings | 3 | 4 | 7 |
+| **Total** | **18** | **26** | **44** |
 
 Current public controls are now labeled by subtype:
 
-- 15 denial controls
-- 7 authorized-allow controls
+- 16 denial controls
+- 10 authorized-allow controls
 
 ## v0 Target Split
 
@@ -26,13 +27,13 @@ should land at 20-30 tasks, with 24 preferred for balanced coverage.
 
 | App | Boundary focus | Public vuln | Public denial | Public allow | Private vuln | Private denial | Private allow | Total |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Project management | tenant/project/task ownership | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
-| Billing | organization billing roles and settings | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
-| Support | ticket ownership, status writes, invites | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
-| File sharing | workspace files, share links, visibility | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
-| API tokens | token scopes, tenant binding, write limits | 5 | 2 | 1 | 2 | 1 | 1 | 12 |
-| Audit/settings | admin logs, security settings, exports | 3 | 2 | 1 | 2 | 1 | 1 | 10 |
-| **Total** |  | **28** | **12** | **6** | **12** | **6** | **6** | **70** |
+| Project management | tenant/project/task ownership | 4 | 2 | 2 | 2 | 1 | 1 | 12 |
+| Billing | organization billing roles and settings | 4 | 2 | 2 | 2 | 1 | 1 | 12 |
+| Support | ticket ownership, status writes, invites | 4 | 4 | 1 | 2 | 1 | 1 | 13 |
+| File sharing | workspace files, share links, visibility | 4 | 4 | 1 | 2 | 1 | 1 | 13 |
+| API tokens | token scopes, tenant binding, write limits | 4 | 4 | 1 | 2 | 1 | 1 | 13 |
+| Audit/settings | admin logs, security settings, exports | 3 | 1 | 3 | 2 | 1 | 1 | 12 |
+| **Total** |  | **23** | **17** | **10** | **12** | **6** | **6** | **74** |
 
 ## Required Task Mix
 
@@ -48,9 +49,9 @@ For v0, maintain at least:
 
 ## Build Order
 
-1. Add audit/settings public tasks and controls.
-2. Add private holdout tasks for the existing five apps.
-3. Add private holdout tasks for the remaining new app if a sixth app is added.
+1. Add private holdout tasks for the six public apps.
+2. Expand route aliases and decoys across apps.
+3. Add multi-seed private variants for the highest-value public task families.
 4. Rerun scripted, live scripted, and model baselines after every scorer or task
    change.
 

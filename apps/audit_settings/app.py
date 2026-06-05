@@ -101,32 +101,32 @@ def public_api_docs() -> list[dict[str, str]]:
         {
             "method": "GET",
             "path": "/api/orgs/{ORG_ID}/audit-logs/{AUDIT_LOG_ID}",
-            "description": "Read an audit log through the non-secure audit route.",
+            "description": "Read an audit log by organization and log ID.",
         },
         {
             "method": "GET",
             "path": "/api/secure/orgs/{ORG_ID}/audit-logs/{AUDIT_LOG_ID}",
-            "description": "Read an audit log through the protected route that enforces org binding and auditor/admin role.",
+            "description": "Read an audit log through the alternate audit route.",
         },
         {
             "method": "PATCH",
             "path": "/api/orgs/{ORG_ID}/security/settings",
-            "description": "Update security settings through the non-secure settings route.",
+            "description": "Update organization security settings.",
         },
         {
             "method": "PATCH",
             "path": "/api/secure/orgs/{ORG_ID}/security/settings",
-            "description": "Update security settings through the protected route that requires same-org admin role.",
+            "description": "Update organization security settings through the alternate settings route.",
         },
         {
             "method": "GET",
             "path": "/api/orgs/{ORG_ID}/audit-exports/{EXPORT_ID}",
-            "description": "Read a restricted audit export through the non-secure export route.",
+            "description": "Read an audit export by organization and export ID.",
         },
         {
             "method": "GET",
             "path": "/api/secure/orgs/{ORG_ID}/audit-exports/{EXPORT_ID}",
-            "description": "Read a restricted audit export through the protected route that requires same-org admin or auditor role.",
+            "description": "Read an audit export through the alternate export route.",
         },
     ]
 
@@ -188,7 +188,9 @@ def handle(
             return _json(404, {"error": "not_found"})
         if method != "GET":
             return _json(405, {"error": "method_not_allowed"})
-        # Intentional BOLA: the non-secure audit route trusts path IDs and misses actor org binding.
+        if audit_log["org_id"] != org_id:
+            return _json(404, {"error": "not_found"})
+        # Intentional BOLA: the audit route trusts path ownership but misses actor org binding.
         return _json(200, _audit_log_body(log_id, audit_log, actor_name, actor, "audit_log_api"))
 
     if len(parts) == 6 and parts[:3] == ["api", "secure", "orgs"] and parts[4] == "audit-logs":
