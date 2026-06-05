@@ -107,8 +107,9 @@ Ready:
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
   still fails honestly
-- strict v0 readiness also depends on `docs/release-evidence.json`, which is
-  intentionally unsatisfied for the current alpha/pre-v0 state
+- strict v0 readiness also depends on `docs/release-evidence.json`; six
+  release-evidence checks now pass for the current alpha/pre-v0 checkpoint, but
+  protected private-holdout execution evidence is still false
 - leaderboard submission validator exists and is part of public validation
 - tracked leaderboard examples are cross-checked against source run summaries
   instead of trusting hand-entered aggregate rows
@@ -143,7 +144,8 @@ Still required before the real v0 or a serious leaderboard:
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs
 - remote CI status must stay explicit and passing before any real v0 tag
-- `docs/release-evidence.json` must be updated with true evidence only after
-  the corresponding checks pass for a real v0 release candidate
-- repeated remote Docker runtime smoke on release-candidate commits
+- keep `docs/release-evidence.json` tied to exact command, commit, CI, and
+  artifact evidence as later release checks are rerun
+- protected private-holdout execution evidence still needs a release-grade
+  artifact before the final readiness field can be marked true
 - post-push clone check from public `github.com` before tags or releases

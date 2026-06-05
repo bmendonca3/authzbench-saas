@@ -88,10 +88,10 @@ This does not make the whole benchmark v0-ready.
 ## Residual v0 Blockers
 
 - Other required review sections are still not marked v0-ready.
-- `docs/release-evidence.json` still has all required evidence fields false.
+- `docs/release-evidence.json` still has protected private-holdout execution
+  evidence marked false.
 - Protected/isolated leaderboard execution still needs release evidence.
-- Final fresh-clone, privacy, Docker smoke, and remote CI evidence must be
-  recorded in release evidence before strict v0 can pass.
+- Remaining sectional reviews must be completed before strict v0 can pass.
 
 ## Local Checks
 

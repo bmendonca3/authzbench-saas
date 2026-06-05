@@ -41,7 +41,7 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         )
         self.assertTrue(any("not all required review sections" in item for item in gates["sectional_reviews"]["unmet"]), result)
         self.assertTrue(
-            any("fresh_clone_validation_passed" in item for item in gates["release_verification_evidence"]["unmet"]),
+            any("protected_private_holdout_execution_available" in item for item in gates["release_verification_evidence"]["unmet"]),
             result,
         )
 

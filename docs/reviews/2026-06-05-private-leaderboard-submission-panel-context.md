@@ -82,5 +82,6 @@ Current strict audit result:
 Remaining blockers:
 
 - not all required sectional reviews are marked v0-ready
-- `docs/release-evidence.json` fields remain false
+- protected private-holdout execution evidence remains false in
+  `docs/release-evidence.json`
 - protected/isolated leaderboard execution still needs release evidence
