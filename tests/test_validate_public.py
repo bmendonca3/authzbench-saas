@@ -90,6 +90,7 @@ class ValidatePublicScriptTests(unittest.TestCase):
                 "scripts/validate_leaderboard_submission.py",
                 "--submission",
                 "examples/leaderboard/*.json",
+                "--require-source-summary",
             ],
             commands,
         )

@@ -215,6 +215,9 @@ returns no findings.
 - Leaderboard submission validator with at least one public example that is
   schema-valid but explicitly not leaderboard eligible when it is only a harness
   check or public-split development run.
+- Artifact-backed leaderboard validation that cross-checks submitted rows
+  against `summary.json` and recomputes aggregate metrics from per-task rows when
+  those rows are present.
 - Baseline report with commands and exact result files.
 - Baseline registry that marks each run as a harness check, model baseline, tool
   agent baseline, current public split, or legacy snapshot.
@@ -258,6 +261,10 @@ Do not tag the real `v0` until all required gates pass:
 - baseline registry validation passes and reports `v0_baseline_ready: true`
 - leaderboard submission validation passes for all tracked examples and any
   release-candidate private-holdout submission files
+- leaderboard submissions trace to source run summaries, and source summaries
+  with task rows recompute cleanly from those rows
+- leaderboard-eligible rows include both vulnerable tasks and secure controls,
+  so false-positive rates cannot be claimed from a vulnerability-only subset
 - combined public/private leaderboard rows remain ineligible until the schema
   includes private-only rates and validates eligibility against those rates
 - route alias support is implemented and exercised by at least one task

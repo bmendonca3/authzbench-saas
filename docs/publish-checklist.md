@@ -9,11 +9,13 @@ intended public host is the public `github.com` account.
 - [ ] `python3 -Wd -m unittest discover -s tests`
 - [ ] `python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'`
 - [ ] `python3 scripts/validate_baseline_registry.py`
-- [ ] `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`
+- [ ] `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary`
 - [ ] `python3 -m compileall -q authzbench apps tests scripts`
 - [ ] `docker compose config`
 - [ ] `python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted`
 - [ ] scripted baseline summary in `baselines/` matches the latest verified run
+- [ ] tracked leaderboard example rows point to source run summaries and validate
+      against them
 - [ ] baseline registry reports `v0_baseline_ready: true` before any real `v0`
       tag; alpha tags may keep it false if the docs clearly say why
 - [ ] if a private pack exists locally, `python3 scripts/validate_holdout_pack.py`

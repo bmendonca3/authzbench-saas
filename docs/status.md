@@ -27,7 +27,8 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - baseline registry validation that separates harness checks, legacy snapshots,
   current public split summaries, and leaderboard eligibility
 - leaderboard submission validation with a tracked public harness-check example
-  that is schema-valid but not leaderboard eligible
+  that is schema-valid, cross-checked against a source run summary, and not
+  leaderboard eligible
 - GitHub Actions workflow for public validation gates, including Docker runtime
   smoke
 - scripted and model baseline summaries
@@ -40,7 +41,7 @@ The following checks have been run successfully on the current local scaffold:
 python3 -Wd -m unittest discover -s tests
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
 python3 scripts/validate_baseline_registry.py
-python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'
+python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
 python3 -m compileall -q authzbench apps tests scripts
 docker compose config
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
@@ -70,6 +71,10 @@ Ready:
 - baseline registry exists and passes consistency validation while explicitly
   reporting `v0_baseline_ready: false`
 - leaderboard submission validator exists and is part of public validation
+- tracked leaderboard examples are cross-checked against source run summaries
+  instead of trusting hand-entered aggregate rows
+- leaderboard-eligible rows require source summaries plus both vulnerable-task
+  and secure-control coverage
 - reproducible fresh-clone validation script exists
 - private holdout pack validator exists for ignored local holdouts, including
   app coverage, control subtype mix, public ID/seed overlap checks, private

@@ -31,6 +31,8 @@
   repeated runs, and leaderboard eligibility are machine-checkable.
 - Added leaderboard submission validation plus a schema-valid public harness
   example that is explicitly not leaderboard eligible.
+- Added artifact-backed leaderboard validation so tracked examples can be
+  checked against source run summaries instead of trusting hand-entered rows.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

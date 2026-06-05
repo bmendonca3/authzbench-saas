@@ -42,6 +42,7 @@ leaderboard should expose separate security-relevant axes.
 | `variance_or_ci` | Variance, confidence interval, or explicit `not_repeated` value |
 | `baseline_kind` | `harness_check`, `model_baseline`, or `tool_agent_baseline` |
 | `leaderboard_eligible` | Boolean eligibility after split, repeat, false-positive, and evidence gates |
+| `source_run_summary` | Optional relative path to the `summary.json` artifact backing the submitted row |
 
 ## Validation
 
@@ -49,13 +50,30 @@ Validate leaderboard submission JSON with:
 
 ```bash
 python3 scripts/validate_leaderboard_submission.py \
-  --submission 'examples/leaderboard/*.json'
+  --submission 'examples/leaderboard/*.json' \
+  --require-source-summary
 ```
 
 The public validation gate runs this command against tracked examples. Passing
-validation means the file is structurally consistent. It does not mean the run
-is leaderboard eligible unless `leaderboard_eligible` is true and the validator
-returns `leaderboard_eligible: true` for that submission.
+validation means the file is structurally consistent and, when
+`source_run_summary` is present or required, agrees with the run artifact it
+claims to summarize. It does not mean the run is leaderboard eligible unless
+`leaderboard_eligible` is true and the validator returns
+`leaderboard_eligible: true` for that submission.
+
+The validator compares each submission against its source summary for overlapping
+identity and aggregate fields, including agent, model, harness type, benchmark
+version, commit SHA, task counts, v0 metrics, false-positive metrics, and
+target-request coverage. If the source summary includes per-task rows, the
+validator also recomputes the summary metrics from those rows and rejects
+inconsistent artifacts. Older alpha summaries that lack `run_id` can still be
+used as non-eligible evidence, but v0 leaderboard bundles should include
+`run_id` in every source summary so identity can be checked directly.
+
+Any row marked `leaderboard_eligible: true` must include `source_run_summary`
+even when the CLI is not run with `--require-source-summary`. Eligible rows must
+also include both vulnerable tasks and secure controls; a run with no controls
+cannot prove its false-positive behavior.
 
 ## Ranking Recommendation
 
@@ -68,6 +86,10 @@ For the current alpha/pre-v0 schema, `leaderboard_eligible: true` requires
 `split: private-holdout`. Combined public/private rows can be schema-valid
 evidence, but they should not become eligible until the schema adds private-only
 rates and validates eligibility against those private-only metrics.
+
+Eligible private-holdout rows must be artifact-backed, repeated, non-scripted,
+large enough to meet the configured private-holdout minimum, and include both
+vulnerable tasks and secure controls.
 
 Default sort among eligible submissions:
 
@@ -100,6 +122,8 @@ A leaderboard submission should include:
 - benchmark version and commit SHA
 - baseline registry entry or submission metadata declaring whether the run is a
   harness check, no-tools model baseline, or tool-agent baseline
+- `source_run_summary` or an equivalent submitted bundle path that lets the
+  validator trace the leaderboard row back to the run artifact
 - `leaderboard_eligible` status and the evidence needed to justify it
 
 One-off model runs and legacy snapshots should be visible as evidence, but they

@@ -25,6 +25,7 @@
   "run_count": 1,
   "run_id": "tracked-scripted-baseline-summary",
   "safety_violations": 0,
+  "source_run_summary": "baselines/scripted-baseline-summary.json",
   "split": "public",
   "target_request_coverage_rate": null,
   "task_count": 44,

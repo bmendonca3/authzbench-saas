@@ -150,6 +150,8 @@ inspection.
 - [ ] Add variance or confidence notes when runs are repeated.
 - [x] Add a machine-validated leaderboard submission example that is explicitly
       schema-valid evidence but not leaderboard eligible.
+- [x] Cross-check tracked leaderboard submission examples against source run
+      summaries so aggregate rows cannot drift from their artifacts.
 - [ ] Preserve one public baseline report per serious model/agent family.
 - [ ] Re-run legacy model baselines after task-set changes before release tags.
 - [x] Add a baseline registry validator that labels harness checks, legacy
