@@ -1,10 +1,10 @@
 {
   "agent": "scripted_baseline_agent",
-  "agent_cmd": "python3.11 scripts/scripted_baseline_agent.py",
+  "agent_cmd": "python3 scripts/scripted_baseline_agent.py",
   "authorized_allow_control_task_count": 10,
   "authorized_allow_pass_rate": 1.0,
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
-  "benchmark_commit_sha": "1247f4167c4665333b2f1e442ab4c7b6bf034905",
+  "benchmark_commit_sha": "a214a36e22c04d7e3906b9a739a6604fd784a9cf",
   "harness_type": "scripted",
   "control_task_count": 26,
   "denial_control_task_count": 16,
