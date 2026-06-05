@@ -141,14 +141,15 @@ Still required before the real v0 or a serious leaderboard:
   generator is only a workflow test
 - actual route-alias randomization and additional private-holdout decoy
   variation implemented in a real non-public holdout pack
-- leaderboard-grade private live-agent validation evidence from protected
-  execution, not just public-split evidence or harness support
+- multi-seed private holdout scoring evidence and route-alias/decoy variations
+  in a real non-public holdout pack
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs
 - remote CI status must stay explicit and passing before any real v0 tag
 - keep `docs/release-evidence.json` tied to exact command, commit, CI, and
   artifact evidence as later release checks are rerun
-- private live/tool-agent holdout execution with target-request correlation still
-  needs a release-grade run artifact before any serious leaderboard claim
+- private live/tool-agent holdout execution now has single-run target-request
+  correlation evidence, but serious leaderboard claims still need multi-seed
+  private scoring and final anti-gaming review
 - post-push clone check from public `github.com` before tags or releases

@@ -27,16 +27,17 @@
     {
       "id": "scorer_runner_request_logs_live_proof",
       "required_for_v0": true,
-      "v0_ready": false,
+      "v0_ready": true,
       "summary_paths": [
         "2026-06-05-v0-metrics-panel-summary.md",
         "2026-06-05-bearer-replay-panel-summary.md",
         "2026-06-05-request-logging-panel-summary.md",
         "2026-06-05-runner-correlation-panel-summary.md",
         "2026-06-05-docker-runtime-ci-panel-summary.md",
-        "2026-06-05-live-baseline-refresh-panel-summary.md"
+        "2026-06-05-live-baseline-refresh-panel-summary.md",
+        "2026-06-05-private-live-tool-agent-panel-summary.md"
       ],
-      "notes": "Scorer, runner, alpha request-log correlation, and public live tool-agent proof have review coverage, but private live/tool-agent holdout execution with target-request correlation is still not final."
+      "notes": "Scorer, runner, request-log correlation, and live tool-agent execution proof on both public and private holdouts have complete review coverage. This section is v0-ready."
     },
     {
       "id": "baseline_methodology_leaderboard_schema",
@@ -66,9 +67,10 @@
         "2026-06-05-holdout-anti-gaming-panel-summary.md",
         "2026-06-05-route-alias-decoy-panel-summary.md",
         "2026-06-05-private-holdout-summary-panel-summary.md",
-        "2026-06-05-protected-private-execution-panel-summary.md"
+        "2026-06-05-protected-private-execution-panel-summary.md",
+        "2026-06-05-private-live-tool-agent-panel-summary.md"
       ],
-      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, and protected maintainer-run private execution have alpha review, but the section is not v0-ready until private live/tool-agent evidence, multi-seed coverage, and final anti-gaming review are complete."
+      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, protected execution, and single-run private live tool-agent evidence have alpha review. This section remains not v0-ready until multi-seed scoring coverage, route-alias/decoy variations, and final anti-gaming review are complete."
     },
     {
       "id": "privacy_packaging_final_release_readiness",
