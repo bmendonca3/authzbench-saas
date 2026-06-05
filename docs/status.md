@@ -60,6 +60,8 @@ Ready:
 - reproducible fresh-clone validation script exists
 - private holdout pack validator exists for ignored local holdouts, including
   app coverage, control subtype mix, and public ID/seed overlap checks
+- ignored local holdout rehearsal generator exists for maintainers to test the
+  private-pack workflow without committing private JSON
 - Git-tracked privacy scan exists in the public validation script
 - private holdout JSON is excluded from the publishable repo
 - local-status paths and personal filesystem references have been removed from this document
@@ -67,6 +69,8 @@ Ready:
 Still required before the real v0 or a serious leaderboard:
 
 - larger private holdout pack outside public Git history
+- real non-public holdout tasks and protected execution; the local rehearsal
+  generator is only a workflow test
 - first-class scored bearer-token replay for the API-token target
 - route alias expansion and randomization
 - Docker-backed validation of per-task request-log correlation in addition to

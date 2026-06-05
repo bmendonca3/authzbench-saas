@@ -51,6 +51,18 @@ Maintainers can validate an ignored local pack with:
 python3 scripts/validate_holdout_pack.py
 ```
 
+They can also generate an ignored local rehearsal pack to verify the private
+pack workflow end to end:
+
+```bash
+python3 scripts/generate_holdout_rehearsal_pack.py --force
+python3 scripts/validate_holdout_pack.py
+```
+
+The rehearsal pack is generated from public task structure, so it is only a
+workflow test. It must not be used for private leaderboard scoring, model
+ranking, or a `v0` release claim.
+
 The validator checks the normal task schema, requires `split=private_holdout`,
 rejects public seed prefixes, rejects public task ID and seed reuse, requires
 coverage across all six app families, limits over-concentration in one app, and

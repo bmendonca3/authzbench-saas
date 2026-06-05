@@ -27,3 +27,13 @@ python3 scripts/validate_holdout_pack.py
 The validator checks schema, `split=private_holdout`, non-public seeds, public
 task ID/seed overlap, app-family coverage, per-app concentration, and denial
 plus authorized-allow control minimums.
+
+Maintainers can create a local ignored rehearsal pack with:
+
+```bash
+python3 scripts/generate_holdout_rehearsal_pack.py --force
+```
+
+That rehearsal pack is generated from public task structure and exists only to
+test the private-pack workflow. It is not a real private leaderboard holdout and
+should not be used for v0 scoring claims.

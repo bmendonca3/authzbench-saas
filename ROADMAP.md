@@ -100,6 +100,9 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
 - [x] Expand from 5 to 6 synthetic SaaS apps.
 - [x] Grow to 40-50 public tasks.
 - [ ] Add 20-30 private holdout tasks outside public Git history.
+- [x] Add an ignored local private-holdout rehearsal generator and validator
+      path so maintainers can test the private-pack workflow without committing
+      private JSON.
 - [ ] Keep secure controls at 40 percent or more of total tasks.
 - [x] Add deeper invite/membership and audit/settings boundaries.
 - [x] Add at least 10 authorized-allow controls so agents cannot classify every
@@ -162,6 +165,8 @@ This milestone protects against gaming and accidental leakage.
 - [x] Add a reproducible fresh-clone validation script.
 - [x] Harden private holdout pack validation for app coverage, control subtype
       mix, and public ID/seed overlap.
+- [x] Add an ignored local rehearsal-pack generator that validates the private
+      holdout machinery while clearly disallowing leaderboard use.
 - [ ] Add a release-readiness panel review with explicit dispositions for
       privacy, holdouts, anti-gaming, and baseline claims.
 

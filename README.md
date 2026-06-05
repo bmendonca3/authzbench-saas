@@ -111,6 +111,16 @@ python3 -m authzbench.run \
   --harness-type scripted
 ```
 
+Validate the ignored private-holdout workflow locally:
+
+```bash
+python3 scripts/generate_holdout_rehearsal_pack.py --force
+python3 scripts/validate_holdout_pack.py
+```
+
+The generated rehearsal pack is ignored by Git and is only a workflow test. It
+is not suitable for private leaderboard scoring.
+
 Run the live HTTP scripted baseline against Docker targets:
 
 ```bash

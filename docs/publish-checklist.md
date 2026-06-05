@@ -14,6 +14,8 @@ intended public host is the public `github.com` account.
 - [ ] scripted baseline summary in `baselines/` matches the latest verified run
 - [ ] if a private pack exists locally, `python3 scripts/validate_holdout_pack.py`
       passes and no private manifests are staged
+- [ ] if using the rehearsal generator, confirm it is treated only as a workflow
+      test and not as private leaderboard evidence
 - [ ] older model/live baseline snapshots are clearly labeled, or rerun before a
       tagged release
 - [ ] Docker daemon running and `python3 scripts/container_smoke.py` passes against `docker compose up --build -d`
