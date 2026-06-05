@@ -13,7 +13,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - 16 denial controls and 10 authorized-allow controls
 - seeded runtime fixtures for tenant, object, organization, invoice, file, link,
   workspace, API-token, scope, and actor IDs
-- prototype route alias and decoy endpoint coverage
+- route aliases and decoy controls across all six target apps
 - target-side JSONL request logs for Docker HTTP targets
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
   `--target-log-dir` is supplied
@@ -73,7 +73,7 @@ Still required before the real v0 or a serious leaderboard:
 - larger private holdout pack outside public Git history
 - real non-public holdout tasks and protected execution; the local rehearsal
   generator is only a workflow test
-- route alias expansion and randomization
+- route-alias randomization and additional private-holdout decoy variation
 - Docker-backed validation of per-task request-log correlation in addition to
   deterministic replay
 - containerized or otherwise isolated model/agent execution for leaderboard runs

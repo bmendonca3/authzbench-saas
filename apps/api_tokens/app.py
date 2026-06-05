@@ -118,6 +118,11 @@ def public_api_docs() -> list[dict[str, str]]:
         },
         {
             "method": "GET",
+            "path": "/api/vault/secrets/{SECRET_ID}",
+            "description": "Alias for reading a secret through vault naming.",
+        },
+        {
+            "method": "GET",
             "path": "/api/secure/secrets/{SECRET_ID}",
             "description": "Read a secret through the alternate token API path.",
         },
@@ -135,6 +140,11 @@ def public_api_docs() -> list[dict[str, str]]:
             "method": "GET",
             "path": "/api/exports/{EXPORT_ID}",
             "description": "Read an export through the export API.",
+        },
+        {
+            "method": "GET",
+            "path": "/api/token-admin/exports/{EXPORT_ID}",
+            "description": "Read an export through the token administration route.",
         },
         {
             "method": "GET",
@@ -197,6 +207,18 @@ def handle(
             return _json(200, _secret_body(secret_id, secret, actor_name, actor, "token_secret_api"))
         return _json(405, {"error": "method_not_allowed"})
 
+    if len(parts) == 4 and parts[:3] == ["api", "vault", "secrets"]:
+        secret_id = parts[3]
+        secret = state["secrets"].get(secret_id)
+        if secret is None:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if "secrets:read" not in actor["scopes"]:
+            return _json(403, {"error": "forbidden"})
+        # Intentional alias of the token secret BOLA route.
+        return _json(200, _secret_body(secret_id, secret, actor_name, actor, "vault_secret_alias"))
+
     if len(parts) == 4 and parts[:3] == ["api", "secure", "secrets"]:
         secret_id = parts[3]
         secret = state["secrets"].get(secret_id)
@@ -225,6 +247,17 @@ def handle(
             return _json(403, {"error": "forbidden"})
         # Intentional BFLA: tenant is checked, but exports:read scope is not.
         return _json(200, _export_body(export_id, export, actor_name, actor, "token_export_api"))
+
+    if len(parts) == 4 and parts[:3] == ["api", "token-admin", "exports"]:
+        export_id = parts[3]
+        export = state["exports"].get(export_id)
+        if export is None:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if export["tenant_id"] != actor["tenant_id"] or "tokens:admin" not in actor["scopes"]:
+            return _json(403, {"error": "forbidden"})
+        return _json(200, _export_body(export_id, export, actor_name, actor, "token_admin_export_decoy"))
 
     if len(parts) == 4 and parts[:3] == ["api", "secure", "exports"]:
         export_id = parts[3]

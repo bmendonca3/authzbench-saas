@@ -36,6 +36,27 @@
       "method": "GET",
       "path": "/api/secure/orgs/{QUASAR_ORG_ID}/audit-logs/{QUASAR_AUDIT_LOG_ID}",
       "status": 403
+    },
+    {
+      "name": "alias_event_route_exposes_same_cross_org_audit_log",
+      "actor": "nimbus_auditor",
+      "method": "GET",
+      "path": "/api/orgs/{QUASAR_ORG_ID}/events/{QUASAR_AUDIT_LOG_ID}",
+      "status": 200,
+      "body_contains": {
+        "audit_log": {
+          "id": "{QUASAR_AUDIT_LOG_ID}",
+          "org_id": "{QUASAR_ORG_ID}",
+          "classification": "security",
+          "events": ["privileged_role_changed"]
+        },
+        "viewer": {
+          "actor": "nimbus_auditor",
+          "org_id": "{NIMBUS_ORG_ID}",
+          "role": "auditor"
+        },
+        "route": "audit_event_alias"
+      }
     }
   ]
 }

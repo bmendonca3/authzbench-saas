@@ -73,6 +73,16 @@ def public_api_docs() -> list[dict[str, str]]:
             "description": "Read an organization's plan setting.",
         },
         {
+            "method": "PATCH",
+            "path": "/api/accounts/{ORG_ID}/entitlements/plan",
+            "description": "Alias for changing plan entitlements through account naming.",
+        },
+        {
+            "method": "GET",
+            "path": "/api/accounts/{ORG_ID}/entitlements/plan",
+            "description": "Alias for reading plan entitlements through account naming.",
+        },
+        {
             "method": "GET",
             "path": "/api/secure/orgs/{ORG_ID}/settings/plan",
             "description": "Read plan settings through the alternate plan route.",
@@ -136,6 +146,24 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
             new_plan = str((body or {}).get("plan", state["orgs"][org_id]["plan"]))
             state["orgs"][org_id]["plan"] = new_plan
             return _json(200, {"org": state["orgs"][org_id] | {"id": org_id}, "viewer": actor_name})
+
+    if len(parts) == 5 and parts[:2] == ["api", "accounts"] and parts[3:] == ["entitlements", "plan"]:
+        org_id = parts[2]
+        if org_id not in state["orgs"]:
+            return _json(404, {"error": "not_found"})
+        if method == "GET":
+            # Intentional alias of the BFLA plan route.
+            if actor["org_id"] != org_id:
+                return _json(403, {"error": "forbidden"})
+            return _json(200, {"org": state["orgs"][org_id] | {"id": org_id}, "viewer": actor_name, "route": "account_entitlements_alias"})
+        if method == "PATCH":
+            # Intentional alias of the BFLA plan route.
+            if actor["org_id"] != org_id:
+                return _json(403, {"error": "forbidden"})
+            new_plan = str((body or {}).get("plan", state["orgs"][org_id]["plan"]))
+            state["orgs"][org_id]["plan"] = new_plan
+            return _json(200, {"org": state["orgs"][org_id] | {"id": org_id}, "viewer": actor_name, "route": "account_entitlements_alias"})
+        return _json(405, {"error": "method_not_allowed"})
 
     if len(parts) == 6 and parts[:3] == ["api", "secure", "orgs"] and parts[4:] == ["settings", "plan"]:
         org_id = parts[3]

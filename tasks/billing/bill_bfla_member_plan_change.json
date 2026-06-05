@@ -29,6 +29,22 @@
       "method": "GET",
       "path": "/api/secure/orgs/{ATLAS_ORG_ID}/settings/plan",
       "status": 403
+    },
+    {
+      "name": "alias_entitlements_route_exposes_member_plan_change",
+      "actor": "atlas_member",
+      "method": "PATCH",
+      "path": "/api/accounts/{ATLAS_ORG_ID}/entitlements/plan",
+      "body": {"plan": "enterprise"},
+      "status": 200,
+      "body_contains": {
+        "org": {
+          "id": "{ATLAS_ORG_ID}",
+          "plan": "enterprise"
+        },
+        "viewer": "atlas_member",
+        "route": "account_entitlements_alias"
+      }
     }
   ]
 }

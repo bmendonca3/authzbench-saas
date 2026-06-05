@@ -105,6 +105,11 @@ def public_api_docs() -> list[dict[str, str]]:
         },
         {
             "method": "GET",
+            "path": "/api/orgs/{ORG_ID}/events/{AUDIT_LOG_ID}",
+            "description": "Alias for reading audit events by organization and event ID.",
+        },
+        {
+            "method": "GET",
             "path": "/api/secure/orgs/{ORG_ID}/audit-logs/{AUDIT_LOG_ID}",
             "description": "Read an audit log through the alternate audit route.",
         },
@@ -122,6 +127,11 @@ def public_api_docs() -> list[dict[str, str]]:
             "method": "GET",
             "path": "/api/orgs/{ORG_ID}/audit-exports/{EXPORT_ID}",
             "description": "Read an audit export by organization and export ID.",
+        },
+        {
+            "method": "GET",
+            "path": "/api/orgs/{ORG_ID}/compliance/export-preview/{EXPORT_ID}",
+            "description": "Preview a compliance export for audit-capable roles.",
         },
         {
             "method": "GET",
@@ -193,6 +203,19 @@ def handle(
         # Intentional BOLA: the audit route trusts path ownership but misses actor org binding.
         return _json(200, _audit_log_body(log_id, audit_log, actor_name, actor, "audit_log_api"))
 
+    if len(parts) == 5 and parts[:2] == ["api", "orgs"] and parts[3] == "events":
+        org_id = parts[2]
+        log_id = parts[4]
+        audit_log = state["audit_logs"].get(log_id)
+        if org_id not in state["orgs"] or audit_log is None:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if audit_log["org_id"] != org_id:
+            return _json(404, {"error": "not_found"})
+        # Intentional alias of the audit-log BOLA route.
+        return _json(200, _audit_log_body(log_id, audit_log, actor_name, actor, "audit_event_alias"))
+
     if len(parts) == 6 and parts[:3] == ["api", "secure", "orgs"] and parts[4] == "audit-logs":
         org_id = parts[3]
         log_id = parts[5]
@@ -242,6 +265,18 @@ def handle(
             return _json(403, {"error": "forbidden"})
         # Intentional BFLA: same-org members can retrieve restricted audit exports.
         return _json(200, _export_body(export_id, export, actor_name, actor, "audit_export_api"))
+
+    if len(parts) == 6 and parts[:2] == ["api", "orgs"] and parts[3:5] == ["compliance", "export-preview"]:
+        org_id = parts[2]
+        export_id = parts[5]
+        export = state["exports"].get(export_id)
+        if org_id not in state["orgs"] or export is None:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if export["org_id"] != org_id or actor["org_id"] != org_id or actor["role"] not in {"admin", "auditor"}:
+            return _json(403, {"error": "forbidden"})
+        return _json(200, _export_body(export_id, export, actor_name, actor, "compliance_export_preview_decoy"))
 
     if len(parts) == 6 and parts[:3] == ["api", "secure", "orgs"] and parts[4] == "audit-exports":
         org_id = parts[3]

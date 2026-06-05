@@ -76,8 +76,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add public v0 release criteria.
 - [x] Add a draft benchmark card.
 - [x] Add a changelog for task and scorer changes.
-- [x] Add a prototype route alias and decoy endpoint exercised by public
-      controls.
+- [x] Add route aliases and decoy endpoints exercised by public controls.
 - [x] Add target-side JSONL request logs for Docker HTTP targets.
 - [x] Add alpha runner correlation from target logs into per-task artifacts.
 - [ ] Add CI for unit tests, manifest validation, compile checks, and Docker
@@ -114,7 +113,9 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
       sensitive route as a bug.
 - [x] Add first-class scored bearer-token replay for the API-token target while
       preserving actor-compatible deterministic replay.
-- [ ] Expand route aliases and decoy endpoints across apps.
+- [x] Expand route aliases and decoy endpoints across apps.
+- [ ] Add route-alias randomization and additional decoy variation across
+      private-holdout seeds.
 - [ ] Harden per-task request-log correlation for leaderboard-grade live-agent
       runs and Docker CI.
 - [ ] Add benchmark version fields to all run summaries.

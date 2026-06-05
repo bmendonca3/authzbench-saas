@@ -36,7 +36,23 @@
       "actor": "beta_member",
       "method": "GET",
       "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
-      "status": 200
+      "status": 200,
+      "body_contains": {
+        "task": {
+          "id": "{ALPHA_PRIVATE_TASK_ID}",
+          "tenant_id": "{ALPHA_TENANT_ID}",
+          "private_note": "board packet due friday"
+        },
+        "viewer": "beta_member",
+        "route": "workspace_work_item_alias"
+      }
+    },
+    {
+      "name": "decoy_project_admin_export_denies_cross_tenant_member",
+      "actor": "beta_member",
+      "method": "GET",
+      "path": "/api/projects/{ALPHA_PROJECT_ID}/admin-export",
+      "status": 403
     }
   ]
 }

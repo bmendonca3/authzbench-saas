@@ -23,6 +23,13 @@
       "method": "GET",
       "path": "/api/secure/exports/{MERIDIAN_EXPORT_ID}",
       "status": 403
+    },
+    {
+      "name": "decoy_token_admin_export_denies_read_token",
+      "actor": "meridian_read_token",
+      "method": "GET",
+      "path": "/api/token-admin/exports/{MERIDIAN_EXPORT_ID}",
+      "status": 403
     }
   ],
   "control_type": "denial"

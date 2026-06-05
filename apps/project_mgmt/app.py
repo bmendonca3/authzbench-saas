@@ -94,6 +94,11 @@ def public_api_docs() -> list[dict[str, str]]:
         },
         {
             "method": "GET",
+            "path": "/api/projects/{PROJECT_ID}/admin-export",
+            "description": "Queue a project administration export for owner-only review.",
+        },
+        {
+            "method": "GET",
             "path": "/api/secure/projects/{PROJECT_ID}/tasks/{TASK_ID}",
             "description": "Read a task through the alternate project task route.",
         },
@@ -135,6 +140,17 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
                 return _json(403, {"error": "forbidden"})
             task["status"] = str((body or {}).get("status", task["status"]))
             return _json(200, {"task": task | {"id": task_id}})
+
+    if len(parts) == 4 and parts[:2] == ["api", "projects"] and parts[3] == "admin-export":
+        project_id = parts[2]
+        project = state["projects"].get(project_id)
+        if project is None:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if project["tenant_id"] != actor["tenant_id"] or actor["role"] != "owner":
+            return _json(403, {"error": "forbidden"})
+        return _json(200, {"export": {"project_id": project_id, "status": "queued"}, "viewer": actor_name})
 
     if len(parts) == 6 and parts[:3] == ["api", "secure", "projects"] and parts[4] == "tasks":
         project_id = parts[3]

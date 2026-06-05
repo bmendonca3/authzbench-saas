@@ -30,6 +30,22 @@
       "method": "GET",
       "path": "/api/secure/tickets/{ORBIT_TICKET_ID}",
       "status": 403
+    },
+    {
+      "name": "alias_case_route_exposes_same_cross_org_read",
+      "actor": "acme_agent",
+      "method": "GET",
+      "path": "/api/cases/{ORBIT_TICKET_ID}",
+      "status": 200,
+      "body_contains": {
+        "ticket": {
+          "id": "{ORBIT_TICKET_ID}",
+          "org_id": "{ORBIT_ORG_ID}",
+          "private_note": "root cause pending vendor review"
+        },
+        "viewer": "acme_agent",
+        "route": "case_alias"
+      }
     }
   ]
 }

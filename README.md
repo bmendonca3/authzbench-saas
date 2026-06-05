@@ -15,7 +15,8 @@ This alpha preview includes:
 - 44 public tasks across BOLA, BFLA, sharing, invite abuse, API-token scope, audit/settings, and secure controls
 - 26 secure controls, including 16 denial controls and 10 authorized-allow controls
 - seeded tenant/object/org IDs to reduce hardcoded-solution value
-- a prototype route alias and decoy endpoint exercised by public controls
+- route aliases and decoy endpoints exercised by public controls across the
+  target apps
 - target-side JSONL request logs when Docker targets run with the provided Compose file
 - machine-verifiable backend proof, denial-control scoring, and authorized-allow scoring
 - false-positive controls where the correct answer is no finding
@@ -311,14 +312,15 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 ## Current Limits
 
-- The alpha preview has 44 public tasks; a stronger leaderboard should add more task variants, route aliases, and private holdout tasks.
+- The alpha preview has 44 public tasks; a stronger leaderboard should add more
+  private variants, multi-seed task variants, and private holdout tasks.
 - The API-token target and scorer replay both support seeded
   `Authorization: Bearer ...` evidence while remaining actor-compatible for
   deterministic local evaluation.
-- A prototype route alias, decoy endpoint, target-side request logger, and
-  runner-side request-log correlation path exist, but route aliases are not
-  randomized yet and live-target proof still needs Docker-backed CI and broader
-  live-agent coverage.
+- Route aliases, decoy endpoints, target-side request logging, and runner-side
+  request-log correlation exist, but aliases are not randomized yet and
+  live-target proof still needs Docker-backed CI and broader live-agent
+  coverage.
 - The runner executes local agent commands and should be used only with trusted
   commands or inside an isolated environment.
 - Docker container smoke depends on a local Docker daemon.

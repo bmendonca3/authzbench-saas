@@ -34,6 +34,13 @@
       "method": "GET",
       "path": "/api/secure/orgs/{NIMBUS_ORG_ID}/audit-exports/{NIMBUS_EXPORT_ID}",
       "status": 403
+    },
+    {
+      "name": "decoy_compliance_export_preview_denies_member",
+      "actor": "nimbus_member",
+      "method": "GET",
+      "path": "/api/orgs/{NIMBUS_ORG_ID}/compliance/export-preview/{NIMBUS_EXPORT_ID}",
+      "status": 403
     }
   ]
 }

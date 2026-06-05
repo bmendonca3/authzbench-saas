@@ -180,6 +180,6 @@ not yet have private holdout scoring.
   smoke requires a local Docker daemon and should be rerun before release tags.
 - HAR browser capture is not implemented yet; backend replay transcripts are
   implemented through `transcript.json`.
-- A prototype route alias and decoy endpoint are present, but route aliases are
-  not randomized yet; object, tenant, org, invoice, file, link, workspace,
-  API-token, scope, and token IDs are seeded.
+- Route aliases and decoy endpoints are present across the public target apps,
+  but route aliases are not randomized yet; object, tenant, org, invoice, file,
+  link, workspace, API-token, scope, and token IDs are seeded.

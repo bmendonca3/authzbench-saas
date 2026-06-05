@@ -27,6 +27,13 @@
         "role": "admin"
       },
       "status": 403
+    },
+    {
+      "name": "decoy_ticket_export_denies_agent",
+      "actor": "acme_agent",
+      "method": "GET",
+      "path": "/api/orgs/{ACME_ORG_ID}/ticket-export",
+      "status": 403
     }
   ],
   "control_type": "denial"

@@ -19,6 +19,8 @@
   type.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
+- Expanded route aliases and decoy endpoint controls across all six public
+  target apps while keeping route randomization as future private-holdout work.
 - Added target-side JSONL request logging for Docker HTTP targets and container
   smoke validation for those logs.
 - Added alpha runner-side correlation of target logs into per-task

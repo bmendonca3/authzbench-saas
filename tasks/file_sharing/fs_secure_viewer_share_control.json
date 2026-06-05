@@ -26,6 +26,13 @@
         "visibility": "public"
       },
       "status": 403
+    },
+    {
+      "name": "decoy_security_report_denies_viewer",
+      "actor": "northstar_viewer",
+      "method": "GET",
+      "path": "/api/workspaces/{NORTHSTAR_WORKSPACE_ID}/security-report",
+      "status": 403
     }
   ],
   "control_type": "denial"

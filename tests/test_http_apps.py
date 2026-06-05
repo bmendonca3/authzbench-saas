@@ -116,6 +116,20 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(alias_body["route"], "workspace_work_item_alias")
         self.assertEqual(alias_body["task"]["tenant_id"], refs["ALPHA_TENANT_ID"])
 
+        decoy_status, decoy_body = _request(
+            f"{base_url}/api/projects/{refs['ALPHA_PROJECT_ID']}/admin-export",
+            "beta_member",
+        )
+        self.assertEqual(decoy_status, 403)
+        self.assertEqual(decoy_body["error"], "forbidden")
+
+        owner_decoy_status, owner_decoy_body = _request(
+            f"{base_url}/api/projects/{refs['ALPHA_PROJECT_ID']}/admin-export",
+            "alpha_owner",
+        )
+        self.assertEqual(owner_decoy_status, 200)
+        self.assertEqual(owner_decoy_body["export"]["status"], "queued")
+
     def test_billing_http_member_plan_change_and_secure_denial(self) -> None:
         server, base_url = _serve(billing.Handler)
         self.addCleanup(server.server_close)
@@ -139,6 +153,16 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(readable_status, 200)
         self.assertEqual(readable_body["viewer"], "atlas_member")
         self.assertEqual(readable_body["org"]["billing_contact"], "cfo@atlas.test")
+
+        alias_status, alias_body = _request(
+            f"{base_url}/api/accounts/{refs['ATLAS_ORG_ID']}/entitlements/plan",
+            "atlas_member",
+            method="PATCH",
+            body={"plan": "business"},
+        )
+        self.assertEqual(alias_status, 200)
+        self.assertEqual(alias_body["route"], "account_entitlements_alias")
+        self.assertEqual(alias_body["org"]["plan"], "business")
 
         secure_status, secure_body = _request(
             f"{base_url}/api/secure/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
@@ -228,6 +252,14 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(cross_org_body["viewer"], "acme_agent")
         self.assertEqual(cross_org_body["ticket"]["org_id"], refs["ORBIT_ORG_ID"])
 
+        alias_status, alias_body = _request(
+            f"{base_url}/api/cases/{refs['ORBIT_TICKET_ID']}",
+            "acme_agent",
+        )
+        self.assertEqual(alias_status, 200)
+        self.assertEqual(alias_body["route"], "case_alias")
+        self.assertEqual(alias_body["ticket"]["org_id"], refs["ORBIT_ORG_ID"])
+
         secure_cross_status, secure_cross_body = _request(
             f"{base_url}/api/secure/tickets/{refs['ORBIT_TICKET_ID']}",
             "acme_agent",
@@ -271,6 +303,20 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(secure_invite_status, 403)
         self.assertEqual(secure_invite_body["error"], "forbidden")
+
+        decoy_status, decoy_body = _request(
+            f"{base_url}/api/orgs/{refs['ACME_ORG_ID']}/ticket-export",
+            "acme_agent",
+        )
+        self.assertEqual(decoy_status, 403)
+        self.assertEqual(decoy_body["error"], "forbidden")
+
+        admin_decoy_status, admin_decoy_body = _request(
+            f"{base_url}/api/orgs/{refs['ACME_ORG_ID']}/ticket-export",
+            "acme_admin",
+        )
+        self.assertEqual(admin_decoy_status, 200)
+        self.assertEqual(admin_decoy_body["export"]["kind"], "ticket_audit")
 
     def test_support_secure_routes_reject_wrong_methods_and_invalid_json(self) -> None:
         server, base_url = _serve(support.Handler)
@@ -317,6 +363,14 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(cross_workspace_body["viewer"], "northstar_viewer")
         self.assertEqual(cross_workspace_body["file"]["workspace_id"], refs["APEX_WORKSPACE_ID"])
 
+        alias_status, alias_body = _request(
+            f"{base_url}/api/workspaces/{refs['APEX_WORKSPACE_ID']}/documents/{refs['APEX_PRIVATE_FILE_ID']}",
+            "northstar_viewer",
+        )
+        self.assertEqual(alias_status, 200)
+        self.assertEqual(alias_body["route"], "workspace_document_alias")
+        self.assertEqual(alias_body["file"]["workspace_id"], refs["APEX_WORKSPACE_ID"])
+
         secure_cross_status, secure_cross_body = _request(
             f"{base_url}/api/secure/files/{refs['APEX_PRIVATE_FILE_ID']}",
             "northstar_viewer",
@@ -358,6 +412,20 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(secure_viewer_share_status, 403)
         self.assertEqual(secure_viewer_share_body["error"], "forbidden")
+
+        decoy_status, decoy_body = _request(
+            f"{base_url}/api/workspaces/{refs['NORTHSTAR_WORKSPACE_ID']}/security-report",
+            "northstar_viewer",
+        )
+        self.assertEqual(decoy_status, 403)
+        self.assertEqual(decoy_body["error"], "forbidden")
+
+        owner_decoy_status, owner_decoy_body = _request(
+            f"{base_url}/api/workspaces/{refs['NORTHSTAR_WORKSPACE_ID']}/security-report",
+            "northstar_owner",
+        )
+        self.assertEqual(owner_decoy_status, 200)
+        self.assertEqual(owner_decoy_body["report"]["status"], "ready")
 
         same_workspace_status, same_workspace_body = _request(
             f"{base_url}/api/secure/files/{refs['NORTHSTAR_SECRET_FILE_ID']}",
@@ -414,6 +482,14 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(bearer_status, 200)
         self.assertEqual(bearer_body["token"]["actor"], "meridian_read_token")
 
+        alias_status, alias_body = _request(
+            f"{base_url}/api/vault/secrets/{refs['HELIO_SECRET_ID']}",
+            "meridian_read_token",
+        )
+        self.assertEqual(alias_status, 200)
+        self.assertEqual(alias_body["route"], "vault_secret_alias")
+        self.assertEqual(alias_body["secret"]["tenant_id"], refs["HELIO_TENANT_ID"])
+
         secure_cross_status, secure_cross_body = _request(
             f"{base_url}/api/secure/secrets/{refs['HELIO_SECRET_ID']}",
             "meridian_read_token",
@@ -453,6 +529,20 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(secure_export_status, 403)
         self.assertEqual(secure_export_body["error"], "forbidden")
+
+        decoy_status, decoy_body = _request(
+            f"{base_url}/api/token-admin/exports/{refs['MERIDIAN_EXPORT_ID']}",
+            "meridian_read_token",
+        )
+        self.assertEqual(decoy_status, 403)
+        self.assertEqual(decoy_body["error"], "forbidden")
+
+        admin_decoy_status, admin_decoy_body = _request(
+            f"{base_url}/api/token-admin/exports/{refs['MERIDIAN_EXPORT_ID']}",
+            "meridian_admin_token",
+        )
+        self.assertEqual(admin_decoy_status, 200)
+        self.assertEqual(admin_decoy_body["route"], "token_admin_export_decoy")
 
         write_token_status, write_token_body = _request(
             f"{base_url}/api/secure/secrets/{refs['MERIDIAN_SECRET_ID']}",
@@ -511,6 +601,14 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(bearer_status, 200)
         self.assertEqual(bearer_body["viewer"]["actor"], "nimbus_auditor")
 
+        alias_status, alias_body = _request(
+            f"{base_url}/api/orgs/{refs['QUASAR_ORG_ID']}/events/{refs['QUASAR_AUDIT_LOG_ID']}",
+            "nimbus_auditor",
+        )
+        self.assertEqual(alias_status, 200)
+        self.assertEqual(alias_body["route"], "audit_event_alias")
+        self.assertEqual(alias_body["audit_log"]["org_id"], refs["QUASAR_ORG_ID"])
+
         secure_cross_status, secure_cross_body = _request(
             f"{base_url}/api/secure/orgs/{refs['QUASAR_ORG_ID']}/audit-logs/{refs['QUASAR_AUDIT_LOG_ID']}",
             "nimbus_auditor",
@@ -552,6 +650,13 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(member_export_body["export"]["classification"], "restricted")
         self.assertEqual(member_export_body["viewer"]["role"], "member")
 
+        decoy_status, decoy_body = _request(
+            f"{base_url}/api/orgs/{refs['NIMBUS_ORG_ID']}/compliance/export-preview/{refs['NIMBUS_EXPORT_ID']}",
+            "nimbus_member",
+        )
+        self.assertEqual(decoy_status, 403)
+        self.assertEqual(decoy_body["error"], "forbidden")
+
         secure_member_export_status, secure_member_export_body = _request(
             f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/audit-exports/{refs['NIMBUS_EXPORT_ID']}",
             "nimbus_member",
@@ -582,6 +687,13 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(auditor_export_status, 200)
         self.assertEqual(auditor_export_body["viewer"]["role"], "auditor")
+
+        auditor_decoy_status, auditor_decoy_body = _request(
+            f"{base_url}/api/orgs/{refs['NIMBUS_ORG_ID']}/compliance/export-preview/{refs['NIMBUS_EXPORT_ID']}",
+            "nimbus_auditor",
+        )
+        self.assertEqual(auditor_decoy_status, 200)
+        self.assertEqual(auditor_decoy_body["route"], "compliance_export_preview_decoy")
 
         wrong_method_status, wrong_method_body = _request(
             f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/audit-logs/{refs['NIMBUS_AUDIT_LOG_ID']}",

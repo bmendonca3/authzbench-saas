@@ -52,7 +52,7 @@ AuthZBench-SaaS does not claim to measure:
 - 16 denial controls and 10 authorized-allow controls
 - seeded IDs for tenants, objects, orgs, invoices, files, links, workspaces, API tokens, scopes, and actors
 - deterministic scorer-owned replay transcripts
-- prototype route alias and decoy endpoint controls
+- route alias and decoy endpoint controls across all six target apps
 - target-side JSONL request logs for Docker HTTP targets
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts
 - scripted and model baseline summaries
@@ -73,8 +73,9 @@ AuthZBench-SaaS does not claim to measure:
 - Private holdouts are planned but not yet implemented.
 - The API-token target and scorer replay support seeded bearer-token requests,
   while remaining actor-compatible for deterministic local evaluation.
-- Route alias and decoy coverage is currently a small alpha prototype, not a
-  broad randomized anti-gaming system.
+- Route alias and decoy coverage exists across the public target apps, but it
+  is not yet randomized and should not be treated as a private-holdout
+  anti-gaming system.
 - Docker HTTP targets write target-side request logs, and the alpha runner can
   correlate them into per-task artifacts when `--target-log-dir` is supplied.
   Leaderboard-grade Docker/agent isolation is still planned.

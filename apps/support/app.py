@@ -78,6 +78,11 @@ def public_api_docs() -> list[dict[str, str]]:
         },
         {
             "method": "GET",
+            "path": "/api/cases/{TICKET_ID}",
+            "description": "Alias for reading a support ticket through case naming.",
+        },
+        {
+            "method": "GET",
             "path": "/api/secure/tickets/{TICKET_ID}",
             "description": "Read a support ticket through the alternate ticket route.",
         },
@@ -95,6 +100,11 @@ def public_api_docs() -> list[dict[str, str]]:
             "method": "POST",
             "path": "/api/orgs/{ORG_ID}/invites",
             "description": "Create an organization invite.",
+        },
+        {
+            "method": "GET",
+            "path": "/api/orgs/{ORG_ID}/ticket-export",
+            "description": "Queue an organization ticket export for administrators.",
         },
         {
             "method": "POST",
@@ -126,14 +136,17 @@ def handle(
         return _json(401, {"error": "missing_or_unknown_actor"})
     parts = [part for part in urlparse(path).path.split("/") if part]
 
-    if len(parts) == 3 and parts[:2] == ["api", "tickets"]:
+    ticket_read_route = len(parts) == 3 and parts[:2] == ["api", "tickets"]
+    case_read_route = len(parts) == 3 and parts[:2] == ["api", "cases"]
+    if ticket_read_route or case_read_route:
         ticket_id = parts[2]
         ticket = state["tickets"].get(ticket_id)
         if ticket is None:
             return _json(404, {"error": "not_found"})
         if method == "GET":
             # Intentional BOLA: organization ownership is not checked.
-            return _json(200, {"ticket": ticket | {"id": ticket_id}, "viewer": actor_name})
+            route_name = "case_alias" if case_read_route else "ticket_api"
+            return _json(200, {"ticket": ticket | {"id": ticket_id}, "viewer": actor_name, "route": route_name})
 
     if len(parts) == 4 and parts[:3] == ["api", "secure", "tickets"]:
         ticket_id = parts[3]
@@ -189,6 +202,16 @@ def handle(
             }
             state["invites"][invite_id] = invite
             return _json(201, {"invite": invite | {"id": invite_id}, "viewer": actor_name})
+
+    if len(parts) == 4 and parts[:2] == ["api", "orgs"] and parts[3] == "ticket-export":
+        org_id = parts[2]
+        if org_id not in state["orgs"]:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if actor["org_id"] != org_id or actor["role"] != "admin":
+            return _json(403, {"error": "forbidden"})
+        return _json(200, {"export": {"org_id": org_id, "status": "queued", "kind": "ticket_audit"}, "viewer": actor_name})
 
     if len(parts) == 5 and parts[:3] == ["api", "secure", "orgs"] and parts[4] == "invites":
         org_id = parts[3]

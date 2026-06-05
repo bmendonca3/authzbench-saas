@@ -30,6 +30,22 @@
       "method": "GET",
       "path": "/api/secure/files/{APEX_PRIVATE_FILE_ID}",
       "status": 403
+    },
+    {
+      "name": "alias_document_route_exposes_same_cross_workspace_read",
+      "actor": "northstar_viewer",
+      "method": "GET",
+      "path": "/api/workspaces/{APEX_WORKSPACE_ID}/documents/{APEX_PRIVATE_FILE_ID}",
+      "status": 200,
+      "body_contains": {
+        "file": {
+          "id": "{APEX_PRIVATE_FILE_ID}",
+          "workspace_id": "{APEX_WORKSPACE_ID}",
+          "content": "acquisition target shortlist"
+        },
+        "viewer": "northstar_viewer",
+        "route": "workspace_document_alias"
+      }
     }
   ]
 }

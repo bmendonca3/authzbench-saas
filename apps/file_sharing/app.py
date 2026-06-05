@@ -125,6 +125,11 @@ def public_api_docs() -> list[dict[str, str]]:
         },
         {
             "method": "GET",
+            "path": "/api/workspaces/{WORKSPACE_ID}/documents/{FILE_ID}",
+            "description": "Alias for reading a file through workspace document naming.",
+        },
+        {
+            "method": "GET",
             "path": "/api/secure/files/{FILE_ID}",
             "description": "Read a file through the alternate file route.",
         },
@@ -142,6 +147,11 @@ def public_api_docs() -> list[dict[str, str]]:
             "method": "POST",
             "path": "/api/workspaces/{WORKSPACE_ID}/files/{FILE_ID}/share-links",
             "description": "Create a share link.",
+        },
+        {
+            "method": "GET",
+            "path": "/api/workspaces/{WORKSPACE_ID}/security-report",
+            "description": "Read a workspace sharing security report for owners.",
         },
         {
             "method": "POST",
@@ -192,6 +202,17 @@ def handle(
             return _json(405, {"error": "method_not_allowed"})
         # Intentional BOLA: workspace membership is not checked.
         return _json(200, _file_body(file_id, file_data, actor_name, "file_api"))
+
+    if len(parts) == 5 and parts[:2] == ["api", "workspaces"] and parts[3] == "documents":
+        workspace_id = parts[2]
+        file_id = parts[4]
+        file_data = state["files"].get(file_id)
+        if workspace_id not in state["workspaces"] or file_data is None or file_data["workspace_id"] != workspace_id:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        # Intentional alias of the file BOLA route.
+        return _json(200, _file_body(file_id, file_data, actor_name, "workspace_document_alias"))
 
     if len(parts) == 4 and parts[:3] == ["api", "secure", "files"]:
         file_id = parts[3]
@@ -246,6 +267,16 @@ def handle(
         }
         state["links"][link_id] = link
         return _json(201, {"link": link | {"id": link_id}, "viewer": actor_name})
+
+    if len(parts) == 4 and parts[:2] == ["api", "workspaces"] and parts[3] == "security-report":
+        workspace_id = parts[2]
+        if workspace_id not in state["workspaces"]:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if actor["workspace_id"] != workspace_id or actor["role"] != "owner":
+            return _json(403, {"error": "forbidden"})
+        return _json(200, {"report": {"workspace_id": workspace_id, "status": "ready"}, "viewer": actor_name})
 
     if len(parts) == 7 and parts[:3] == ["api", "secure", "workspaces"] and parts[4] == "files" and parts[6] == "share-links":
         workspace_id = parts[3]
