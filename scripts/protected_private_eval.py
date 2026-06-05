@@ -98,6 +98,22 @@ def _target_requests(
     return entries
 
 
+def _target_requests_after_settle(
+    target_log_dir: Path,
+    app_name: str,
+    run_id: str,
+    task_id: str,
+    agent_id: str,
+    start_offset: int,
+) -> list[dict[str, Any]]:
+    for attempt in range(6):
+        entries = _target_requests(target_log_dir, app_name, run_id, task_id, agent_id, start_offset)
+        if entries or attempt == 5:
+            return entries
+        time.sleep(0.1)
+    return []
+
+
 def _run_agent_protected(
     agent_cmd: str,
     context: dict[str, Any],
@@ -388,7 +404,14 @@ def run_protected_private_eval(
         target_request_warning: str | None = None
         if target_log_dir is not None:
             target_log_exists = (target_log_dir / f"{task['app']}.jsonl").exists()
-            requests = _target_requests(target_log_dir, task["app"], run_id, task["id"], agent_id, target_log_start_offset)
+            requests = _target_requests_after_settle(
+                target_log_dir,
+                task["app"],
+                run_id,
+                task["id"],
+                agent_id,
+                target_log_start_offset,
+            )
             _write_jsonl(task_dir / "target-requests.jsonl", requests)
             target_request_count = len(requests)
             if not target_log_exists:
