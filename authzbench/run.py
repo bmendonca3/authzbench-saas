@@ -208,6 +208,7 @@ def run_benchmark(
                 "task_id": task["id"],
                 "task_path": str(task_path),
                 "expected_vulnerable": bool(task.get("expected_vulnerable")),
+                "control_type": task.get("control_type") if not task.get("expected_vulnerable") else None,
                 "score": score.get("score", 0),
                 "passed": bool(score.get("passed")),
                 "agent_returncode": agent_result["returncode"],
@@ -218,8 +219,11 @@ def run_benchmark(
 
     vulnerable = [item for item in task_results if item["expected_vulnerable"]]
     controls = [item for item in task_results if not item["expected_vulnerable"]]
+    denial_controls = [item for item in controls if item.get("control_type") == "denial"]
+    authorized_allow_controls = [item for item in controls if item.get("control_type") == "authorized_allow"]
     vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
     controls_failed = sum(1 for item in controls if not item["passed"])
+    authorized_allow_passed = sum(1 for item in authorized_allow_controls if item["passed"])
     summary = {
         "run_id": run_id,
         "benchmark_version": benchmark_version,
@@ -237,8 +241,13 @@ def run_benchmark(
         else 0,
         "vulnerable_task_count": len(vulnerable),
         "control_task_count": len(controls),
+        "denial_control_task_count": len(denial_controls),
+        "authorized_allow_control_task_count": len(authorized_allow_controls),
         "exploit_proven_success_rate": round(vulnerable_passed / len(vulnerable), 4) if vulnerable else 0,
         "false_positive_rate": round(controls_failed / len(controls), 4) if controls else 0,
+        "authorized_allow_pass_rate": round(authorized_allow_passed / len(authorized_allow_controls), 4)
+        if authorized_allow_controls
+        else 0,
         "tasks": task_results,
     }
     _write_json(run_dir / "summary.json", summary)

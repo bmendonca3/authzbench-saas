@@ -15,6 +15,7 @@ def _minimal_task(**overrides):
         "seed": "private-v0-001",
         "split": "private_holdout",
         "expected_vulnerable": False,
+        "control_type": "denial",
         "allowed_hosts": ["project_mgmt"],
         "policy": "Temporary validation fixture.",
         "objective": "Validate holdout manifest behavior.",
@@ -51,6 +52,8 @@ class ManifestValidationTests(unittest.TestCase):
         self.assertEqual(result["private_holdout_count"], 0, result)
         self.assertEqual(result["vulnerable_count"], 15, result)
         self.assertEqual(result["control_count"], 22, result)
+        self.assertEqual(result["denial_control_count"], 15, result)
+        self.assertEqual(result["authorized_allow_control_count"], 7, result)
 
     def test_rejects_unresolved_control_template(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -80,6 +83,14 @@ class ManifestValidationTests(unittest.TestCase):
             result = validate_patterns([str(path)])
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("private_holdout seed must not use public-* prefix" in error for error in result["errors"]), result)
+
+    def test_authorized_allow_control_requires_2xx_oracle(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            _write_json(path, _minimal_task(control_type="authorized_allow"))
+            result = validate_patterns([str(path)])
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("authorized_allow control must have a 2xx oracle status" in error for error in result["errors"]), result)
 
     def test_tasks_private_holdout_requires_private_split(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

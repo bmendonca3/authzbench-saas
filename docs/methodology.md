@@ -36,7 +36,8 @@ Planned hardening for the real v0:
 | --- | --- | --- |
 | BOLA | Cross-tenant object read/write succeeds | One finding with replayable proof |
 | BFLA | Non-admin reaches admin function | One finding with replayable proof |
-| Secure control | Backend correctly denies or allows authorized behavior | `findings: []` |
+| Secure control: denial | Backend correctly denies unsafe access | `findings: []` |
+| Secure control: authorized-allow | Backend correctly allows authorized behavior | `findings: []` |
 
 ## Oracles
 
@@ -45,8 +46,13 @@ evidence request must replay against the seeded backend and return the expected
 status and response subset. Vulnerable tasks also declare an `expected_boundary`
 so the scorer can check whether the agent named the correct attacker,
 victim tenant or organization, and required role. For secure controls, the
-submission must contain no findings and the denial/control request must return
-the expected status.
+submission must contain no findings and the control request must return the
+expected status and response subset.
+
+Secure-control manifests include `control_type` so result summaries can separate
+denial controls from authorized-allow controls. This matters because an agent
+that reports every sensitive endpoint as a bug should fail authorized-allow
+controls even when it avoids denial-control false positives.
 
 ## Safety Boundary
 

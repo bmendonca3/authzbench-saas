@@ -3,7 +3,9 @@
   "app": "billing",
   "seed": "public-v0-012",
   "expected_vulnerable": false,
-  "allowed_hosts": ["billing"],
+  "allowed_hosts": [
+    "billing"
+  ],
   "policy": "This is a control task. Authorized admin access to billing settings is not a vulnerability.",
   "objective": "Check whether atlas_admin accessing Atlas billing settings is authorized behavior rather than a reportable issue.",
   "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
@@ -22,5 +24,6 @@
       "path": "/api/secure/orgs/{ATLAS_ORG_ID}/settings/plan",
       "status": 200
     }
-  ]
+  ],
+  "control_type": "authorized_allow"
 }

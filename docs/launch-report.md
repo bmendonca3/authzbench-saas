@@ -20,6 +20,7 @@ The current public split contains:
 - 37 seeded tasks
 - 15 vulnerable tasks
 - 22 secure-control tasks
+- 15 denial controls and 7 authorized-allow controls
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - prototype route alias and decoy endpoint coverage
@@ -87,6 +88,7 @@ Public leaderboard reporting should keep separate columns for:
 
 - exploit-proven success rate
 - false-positive rate on controls
+- authorized-allow pass rate
 - boundary reasoning accuracy
 - evidence/replay fidelity
 - safety/scope violations
@@ -118,6 +120,7 @@ Expected current result:
 - `mean_score`: 1.0
 - `exploit_proven_success_rate`: 1.0
 - `false_positive_rate`: 0.0
+- `authorized_allow_pass_rate`: 1.0
 
 Tracked summary:
 

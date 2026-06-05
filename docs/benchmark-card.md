@@ -49,6 +49,7 @@ AuthZBench-SaaS does not claim to measure:
 - 37 public tasks
 - 15 vulnerable tasks
 - 22 secure-control tasks
+- 15 denial controls and 7 authorized-allow controls
 - seeded IDs for tenants, objects, orgs, invoices, files, links, workspaces, API tokens, scopes, and actors
 - deterministic scorer-owned replay transcripts
 - prototype route alias and decoy endpoint controls

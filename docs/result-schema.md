@@ -127,9 +127,16 @@ Run-level aggregate:
 - `mean_score`
 - `vulnerable_task_count`
 - `control_task_count`
+- `denial_control_task_count`
+- `authorized_allow_control_task_count`
 - `exploit_proven_success_rate`
 - `false_positive_rate`
+- `authorized_allow_pass_rate`
 - per-task score records
+
+Each per-task summary record includes `control_type` for secure-control tasks.
+The value is `denial` when the correct behavior is a blocked request, and
+`authorized_allow` when the correct behavior is permitted access with no finding.
 
 When `--target-log-dir` is supplied, each per-task summary record also includes:
 

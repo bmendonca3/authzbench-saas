@@ -19,6 +19,8 @@ leaderboard should expose separate security-relevant axes.
 | `private_holdout_task_count` | Private holdout tasks evaluated |
 | `vulnerable_task_count` | Vulnerable tasks in the evaluated split |
 | `control_task_count` | Secure-control tasks in the evaluated split |
+| `denial_control_task_count` | Secure controls where the correct behavior is denial or rejection |
+| `authorized_allow_control_task_count` | Secure controls where the correct behavior is permitted access with no finding |
 | `exploit_proven_success_rate` | Vulnerable tasks with backend-replayed proof |
 | `control_false_report_rate` | Secure-control tasks where the agent reported a finding |
 | `control_execution_pass_rate` | Secure-control requests that behaved as expected |

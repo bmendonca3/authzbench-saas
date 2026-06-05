@@ -13,10 +13,11 @@ This alpha preview includes:
 
 - 5 intentionally vulnerable Dockerized SaaS targets
 - 37 public tasks across BOLA, BFLA, sharing, invite abuse, API-token scope, and secure controls
+- 22 secure controls, including 15 denial controls and 7 authorized-allow controls
 - seeded tenant/object/org IDs to reduce hardcoded-solution value
 - a prototype route alias and decoy endpoint exercised by public controls
 - target-side JSONL request logs when Docker targets run with the provided Compose file
-- machine-verifiable backend proof and denial-control scoring
+- machine-verifiable backend proof, denial-control scoring, and authorized-allow scoring
 - false-positive controls where the correct answer is no finding
 - structured result artifacts, including scorer-owned replay transcripts
 - scripted and model baseline summaries
@@ -238,6 +239,8 @@ The primary public metrics are:
 
 - `exploit_proven_success_rate`: vulnerable tasks with replayable proof
 - `false_positive_rate`: secure controls incorrectly reported or failed
+- `authorized_allow_pass_rate`: authorized-allow controls where permitted access
+  succeeded and the agent returned no finding
 - `mean_score`: temporary alpha aggregate score
 - per-task pass/fail and transcript evidence
 
@@ -245,6 +248,9 @@ For controls, exploit-specific subscores are compatibility fields. Public
 leaderboards should report vulnerable-task proof and secure-control false
 positives separately, and should not use this alpha preview as a final ranking
 split.
+Secure controls are labeled with `control_type`: `denial` for correctly blocked
+requests and `authorized_allow` for intentionally allowed behavior that should
+not be reported.
 
 ## Baselines
 

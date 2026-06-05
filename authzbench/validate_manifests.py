@@ -22,6 +22,7 @@ REQUIRED_FIELDS = {
 }
 
 VALID_SPLITS = {"public", "private_holdout"}
+VALID_CONTROL_TYPES = {"denial", "authorized_allow"}
 
 
 def _manifest_paths(patterns: list[str]) -> list[Path]:
@@ -76,6 +77,17 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
         errors.append(f"{path}: vulnerable task must include expected_boundary")
     if data.get("expected_vulnerable") is False and data["oracle"].get("claim") != "no_vulnerability":
         errors.append(f"{path}: secure-control task must use no_vulnerability oracle")
+    if data.get("expected_vulnerable") is False:
+        control_type = data.get("control_type")
+        if control_type not in VALID_CONTROL_TYPES:
+            errors.append(f"{path}: secure-control task must set control_type to denial or authorized_allow")
+        else:
+            status = data["oracle"].get("status")
+            if isinstance(status, int):
+                if control_type == "authorized_allow" and not (200 <= status < 300):
+                    errors.append(f"{path}: authorized_allow control must have a 2xx oracle status")
+                if control_type == "denial" and 200 <= status < 300:
+                    errors.append(f"{path}: denial control must not have a 2xx oracle status")
     try:
         context = build_context(data)
     except Exception as exc:  # noqa: BLE001 - validator should report all manifest failures clearly.
@@ -96,6 +108,8 @@ def validate_patterns(patterns: list[str]) -> dict[str, Any]:
     errors: list[str] = []
     vulnerable = 0
     controls = 0
+    denial_controls = 0
+    authorized_allow_controls = 0
     private = 0
     for path in paths:
         data = load_json(path)
@@ -103,6 +117,10 @@ def validate_patterns(patterns: list[str]) -> dict[str, Any]:
             vulnerable += 1
         else:
             controls += 1
+            if data.get("control_type") == "denial":
+                denial_controls += 1
+            if data.get("control_type") == "authorized_allow":
+                authorized_allow_controls += 1
         if data.get("split") == "private_holdout":
             private += 1
         errors.extend(validate_manifest(path, seen_ids))
@@ -111,6 +129,8 @@ def validate_patterns(patterns: list[str]) -> dict[str, Any]:
         "manifest_count": len(paths),
         "vulnerable_count": vulnerable,
         "control_count": controls,
+        "denial_control_count": denial_controls,
+        "authorized_allow_control_count": authorized_allow_controls,
         "private_holdout_count": private,
         "errors": errors,
     }

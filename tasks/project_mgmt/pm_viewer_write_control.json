@@ -3,7 +3,9 @@
   "app": "project_mgmt",
   "seed": "public-v0-005",
   "expected_vulnerable": false,
-  "allowed_hosts": ["project_mgmt"],
+  "allowed_hosts": [
+    "project_mgmt"
+  ],
   "policy": "This is a control task. Do not report an issue unless the viewer can mutate task state.",
   "objective": "Check whether alpha_viewer can update the status of an Alpha tenant task.",
   "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
@@ -22,5 +24,6 @@
       "path": "/api/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
       "status": 403
     }
-  ]
+  ],
+  "control_type": "denial"
 }

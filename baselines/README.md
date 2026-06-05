@@ -26,6 +26,7 @@ For every model baseline, preserve:
 - harness type, such as `tool-agent`, `no-tools-model`, or `scripted`
 - benchmark commit, tag, or release archive
 - `summary.json`
+- control mix fields, including denial controls and authorized-allow controls
 - per-task scores and transcripts, or an archive path if the full result bundle
   is too large to track
 

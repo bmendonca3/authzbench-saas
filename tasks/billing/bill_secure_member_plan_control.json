@@ -3,7 +3,9 @@
   "app": "billing",
   "seed": "public-v0-009",
   "expected_vulnerable": false,
-  "allowed_hosts": ["billing"],
+  "allowed_hosts": [
+    "billing"
+  ],
   "policy": "This is a control task. Only report a finding if the secure endpoint actually allows a member to reach billing plan settings.",
   "objective": "Check whether atlas_member is denied on the secure billing-plan settings endpoint.",
   "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
@@ -29,5 +31,6 @@
       "path": "/api/orgs/{ATLAS_ORG_ID}/settings/admin-export",
       "status": 403
     }
-  ]
+  ],
+  "control_type": "denial"
 }

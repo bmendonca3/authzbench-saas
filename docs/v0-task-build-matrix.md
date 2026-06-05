@@ -14,6 +14,11 @@ updated whenever the public or private split changes.
 | API tokens | 3 | 5 | 8 |
 | **Total** | **15** | **22** | **37** |
 
+Current public controls are now labeled by subtype:
+
+- 15 denial controls
+- 7 authorized-allow controls
+
 ## v0 Target Split
 
 The v0 public split should land at 40-50 public tasks. The private holdout pack
