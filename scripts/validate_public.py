@@ -78,6 +78,7 @@ def run_container_smoke(cwd: Path) -> None:
     if hasattr(os, "getuid") and hasattr(os, "getgid"):
         compose_env.setdefault("AUTHZBENCH_DOCKER_UID", str(os.getuid()))
         compose_env.setdefault("AUTHZBENCH_DOCKER_GID", str(os.getgid()))
+    run(["docker", "compose", "config"], cwd, env=compose_env)
     (cwd / "captures" / "request-logs").mkdir(parents=True, exist_ok=True)
     project_name = f"authzbench-public-smoke-{os.getpid()}"
     try:
@@ -107,7 +108,6 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         cwd,
     )
     run([sys.executable, "-m", "compileall", "-q", "authzbench", "apps", "tests", "scripts"], cwd)
-    run(["docker", "compose", "config"], cwd)
     scan_privacy(cwd)
     if include_scripted_baseline:
         commit = subprocess.run(

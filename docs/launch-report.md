@@ -137,17 +137,23 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 |
+| Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 |
 | Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
 
 Tracked summaries:
 
+- [live-scripted-baseline-summary.json](../baselines/live-scripted-baseline-summary.json)
 - [kiro-claude-sonnet-4.6-full-summary.json](../baselines/kiro-claude-sonnet-4.6-full-summary.json)
 - [kiro-qwen3-coder-next-full-summary.json](../baselines/kiro-qwen3-coder-next-full-summary.json)
 
-These 15-task snapshots are public-split baselines from the earlier alpha split,
-not private leaderboard results. They should be rerun on the 44-task split
+The live HTTP scripted baseline is a current 44-task harness check against the
+Docker targets. It correlates target-side requests for the 18 vulnerable proof
+tasks, but it is still not leaderboard-grade live-agent evidence because secure
+controls are not live-exercised by the deterministic finding-only agent.
+
+The Kiro snapshots are public-split baselines from the earlier 15-task alpha
+split, not private leaderboard results. They should be rerun on the 44-task split
 before any release tag.
 
 Baseline credibility is now tracked by

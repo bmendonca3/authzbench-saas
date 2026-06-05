@@ -28,18 +28,18 @@
       "notes": "Deterministic harness sanity check. Useful for validating scorer and manifests, but not a model result."
     },
     {
-      "id": "live-scripted-legacy-15",
+      "id": "live-scripted-public-44",
       "summary_path": "live-scripted-baseline-summary.json",
       "kind": "harness_check",
-      "release_suitability": "legacy_snapshot",
+      "release_suitability": "current_public_harness_check",
       "leaderboard_eligible": false,
       "run_count": 1,
       "expected_harness_type": "scripted-live-http",
       "expected_agent": "live_scripted_baseline_agent",
       "expected_model": "deterministic-live-http-script",
-      "expected_task_count": 15,
+      "expected_task_count": 44,
       "requires_rerun_before_v0": true,
-      "notes": "Legacy 15-task live HTTP harness check. Must be rerun on the current public split before any v0 tag."
+      "notes": "Current 44-task live HTTP harness check against Docker targets. Vulnerable proof requests correlate to target logs, but secure controls are not live-exercised by this deterministic finding-only agent, so this is not leaderboard-grade live-agent evidence."
     },
     {
       "id": "kiro-claude-sonnet-4-6-legacy-15",

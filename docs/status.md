@@ -26,6 +26,8 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - v0 task build matrix documentation
 - baseline registry validation that separates harness checks, legacy snapshots,
   current public split summaries, and leaderboard eligibility
+- current 44-task live HTTP scripted harness check against Docker targets, with
+  target request-log correlation for the 18 vulnerable tasks
 - v0 release-gate audit script that reports `v0_ready: false` with explicit
   unmet gates while the repo is still alpha/pre-v0
 - release evidence registry that keeps local validation, fresh-clone validation,
@@ -57,13 +59,16 @@ python3 scripts/validate_public.py --include-scripted-baseline
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
 should be rerun before any tagged release. Docker runtime smoke requires a
 Docker daemon and is covered by the GitHub Actions public-validation workflow.
+The live HTTP scripted baseline has been rerun on the current 44-task public
+split, but its target request-log coverage is 18/44 because the deterministic
+agent only exercises vulnerable proof requests before submitting.
 
 ## Baseline Results
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 44 | 44 | 1.0 | 0.0 | 1.0 |
-| Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 | not tracked |
+| Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 | not tracked |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 | not tracked |
 
@@ -74,6 +79,7 @@ Ready:
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
+- current live HTTP scripted harness summary exists for the 44-task public split
 - baseline registry exists and passes consistency validation while explicitly
   reporting `v0_baseline_ready: false`
 - v0 release-gate audit exists and is run in public validation with

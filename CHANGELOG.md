@@ -37,6 +37,11 @@
   report `v0_ready: false` with explicit unmet gates during alpha/pre-v0 work.
 - Added a release evidence registry and release-candidate leaderboard submission
   gate so strict v0 readiness cannot pass from public examples alone.
+- Reran the live HTTP scripted baseline on the current 44-task public split and
+  updated the baseline registry to treat it as a current harness check, while
+  keeping it non-eligible for leaderboard claims.
+- Hardened public validation so lightweight checks do not require Docker
+  Compose unless container smoke validation is requested.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

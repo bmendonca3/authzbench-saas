@@ -33,7 +33,8 @@
         "2026-06-05-bearer-replay-panel-summary.md",
         "2026-06-05-request-logging-panel-summary.md",
         "2026-06-05-runner-correlation-panel-summary.md",
-        "2026-06-05-docker-runtime-ci-panel-summary.md"
+        "2026-06-05-docker-runtime-ci-panel-summary.md",
+        "2026-06-05-live-baseline-refresh-panel-summary.md"
       ],
       "notes": "Scorer and alpha request-log correlation have review coverage, but protected live-agent execution is not final."
     },

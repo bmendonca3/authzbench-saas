@@ -54,7 +54,13 @@ The current scripted baseline is a harness sanity check on the 44-task public
 split. It is valuable because it proves the scorer and task manifests are still
 coherent.
 
-The live scripted baseline and Kiro model summaries are legacy 15-task alpha
-snapshots. They are useful historical evidence, but they must be rerun on the
-current 44-task split and repeated before any v0 tag or serious public
-leaderboard claim.
+The live scripted baseline is now a current 44-task harness sanity check against
+the Docker targets. It is useful because it proves vulnerable proof requests can
+hit the live synthetic services and correlate into target-side request logs. It
+is still not leaderboard-grade live-agent evidence: the deterministic agent only
+submits findings for vulnerable tasks, so secure controls are scored by replay
+but are not live-exercised as agent requests.
+
+The Kiro model summaries are legacy 15-task alpha snapshots. They are useful
+historical evidence, but they must be rerun on the current 44-task split and
+repeated before any v0 tag or serious public leaderboard claim.

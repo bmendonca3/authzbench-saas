@@ -21,14 +21,18 @@ not that the v0 baseline bar is complete.
 - `scripted-baseline-summary.json`: deterministic harness sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises
   vulnerable proof requests against the live Docker targets before submitting.
+  The current 44-task run passes, with target-side request correlation on the 18
+  vulnerable tasks. Secure controls still have no agent-side live requests in
+  this harness because the deterministic agent only exercises submitted
+  findings.
 - `kiro-claude-sonnet-4.6-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
 - `kiro-qwen3-coder-next-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
 
-The scripted baseline summary should match the current public split. The live
-scripted and Kiro summaries may temporarily be older alpha snapshots when the
-task set expands; rerun them before any tagged release.
+The scripted and live scripted summaries should match the current public split.
+The Kiro summaries may temporarily be older alpha snapshots when the task set
+expands; rerun them before any tagged release.
 
 For every model baseline, preserve:
 

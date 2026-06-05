@@ -37,7 +37,7 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertTrue(any("current public model families" in item for item in result["unmet_v0_requirements"]), result)
         self.assertTrue(any("missing current public tool-agent baseline" in item for item in result["unmet_v0_requirements"]), result)
 
-    def test_rejects_legacy_snapshot_mislabeled_as_current(self) -> None:
+    def test_rejects_harness_check_mislabeled_as_current_public_split(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
@@ -47,7 +47,10 @@ class BaselineRegistryTests(unittest.TestCase):
             result = validate_registry(registry_path)
 
         self.assertFalse(result["passed"], result)
-        self.assertTrue(any("current_public_split must use current public task count" in error for error in result["errors"]), result)
+        self.assertTrue(
+            any("harness checks must use current_public_harness_check" in error for error in result["errors"]),
+            result,
+        )
 
     def test_rejects_one_off_model_baseline_marked_leaderboard_eligible(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

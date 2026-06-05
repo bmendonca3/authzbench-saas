@@ -335,7 +335,7 @@ Harness sanity checks:
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 44 | 44 | 1.0 | 0.0 |
-| Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 |
+| Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 |
 
 Initial no-tools model baselines:
 
@@ -344,11 +344,13 @@ Initial no-tools model baselines:
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
 
-The scripted baseline is a harness check, not a model result. The live scripted
-and Kiro snapshots were run on the earlier 15-task split and should be rerun for
-any release tag. The baseline registry is intentionally not v0-ready yet because
-the current public split still lacks repeated real model families and a
-tool-agent baseline.
+The scripted and live scripted baselines are harness checks, not model results.
+The current live HTTP run correlates target-side requests for the 18 vulnerable
+tasks; secure controls still have no live requests in that deterministic harness
+because it only exercises submitted findings. The Kiro snapshots were run on the
+earlier 15-task split and should be rerun for any release tag. The baseline
+registry is intentionally not v0-ready yet because the current public split
+still lacks repeated real model families and a tool-agent baseline.
 
 ## Private Holdouts
 
