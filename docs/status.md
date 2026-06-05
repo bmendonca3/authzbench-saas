@@ -28,6 +28,9 @@ docker compose config
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model claude-sonnet-4.6 --timeout-seconds 90' --results-dir results/kiro-sonnet-full --timeout-seconds 120
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 90' --results-dir results/kiro-qwen-full --timeout-seconds 120
+docker compose up --build -d
+python3 scripts/container_smoke.py
+docker compose down
 ```
 
 The Kiro baseline commands exit nonzero when the model misses any benchmark
@@ -56,6 +59,5 @@ Still required before a serious leaderboard:
 - larger private holdout pack outside public Git history
 - route alias randomization
 - containerized or otherwise isolated model/agent execution for leaderboard runs
-- Docker container smoke on a machine with Docker available
 - final secret/personal-info scan immediately before push
 - post-push clone check from public `github.com`

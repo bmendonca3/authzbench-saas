@@ -131,8 +131,8 @@ model baselines, but does not yet have private holdout scoring.
   larger unpublished holdout pack is still needed for a finished leaderboard.
 - The runner uses process timeout bounds, but not containerized network egress
   enforcement yet.
-- HTTP apps have smoke tests, but Docker container runtime smoke tests are still
-  pending.
+- HTTP apps and Docker container runtime smoke tests pass locally when a Docker
+  daemon is available.
 - HAR browser capture is not implemented yet; backend replay transcripts are
   implemented through `transcript.json`.
 - Route aliases are not randomized yet; object, tenant, org, invoice, and token

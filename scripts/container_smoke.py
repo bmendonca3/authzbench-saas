@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import json
+import sys
 import time
 import urllib.error
 import urllib.request
+from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from apps.billing import app as billing
 from apps.project_mgmt import app as project_mgmt
@@ -52,6 +56,7 @@ def main() -> int:
     checks = [
         ("pm_vulnerable_cross_tenant_read", _request(pm_vuln, "beta_member"), 200),
         ("pm_secure_cross_tenant_denial", _request(pm_secure, "beta_member"), 403),
+        ("billing_member_plan_read", _request(bill_vuln, "atlas_member"), 200),
         ("billing_member_plan_change", _request(bill_vuln, "atlas_member", "PATCH", {"plan": "enterprise"}), 200),
         ("billing_secure_member_denial", _request(bill_secure, "atlas_member"), 403),
     ]
@@ -69,4 +74,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
