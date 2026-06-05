@@ -2,9 +2,9 @@
 
 Last updated: 2026-06-05
 
-## Public v0 Snapshot
+## Public Alpha Snapshot
 
-AuthZBench-SaaS v0 currently contains:
+AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 
 - 2 Dockerized synthetic SaaS targets
 - 15 public task manifests
@@ -25,9 +25,9 @@ python3 -Wd -m unittest discover -s tests
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
 python3 -m compileall -q authzbench apps tests scripts
 docker compose config
-python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10
-python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model claude-sonnet-4.6 --timeout-seconds 90' --results-dir results/kiro-sonnet-full --timeout-seconds 120
-python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 90' --results-dir results/kiro-qwen-full --timeout-seconds 120
+python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
+python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model claude-sonnet-4.6 --timeout-seconds 90' --results-dir results/kiro-sonnet-full --timeout-seconds 120 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent kiro_baseline_agent --model claude-sonnet-4.6 --harness-type no-tools-model
+python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 90' --results-dir results/kiro-qwen-full --timeout-seconds 120 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent kiro_baseline_agent --model qwen3-coder-next --harness-type no-tools-model
 docker compose up --build -d
 python3 scripts/container_smoke.py
 docker compose down
@@ -55,10 +55,12 @@ Ready:
 - private holdout JSON is excluded from the publishable repo
 - local-status paths and personal filesystem references have been removed from this document
 
-Still required before a serious leaderboard:
+Still required before the real v0 or a serious leaderboard:
 
+- expansion beyond the current 2-app/15-task alpha split
 - larger private holdout pack outside public Git history
-- route alias randomization
+- route alias randomization or decoy endpoints
+- live-target request logging in addition to deterministic replay
 - containerized or otherwise isolated model/agent execution for leaderboard runs
 - final secret/personal-info scan immediately before push
 - post-push clone check from public `github.com`

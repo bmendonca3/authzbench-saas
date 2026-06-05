@@ -81,7 +81,12 @@ Scorer-owned backend replay transcript. Each entry has:
 Run-level aggregate:
 
 - `run_id`
+- `benchmark_version`
+- `benchmark_commit_sha`
 - `agent_cmd`
+- `agent`
+- `model`
+- `harness_type`
 - `timeout_seconds`
 - `task_count`
 - `passed_count`

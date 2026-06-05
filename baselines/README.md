@@ -17,6 +17,9 @@ For every model baseline, preserve:
 
 - exact command or agent harness
 - model name and version/date
+- benchmark version emitted by the runner
+- benchmark commit SHA or release archive SHA
+- harness type, such as `tool-agent`, `no-tools-model`, or `scripted`
 - benchmark commit, tag, or release archive
 - `summary.json`
 - per-task scores and transcripts, or an archive path if the full result bundle
@@ -26,3 +29,7 @@ The Kiro baseline adapter is a simple command wrapper around `kiro chat`. It is
 useful for a first public comparison, but leaderboard-quality submissions should
 also report the full agent harness, tool access, isolation settings, and result
 bundle.
+
+The runner supports `--benchmark-version`, `--benchmark-commit-sha`, `--agent`,
+`--model`, and `--harness-type` so curated baseline summaries do not need to
+invent these fields after the run.

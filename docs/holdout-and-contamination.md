@@ -32,17 +32,30 @@ publish:
 - reference exploits
 - task seeds
 
-The holdout should contain at least:
+The real v0 holdout should contain 20-30 unpublished tasks. The minimum useful
+v0 holdout target is 24 tasks:
 
-- 4 BOLA tasks
-- 4 BFLA tasks
-- 4 secure controls
+- 8 BOLA or tenant/object-boundary tasks
+- 8 BFLA, invite/membership, token-scope, or role-boundary tasks
+- 8 secure controls, including denial controls and authorized-allow controls
 
 The public repo intentionally does not include holdout JSON. Maintainers can keep
 local manifests under `tasks_private/holdout/`; that path is ignored by Git.
 Those local files prove the private split mechanism during development but do
 not satisfy the final holdout size target unless a separate private pack contains
-at least 12 tasks.
+at least 20 tasks, with 24 preferred for balanced coverage.
+
+## Holdout Execution Model
+
+Private holdouts should not be handed to participants as readable local JSON.
+For serious leaderboard use, prefer one of these execution models:
+
+- hosted scorer API that renders tasks, runs targets, records server-side
+  request logs, and returns only aggregate results
+- maintainer-run private evaluation where submitted agent harnesses run in an
+  isolated container and receive only rendered contexts
+- encrypted/local package only for trusted internal validation, not public
+  leaderboard claims
 
 ## Future Randomization
 

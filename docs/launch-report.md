@@ -1,12 +1,12 @@
-# AuthZBench-SaaS v0 Launch Report
+# AuthZBench-SaaS Alpha Preview Report
 
-Status: draft v0.0.1 public scaffold
+Status: alpha/pre-v0 public scaffold
 
 ## Summary
 
-AuthZBench-SaaS v0 is a focused benchmark for evaluating whether AI agents can
-prove multi-tenant SaaS authorization failures with backend evidence while
-avoiding false positives on secure controls.
+AuthZBench-SaaS is a focused alpha-preview benchmark for evaluating whether AI
+agents can prove multi-tenant SaaS authorization failures with backend evidence
+while avoiding false positives on secure controls.
 
 The benchmark is designed around a narrow question:
 
@@ -78,7 +78,11 @@ python3 -m authzbench.run \
   --task 'tasks/*/*.json' \
   --agent-cmd 'python3 scripts/scripted_baseline_agent.py' \
   --results-dir results/scripted-baseline \
-  --timeout-seconds 10
+  --timeout-seconds 10 \
+  --benchmark-commit-sha "$(git rev-parse HEAD)" \
+  --agent scripted_baseline_agent \
+  --model deterministic-script \
+  --harness-type scripted
 ```
 
 Expected current result:
@@ -110,21 +114,22 @@ These are public-split baselines, not private leaderboard results.
 
 ## Publication Status
 
-The repository is close to a public scaffold release but not a finished public
-leaderboard. It has enough structure for external reviewers to inspect the
-methodology and integrate a custom agent command. It now has initial public-split
-model baselines, but does not yet have private holdout scoring.
+The repository is an alpha public scaffold, not a finished public leaderboard.
+It is already useful as a local integration and regression suite for agent
+builders who want to test authorization-bug proof workflows. It has enough
+structure for external reviewers to inspect the methodology and integrate a
+custom agent command. It now has initial public-split model baselines, but does
+not yet have private holdout scoring.
 
-## Release Criteria For v0
+## Release Criteria For The Real v0
 
-- public runner and scorer pass locally
-- Docker target apps build and pass container smoke test
-- at least one scripted baseline run is preserved
-- at least two real agent/model baseline runs are added or explicitly marked as
-  pending in the first release
-- launch report and README reflect current verified evidence
-- remote publication is approved by the repository owner
-- optional CI workflow is added when GitHub credentials allow workflow writes
+- expand beyond the current 2-app/15-task alpha split
+- add a private holdout pack outside public Git history
+- add stronger anti-gaming, including route aliases or decoys
+- add live-target request logging in addition to scorer replay
+- preserve at least five agent/model baseline summaries or linked result bundles
+- update launch report and README to reflect verified release evidence
+- pass the publish checklist from a fresh public clone
 
 ## Known Limits
 

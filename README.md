@@ -2,14 +2,14 @@
 
 ![AuthZBench-SaaS benchmark flow](assets/authzbench-saas-infographic.svg)
 
-AuthZBench-SaaS is a benchmark for evaluating whether AI agents can find,
-prove, and avoid over-reporting multi-tenant SaaS authorization bugs.
+AuthZBench-SaaS is an alpha-preview benchmark for evaluating whether AI agents
+can find, prove, and avoid over-reporting multi-tenant SaaS authorization bugs.
 
 Most security-agent benchmarks reward exploit success in CTF-like settings.
 This one focuses on a narrower and messier real-world skill: reasoning about
 actors, tenants, roles, objects, backend proof, and secure controls in SaaS APIs.
 
-The v0 public split includes:
+This alpha preview includes:
 
 - 2 intentionally vulnerable Dockerized SaaS targets
 - 15 public tasks across BOLA, BFLA, and secure controls
@@ -21,6 +21,16 @@ The v0 public split includes:
 
 This repository is a local research sandbox. Do not expose the target apps to
 the public internet.
+
+## Current Status
+
+This repository is **not a finished leaderboard benchmark yet**. It is an
+alpha/pre-v0 public preview with enough structure for reviewers to inspect the
+idea, run the harness, and compare early agents on a small public split.
+
+The next serious milestone is the real `v0` release. That release needs a larger
+task set, private holdouts, stronger live-target proof, more model baselines, and
+clear release gates. See [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
 
 ## Why This Exists
 
@@ -78,7 +88,11 @@ python3 -m authzbench.run \
   --task 'tasks/*/*.json' \
   --agent-cmd 'python3 scripts/scripted_baseline_agent.py' \
   --results-dir results/scripted-baseline \
-  --timeout-seconds 10
+  --timeout-seconds 10 \
+  --benchmark-commit-sha "$(git rev-parse HEAD)" \
+  --agent scripted_baseline_agent \
+  --model deterministic-script \
+  --harness-type scripted
 ```
 
 Run the live HTTP scripted baseline against Docker targets:
@@ -89,7 +103,11 @@ python3 -m authzbench.run \
   --task 'tasks/*/*.json' \
   --agent-cmd 'python3 scripts/live_scripted_baseline_agent.py' \
   --results-dir results/live-scripted-baseline \
-  --timeout-seconds 10
+  --timeout-seconds 10 \
+  --benchmark-commit-sha "$(git rev-parse HEAD)" \
+  --agent live_scripted_baseline_agent \
+  --model deterministic-live-http-script \
+  --harness-type scripted-live-http
 docker compose down
 ```
 
@@ -100,7 +118,25 @@ python3 -m authzbench.run \
   --task 'tasks/*/*.json' \
   --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model claude-sonnet-4.6 --timeout-seconds 90' \
   --results-dir results/kiro-sonnet-full \
-  --timeout-seconds 120
+  --timeout-seconds 120 \
+  --benchmark-commit-sha "$(git rev-parse HEAD)" \
+  --agent kiro_baseline_agent \
+  --model claude-sonnet-4.6 \
+  --harness-type no-tools-model
+```
+
+Run the second tracked no-tools Kiro baseline:
+
+```bash
+python3 -m authzbench.run \
+  --task 'tasks/*/*.json' \
+  --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 90' \
+  --results-dir results/kiro-qwen-full \
+  --timeout-seconds 120 \
+  --benchmark-commit-sha "$(git rev-parse HEAD)" \
+  --agent kiro_baseline_agent \
+  --model qwen3-coder-next \
+  --harness-type no-tools-model
 ```
 
 Run the HTTP targets with Docker:
@@ -173,26 +209,34 @@ The primary public metrics are:
 
 - `exploit_proven_success_rate`: vulnerable tasks with replayable proof
 - `false_positive_rate`: secure controls incorrectly reported or failed
-- `mean_score`: temporary v0 aggregate score
+- `mean_score`: temporary alpha aggregate score
 - per-task pass/fail and transcript evidence
 
-For controls, exploit-specific subscores are v0 compatibility fields. Public
+For controls, exploit-specific subscores are compatibility fields. Public
 leaderboards should report vulnerable-task proof and secure-control false
-positives separately.
+positives separately, and should not use this alpha preview as a final ranking
+split.
 
 ## Baselines
 
-Tracked summaries live in [`baselines/`](baselines).
+Tracked alpha-preview summaries live in [`baselines/`](baselines).
+
+Harness sanity checks:
 
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 15 | 15 | 1.0 | 0.0 |
 | Live HTTP scripted baseline | 15 | 15 | 1.0 | 0.0 |
+
+Initial no-tools model baselines:
+
+| Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
+| --- | ---: | ---: | ---: | ---: |
 | Kiro `claude-sonnet-4.6` no-tools | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` no-tools | 15 | 8 | 0.0 | 0.1111 |
 
 The scripted baseline is a harness check, not a model result. The Kiro runs are
-initial public-split baselines and should be rerun for any release tag.
+initial alpha public-split baselines and should be rerun for any release tag.
 
 ## Private Holdouts
 
@@ -205,16 +249,20 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 ## Documentation
 
 - [`docs/methodology.md`](docs/methodology.md): benchmark thesis and scoring model
+- [`ROADMAP.md`](ROADMAP.md): public path from alpha preview to a top-tier benchmark
+- [`CHANGELOG.md`](CHANGELOG.md): task, scorer, baseline, and release-note changes
 - [`docs/result-schema.md`](docs/result-schema.md): runner artifact schema
 - [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): suggested leaderboard columns
-- [`docs/launch-report.md`](docs/launch-report.md): v0 release narrative and known limits
+- [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use, scope, and known limits
+- [`docs/launch-report.md`](docs/launch-report.md): alpha preview report and known limits
+- [`docs/v0-release-plan.md`](docs/v0-release-plan.md): concrete criteria for the real v0 release
 - [`docs/reviews/2026-06-05-panel-summary.md`](docs/reviews/2026-06-05-panel-summary.md): grounded model-panel review and implemented follow-ups
 - [`docs/publish-checklist.md`](docs/publish-checklist.md): pre-publication checklist
 - [`SECURITY.md`](SECURITY.md): safe handling for intentionally vulnerable apps
 
 ## Current Limits
 
-- v0 has 15 public tasks; a stronger leaderboard should add more private holdout tasks.
+- The alpha preview has 15 public tasks; a stronger leaderboard should add more private holdout tasks.
 - Route aliases are not randomized yet.
 - The runner executes local agent commands and should be used only with trusted
   commands or inside an isolated environment.

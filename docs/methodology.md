@@ -22,7 +22,7 @@ Each task uses a seed. Target apps derive tenant IDs, object IDs, and actor toke
 from that seed. Public tasks can therefore render concrete values per run while
 keeping manifests readable and reducing hardcoded-solution value.
 
-Planned v0 hardening:
+Planned hardening for the real v0:
 
 - private holdout tasks
 - randomized route aliases

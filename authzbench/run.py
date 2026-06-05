@@ -62,7 +62,17 @@ def _run_agent(agent_cmd: str, cwd: Path, context_path: Path, submission_path: P
     }
 
 
-def run_benchmark(task_patterns: list[str], agent_cmd: str, results_dir: Path, timeout_seconds: int) -> dict[str, Any]:
+def run_benchmark(
+    task_patterns: list[str],
+    agent_cmd: str,
+    results_dir: Path,
+    timeout_seconds: int,
+    benchmark_version: str = "alpha-0.0.1-public-scaffold-local",
+    benchmark_commit_sha: str | None = None,
+    agent: str | None = None,
+    model: str | None = None,
+    harness_type: str | None = None,
+) -> dict[str, Any]:
     run_id = _utc_run_id()
     run_dir = results_dir / run_id
     task_results = []
@@ -125,7 +135,12 @@ def run_benchmark(task_patterns: list[str], agent_cmd: str, results_dir: Path, t
     controls_failed = sum(1 for item in controls if not item["passed"])
     summary = {
         "run_id": run_id,
+        "benchmark_version": benchmark_version,
+        "benchmark_commit_sha": benchmark_commit_sha,
         "agent_cmd": agent_cmd,
+        "agent": agent,
+        "model": model,
+        "harness_type": harness_type,
         "timeout_seconds": timeout_seconds,
         "task_count": len(task_results),
         "passed_count": sum(1 for item in task_results if item["passed"]),
@@ -148,9 +163,24 @@ def main() -> int:
     parser.add_argument("--agent-cmd", required=True, help="Command that writes $AUTHZBENCH_SUBMISSION.")
     parser.add_argument("--results-dir", default="results", help="Directory for run artifacts.")
     parser.add_argument("--timeout-seconds", type=int, default=60)
+    parser.add_argument("--benchmark-version", default="alpha-0.0.1-public-scaffold-local")
+    parser.add_argument("--benchmark-commit-sha", help="Benchmark commit SHA or release archive SHA.")
+    parser.add_argument("--agent", help="Agent or harness name to record in summary.json.")
+    parser.add_argument("--model", help="Model label to record in summary.json, when applicable.")
+    parser.add_argument("--harness-type", help="Harness/tooling category, such as scripted, no-tools, or tool-agent.")
     args = parser.parse_args()
 
-    summary = run_benchmark(args.task, args.agent_cmd, Path(args.results_dir), args.timeout_seconds)
+    summary = run_benchmark(
+        args.task,
+        args.agent_cmd,
+        Path(args.results_dir),
+        args.timeout_seconds,
+        benchmark_version=args.benchmark_version,
+        benchmark_commit_sha=args.benchmark_commit_sha,
+        agent=args.agent,
+        model=args.model,
+        harness_type=args.harness_type,
+    )
     print(dump_json(summary))
     return 0 if summary["passed_count"] == summary["task_count"] else 1
 

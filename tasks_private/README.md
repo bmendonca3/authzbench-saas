@@ -15,5 +15,5 @@ The public repository should contain:
 - no private task JSON
 
 Before serious public leaderboard claims, maintain a separate private holdout
-pack with at least 12 private tasks as described in
-`docs/holdout-and-contamination.md`.
+pack with 20-30 private tasks, with 24 preferred for balanced coverage, as
+described in `docs/holdout-and-contamination.md`.

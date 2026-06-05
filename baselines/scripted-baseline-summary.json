@@ -1,7 +1,9 @@
 {
   "agent": "scripted_baseline_agent",
   "agent_cmd": "python3 scripts/scripted_baseline_agent.py",
-  "benchmark_version": "v0.0.1-public-scaffold-local",
+  "benchmark_version": "alpha-0.0.1-public-scaffold-local",
+  "benchmark_commit_sha": "8b9651578d6d3eaee74fc2e0e74a4c8d76654f7d",
+  "harness_type": "scripted",
   "control_task_count": 9,
   "exploit_proven_success_rate": 1.0,
   "false_positive_rate": 0.0,

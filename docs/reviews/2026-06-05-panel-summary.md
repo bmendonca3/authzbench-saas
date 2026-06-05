@@ -48,7 +48,8 @@ read-only inspection only.
 
 ## Still Open
 
-- Build a non-public private holdout pack with at least 12 tasks.
+- Build a non-public private holdout pack with 20-30 tasks, with 24 preferred
+  for balanced coverage.
 - Add route alias randomization and decoy endpoints.
 - Add an isolated/containerized agent runner for leaderboard-grade submissions.
 - Add request-log or HAR-backed verification to prove the agent actually
