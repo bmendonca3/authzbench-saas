@@ -73,7 +73,7 @@ def _summary_errors(path: Path, summary: dict[str, Any]) -> list[str]:
     if int(summary.get("task_count") or 0) != private_count:
         errors.append(f"{path}: task_count must match private_holdout_task_count")
     if vulnerable_count < 12:
-        errors.append(f"{path}: vulnerable_task_count must be at least 12; got {vulnerable_count}")
+        errors.append(f"{path}: vulnerable_task_count minimum is 12; got {vulnerable_count}")
     if control_count < 8:
         errors.append(f"{path}: control_task_count must be at least 8; got {control_count}")
     if authorized_allow_count < 4:
