@@ -107,19 +107,23 @@ apps write JSONL logs under `captures/request-logs/`. Each entry includes:
 - optional `agent_id`
 - optional `task_id`
 
-When `python3 -m authzbench.run` is called with `--target-log-dir`, the runner
-records the relevant app log offset before each task starts, then filters only
-newly appended entries by `run_id`, `task_id`, and `agent_id`. Matching entries
-are written into the task's `target-requests.jsonl` artifact. Scoring still
-comes from deterministic replay in `transcript.json`.
+When `python3 -m authzbench.run` or `scripts/protected_private_eval.py` is
+called with `--target-log-dir`, the harness records the relevant app log offset
+before each task starts, then filters only newly appended entries by `run_id`,
+`task_id`, and `agent_id`. Matching entries are written into the task's
+`target-requests.jsonl` artifact. Scoring still comes from deterministic replay
+in `transcript.json`.
 
 If `--target-log-dir` is omitted, the runner does not create
 `target-requests.jsonl`.
 
 The runner does not expose `AUTHZBENCH_TARGET_LOG_DIR` to the agent process.
-Leaderboard-grade runs should still isolate the agent from the target-log
-filesystem path so the artifact remains target-side evidence rather than
-self-reported output.
+The protected private evaluator also removes inherited target-log environment
+variables from the agent process while still preserving optional live tool-agent
+artifacts such as `model-tool-plan.json` and `tool-probes.json` in the ignored
+raw result bundle. Leaderboard-grade runs should still isolate the agent from
+the target-log filesystem path so the artifact remains target-side evidence
+rather than self-reported output.
 
 ## `summary.json`
 

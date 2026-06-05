@@ -62,6 +62,9 @@
 - Added a protected maintainer-run private evaluation path that runs agents from
   a temporary empty workspace with rendered contexts only, plus redacted
   private-holdout execution evidence.
+- Added optional target-request correlation and live tool-agent artifact capture
+  to protected private-holdout evaluation without exposing target-log paths to
+  the agent workspace.
 - Hardened public validation so lightweight checks do not require Docker
   Compose unless container smoke validation is requested.
 - Added a public-safe private holdout summary utility so maintainers can produce

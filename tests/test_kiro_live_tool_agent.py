@@ -76,6 +76,27 @@ class KiroLiveToolAgentTests(unittest.TestCase):
         self.assertEqual(submission, {"findings": []})
         self.assertEqual(records["artifact"]["submitted_finding_count"], 0)
 
+    def test_parse_failure_runs_safe_fallback_probe_without_finding(self) -> None:
+        task = load_json(ROOT / "tasks" / "project_mgmt" / "pm_same_tenant_read_control.json")
+        context = build_context(task)
+
+        with patch.object(
+            kiro_live_tool_agent,
+            "run_kiro_plan",
+            return_value=({"probes": [], "finding": None}, {"returncode": 0, "parse_error": "bad json"}),
+        ), patch.object(
+            kiro_live_tool_agent,
+            "_request",
+            return_value={"status": 200, "body": {"task": {"id": "x"}}},
+        ) as request:
+            submission, records = kiro_live_tool_agent.solve(context, "claude-sonnet-4.6", 1, 4)
+
+        self.assertEqual(submission, {"findings": []})
+        self.assertEqual(records["artifact"]["executed_probe_count"], 1)
+        self.assertEqual(records["artifact"]["fallback_probe_count"], 1)
+        self.assertTrue(records["artifact"]["probes"][0]["fallback"])
+        self.assertEqual(request.call_args.args[1]["method"], "GET")
+
     def test_main_writes_submission_plan_and_probe_artifacts(self) -> None:
         task = load_json(ROOT / "tasks" / "api_tokens" / "tok_secure_cross_tenant_secret_control.json")
         context = build_context(task)

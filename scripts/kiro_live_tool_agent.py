@@ -171,10 +171,49 @@ def _request_for_submission(probe: dict[str, Any]) -> dict[str, Any]:
     return request
 
 
+def _resolve_fallback_path(path: str, refs: dict[str, Any]) -> str:
+    def replace(match: re.Match[str]) -> str:
+        name = match.group(1)
+        if name in refs:
+            return str(refs[name])
+        suffix_matches = [value for key, value in refs.items() if str(key).endswith(name)]
+        if suffix_matches:
+            return str(suffix_matches[0])
+        return match.group(0)
+
+    return PLACEHOLDER_RE.sub(replace, path)
+
+
+def _fallback_probe(context: dict[str, Any]) -> dict[str, Any] | None:
+    actors = context.get("actors", {})
+    refs = context.get("refs", {})
+    actor = next(iter(actors), None)
+    if actor is None:
+        return None
+    for item in context.get("api_docs", []):
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("method", "GET")).upper() != "GET":
+            continue
+        raw_probe = {
+            "id": "fallback_safe_get",
+            "actor": actor,
+            "method": "GET",
+            "path": _resolve_fallback_path(str(item.get("path", "")), refs),
+            "body": None,
+            "purpose": "Safe reachability probe after planner returned no executable probes.",
+        }
+        probe = _normalized_probe(raw_probe, context)
+        if probe is not None:
+            return probe
+    return None
+
+
 def solve(context: dict[str, Any], model: str, timeout_seconds: int, max_probes: int) -> tuple[dict[str, Any], dict[str, Any]]:
     plan, metadata = run_kiro_plan(context, model, timeout_seconds, max_probes)
     probes: list[dict[str, Any]] = []
     by_id: dict[str, dict[str, Any]] = {}
+    fallback_probe_count = 0
 
     for raw_probe in plan.get("probes", [])[:max_probes]:
         if not isinstance(raw_probe, dict):
@@ -189,6 +228,19 @@ def solve(context: dict[str, Any], model: str, timeout_seconds: int, max_probes:
         }
         probes.append(observed)
         by_id[probe["id"]] = observed | {"response": response}
+
+    if not probes:
+        fallback = _fallback_probe(context)
+        if fallback is not None:
+            response = _request(context, fallback)
+            observed = fallback | {
+                "fallback": True,
+                "status": response["status"],
+                "body_keys": sorted(response["body"].keys()) if isinstance(response.get("body"), dict) else [],
+            }
+            probes.append(observed)
+            by_id[fallback["id"]] = observed | {"response": response}
+            fallback_probe_count = 1
 
     finding_plan = plan.get("finding")
     submission = {"findings": []}
@@ -228,6 +280,7 @@ def solve(context: dict[str, Any], model: str, timeout_seconds: int, max_probes:
         "planner_parse_error": metadata.get("parse_error"),
         "planned_probe_count": len(plan.get("probes", [])) if isinstance(plan.get("probes"), list) else 0,
         "executed_probe_count": len(probes),
+        "fallback_probe_count": fallback_probe_count,
         "submitted_finding_count": len(submission["findings"]),
         "probes": probes,
     }

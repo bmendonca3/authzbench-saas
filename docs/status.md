@@ -129,6 +129,9 @@ Ready:
   for leaderboard scoring
 - Git-tracked privacy scan exists in the public validation script
 - private holdout JSON is excluded from the publishable repo
+- protected private-holdout execution can optionally correlate live target
+  request logs into per-task artifacts without exposing target-log paths to the
+  agent workspace
 - local-status paths and personal filesystem references have been removed from this document
 
 Still required before the real v0 or a serious leaderboard:
@@ -138,8 +141,8 @@ Still required before the real v0 or a serious leaderboard:
   generator is only a workflow test
 - actual route-alias randomization and additional private-holdout decoy
   variation implemented in a real non-public holdout pack
-- leaderboard-grade live-agent validation on private holdouts with protected
-  execution, not just public-split evidence
+- leaderboard-grade private live-agent validation evidence from protected
+  execution, not just public-split evidence or harness support
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs
@@ -147,5 +150,5 @@ Still required before the real v0 or a serious leaderboard:
 - keep `docs/release-evidence.json` tied to exact command, commit, CI, and
   artifact evidence as later release checks are rerun
 - private live/tool-agent holdout execution with target-request correlation still
-  needs release-grade evidence before any serious leaderboard claim
+  needs a release-grade run artifact before any serious leaderboard claim
 - post-push clone check from public `github.com` before tags or releases

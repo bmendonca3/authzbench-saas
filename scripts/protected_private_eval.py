@@ -32,6 +32,12 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
     path.write_text(dump_json(data) + "\n", encoding="utf-8")
 
 
+def _write_jsonl(path: Path, entries: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [json.dumps(entry, sort_keys=True) for entry in entries]
+    path.write_text(("\n".join(lines) + "\n") if lines else "", encoding="utf-8")
+
+
 def _task_paths(patterns: list[str]) -> list[Path]:
     paths: list[Path] = []
     for pattern in patterns:
@@ -51,6 +57,45 @@ def _git_ls_files(pathspec: str) -> list[str]:
     if completed.returncode != 0:
         return []
     return [line for line in completed.stdout.splitlines() if line.strip()]
+
+
+def _target_log_offset(target_log_dir: Path, app_name: str) -> int:
+    log_path = target_log_dir / f"{app_name}.jsonl"
+    if not log_path.exists():
+        return 0
+    return log_path.stat().st_size
+
+
+def _target_requests(
+    target_log_dir: Path,
+    app_name: str,
+    run_id: str,
+    task_id: str,
+    agent_id: str,
+    start_offset: int,
+) -> list[dict[str, Any]]:
+    log_path = target_log_dir / f"{app_name}.jsonl"
+    if not log_path.exists():
+        return []
+    entries: list[dict[str, Any]] = []
+    with log_path.open("r", encoding="utf-8") as fh:
+        fh.seek(start_offset)
+        lines = fh.read().splitlines()
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if (
+            entry.get("app") == app_name
+            and entry.get("run_id") == run_id
+            and entry.get("task_id") == task_id
+            and entry.get("agent_id") == agent_id
+        ):
+            entries.append(entry | {"correlation": {"matched_on": ["run_id", "task_id", "agent_id"], "source_log": str(log_path)}})
+    return entries
 
 
 def _run_agent_protected(
@@ -75,6 +120,8 @@ def _run_agent_protected(
             submission=shlex.quote(str(submission_path)),
         )
         env = os.environ.copy()
+        env.pop("AUTHZBENCH_TARGET_LOG_DIR", None)
+        env.pop("AUTHZBENCH_REQUEST_LOG_DIR", None)
         env.update(
             {
                 "AUTHZBENCH_CONTEXT": str(context_path),
@@ -113,7 +160,7 @@ def _run_agent_protected(
 
         submission = load_json(submission_path) if submission_path.exists() else {"findings": []}
         copied_artifacts: dict[str, Any] = {}
-        for artifact_name in ("submission.json", "model-output.json"):
+        for artifact_name in ("submission.json", "model-output.json", "model-tool-plan.json", "tool-probes.json"):
             artifact_path = temp_root / artifact_name
             if artifact_path.exists():
                 copied_artifacts[artifact_name] = load_json(artifact_path)
@@ -169,6 +216,10 @@ def _metric_summary(
     task_count = len(task_results)
     vulnerable_count = len(vulnerable)
     control_count = len(controls)
+    executed_probe_count = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
+    fallback_probe_count = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
+    model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
+    per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
     return {
         "agent": agent,
         "authorized_allow_control_task_count": len(authorized_allow_controls),
@@ -187,15 +238,19 @@ def _metric_summary(
         "control_false_report_rate": round(controls_with_findings / control_count, 4) if control_count else None,
         "control_task_count": control_count,
         "denial_control_task_count": len(denial_controls),
+        "executed_probe_count": executed_probe_count,
         "exploit_proven_success_rate": round(exploit_proven / vulnerable_count, 4) if vulnerable_count else None,
         "exploit_proven_task_count": exploit_proven,
+        "fallback_probe_count": fallback_probe_count,
         "false_positive_rate": round(controls_with_findings / control_count, 4) if control_count else None,
         "harness_type": harness_type,
         "invalid_submission_count": invalid_submissions,
         "invalid_submission_rate": round(invalid_submissions / task_count, 4) if task_count else None,
         "mean_score": round(sum(float(item["score"]) for item in task_results) / task_count, 4) if task_count else 0,
         "model": model,
+        "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
         "passed_count": sum(1 for item in task_results if item["passed"]),
+        "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
         "protected_execution": {
             "agent_cwd": "temporary-empty-workspace",
             "agent_received": "rendered-context-only",
@@ -230,8 +285,10 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "control_false_report_rate": summary.get("control_false_report_rate"),
         "control_task_count": summary.get("control_task_count"),
         "denial_control_task_count": summary.get("denial_control_task_count"),
+        "executed_probe_count": summary.get("executed_probe_count"),
         "exploit_proven_success_rate": summary.get("exploit_proven_success_rate"),
         "exploit_proven_task_count": summary.get("exploit_proven_task_count"),
+        "fallback_probe_count": summary.get("fallback_probe_count"),
         "false_positive_rate": summary.get("false_positive_rate"),
         "full_result_bundle_tracked": bool(protected.get("raw_result_bundle_tracked")),
         "harness_type": summary.get("harness_type"),
@@ -239,6 +296,8 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "invalid_submission_rate": summary.get("invalid_submission_rate"),
         "mean_score": summary.get("mean_score"),
         "model": summary.get("model"),
+        "model_tool_plan_artifact_count": summary.get("model_tool_plan_artifact_count"),
+        "per_task_tool_probe_artifact_count": summary.get("per_task_tool_probe_artifact_count"),
         "private_holdout_task_count": summary.get("task_count"),
         "protected_execution": {
             "agent_cwd": protected.get("agent_cwd"),
@@ -255,6 +314,7 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "run_id": str(summary.get("run_id", "")) + "-redacted",
         "safety_violations": 0,
         "split": "private-holdout",
+        "target_request_correlated_task_count": summary.get("target_request_correlated_task_count"),
         "target_request_coverage_rate": summary.get("target_request_coverage_rate"),
         "task_count": summary.get("task_count"),
         "tracked_private_manifest_count": protected.get("tracked_private_manifest_count"),
@@ -277,6 +337,7 @@ def run_protected_private_eval(
     agent: str | None,
     model: str | None,
     harness_type: str | None,
+    target_log_dir: Path | None = None,
     run_id: str | None = None,
 ) -> dict[str, Any]:
     run_id = run_id or _utc_run_id()
@@ -291,6 +352,7 @@ def run_protected_private_eval(
         task_dir = run_dir / task["id"]
         context = build_context(task)
         agent_id = agent or Path(shlex.split(agent_cmd)[0]).name
+        target_log_start_offset = _target_log_offset(target_log_dir, task["app"]) if target_log_dir is not None else 0
         agent_result, submission, protected_artifacts = _run_agent_protected(
             agent_cmd,
             context,
@@ -304,6 +366,9 @@ def run_protected_private_eval(
         _write_json(task_dir / "protected-artifacts.json", protected_artifacts)
         for artifact_name, artifact_data in protected_artifacts["artifacts"].items():
             _write_json(task_dir / artifact_name, artifact_data)
+        tool_probe_data = protected_artifacts["artifacts"].get("tool-probes.json")
+        if not isinstance(tool_probe_data, dict):
+            tool_probe_data = {}
 
         try:
             score = score_submission(task, submission)
@@ -319,6 +384,17 @@ def run_protected_private_eval(
             }
         _write_json(task_dir / "score.json", score)
         _write_json(task_dir / "transcript.json", {"task_id": task["id"], "entries": score.get("transcript", [])})
+        target_request_count: int | None = None
+        target_request_warning: str | None = None
+        if target_log_dir is not None:
+            target_log_exists = (target_log_dir / f"{task['app']}.jsonl").exists()
+            requests = _target_requests(target_log_dir, task["app"], run_id, task["id"], agent_id, target_log_start_offset)
+            _write_jsonl(task_dir / "target-requests.jsonl", requests)
+            target_request_count = len(requests)
+            if not target_log_exists:
+                target_request_warning = "target_log_missing"
+            elif target_request_count == 0:
+                target_request_warning = "no_target_requests_correlated"
         task_results.append(
             {
                 "agent_returncode": agent_result["returncode"],
@@ -326,15 +402,21 @@ def run_protected_private_eval(
                 "control_replay_passed": score.get("control_replay_passed"),
                 "control_type": task.get("control_type") if not task.get("expected_vulnerable") else None,
                 "expected_vulnerable": bool(task.get("expected_vulnerable")),
+                "executed_probe_count": int(tool_probe_data.get("executed_probe_count", 0)),
                 "exploit_proof": score.get("subscores", {}).get("exploit_proof", 0),
+                "fallback_probe_count": int(tool_probe_data.get("fallback_probe_count", 0)),
                 "false_positive_control": score.get("subscores", {}).get("false_positive_control", 0),
                 "invalid_submission": bool(score.get("invalid_submission")),
+                "model_tool_plan_artifact": "model-tool-plan.json" in protected_artifacts["artifacts"],
                 "passed": bool(score.get("passed")),
                 "safety": score.get("subscores", {}).get("safety", 0),
                 "score": score.get("score", 0),
                 "submission_finding_count": score.get("submission_finding_count", 0),
                 "task_id": task["id"],
+                "tool_probe_artifact": "tool-probes.json" in protected_artifacts["artifacts"],
             }
+            | ({"target_request_count": target_request_count} if target_request_count is not None else {})
+            | ({"target_request_warning": target_request_warning} if target_request_warning else {})
         )
 
     summary = _metric_summary(
@@ -346,6 +428,12 @@ def run_protected_private_eval(
         model=model,
         harness_type=harness_type,
     )
+    if target_log_dir is not None:
+        target_log_tasks = [item for item in task_results if "target_request_count" in item]
+        target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
+        summary["target_log_dir"] = str(target_log_dir)
+        summary["target_request_correlated_task_count"] = target_log_correlated
+        summary["target_request_coverage_rate"] = round(target_log_correlated / len(target_log_tasks), 4) if target_log_tasks else None
     _write_json(run_dir / "summary.json", summary)
     return summary
 
@@ -361,6 +449,7 @@ def main() -> int:
     parser.add_argument("--agent")
     parser.add_argument("--model")
     parser.add_argument("--harness-type")
+    parser.add_argument("--target-log-dir", help="Directory containing target-side <app>.jsonl logs to correlate per task.")
     parser.add_argument("--run-id")
     parser.add_argument("--redacted-summary-output")
     args = parser.parse_args()
@@ -375,6 +464,7 @@ def main() -> int:
         agent=args.agent,
         model=args.model,
         harness_type=args.harness_type,
+        target_log_dir=Path(args.target_log_dir).resolve() if args.target_log_dir else None,
         run_id=args.run_id,
     )
     if args.redacted_summary_output:
