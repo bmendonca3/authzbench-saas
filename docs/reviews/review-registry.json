@@ -41,7 +41,7 @@
     {
       "id": "baseline_methodology_leaderboard_schema",
       "required_for_v0": true,
-      "v0_ready": false,
+      "v0_ready": true,
       "summary_paths": [
         "2026-06-05-baseline-registry-panel-summary.md",
         "2026-06-05-leaderboard-submission-panel-summary.md",
@@ -52,9 +52,10 @@
         "2026-06-05-deepseek-current-baseline-panel-summary.md",
         "2026-06-05-haiku-current-baseline-panel-summary.md",
         "2026-06-05-opus-current-baseline-panel-summary.md",
-        "2026-06-05-kiro-live-tool-agent-panel-summary.md"
+        "2026-06-05-kiro-live-tool-agent-panel-summary.md",
+        "2026-06-05-private-leaderboard-submission-panel-summary.md"
       ],
-      "notes": "Registry and leaderboard validators have review coverage. The heuristic live HTTP prober improves live-target proof, but panel review classified it as deterministic harness evidence. Five repeated current public no-tools families and a true public-split tool-agent baseline now exist; the section remains not v0-ready until leaderboard submission evidence and final release review are complete."
+      "notes": "Registry and leaderboard validators have review coverage. Five repeated current public no-tools families, a true public-split tool-agent baseline, and one validated private-holdout release-candidate leaderboard row now exist. This section is v0-ready; overall v0 remains blocked by other review sections and release evidence."
     },
     {
       "id": "holdout_contamination_anti_gaming",

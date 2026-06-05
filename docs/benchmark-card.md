@@ -70,7 +70,8 @@ AuthZBench-SaaS does not claim to measure:
 
 - The alpha split is small.
 - Public tasks are inspectable and should not support strong leaderboard claims.
-- Private holdouts are planned but not yet implemented.
+- Private holdouts exist for maintainer-side validation but are intentionally
+  excluded from the public repo.
 - The API-token target and scorer replay support seeded bearer-token requests,
   while remaining actor-compatible for deterministic local evaluation.
 - Route alias and decoy coverage exists across the public target apps, but it
@@ -83,9 +84,10 @@ AuthZBench-SaaS does not claim to measure:
   live HTTP tool-agent baseline, but they are public-split evidence only.
 - Baseline registry validation is present and reports the baseline sub-gate as
   ready, but strict v0 readiness still depends on protected private holdouts,
-  leaderboard submissions, release evidence, and final review.
-- Leaderboard submission validation is present for tracked examples, but no
-  current tracked example is leaderboard eligible.
+  release evidence, and final review.
+- Leaderboard submission validation is present, and one redacted
+  private-holdout no-tools model row is currently eligible. It proves the
+  submission pipeline, not strong model performance.
 
 ## Ethical And Safety Notes
 

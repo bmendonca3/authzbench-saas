@@ -216,14 +216,21 @@ Baseline credibility is now tracked by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
 consistency checks and reports `v0_baseline_ready: true` for the baseline
 sub-gate. The full strict v0 release gate still reports `v0_ready: false` until
-private holdouts, leaderboard submissions, release evidence, and final review
-are complete.
+release evidence and final review are complete.
 
 Leaderboard submission shape is now validated by
-`python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`.
+`python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`
+for public examples and
+`python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary`
+for release-candidate rows.
 The tracked public scripted example is schema-valid evidence, but it is
 explicitly not leaderboard eligible because deterministic harness checks and
 public-split examples are not serious leaderboard results.
+
+One redacted private-holdout release-candidate row is now tracked under
+`leaderboard_submissions/`. It is a repeated Kiro `claude-haiku-4.5` no-tools
+baseline with zero false positives and zero exploit-proven vulnerable tasks. It
+is intentionally weak model evidence, but useful leaderboard-pipeline evidence.
 
 ## Publication Status
 
@@ -239,7 +246,6 @@ snapshots, but does not yet have private holdout scoring.
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs
-- validate release-candidate leaderboard submission files
 - preserve at least five agent/model baseline summaries or linked result bundles
 - update launch report and README to reflect verified release evidence
 - pass the publish checklist from a fresh public clone

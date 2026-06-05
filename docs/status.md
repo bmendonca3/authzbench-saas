@@ -114,6 +114,10 @@ Ready:
   instead of trusting hand-entered aggregate rows
 - leaderboard-eligible rows require source summaries plus both vulnerable-task
   and secure-control coverage
+- one redacted release-candidate private-holdout leaderboard row exists under
+  `leaderboard_submissions/`, backed by a tracked aggregate source summary and
+  validated without publishing private task bodies, IDs, seeds, refs, routes, or
+  raw result bundles
 - reproducible fresh-clone validation script exists
 - private holdout pack validator exists for ignored local holdouts, including
   app coverage, control subtype mix, public ID/seed overlap checks, private

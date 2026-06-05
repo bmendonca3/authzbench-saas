@@ -186,8 +186,6 @@ benchmark until the strict release gate passes.
 
 Remaining major gaps:
 
-- artifact-backed leaderboard submissions
-- private-holdout leaderboard execution
 - protected/isolated live-agent execution for leaderboard runs
 - release evidence fields with supporting commands, commits, CI links, and
   privacy checks

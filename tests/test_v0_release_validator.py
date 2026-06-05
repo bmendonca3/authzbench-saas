@@ -29,14 +29,17 @@ class V0ReleaseValidatorTests(unittest.TestCase):
                 result,
             )
         self.assertTrue(gates["baseline_credibility"]["passed"], result)
-        self.assertFalse(gates["leaderboard_submissions"]["passed"], result)
+        self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
         self.assertFalse(gates["sectional_reviews"]["passed"], result)
         self.assertFalse(gates["release_verification_evidence"]["passed"], result)
         self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
-        self.assertTrue(
-            any("no release-candidate leaderboard submissions" in item for item in gates["leaderboard_submissions"]["unmet"]),
+        self.assertEqual(gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"], 1, result)
+        self.assertEqual(
+            gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
+            1,
             result,
         )
+        self.assertTrue(any("not all required review sections" in item for item in gates["sectional_reviews"]["unmet"]), result)
         self.assertTrue(
             any("fresh_clone_validation_passed" in item for item in gates["release_verification_evidence"]["unmet"]),
             result,
@@ -66,7 +69,12 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         self.assertEqual(gates["leaderboard_submissions"]["evidence"]["example_submission_count"], 1, result)
         self.assertEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"],
-            0,
+            1,
+            result,
+        )
+        self.assertEqual(
+            gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
+            1,
             result,
         )
 

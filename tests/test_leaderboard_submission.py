@@ -11,6 +11,7 @@ from scripts.validate_leaderboard_submission import ROOT, validate_submission
 
 
 EXAMPLE = ROOT / "examples" / "leaderboard" / "scripted-sanity-public.leaderboard.json"
+RELEASE_CANDIDATE = ROOT / "leaderboard_submissions" / "2026-06-05" / "haiku-private-holdout.leaderboard.json"
 
 
 def _write_submission(tmp_path: Path, data: dict) -> Path:
@@ -27,6 +28,13 @@ class LeaderboardSubmissionTests(unittest.TestCase):
         self.assertFalse(result["leaderboard_eligible"], result)
         self.assertTrue(any("not marked leaderboard_eligible" in item for item in result["warnings"]), result)
         self.assertTrue(any("identity cross-check is limited" in item for item in result["warnings"]), result)
+
+    def test_current_private_holdout_release_candidate_is_eligible(self) -> None:
+        result = validate_submission(RELEASE_CANDIDATE, require_source_summary=True)
+
+        self.assertTrue(result["passed"], result)
+        self.assertTrue(result["leaderboard_eligible"], result)
+        self.assertEqual(result["warnings"], [], result)
 
     def test_rejects_missing_required_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

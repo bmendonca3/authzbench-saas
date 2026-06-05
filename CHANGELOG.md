@@ -56,6 +56,9 @@
 - Added a Kiro-planned live HTTP tool-agent adapter and current public
   `claude-sonnet-4.6` tool-agent baseline summary with 44/44 target-request
   correlation.
+- Added a redacted private-holdout release-candidate leaderboard submission for
+  repeated Kiro `claude-haiku-4.5` no-tools runs, backed by an aggregate source
+  summary without publishing private task details or raw result bundles.
 - Hardened public validation so lightweight checks do not require Docker
   Compose unless container smoke validation is requested.
 - Added a public-safe private holdout summary utility so maintainers can produce
