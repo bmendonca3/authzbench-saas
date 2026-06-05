@@ -40,6 +40,15 @@ REQUIRED_SUMMARY_FIELDS = {
     "vulnerable_task_count",
 }
 
+REQUIRED_TOOL_AGENT_SUMMARY_FIELDS = {
+    "model_tool_plan_artifact_count",
+    "per_task_tool_probe_artifact_count",
+    "planner_failure_count",
+    "planner_parse_error_count",
+    "target_request_correlated_task_count",
+    "target_request_coverage_rate",
+}
+
 VALID_KINDS = {"harness_check", "model_baseline", "tool_agent_baseline"}
 VALID_SUITABILITY = {"current_public_split", "current_public_harness_check", "legacy_snapshot"}
 
@@ -285,6 +294,27 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
                     current_model_families.add(model_family)
             if kind == "tool_agent_baseline" and suitability == "current_public_split":
                 has_tool_agent_baseline = True
+                missing_tool_fields = sorted(REQUIRED_TOOL_AGENT_SUMMARY_FIELDS - set(summary))
+                if missing_tool_fields:
+                    errors.append(
+                        f"{entry_id}: current public tool-agent summary missing fields: "
+                        f"{', '.join(missing_tool_fields)}"
+                    )
+                if summary.get("target_request_correlated_task_count") != expected_task_count:
+                    errors.append(
+                        f"{entry_id}: current public tool-agent must correlate target requests for "
+                        f"all {expected_task_count} tasks"
+                    )
+                if summary.get("target_request_coverage_rate") != 1.0:
+                    errors.append(f"{entry_id}: current public tool-agent target_request_coverage_rate must be 1.0")
+                if summary.get("model_tool_plan_artifact_count") != expected_task_count:
+                    errors.append(
+                        f"{entry_id}: current public tool-agent must include one model-tool plan artifact per task"
+                    )
+                if summary.get("per_task_tool_probe_artifact_count") != expected_task_count:
+                    errors.append(
+                        f"{entry_id}: current public tool-agent must include one tool-probe artifact per task"
+                    )
             has_repeated_evidence = True
             if run_count >= min_runs:
                 has_repeated_evidence = _has_repeated_run_evidence(

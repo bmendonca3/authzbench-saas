@@ -32,7 +32,10 @@ It also labels every summary as one of:
 
 ## v0 Baseline Bar
 
-The registry is intentionally not v0-ready yet. The v0 baseline bar is:
+The baseline sub-gate now has enough current public evidence to report
+`v0_baseline_ready: true`. That does not make the benchmark v0-ready. The full
+strict release gate still requires protected private holdouts, leaderboard
+submissions, release evidence, and final review. The v0 baseline bar is:
 
 - at least five real model or agent families on the current public split
 - at least two runs per serious model or agent family
@@ -44,9 +47,8 @@ The registry is intentionally not v0-ready yet. The v0 baseline bar is:
 - public-split and private-holdout results reported separately
 - one-off or legacy snapshots excluded from leaderboard eligibility
 
-The validator can pass while reporting `v0_baseline_ready: false`. That means
-the registry is honest and internally consistent, not that v0 baseline evidence
-is complete.
+The validator can pass while reporting `v0_baseline_ready: true`. That means the
+baseline sub-gate is satisfied, not that the full v0 release is complete.
 
 ## Current Interpretation
 
@@ -106,5 +108,15 @@ The fifth repeated current model family is Opus through Kiro. The two
 passed 27 of 44 tasks, proved 12 of 18 vulnerable replays, kept a zero
 false-positive rate, and fully passed 1 vulnerable task because boundary
 reasoning remained weak at `0.0556`. They satisfy the repeated public model
-family count while still leaving a true tool-agent baseline and private-holdout
-leaderboard submissions missing.
+family count while still leaving private-holdout leaderboard submissions
+missing.
+
+The current public tool-agent baseline is Kiro-planned live HTTP probing through
+`claude-sonnet-4.6`. The adapter asks the model to plan authorization probes
+from task context, executes those probes against the Docker targets, and only
+submits a finding when a referenced live probe supports it. The run produced
+44/44 model-tool plan artifacts, 44/44 tool-probe artifacts, 100 executed live
+HTTP probes, and 44/44 target-request correlation. It passed all controls with
+zero false positives and proved 14 of 18 vulnerable replays, but boundary
+reasoning remained `0.0`, so it is useful public-split tool-agent evidence
+rather than a leaderboard claim.

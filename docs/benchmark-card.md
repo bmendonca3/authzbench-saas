@@ -55,7 +55,7 @@ AuthZBench-SaaS does not claim to measure:
 - route alias and decoy endpoint controls across all six target apps
 - target-side JSONL request logs for Docker HTTP targets
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts
-- scripted and model baseline summaries
+- scripted, no-tools model, and live HTTP tool-agent baseline summaries
 
 ## Main Metrics
 
@@ -79,10 +79,11 @@ AuthZBench-SaaS does not claim to measure:
 - Docker HTTP targets write target-side request logs, and the alpha runner can
   correlate them into per-task artifacts when `--target-log-dir` is supplied.
   Leaderboard-grade Docker/agent isolation is still planned.
-- Current model baselines are sparse and include no-tools runs.
-- Baseline registry validation is present, but the registry intentionally reports
-  that v0 baseline evidence is not ready yet because current repeated model
-  families and a tool-agent baseline are still missing.
+- Current public baselines include five repeated no-tools model families and one
+  live HTTP tool-agent baseline, but they are public-split evidence only.
+- Baseline registry validation is present and reports the baseline sub-gate as
+  ready, but strict v0 readiness still depends on protected private holdouts,
+  leaderboard submissions, release evidence, and final review.
 - Leaderboard submission validation is present for tracked examples, but no
   current tracked example is leaderboard eligible.
 

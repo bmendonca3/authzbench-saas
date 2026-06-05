@@ -179,6 +179,21 @@
       "expected_task_count": 44,
       "requires_rerun_before_v0": false,
       "notes": "Repeated current 44-task public split no-tools Kiro baseline. Non-leaderboard public evidence only; private holdout results are still missing."
+    },
+    {
+      "id": "kiro-live-tool-agent-sonnet-current-public-44",
+      "summary_path": "kiro-live-tool-agent-sonnet-current-public-44-summary.json",
+      "kind": "tool_agent_baseline",
+      "model_family": "kiro-live-tool-agent-sonnet",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 1,
+      "expected_harness_type": "tool-agent",
+      "expected_agent": "kiro_live_tool_agent",
+      "expected_model": "claude-sonnet-4.6",
+      "expected_task_count": 44,
+      "requires_rerun_before_v0": false,
+      "notes": "Current public 44-task Kiro-planned live HTTP tool-agent baseline. Produces per-task model-tool plans, live tool-probe artifacts, and target-log correlation. Public-split evidence only; private holdout leaderboard results are still missing."
     }
   ]
 }

@@ -12,9 +12,10 @@ python3 scripts/validate_baseline_registry.py
 
 The registry is an honesty gate. It separates current public-split runs from
 legacy snapshots, harness checks from model baselines, and one-off runs from
-leaderboard-eligible evidence. It can pass while reporting
-`v0_baseline_ready: false`; that means the tracked baseline files are consistent,
-not that the v0 baseline bar is complete.
+leaderboard-eligible evidence. It can report `v0_baseline_ready: true` while
+the overall strict v0 gate still fails; that means the tracked baseline files
+meet the baseline sub-gate, not that private holdouts, leaderboard submissions,
+release evidence, or final review are complete.
 
 ## Current Baselines
 
@@ -30,6 +31,12 @@ not that the v0 baseline bar is complete.
   per-task probe artifacts. The current run has 44/44 target-side request
   correlation and zero control false reports, but panel review classified it as
   a harness check, not the real v0 tool-agent baseline.
+- `kiro-live-tool-agent-sonnet-current-public-44-summary.json`: Kiro-planned
+  live HTTP tool-agent baseline using `claude-sonnet-4.6`. It writes one
+  model-tool plan artifact and one tool-probe artifact per public task, executes
+  100 live HTTP probes, and has 44/44 target-side request correlation. It is
+  public-split evidence only, not private-holdout or leaderboard-eligible
+  evidence.
 - `kiro-claude-sonnet-4.6-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
 - `kiro-qwen3-coder-next-full-summary.json`: legacy 15-task alpha snapshot

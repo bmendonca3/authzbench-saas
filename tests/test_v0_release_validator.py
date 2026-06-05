@@ -28,13 +28,11 @@ class V0ReleaseValidatorTests(unittest.TestCase):
                 any("total vulnerable tasks" in item for item in gates["task_mix"]["unmet"]),
                 result,
             )
-        self.assertFalse(gates["baseline_credibility"]["passed"], result)
+        self.assertTrue(gates["baseline_credibility"]["passed"], result)
         self.assertFalse(gates["leaderboard_submissions"]["passed"], result)
+        self.assertFalse(gates["sectional_reviews"]["passed"], result)
         self.assertFalse(gates["release_verification_evidence"]["passed"], result)
-        self.assertTrue(
-            any("baseline registry reports v0_baseline_ready=false" in item for item in gates["baseline_credibility"]["unmet"]),
-            result,
-        )
+        self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
         self.assertTrue(
             any("no release-candidate leaderboard submissions" in item for item in gates["leaderboard_submissions"]["unmet"]),
             result,

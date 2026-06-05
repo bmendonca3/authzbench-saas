@@ -93,14 +93,17 @@ Ready:
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
 - current live HTTP scripted harness summary exists for the 44-task public split
-- baseline registry exists and passes consistency validation while explicitly
-  reporting `v0_baseline_ready: false`
+- baseline registry exists and passes consistency validation while reporting
+  `v0_baseline_ready: true` for baseline evidence only
 - a heuristic live HTTP prober now provides 44/44 target-request correlation
   across vulnerable and control public tasks, but it is classified as a harness
   check rather than a v0 tool-agent baseline
 - five repeated current public model families exist: Kiro `claude-opus-4.6`,
   `claude-sonnet-4.6`, `claude-haiku-4.5`, `deepseek-3.2`, and
   `qwen3-coder-next` no-tools, each with two distinct 44-task run summaries
+- a current public Kiro live HTTP tool-agent baseline exists with 44/44
+  target-request correlation plus per-task model-tool plans and tool-probe
+  artifacts
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
   still fails honestly
@@ -130,9 +133,8 @@ Still required before the real v0 or a serious leaderboard:
   generator is only a workflow test
 - actual route-alias randomization and additional private-holdout decoy
   variation implemented in a real non-public holdout pack
-- leaderboard-grade live-agent validation of per-task request-log correlation in
-  addition to deterministic replay and CI smoke checks
-- at least one current public tool-agent baseline
+- leaderboard-grade live-agent validation on private holdouts with protected
+  execution, not just public-split evidence
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs

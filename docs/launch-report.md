@@ -30,6 +30,8 @@ The current public split contains:
 - scripted baseline agent for harness validation
 - legacy Kiro no-tools snapshots plus five repeated current public no-tools
   baseline families
+- Kiro-planned live HTTP tool-agent baseline with 44/44 public-task
+  target-request correlation
 
 ## Task Mapping
 
@@ -152,6 +154,7 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `deepseek-3.2` current run 2 | 44 | 26 | 0.0 | 0.0 | 0.0 |
 | Kiro `qwen3-coder-next` current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 |
 | Kiro `qwen3-coder-next` current run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` | 44 | 26 | 0.7778 | 0.0 | 0.0 |
 
 Tracked summaries:
 
@@ -169,6 +172,7 @@ Tracked summaries:
 - [kiro-deepseek-3.2-current-public-44-run2-summary.json](../baselines/kiro-deepseek-3.2-current-public-44-run2-summary.json)
 - [kiro-qwen3-coder-next-current-public-44-run1-summary.json](../baselines/kiro-qwen3-coder-next-current-public-44-run1-summary.json)
 - [kiro-qwen3-coder-next-current-public-44-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-44-run2-summary.json)
+- [kiro-live-tool-agent-sonnet-current-public-44-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-44-summary.json)
 
 The live HTTP scripted baseline is a current 44-task harness check against the
 Docker targets. It correlates target-side requests for the 18 vulnerable proof
@@ -189,6 +193,13 @@ repeated 44-task public model baseline families. They are useful
 model-comparison evidence, but they are public-only no-tools runs and are not
 leaderboard eligible.
 
+The Kiro live HTTP tool-agent baseline is the first accepted current public
+tool-agent baseline. It uses `claude-sonnet-4.6` to plan per-task HTTP probes,
+executes those probes against live Docker targets, and produces 44/44
+model-tool plan artifacts, 44/44 tool-probe artifacts, and 44/44 target-request
+correlation. It is still public-split evidence only, not a private-holdout
+leaderboard result.
+
 The Opus runs proved 12 of 18 vulnerable replays in both runs and kept zero
 false positives, but only 1 vulnerable task fully passed because boundary
 reasoning remained weak at `0.0556`. The Sonnet runs show why AuthZBench-SaaS
@@ -203,8 +214,10 @@ proved no vulnerable exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks but intentionally reports `v0_baseline_ready: false` because
-the current public split still lacks a tool-agent baseline.
+consistency checks and reports `v0_baseline_ready: true` for the baseline
+sub-gate. The full strict v0 release gate still reports `v0_ready: false` until
+private holdouts, leaderboard submissions, release evidence, and final review
+are complete.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`.
@@ -226,7 +239,6 @@ snapshots, but does not yet have private holdout scoring.
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs
-- make the baseline registry `v0_baseline_ready: true`
 - validate release-candidate leaderboard submission files
 - preserve at least five agent/model baseline summaries or linked result bundles
 - update launch report and README to reflect verified release evidence

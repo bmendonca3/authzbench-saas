@@ -13,6 +13,7 @@ from scripts.validate_baseline_registry import ROOT, validate_registry
 REGISTRY = ROOT / "baselines" / "baseline-registry.json"
 LEGACY_CLAUDE_ID = "kiro-claude-sonnet-4-6-legacy-15"
 CURRENT_QWEN_ID = "kiro-qwen3-coder-next-current-public-44"
+CURRENT_TOOL_AGENT_ID = "kiro-live-tool-agent-sonnet-current-public-44"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
@@ -44,17 +45,17 @@ def _baseline_by_id(registry: dict, baseline_id: str) -> dict:
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_is_honest_but_not_v0_ready(self) -> None:
+    def test_current_registry_has_public_baseline_evidence_but_not_full_v0_proof(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 10, result)
+        self.assertEqual(result["baseline_count"], 11, result)
         self.assertEqual(result["public_split"]["task_count"], 44, result)
-        self.assertEqual(result["current_public_model_family_count"], 5, result)
+        self.assertEqual(result["current_public_model_family_count"], 6, result)
         self.assertEqual(result["repeated_model_baseline_count"], 5, result)
-        self.assertFalse(result["v0_baseline_ready"], result)
-        self.assertTrue(any("missing current public tool-agent baseline" in item for item in result["unmet_v0_requirements"]), result)
-        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
+        self.assertTrue(result["v0_baseline_ready"], result)
+        self.assertEqual(result["unmet_v0_requirements"], [], result)
+        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
 
     def test_rejects_harness_check_mislabeled_as_current_public_split(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -195,6 +196,23 @@ class BaselineRegistryTests(unittest.TestCase):
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("current_public_harness_check is only valid" in error for error in result["errors"]), result)
+
+    def test_rejects_tool_agent_without_full_live_correlation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            tool_entry = _baseline_by_id(registry, CURRENT_TOOL_AGENT_ID)
+            summary_path = registry_path.parent / tool_entry["summary_path"]
+            summary = load_json(summary_path)
+            summary["target_request_correlated_task_count"] = 43
+            summary["target_request_coverage_rate"] = 0.9773
+            summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("correlate target requests for all 44 tasks" in error for error in result["errors"]), result)
+        self.assertTrue(any("target_request_coverage_rate must be 1.0" in error for error in result["errors"]), result)
 
 
 if __name__ == "__main__":

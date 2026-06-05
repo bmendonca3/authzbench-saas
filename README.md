@@ -139,15 +139,23 @@ The baseline registry lives at
 | Kiro `deepseek-3.2` current run 2 | 44 | 26 | 0.0 | 0.0 |
 | Kiro `qwen3-coder-next` current run 1 | 44 | 26 | 0.0 | 0.0 |
 | Kiro `qwen3-coder-next` current run 2 | 44 | 25 | 0.0 | 0.0385 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` | 44 | 26 | 0.7778 | 0.0 |
 
 The scripted baselines are harness checks, not model results. The model runs are
 public-split evidence only; they are not private-holdout or leaderboard results.
+The Kiro live HTTP tool-agent baseline is also public-split evidence only; it
+adds model-planned probe artifacts and 44/44 target-request correlation without
+making leaderboard claims.
 
 Current registry status:
 
 - 5 of 5 required repeated model/agent families
-- no accepted tool-agent baseline yet
-- `v0_baseline_ready: false`
+- accepted current public live HTTP tool-agent baseline
+- `v0_baseline_ready: true`
+
+That status covers only the baseline registry. The strict release gate still
+reports `v0_ready: false` until private holdouts, leaderboard submissions,
+release evidence, and final review gates are complete.
 
 ## Scoring Summary
 
@@ -178,9 +186,9 @@ benchmark until the strict release gate passes.
 
 Remaining major gaps:
 
-- one real live HTTP tool-agent baseline
 - artifact-backed leaderboard submissions
-- stronger live-target proof across vulnerable and control tasks
+- private-holdout leaderboard execution
+- protected/isolated live-agent execution for leaderboard runs
 - release evidence fields with supporting commands, commits, CI links, and
   privacy checks
 - final sectional panel review
