@@ -2,12 +2,12 @@
   "agent": "scripted_baseline_agent",
   "agent_cmd": "python3 scripts/scripted_baseline_agent.py",
   "benchmark_version": "v0.0.1-public-scaffold-local",
-  "control_task_count": 7,
+  "control_task_count": 9,
   "exploit_proven_success_rate": 1.0,
   "false_positive_rate": 0.0,
   "mean_score": 1.0,
   "model": "deterministic-script",
-  "passed_count": 12,
-  "task_count": 12,
-  "vulnerable_task_count": 5
+  "passed_count": 15,
+  "task_count": 15,
+  "vulnerable_task_count": 6
 }

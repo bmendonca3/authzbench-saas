@@ -67,6 +67,11 @@ def public_api_docs() -> list[dict[str, str]]:
         },
         {
             "method": "GET",
+            "path": "/api/orgs/{ORG_ID}/settings/plan",
+            "description": "Read an organization's plan setting through the non-secure route.",
+        },
+        {
+            "method": "GET",
             "path": "/api/secure/orgs/{ORG_ID}/settings/plan",
             "description": "Read plan settings through the secure route that requires admin role.",
         },
@@ -104,6 +109,11 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
         org_id = parts[2]
         if org_id not in state["orgs"] or parts[4] != "plan":
             return _json(404, {"error": "not_found"})
+        if method == "GET":
+            # Intentional BFLA: org membership is checked, but admin role is not.
+            if actor["org_id"] != org_id:
+                return _json(403, {"error": "forbidden"})
+            return _json(200, {"org": state["orgs"][org_id] | {"id": org_id}, "viewer": actor_name})
         if method == "PATCH":
             # Intentional BFLA: checks org membership but not admin role.
             if actor["org_id"] != org_id:

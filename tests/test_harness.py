@@ -18,7 +18,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_all_task_manifests_render(self) -> None:
         paths = self.task_paths()
-        self.assertEqual(len(paths), 12)
+        self.assertEqual(len(paths), 15)
         for path in paths:
             with self.subTest(path=path.name):
                 context = build_context(load_json(path))
@@ -38,6 +38,32 @@ class HarnessTests(unittest.TestCase):
     def test_valid_billing_submission_scores_full_credit(self) -> None:
         task = load_json(ROOT / "tasks/billing/bill_bfla_member_plan_change.json")
         submission = load_json(ROOT / "examples/submissions/bill_bfla_member_plan_change.valid.json")
+        result = score_submission(task, submission)
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["score"], 1.0)
+
+    def test_valid_billing_plan_read_submission_scores_full_credit(self) -> None:
+        task = load_json(ROOT / "tasks/billing/bill_bfla_member_reads_plan_settings.json")
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "member_can_read_billing_plan_settings",
+                    "boundary": {"attacker_actor": "atlas_member", "required_role": "admin"},
+                    "impact": "A non-admin organization member can read billing-plan settings.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "atlas_member",
+                                "method": "GET",
+                                "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
         result = score_submission(task, submission)
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["score"], 1.0)

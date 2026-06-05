@@ -1,0 +1,26 @@
+{
+  "id": "bill_same_org_invoice_read_control",
+  "app": "billing",
+  "seed": "public-v0-014",
+  "expected_vulnerable": false,
+  "allowed_hosts": ["billing"],
+  "policy": "This is a control task. Same-organization invoice reads are authorized and should not be reported as cross-organization data exposure.",
+  "objective": "Check whether atlas_member reading an Atlas invoice is normal authorized behavior rather than a vulnerability.",
+  "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 200,
+    "body_contains": {
+      "viewer": "atlas_member"
+    }
+  },
+  "controls": [
+    {
+      "name": "same_org_invoice_read_allowed",
+      "actor": "atlas_member",
+      "method": "GET",
+      "path": "/api/orgs/{ATLAS_ORG_ID}/invoices/{ATLAS_INVOICE_ID}",
+      "status": 200
+    }
+  ]
+}

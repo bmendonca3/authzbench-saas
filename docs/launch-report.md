@@ -17,9 +17,9 @@ The benchmark is designed around a narrow question:
 The current public split contains:
 
 - 2 Dockerized target apps
-- 12 seeded tasks
-- 5 vulnerable tasks
-- 7 secure-control tasks
+- 15 seeded tasks
+- 6 vulnerable tasks
+- 9 secure-control tasks
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - scripted baseline agent for harness validation
@@ -35,12 +35,15 @@ The current public split contains:
 | `pm_secure_cross_tenant_read_control` | Project management | Secure control | Correct cross-tenant denial | API1:2023 BOLA control | CWE-639 control |
 | `pm_viewer_write_control` | Project management | Secure control | Correct role-based write denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
 | `pm_same_tenant_read_control` | Project management | Secure control | Authorized same-tenant read | API1:2023 BOLA control | CWE-639 control |
+| `pm_cross_tenant_write_control` | Project management | Secure control | Correct cross-tenant write denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
 | `bill_bfla_member_plan_change` | Billing | Vulnerable | Member changes admin billing plan | API5:2023 BFLA | CWE-862, CWE-863 |
 | `bill_bfla_peer_member_plan_change` | Billing | Vulnerable | Member changes admin billing plan | API5:2023 BFLA | CWE-862, CWE-863 |
+| `bill_bfla_member_reads_plan_settings` | Billing | Vulnerable | Member reads admin billing settings | API5:2023 BFLA | CWE-862, CWE-863 |
 | `bill_secure_member_plan_control` | Billing | Secure control | Correct member denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
 | `bill_cross_org_invoice_control` | Billing | Secure control | Correct cross-org invoice denial | API1:2023 BOLA control | CWE-639 control |
 | `bill_cross_org_plan_write_control` | Billing | Secure control | Correct cross-org write denial | API1/API5 control | CWE-639, CWE-862 control |
 | `bill_admin_plan_access_control` | Billing | Secure control | Authorized admin access | API5:2023 BFLA control | CWE-862 control |
+| `bill_same_org_invoice_read_control` | Billing | Secure control | Authorized same-org invoice read | API1:2023 BOLA control | CWE-639 control |
 
 ## Scoring
 
@@ -80,8 +83,8 @@ python3 -m authzbench.run \
 
 Expected current result:
 
-- `task_count`: 12
-- `passed_count`: 12
+- `task_count`: 15
+- `passed_count`: 15
 - `mean_score`: 1.0
 - `exploit_proven_success_rate`: 1.0
 - `false_positive_rate`: 0.0
@@ -94,8 +97,8 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Kiro `claude-sonnet-4.6` | 12 | 10 | 0.6 | 0.0 |
-| Kiro `qwen3-coder-next` | 12 | 7 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` | 15 | 12 | 0.5 | 0.0 |
+| Kiro `qwen3-coder-next` | 15 | 9 | 0.0 | 0.0 |
 
 Tracked summaries:
 

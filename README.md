@@ -10,7 +10,7 @@ actors, tenants, roles, objects, backend proof, and secure controls in SaaS APIs
 The v0 public split includes:
 
 - 2 intentionally vulnerable Dockerized SaaS targets
-- 12 public tasks across BOLA, BFLA, and secure controls
+- 15 public tasks across BOLA, BFLA, and secure controls
 - seeded tenant/object/org IDs to reduce hardcoded-solution value
 - machine-verifiable backend proof and denial-control scoring
 - false-positive controls where the correct answer is no finding
@@ -167,9 +167,9 @@ Tracked summaries live in [`baselines/`](baselines).
 
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 12 | 12 | 1.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` no-tools | 12 | 10 | 0.6 | 0.0 |
-| Kiro `qwen3-coder-next` no-tools | 12 | 7 | 0.0 | 0.0 |
+| Scripted sanity baseline | 15 | 15 | 1.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools | 15 | 12 | 0.5 | 0.0 |
+| Kiro `qwen3-coder-next` no-tools | 15 | 9 | 0.0 | 0.0 |
 
 The scripted baseline is a harness check, not a model result. The Kiro runs are
 initial public-split baselines and should be rerun for any release tag.
@@ -193,7 +193,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 ## Current Limits
 
-- v0 has 12 public tasks; a stronger leaderboard should add more holdout tasks.
+- v0 has 15 public tasks; a stronger leaderboard should add more private holdout tasks.
 - Route aliases are not randomized yet.
 - The runner executes local agent commands and should be used only with trusted
   commands or inside an isolated environment.

@@ -34,7 +34,7 @@ Tag: `v0.0.1-public-scaffold`
 Release notes:
 
 - 2 Docker-ready intentionally vulnerable SaaS targets
-- 12 public seeded tasks
+- 15 public seeded tasks
 - deterministic scorer with backend replay transcripts
 - secure-control tasks for false-positive measurement
 - scripted baseline and two initial model baselines

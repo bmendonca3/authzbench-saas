@@ -19,11 +19,11 @@ class RunnerTests(unittest.TestCase):
                 Path(tmp),
                 timeout_seconds=10,
             )
-            self.assertEqual(summary["task_count"], 12, summary)
-            self.assertEqual(summary["passed_count"], 12, summary)
+            self.assertEqual(summary["task_count"], 15, summary)
+            self.assertEqual(summary["passed_count"], 15, summary)
             self.assertEqual(summary["mean_score"], 1.0, summary)
-            self.assertEqual(summary["vulnerable_task_count"], 5, summary)
-            self.assertEqual(summary["control_task_count"], 7, summary)
+            self.assertEqual(summary["vulnerable_task_count"], 6, summary)
+            self.assertEqual(summary["control_task_count"], 9, summary)
             self.assertEqual(summary["exploit_proven_success_rate"], 1.0, summary)
             self.assertEqual(summary["false_positive_rate"], 0.0, summary)
             self.assertTrue(Path(summary["run_dir"], "summary.json").exists())

@@ -72,6 +72,14 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(vulnerable_body["viewer"], "atlas_member")
         self.assertEqual(vulnerable_body["org"]["plan"], "enterprise")
 
+        readable_status, readable_body = _request(
+            f"{base_url}/api/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
+            "atlas_member",
+        )
+        self.assertEqual(readable_status, 200)
+        self.assertEqual(readable_body["viewer"], "atlas_member")
+        self.assertEqual(readable_body["org"]["billing_contact"], "cfo@atlas.test")
+
         secure_status, secure_body = _request(
             f"{base_url}/api/secure/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
             "atlas_member",

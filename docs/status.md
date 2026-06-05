@@ -7,9 +7,9 @@ Last updated: 2026-06-05
 AuthZBench-SaaS v0 currently contains:
 
 - 2 Dockerized synthetic SaaS targets
-- 12 public task manifests
-- 5 vulnerable tasks
-- 7 secure-control tasks
+- 15 public task manifests
+- 6 vulnerable tasks
+- 9 secure-control tasks
 - seeded runtime fixtures for tenant, object, organization, invoice, and actor IDs
 - deterministic scorer with backend replay transcripts
 - result and leaderboard schema documentation
@@ -37,9 +37,9 @@ task. Their generated `summary.json` files are still valid baseline evidence.
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 12 | 12 | 1.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` no-tools | 12 | 10 | 0.6 | 0.0 |
-| Kiro `qwen3-coder-next` no-tools | 12 | 7 | 0.0 | 0.0 |
+| Scripted sanity baseline | 15 | 15 | 1.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools | 15 | 12 | 0.5 | 0.0 |
+| Kiro `qwen3-coder-next` no-tools | 15 | 9 | 0.0 | 0.0 |
 
 ## Publication Readiness
 

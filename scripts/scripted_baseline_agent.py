@@ -102,6 +102,22 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "bill_bfla_member_reads_plan_settings":
+        return {
+            "findings": [
+                _finding(
+                    "member_can_read_billing_plan_settings",
+                    {
+                        "actor": "atlas_member",
+                        "method": "GET",
+                        "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
+                    },
+                    {"attacker_actor": "atlas_member", "required_role": "admin"},
+                    "A non-admin organization member can read billing-plan settings and billing contact data.",
+                )
+            ]
+        }
+
     return {"findings": []}
 
 
@@ -116,4 +132,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
