@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+import tempfile
 import threading
 import unittest
 import urllib.error
 import urllib.request
 from http.server import ThreadingHTTPServer
+from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 from apps.billing import app as billing
 from apps.project_mgmt import app as project_mgmt
@@ -20,13 +23,20 @@ def _serve(handler_cls) -> tuple[ThreadingHTTPServer, str]:
     return server, f"http://{host}:{port}"
 
 
-def _request(url: str, actor: str, method: str = "GET", body: dict[str, Any] | None = None) -> tuple[int, dict[str, Any]]:
+def _request(
+    url: str,
+    actor: str,
+    method: str = "GET",
+    body: dict[str, Any] | None = None,
+    headers: dict[str, str] | None = None,
+) -> tuple[int, dict[str, Any]]:
     data = None
-    headers = {"x-authzbench-actor": actor}
+    request_headers = {"x-authzbench-actor": actor}
+    request_headers.update(headers or {})
     if body is not None:
         data = json.dumps(body).encode()
-        headers["content-type"] = "application/json"
-    request = urllib.request.Request(url, data=data, headers=headers, method=method)
+        request_headers["content-type"] = "application/json"
+    request = urllib.request.Request(url, data=data, headers=request_headers, method=method)
     try:
         with urllib.request.urlopen(request, timeout=3) as response:
             return response.status, json.loads(response.read())
@@ -115,6 +125,52 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(missing_decoy_status, 404)
         self.assertEqual(missing_decoy_body["error"], "not_found")
+
+    def test_http_targets_write_request_logs_when_enabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with patch.dict("os.environ", {"AUTHZBENCH_REQUEST_LOG_DIR": tmp}):
+                server, base_url = _serve(project_mgmt.Handler)
+                self.addCleanup(server.server_close)
+                self.addCleanup(server.shutdown)
+                refs = project_mgmt.public_refs(project_mgmt.Handler.state)
+                status, _ = _request(
+                    f"{base_url}/api/workspaces/{refs['ALPHA_PROJECT_ID']}/work-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+                    "beta_member",
+                    headers={
+                        "x-authzbench-agent-id": "unit-test-agent",
+                        "x-authzbench-run-id": "unit-test-run",
+                        "x-authzbench-task-id": "unit-test-task",
+                    },
+                )
+                self.assertEqual(status, 200)
+
+            log_path = Path(tmp) / "project_mgmt.jsonl"
+            entries = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines()]
+            self.assertTrue(entries)
+            self.assertEqual(entries[-1]["app"], "project_mgmt")
+            self.assertEqual(entries[-1]["actor"], "beta_member")
+            self.assertEqual(entries[-1]["method"], "GET")
+            self.assertEqual(entries[-1]["status"], 200)
+            self.assertEqual(entries[-1]["path"].split("/")[-2], "work-items")
+            self.assertEqual(entries[-1]["agent_id"], "unit-test-agent")
+            self.assertEqual(entries[-1]["run_id"], "unit-test-run")
+            self.assertEqual(entries[-1]["task_id"], "unit-test-task")
+            self.assertEqual(len(entries[-1]["response_body_sha256"]), 64)
+
+    def test_request_log_io_failure_does_not_break_target_response(self) -> None:
+        with tempfile.NamedTemporaryFile() as tmp:
+            with patch.dict("os.environ", {"AUTHZBENCH_REQUEST_LOG_DIR": tmp.name}):
+                server, base_url = _serve(project_mgmt.Handler)
+                self.addCleanup(server.server_close)
+                self.addCleanup(server.shutdown)
+                refs = project_mgmt.public_refs(project_mgmt.Handler.state)
+                status, body = _request(
+                    f"{base_url}/api/projects/{refs['ALPHA_PROJECT_ID']}/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}",
+                    "beta_member",
+                )
+
+        self.assertEqual(status, 200)
+        self.assertEqual(body["viewer"], "beta_member")
 
 
 if __name__ == "__main__":

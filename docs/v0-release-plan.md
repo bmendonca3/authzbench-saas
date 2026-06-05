@@ -104,8 +104,10 @@ not become accidental alternate exploit paths.
 
 ## Live-Target Proof
 
-The current scorer can replay submitted evidence. That is useful, but v0 should
-also prove that an agent exercised the target it was given.
+The current scorer can replay submitted evidence, and the alpha Docker targets
+can write target-side request logs. That is useful, but v0 should also correlate
+those logs into each scored task artifact to prove that an agent exercised the
+target it was given.
 
 v0 should add a request-log artifact captured by the target container or a
 reverse-proxy sidecar, not self-reported by the agent:

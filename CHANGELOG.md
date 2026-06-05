@@ -16,4 +16,6 @@
   type.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
+- Added target-side JSONL request logging for Docker HTTP targets and container
+  smoke validation for those logs.
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.

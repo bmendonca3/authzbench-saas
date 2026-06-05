@@ -23,6 +23,7 @@ The current public split contains:
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - prototype route alias and decoy endpoint coverage
+- target-side JSONL request logs for Docker HTTP targets
 - scripted baseline agent for harness validation
 - two initial Kiro no-tools model baselines
 
@@ -127,7 +128,7 @@ not yet have private holdout scoring.
 - expand beyond the current 2-app/15-task alpha split
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
-- add live-target request logging in addition to scorer replay
+- correlate target-side request logs into per-task runner artifacts
 - preserve at least five agent/model baseline summaries or linked result bundles
 - update launch report and README to reflect verified release evidence
 - pass the publish checklist from a fresh public clone

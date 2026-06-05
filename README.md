@@ -15,6 +15,7 @@ This alpha preview includes:
 - 15 public tasks across BOLA, BFLA, and secure controls
 - seeded tenant/object/org IDs to reduce hardcoded-solution value
 - a prototype route alias and decoy endpoint exercised by public controls
+- target-side JSONL request logs when Docker targets run with the provided Compose file
 - machine-verifiable backend proof and denial-control scoring
 - false-positive controls where the correct answer is no finding
 - structured result artifacts, including scorer-owned replay transcripts
@@ -148,10 +149,19 @@ python3 scripts/container_smoke.py
 docker compose down
 ```
 
+The Docker Compose targets write target-side request logs under
+`captures/request-logs/`. That directory is ignored by Git.
+
+On Linux, set `AUTHZBENCH_DOCKER_UID` and `AUTHZBENCH_DOCKER_GID` if the
+default `1000:1000` Compose user does not match the host user that should own
+generated request logs.
+
 Rendered task contexts include a `target` object with the local base URL,
 container-network base URL, task seed, and `x-authzbench-seed` header name.
 Tool-using agents should send that seed header so live Docker requests match the
-same seeded IDs used by the scorer.
+same seeded IDs used by the scorer. Live agents can also send
+`x-authzbench-run-id`, `x-authzbench-agent-id`, and `x-authzbench-task-id` so
+target-side logs can later be correlated into per-task artifacts.
 
 ## Submission Format
 
@@ -264,8 +274,9 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 ## Current Limits
 
 - The alpha preview has 15 public tasks; a stronger leaderboard should add more private holdout tasks.
-- A prototype route alias and decoy endpoint exist, but route aliases are not
-  randomized yet.
+- A prototype route alias, decoy endpoint, and target-side request logger exist,
+  but route aliases are not randomized yet and request logs are not yet copied
+  into each runner task artifact.
 - The runner executes local agent commands and should be used only with trusted
   commands or inside an isolated environment.
 - Docker container smoke depends on a local Docker daemon.

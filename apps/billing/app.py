@@ -6,6 +6,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from urllib.parse import urlparse
 
+from apps.request_logging import log_request
+
 
 def _id(seed: str, label: str) -> str:
     return hashlib.sha256(f"{seed}:{label}".encode()).hexdigest()[:10]
@@ -164,13 +166,31 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(encoded)
 
+    def _handle_and_send(self, method: str, body: dict[str, Any] | None = None) -> None:
+        seed = self.headers.get("x-authzbench-seed") or "dev"
+        actor = self.headers.get("x-authzbench-actor")
+        response = handle(self._state(), method, self.path, actor, body)
+        log_request(
+            "billing",
+            seed=seed,
+            actor=actor,
+            method=method,
+            path=urlparse(self.path).path,
+            status=response["status"],
+            response_body=response["body"],
+            run_id=self.headers.get("x-authzbench-run-id"),
+            agent_id=self.headers.get("x-authzbench-agent-id"),
+            task_id=self.headers.get("x-authzbench-task-id"),
+        )
+        self._send(response)
+
     def do_GET(self) -> None:
-        self._send(handle(self._state(), "GET", self.path, self.headers.get("x-authzbench-actor")))
+        self._handle_and_send("GET")
 
     def do_PATCH(self) -> None:
         length = int(self.headers.get("content-length", "0") or "0")
         body = json.loads(self.rfile.read(length) or b"{}")
-        self._send(handle(self._state(), "PATCH", self.path, self.headers.get("x-authzbench-actor"), body))
+        self._handle_and_send("PATCH", body)
 
 
 def main() -> int:

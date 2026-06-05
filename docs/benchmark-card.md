@@ -52,6 +52,7 @@ AuthZBench-SaaS does not claim to measure:
 - seeded IDs for tenants, objects, orgs, invoices, and actors
 - deterministic scorer-owned replay transcripts
 - prototype route alias and decoy endpoint controls
+- target-side JSONL request logs for Docker HTTP targets
 - scripted and model baseline summaries
 
 ## Main Metrics
@@ -70,7 +71,8 @@ AuthZBench-SaaS does not claim to measure:
 - Private holdouts are planned but not yet implemented.
 - Route alias and decoy coverage is currently a small alpha prototype, not a
   broad randomized anti-gaming system.
-- Live-target request logging is planned but not yet implemented.
+- Docker HTTP targets write target-side request logs, but those logs are not yet
+  correlated into each runner task artifact.
 - Current model baselines are sparse and include no-tools runs.
 
 ## Ethical And Safety Notes

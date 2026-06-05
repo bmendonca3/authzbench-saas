@@ -11,6 +11,7 @@ results/<run_id>/
     agent.json
     score.json
     transcript.json
+    target-requests.jsonl  # v0 target shape; alpha Docker logs live under captures/request-logs/
 ```
 
 ## `context.json`
@@ -75,6 +76,29 @@ Scorer-owned backend replay transcript. Each entry has:
 - `name`: `proof` or the control name
 - `request`: actor, method, path, and optional body
 - `response`: status and JSON body returned by the benchmark app logic
+
+## Target-Side Request Logs
+
+When the Docker targets are run through the provided Compose file, the target
+apps write JSONL logs under `captures/request-logs/`. Each entry includes:
+
+- `request_id`
+- `timestamp_unix`
+- `app`
+- `seed`
+- `actor`
+- `method`
+- `path`
+- `status`
+- `response_body_sha256`
+- optional `run_id`
+- optional `agent_id`
+- optional `task_id`
+
+The real v0 runner should copy or correlate these target-side logs into
+per-task `target-requests.jsonl` artifacts. The alpha preview keeps them as
+Docker target logs so the mechanism can be tested without pretending it is a
+complete leaderboard proof system.
 
 ## `summary.json`
 

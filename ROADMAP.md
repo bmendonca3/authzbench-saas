@@ -43,6 +43,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add a changelog for task and scorer changes.
 - [x] Add a prototype route alias and decoy endpoint exercised by public
       controls.
+- [x] Add target-side JSONL request logs for Docker HTTP targets.
 - [ ] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
 
@@ -71,7 +72,7 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
 - [ ] Add authorized-allow controls so agents cannot classify every sensitive
       route as a bug.
 - [ ] Expand route aliases and decoy endpoints across apps.
-- [ ] Add target request logs to prove agents exercised the live app.
+- [ ] Correlate target request logs into per-task runner artifacts.
 - [ ] Add benchmark version fields to all run summaries.
 - [ ] Add a v0 task build matrix with public/private allocations per app.
 
@@ -79,7 +80,7 @@ Exit criteria:
 
 - public and private task counts meet the v0 target
 - task manifests validate
-- scorer replay and live-target request logging both work
+- scorer replay and per-task request-log correlation both work
 - public docs clearly separate public-split results from private holdout results
 
 ## Milestone 3: Baseline Credibility

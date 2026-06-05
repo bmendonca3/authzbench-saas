@@ -52,5 +52,6 @@ read-only inspection only.
   for balanced coverage.
 - Add route alias randomization and decoy endpoints.
 - Add an isolated/containerized agent runner for leaderboard-grade submissions.
-- Add request-log or HAR-backed verification to prove the agent actually
-  exercised the live target, not only submitted replayable evidence.
+- Correlate target-side request logs or HAR-backed verification into runner
+  artifacts to prove the agent actually exercised the live target, not only
+  submitted replayable evidence.

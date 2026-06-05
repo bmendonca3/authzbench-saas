@@ -16,8 +16,11 @@ def _request(base_url: str, seed_header: str, seed: str, request_data: dict[str,
     headers = {
         "content-type": "application/json",
         "x-authzbench-actor": str(request_data["actor"]),
+        "x-authzbench-agent-id": "live-scripted-baseline",
+        "x-authzbench-run-id": "live-scripted-baseline",
         seed_header: seed,
     }
+    headers.update({str(key): str(value) for key, value in request_data.get("headers", {}).items()})
     if body is not None:
         data = json.dumps(body).encode()
     request = urllib.request.Request(
@@ -40,6 +43,7 @@ def _exercise_live_target(context: dict[str, Any], submission: dict[str, Any]) -
     seed = target["seed"]
     for finding in submission.get("findings", []):
         for evidence in finding.get("evidence", []):
+            evidence["request"]["headers"] = evidence["request"].get("headers", {}) | {"x-authzbench-task-id": context["task_id"]}
             response = _request(base_url, seed_header, seed, evidence["request"])
             evidence["live_response"] = response
             if response["status"] >= 400:
