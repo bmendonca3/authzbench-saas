@@ -76,6 +76,12 @@ The first repeated current model family is Qwen through Kiro. The two
 `qwen3-coder-next` no-tools runs are public-split baselines only: both showed
 strong control restraint and zero control false-report findings. Run 2 still had
 one failed denial-control score, and neither run proved vulnerable exploits.
-They improve model-baseline credibility while still leaving four repeated
-model/agent families, a true tool-agent baseline, and private-holdout
-leaderboard submissions missing.
+
+The second repeated current model family is Sonnet through Kiro. The two
+`claude-sonnet-4.6` no-tools runs are also public-split baselines only: both
+passed all 26 controls and proved 14 of 18 vulnerable exploit replays, but only
+3 of 18 vulnerable tasks fully passed because boundary reasoning was weak at
+`0.1667`. They kept a zero false-positive rate on controls and improve
+model-baseline credibility while still leaving three repeated model/agent
+families, a true tool-agent baseline, and private-holdout leaderboard
+submissions missing.

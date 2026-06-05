@@ -339,22 +339,26 @@ Harness sanity checks:
 
 Tracked no-tools model baselines:
 
-| Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
-| --- | ---: | ---: | ---: | ---: |
-| Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
-| Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
-| Kiro `qwen3-coder-next` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` no-tools current run 2 | 44 | 25 | 0.0 | 0.0385 |
+| Baseline | Public tasks | Passed | Exploit-proven rate | Boundary reasoning | False-positive rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 |
+| Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | not tracked | 0.1111 |
+| Kiro `claude-sonnet-4.6` no-tools current run 1 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools current run 2 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
+| Kiro `qwen3-coder-next` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` no-tools current run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
 
 The scripted and live scripted baselines are harness checks, not model results.
 The current live HTTP run correlates target-side requests for the 18 vulnerable
 tasks; secure controls still have no live requests in that deterministic harness
 because it only exercises submitted findings. The 15-task Kiro snapshots were
 run on the earlier alpha split and should be rerun for any release tag. The
-current Qwen pair is repeated public-split evidence only, not private-holdout or
-leaderboard-eligible evidence. The baseline registry is intentionally not
-v0-ready yet because the current public split still lacks four more repeated
-real model or agent families and a tool-agent baseline.
+current Sonnet and Qwen pairs are repeated public-split evidence only, not
+private-holdout or leaderboard-eligible evidence. The baseline registry is
+intentionally not v0-ready yet because the current public split still lacks
+three more repeated real model or agent families and a tool-agent baseline.
+The Sonnet runs proved many vulnerable replays, but weak boundary reasoning kept
+their full vulnerable-task pass count to 3 of 18 in both runs.
 
 ## Private Holdouts
 

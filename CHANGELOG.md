@@ -45,6 +45,8 @@
   tool-agent baseline gate.
 - Added two current 44-task Kiro `qwen3-coder-next` no-tools model baseline
   summaries and registered them as the first repeated public model family.
+- Added two current 44-task Kiro `claude-sonnet-4.6` no-tools model baseline
+  summaries and registered them as the second repeated public model family.
 - Hardened public validation so lightweight checks do not require Docker
   Compose unless container smoke validation is requested.
 - Added a public-safe private holdout summary utility so maintainers can produce

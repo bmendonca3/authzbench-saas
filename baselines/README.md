@@ -34,6 +34,11 @@ not that the v0 baseline bar is complete.
   through the Kiro no-tools adapter.
 - `kiro-qwen3-coder-next-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
+- `kiro-claude-sonnet-4.6-current-public-44-run1-summary.json` and
+  `kiro-claude-sonnet-4.6-current-public-44-run2-summary.json`: repeated
+  current 44-task public split no-tools Sonnet runs through the Kiro adapter.
+  They are public-split model baselines, not private-holdout or
+  leaderboard-eligible submissions.
 - `kiro-qwen3-coder-next-current-public-44-run1-summary.json` and
   `kiro-qwen3-coder-next-current-public-44-run2-summary.json`: repeated current
   44-task public split no-tools Qwen runs through the Kiro adapter. They are

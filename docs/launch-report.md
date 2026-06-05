@@ -28,8 +28,8 @@ The current public split contains:
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
   `--target-log-dir` is supplied
 - scripted baseline agent for harness validation
-- legacy Kiro no-tools snapshots plus one repeated current public Qwen no-tools
-  baseline family
+- legacy Kiro no-tools snapshots plus two repeated current public no-tools
+  baseline families
 
 ## Task Mapping
 
@@ -136,14 +136,16 @@ Tracked summary:
 
 Initial model baselines were also run through the Kiro no-tools adapter.
 
-| Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
-| --- | ---: | ---: | ---: | ---: |
-| Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 |
-| Heuristic live HTTP prober | 44 | 33 | 0.6111 | 0.0 |
-| Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
-| Kiro `qwen3-coder-next` legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
-| Kiro `qwen3-coder-next` current run 1 | 44 | 26 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` current run 2 | 44 | 25 | 0.0 | 0.0385 |
+| Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Live HTTP scripted baseline | 44 | 44 | 1.0 | 1.0 | 0.0 |
+| Heuristic live HTTP prober | 44 | 33 | 0.6111 | 0.6667 | 0.0 |
+| Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 |
+| Kiro `qwen3-coder-next` legacy snapshot | 15 | 8 | 0.0 | not tracked | 0.1111 |
+| Kiro `claude-sonnet-4.6` current run 1 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
+| Kiro `claude-sonnet-4.6` current run 2 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
+| Kiro `qwen3-coder-next` current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` current run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
 
 Tracked summaries:
 
@@ -151,6 +153,8 @@ Tracked summaries:
 - [heuristic-live-http-prober-public-44-summary.json](../baselines/heuristic-live-http-prober-public-44-summary.json)
 - [kiro-claude-sonnet-4.6-full-summary.json](../baselines/kiro-claude-sonnet-4.6-full-summary.json)
 - [kiro-qwen3-coder-next-full-summary.json](../baselines/kiro-qwen3-coder-next-full-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-44-run1-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-44-run1-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-44-run2-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-44-run2-summary.json)
 - [kiro-qwen3-coder-next-current-public-44-run1-summary.json](../baselines/kiro-qwen3-coder-next-current-public-44-run1-summary.json)
 - [kiro-qwen3-coder-next-current-public-44-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-44-run2-summary.json)
 
@@ -168,15 +172,18 @@ The Kiro snapshots are public-split baselines from the earlier 15-task alpha
 split, not private leaderboard results. They should be rerun on the 44-task split
 before any release tag.
 
-The current Qwen runs are the first repeated 44-task public model baseline
-family. They are useful model-comparison evidence, but they are public-only
-no-tools runs and are not leaderboard eligible.
+The current Sonnet and Qwen runs are the first two repeated 44-task public model
+baseline families. They are useful model-comparison evidence, but they are
+public-only no-tools runs and are not leaderboard eligible. The Sonnet runs
+show why AuthZBench-SaaS separates exploit replay from boundary reasoning: both
+runs proved 14 of 18 vulnerable replays, but only 3 vulnerable tasks fully
+passed because boundary reasoning remained weak at `0.1667`.
 
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
 consistency checks but intentionally reports `v0_baseline_ready: false` because
-the current public split still lacks four more repeated real model or agent
+the current public split still lacks three more repeated real model or agent
 families and a tool-agent baseline.
 
 Leaderboard submission shape is now validated by
