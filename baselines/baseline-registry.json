@@ -1,0 +1,75 @@
+{
+  "schema_version": "baseline-registry-v1",
+  "public_split": {
+    "task_count": 44,
+    "vulnerable_task_count": 18,
+    "control_task_count": 26,
+    "denial_control_task_count": 16,
+    "authorized_allow_control_task_count": 10
+  },
+  "v0_requirements": {
+    "min_real_model_families": 5,
+    "min_runs_per_serious_baseline": 2,
+    "requires_tool_agent_baseline": true
+  },
+  "baselines": [
+    {
+      "id": "scripted-sanity-public-44",
+      "summary_path": "scripted-baseline-summary.json",
+      "kind": "harness_check",
+      "release_suitability": "current_public_harness_check",
+      "leaderboard_eligible": false,
+      "run_count": 1,
+      "expected_harness_type": "scripted",
+      "expected_agent": "scripted_baseline_agent",
+      "expected_model": "deterministic-script",
+      "expected_task_count": 44,
+      "requires_rerun_before_v0": true,
+      "notes": "Deterministic harness sanity check. Useful for validating scorer and manifests, but not a model result."
+    },
+    {
+      "id": "live-scripted-legacy-15",
+      "summary_path": "live-scripted-baseline-summary.json",
+      "kind": "harness_check",
+      "release_suitability": "legacy_snapshot",
+      "leaderboard_eligible": false,
+      "run_count": 1,
+      "expected_harness_type": "scripted-live-http",
+      "expected_agent": "live_scripted_baseline_agent",
+      "expected_model": "deterministic-live-http-script",
+      "expected_task_count": 15,
+      "requires_rerun_before_v0": true,
+      "notes": "Legacy 15-task live HTTP harness check. Must be rerun on the current public split before any v0 tag."
+    },
+    {
+      "id": "kiro-claude-sonnet-4-6-legacy-15",
+      "summary_path": "kiro-claude-sonnet-4.6-full-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-claude-sonnet",
+      "release_suitability": "legacy_snapshot",
+      "leaderboard_eligible": false,
+      "run_count": 1,
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-sonnet-4.6",
+      "expected_task_count": 15,
+      "requires_rerun_before_v0": true,
+      "notes": "Initial no-tools model snapshot from the earlier 15-task alpha split. Not repeated and not leaderboard eligible."
+    },
+    {
+      "id": "kiro-qwen3-coder-next-legacy-15",
+      "summary_path": "kiro-qwen3-coder-next-full-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-qwen",
+      "release_suitability": "legacy_snapshot",
+      "leaderboard_eligible": false,
+      "run_count": 1,
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "qwen3-coder-next",
+      "expected_task_count": 15,
+      "requires_rerun_before_v0": true,
+      "notes": "Initial no-tools model snapshot from the earlier 15-task alpha split. Not repeated and not leaderboard eligible."
+    }
+  ]
+}

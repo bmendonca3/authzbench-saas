@@ -24,6 +24,8 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - result and leaderboard schema documentation
 - public holdout strategy documentation
 - v0 task build matrix documentation
+- baseline registry validation that separates harness checks, legacy snapshots,
+  current public split summaries, and leaderboard eligibility
 - GitHub Actions workflow for public validation gates, including Docker runtime
   smoke
 - scripted and model baseline summaries
@@ -35,6 +37,7 @@ The following checks have been run successfully on the current local scaffold:
 ```bash
 python3 -Wd -m unittest discover -s tests
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
+python3 scripts/validate_baseline_registry.py
 python3 -m compileall -q authzbench apps tests scripts
 docker compose config
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
@@ -61,6 +64,8 @@ Ready:
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
+- baseline registry exists and passes consistency validation while explicitly
+  reporting `v0_baseline_ready: false`
 - reproducible fresh-clone validation script exists
 - private holdout pack validator exists for ignored local holdouts, including
   app coverage, control subtype mix, public ID/seed overlap checks, private
@@ -82,6 +87,8 @@ Still required before the real v0 or a serious leaderboard:
   variation implemented in a real non-public holdout pack
 - leaderboard-grade live-agent validation of per-task request-log correlation in
   addition to deterministic replay and CI smoke checks
+- repeated model baselines on the current 44-task public split
+- at least one current public tool-agent baseline
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs

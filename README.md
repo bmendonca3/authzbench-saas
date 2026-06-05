@@ -90,10 +90,11 @@ Run the local validation suite:
 python3 scripts/validate_public.py --include-scripted-baseline
 ```
 
-The validation script runs unit tests, manifest validation, compile checks,
-Docker Compose config validation, a Git-tracked privacy scan, and the
-deterministic scripted baseline. Add `--include-container-smoke` when a Docker
-daemon is available and you want the release-grade runtime gate:
+The validation script runs unit tests, manifest validation, baseline-registry
+validation, compile checks, Docker Compose config validation, a Git-tracked
+privacy scan, and the deterministic scripted baseline. Add
+`--include-container-smoke` when a Docker daemon is available and you want the
+release-grade runtime gate:
 
 ```bash
 python3 scripts/validate_public.py \
@@ -300,6 +301,13 @@ not be reported.
 ## Baselines
 
 Tracked alpha-preview summaries live in [`baselines/`](baselines).
+The registry at [`baselines/baseline-registry.json`](baselines/baseline-registry.json)
+labels each summary as a harness check, model baseline, current public split, or
+legacy snapshot. Validate it with:
+
+```bash
+python3 scripts/validate_baseline_registry.py
+```
 
 Harness sanity checks:
 
@@ -317,7 +325,9 @@ Initial no-tools model baselines:
 
 The scripted baseline is a harness check, not a model result. The live scripted
 and Kiro snapshots were run on the earlier 15-task split and should be rerun for
-any release tag.
+any release tag. The baseline registry is intentionally not v0-ready yet because
+the current public split still lacks repeated real model families and a
+tool-agent baseline.
 
 ## Private Holdouts
 
@@ -336,6 +346,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 - [`docs/result-schema.md`](docs/result-schema.md): runner artifact schema
 - [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): suggested leaderboard columns
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use, scope, and known limits
+- [`docs/baseline-credibility.md`](docs/baseline-credibility.md): baseline registry and v0 baseline bar
 - [`docs/launch-report.md`](docs/launch-report.md): alpha preview report and known limits
 - [`docs/v0-release-plan.md`](docs/v0-release-plan.md): concrete criteria for the real v0 release
 - [`docs/v0-task-build-matrix.md`](docs/v0-task-build-matrix.md): concrete public/private task allocation plan

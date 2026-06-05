@@ -27,6 +27,8 @@
   and manual dispatch, now including Docker container smoke validation.
 - Hardened private-holdout validation with non-empty route/decoy variant
   metadata checks and behavioral public-task structural-copy detection.
+- Added a baseline registry and validator so legacy snapshots, harness checks,
+  repeated runs, and leaderboard eligibility are machine-checkable.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

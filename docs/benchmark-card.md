@@ -80,6 +80,9 @@ AuthZBench-SaaS does not claim to measure:
   correlate them into per-task artifacts when `--target-log-dir` is supplied.
   Leaderboard-grade Docker/agent isolation is still planned.
 - Current model baselines are sparse and include no-tools runs.
+- Baseline registry validation is present, but the registry intentionally reports
+  that v0 baseline evidence is not ready yet because current repeated model
+  families and a tool-agent baseline are still missing.
 
 ## Ethical And Safety Notes
 

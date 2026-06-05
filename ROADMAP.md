@@ -151,6 +151,9 @@ inspection.
 - [ ] Add leaderboard examples that do not rank by blended score alone.
 - [ ] Preserve one public baseline report per serious model/agent family.
 - [ ] Re-run legacy model baselines after task-set changes before release tags.
+- [x] Add a baseline registry validator that labels harness checks, legacy
+      snapshots, current public-split runs, repeated runs, and leaderboard
+      eligibility.
 - [x] Add v0-candidate metrics that avoid agent-independent control credit on
       vulnerable tasks.
 - [ ] Decide whether to make v0-candidate metrics the default release scoring

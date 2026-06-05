@@ -77,3 +77,9 @@ A leaderboard submission should include:
 - per-task `agent.json`
 - agent/model metadata
 - benchmark version and commit SHA
+- baseline registry entry or submission metadata declaring whether the run is a
+  harness check, no-tools model baseline, or tool-agent baseline
+
+One-off model runs and legacy snapshots should be visible as evidence, but they
+should not be leaderboard eligible until they are repeated on the current scored
+split and pass the published false-positive threshold.

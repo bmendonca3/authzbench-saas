@@ -150,20 +150,28 @@ These 15-task snapshots are public-split baselines from the earlier alpha split,
 not private leaderboard results. They should be rerun on the 44-task split
 before any release tag.
 
+Baseline credibility is now tracked by
+[`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
+`python3 scripts/validate_baseline_registry.py`. The registry currently passes
+consistency checks but intentionally reports `v0_baseline_ready: false` because
+the current public split still lacks repeated real model families and a
+tool-agent baseline.
+
 ## Publication Status
 
 The repository is an alpha public scaffold, not a finished public leaderboard.
 It is already useful as a local integration and regression suite for agent
 builders who want to test authorization-bug proof workflows. It has enough
 structure for external reviewers to inspect the methodology and integrate a
-custom agent command. It now has initial public-split model baselines, but does
-not yet have private holdout scoring.
+custom agent command. It now has initial legacy 15-task public-alpha model
+snapshots, but does not yet have private holdout scoring.
 
 ## Release Criteria For The Real v0
 
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs
+- make the baseline registry `v0_baseline_ready: true`
 - preserve at least five agent/model baseline summaries or linked result bundles
 - update launch report and README to reflect verified release evidence
 - pass the publish checklist from a fresh public clone

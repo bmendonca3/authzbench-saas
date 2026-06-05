@@ -3,15 +3,28 @@
 Tracked baseline files summarize reproducible runs without committing the full
 `results/` directory.
 
+The machine-readable registry is
+[`baseline-registry.json`](baseline-registry.json). Validate it with:
+
+```bash
+python3 scripts/validate_baseline_registry.py
+```
+
+The registry is an honesty gate. It separates current public-split runs from
+legacy snapshots, harness checks from model baselines, and one-off runs from
+leaderboard-eligible evidence. It can pass while reporting
+`v0_baseline_ready: false`; that means the tracked baseline files are consistent,
+not that the v0 baseline bar is complete.
+
 ## Current Baselines
 
 - `scripted-baseline-summary.json`: deterministic harness sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises
   vulnerable proof requests against the live Docker targets before submitting.
-- `kiro-claude-sonnet-4.6-full-summary.json`: full public split through the
-  Kiro no-tools adapter.
-- `kiro-qwen3-coder-next-full-summary.json`: full public split through the Kiro
-  no-tools adapter.
+- `kiro-claude-sonnet-4.6-full-summary.json`: legacy 15-task alpha snapshot
+  through the Kiro no-tools adapter.
+- `kiro-qwen3-coder-next-full-summary.json`: legacy 15-task alpha snapshot
+  through the Kiro no-tools adapter.
 
 The scripted baseline summary should match the current public split. The live
 scripted and Kiro summaries may temporarily be older alpha snapshots when the

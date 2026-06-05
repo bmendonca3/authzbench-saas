@@ -213,6 +213,8 @@ returns no findings.
 - v0 task build matrix with public and private allocations per app.
 - Leaderboard schema.
 - Baseline report with commands and exact result files.
+- Baseline registry that marks each run as a harness check, model baseline, tool
+  agent baseline, current public split, or legacy snapshot.
 - Publish checklist with validation commands and privacy checks.
 - Changelog or release notes for task/scorer changes.
 
@@ -250,6 +252,7 @@ Do not tag the real `v0` until all required gates pass:
 - at least five distinct real model or agent families are present or linked,
   excluding scripted/live-scripted harness checks
 - at least one baseline uses a tool-equipped agent harness
+- baseline registry validation passes and reports `v0_baseline_ready: true`
 - route alias support is implemented and exercised by at least one task
 - at least one decoy endpoint is present and covered by a secure control
 - private holdout validation reports sufficient route and decoy variant metadata
