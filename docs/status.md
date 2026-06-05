@@ -30,9 +30,9 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
   target request-log correlation for the 18 vulnerable tasks
 - v0 release-gate audit script that reports `v0_ready: false` with explicit
   unmet gates while the repo is still alpha/pre-v0
-- release evidence registry that keeps local validation, fresh-clone validation,
-  remote CI, Docker smoke, privacy scan, release-note separation, and protected
-  private-holdout execution false until a real v0 candidate satisfies them
+- release evidence registry for local validation, fresh-clone validation, remote
+  CI, Docker smoke, privacy scan, release-note separation, and protected
+  private-holdout execution
 - leaderboard submission validation with a tracked public harness-check example
   that is schema-valid, cross-checked against a source run summary, and not
   leaderboard eligible
@@ -107,9 +107,9 @@ Ready:
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
   still fails honestly
-- strict v0 readiness also depends on `docs/release-evidence.json`; six
-  release-evidence checks now pass for the current alpha/pre-v0 checkpoint, but
-  protected private-holdout execution evidence is still false
+- strict v0 readiness also depends on `docs/release-evidence.json`; the release
+  evidence checks now pass for the current alpha/pre-v0 checkpoint, while
+  sectional reviews still keep strict v0 false
 - leaderboard submission validator exists and is part of public validation
 - tracked leaderboard examples are cross-checked against source run summaries
   instead of trusting hand-entered aggregate rows
@@ -134,7 +134,7 @@ Ready:
 Still required before the real v0 or a serious leaderboard:
 
 - larger private holdout pack outside public Git history
-- real non-public holdout tasks and protected execution; the local rehearsal
+- continued hardening of real non-public holdout tasks; the local rehearsal
   generator is only a workflow test
 - actual route-alias randomization and additional private-holdout decoy
   variation implemented in a real non-public holdout pack
@@ -146,6 +146,6 @@ Still required before the real v0 or a serious leaderboard:
 - remote CI status must stay explicit and passing before any real v0 tag
 - keep `docs/release-evidence.json` tied to exact command, commit, CI, and
   artifact evidence as later release checks are rerun
-- protected private-holdout execution evidence still needs a release-grade
-  artifact before the final readiness field can be marked true
+- private live/tool-agent holdout execution with target-request correlation still
+  needs release-grade evidence before any serious leaderboard claim
 - post-push clone check from public `github.com` before tags or releases

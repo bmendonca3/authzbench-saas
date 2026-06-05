@@ -31,7 +31,7 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         self.assertTrue(gates["baseline_credibility"]["passed"], result)
         self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
         self.assertFalse(gates["sectional_reviews"]["passed"], result)
-        self.assertFalse(gates["release_verification_evidence"]["passed"], result)
+        self.assertTrue(gates["release_verification_evidence"]["passed"], result)
         self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
         self.assertEqual(gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"], 1, result)
         self.assertEqual(
@@ -40,10 +40,6 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             result,
         )
         self.assertTrue(any("not all required review sections" in item for item in gates["sectional_reviews"]["unmet"]), result)
-        self.assertTrue(
-            any("protected_private_holdout_execution_available" in item for item in gates["release_verification_evidence"]["unmet"]),
-            result,
-        )
 
     def test_allow_incomplete_cli_returns_success_for_alpha_audit(self) -> None:
         completed = subprocess.run(

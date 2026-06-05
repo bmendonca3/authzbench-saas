@@ -2,8 +2,8 @@
   "schema_version": "release-evidence-v1",
   "release_candidate": {
     "version_label": "alpha/pre-v0",
-    "commit_sha": "c756e64e53ac43b4c8b028f0ae7683df1bd4ea4a",
-    "notes": "Current public repository is still alpha/pre-v0. Several release-evidence checks now pass for this checkpoint, but protected private-holdout execution evidence and remaining sectional reviews are still incomplete."
+    "commit_sha": "fa8ec07467273bae62ba1f4c132289a3f9537b4b",
+    "notes": "Current public repository is still alpha/pre-v0. Required release-evidence checks now pass for this checkpoint, but remaining sectional reviews are still incomplete."
   },
   "required_for_v0": {
     "local_public_validation_passed": true,
@@ -12,7 +12,7 @@
     "docker_container_smoke_passed": true,
     "privacy_scan_passed": true,
     "release_notes_separate_public_and_private_results": true,
-    "protected_private_holdout_execution_available": false
+    "protected_private_holdout_execution_available": true
   },
   "evidence": {
     "local_public_validation_command": "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
@@ -22,6 +22,7 @@
     "latest_remote_ci_run_id": "27032485748",
     "privacy_scan_source": "validate_public.py tracked-file scan plus staged diff scans before commit c756e64e53ac43b4c8b028f0ae7683df1bd4ea4a",
     "docker_container_smoke_source": "local validate_public run with --include-container-smoke passed and docker compose project authzbench-public-smoke-83191 was torn down",
+    "protected_private_holdout_execution_source": "docs/protected-private-execution-2026-06-05.redacted.json plus ignored raw bundle under results/protected-private-haiku; agent ran from a temporary empty workspace and received rendered context only",
     "release_notes_source": [
       "README.md",
       "docs/status.md",
@@ -29,6 +30,6 @@
       "docs/launch-report.md",
       "CHANGELOG.md"
     ],
-    "notes": "Alpha validation may pass with --allow-incomplete; strict v0 evidence remains false until protected private-holdout execution evidence and all required sectional reviews pass."
+    "notes": "Alpha validation may pass with --allow-incomplete; strict v0 still remains false until all required sectional reviews pass."
   }
 }

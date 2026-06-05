@@ -186,9 +186,7 @@ benchmark until the strict release gate passes.
 
 Remaining major gaps:
 
-- protected/isolated live-agent execution for leaderboard runs
-- release evidence fields with supporting commands, commits, CI links, and
-  privacy checks
+- private live/tool-agent leaderboard execution with target-request correlation
 - final sectional panel review
 
 Run:

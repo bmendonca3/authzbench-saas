@@ -181,7 +181,7 @@ This milestone protects against gaming and accidental leakage.
 - [ ] Randomize harmless response details where semantics are unchanged.
 - [ ] Add hidden oracle details for private holdouts.
 - [ ] Add isolated or containerized agent execution for leaderboard runs.
-- [ ] Add hosted, maintainer-run, or otherwise protected private-holdout
+- [x] Add hosted, maintainer-run, or otherwise protected private-holdout
       execution so participants do not receive readable holdout manifests.
 - [x] Add privacy and secret scanning to the release validation script and
       checklist.
