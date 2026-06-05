@@ -79,11 +79,42 @@ def resolve_templates(value: Any, refs: dict[str, str]) -> Any:
     return value
 
 
+def _request_headers(request: dict[str, Any]) -> dict[str, str]:
+    raw_headers = request.get("headers") or {}
+    if not isinstance(raw_headers, dict):
+        raise ValueError("request.headers must be an object when supplied")
+    return {str(key).lower(): str(value) for key, value in raw_headers.items()}
+
+
+def _actor_from_bearer_token(app: Any, state: dict[str, Any], token: str) -> str | None:
+    if hasattr(app, "public_actors"):
+        for actor_name, actor_data in app.public_actors(state).items():
+            if actor_data.get("token") == token:
+                return str(actor_name)
+    return None
+
+
+def _request_actor(app: Any, state: dict[str, Any], request: dict[str, Any]) -> str | None:
+    actor = request.get("actor")
+    actor_name = str(actor) if actor is not None else None
+    authorization = _request_headers(request).get("authorization", "")
+    prefix = "Bearer "
+    if not authorization.startswith(prefix):
+        return actor_name
+
+    token_actor = _actor_from_bearer_token(app, state, authorization[len(prefix):].strip())
+    if token_actor is None:
+        return None
+    if actor_name is not None and actor_name != token_actor:
+        return None
+    return token_actor
+
+
 def replay_request(task: dict[str, Any], request: dict[str, Any], state: dict[str, Any] | None = None) -> dict[str, Any]:
     app = load_app(task["app"])
     if state is None:
         state = app.seed_state(task["seed"])
-    actor = request.get("actor")
+    actor = _request_actor(app, state, request)
     method = str(request.get("method", "GET")).upper()
     path = request.get("path")
     body = request.get("body") or {}

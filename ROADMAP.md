@@ -107,6 +107,8 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
 - [x] Add deeper invite/membership and audit/settings boundaries.
 - [x] Add at least 10 authorized-allow controls so agents cannot classify every
       sensitive route as a bug.
+- [x] Add first-class scored bearer-token replay for the API-token target while
+      preserving actor-compatible deterministic replay.
 - [ ] Expand route aliases and decoy endpoints across apps.
 - [ ] Harden per-task request-log correlation for leaderboard-grade live-agent
       runs and Docker CI.

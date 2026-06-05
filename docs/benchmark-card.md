@@ -71,8 +71,8 @@ AuthZBench-SaaS does not claim to measure:
 - The alpha split is small.
 - Public tasks are inspectable and should not support strong leaderboard claims.
 - Private holdouts are planned but not yet implemented.
-- The API-token target supports seeded bearer-token HTTP requests, but scorer
-  replay is still actor-compatible for deterministic local evaluation.
+- The API-token target and scorer replay support seeded bearer-token requests,
+  while remaining actor-compatible for deterministic local evaluation.
 - Route alias and decoy coverage is currently a small alpha prototype, not a
   broad randomized anti-gaming system.
 - Docker HTTP targets write target-side request logs, and the alpha runner can

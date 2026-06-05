@@ -35,6 +35,8 @@
   authorized-allow controls.
 - Added scorer support for control request bodies so write and invite controls
   can be replayed accurately.
+- Added scorer support for seeded API-token bearer evidence while preserving
+  actor-compatible deterministic replay.
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.
 - Added `control_type` to public secure-control manifests and runner summaries
   so denial controls and authorized-allow controls are tracked separately.

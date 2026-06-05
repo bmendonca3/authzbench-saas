@@ -312,10 +312,9 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 ## Current Limits
 
 - The alpha preview has 44 public tasks; a stronger leaderboard should add more task variants, route aliases, and private holdout tasks.
-- The API-token target supports seeded `Authorization: Bearer ...` HTTP
-  requests, while scorer replay remains actor-compatible for deterministic
-  local evaluation. The real v0 should make bearer-token replay a first-class
-  scored path.
+- The API-token target and scorer replay both support seeded
+  `Authorization: Bearer ...` evidence while remaining actor-compatible for
+  deterministic local evaluation.
 - A prototype route alias, decoy endpoint, target-side request logger, and
   runner-side request-log correlation path exist, but route aliases are not
   randomized yet and live-target proof still needs Docker-backed CI and broader

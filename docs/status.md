@@ -73,7 +73,6 @@ Still required before the real v0 or a serious leaderboard:
 - larger private holdout pack outside public Git history
 - real non-public holdout tasks and protected execution; the local rehearsal
   generator is only a workflow test
-- first-class scored bearer-token replay for the API-token target
 - route alias expansion and randomization
 - Docker-backed validation of per-task request-log correlation in addition to
   deterministic replay

@@ -174,9 +174,8 @@ not yet have private holdout scoring.
   larger unpublished holdout pack is still needed for a finished leaderboard.
 - The runner uses process timeout bounds, but not containerized network egress
   enforcement yet.
-- The API-token target supports seeded bearer-token HTTP requests, but scorer
-  replay is still actor-compatible. First-class scored bearer-token replay is a
-  real v0 hardening item.
+- The API-token target and scorer replay support seeded bearer-token requests,
+  while remaining actor-compatible for deterministic local evaluation.
 - Docker Compose config validation passes locally. Docker container runtime
   smoke requires a local Docker daemon and should be rerun before release tags.
 - HAR browser capture is not implemented yet; backend replay transcripts are

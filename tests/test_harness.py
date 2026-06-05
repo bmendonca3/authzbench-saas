@@ -100,6 +100,102 @@ class HarnessTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
 
+    def test_api_token_bearer_evidence_scores_full_credit(self) -> None:
+        task = load_json(ROOT / "tasks/api_tokens/tok_cross_tenant_secret_read.json")
+        context = build_context(task)
+        refs = context["refs"]
+        token = context["actors"]["meridian_read_token"]["token"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "token_cross_tenant_secret_read",
+                    "boundary": {
+                        "attacker_actor": "meridian_read_token",
+                        "victim_tenant": "helio",
+                        "required_scope": "secrets:read",
+                    },
+                    "impact": "A Meridian read token can read Helio tenant secret material.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "method": "GET",
+                                "path": f"/api/secrets/{refs['HELIO_SECRET_ID']}",
+                                "headers": {"Authorization": f"Bearer {token}"},
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertTrue(result["passed"], result)
+        proof = [entry for entry in result["transcript"] if entry["name"] == "proof"][0]
+        self.assertEqual(proof["request"]["headers"]["Authorization"], f"Bearer {token}")
+
+    def test_api_token_unknown_bearer_evidence_fails_closed(self) -> None:
+        task = load_json(ROOT / "tasks/api_tokens/tok_cross_tenant_secret_read.json")
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "token_cross_tenant_secret_read",
+                    "boundary": {
+                        "attacker_actor": "meridian_read_token",
+                        "victim_tenant": "helio",
+                        "required_scope": "secrets:read",
+                    },
+                    "impact": "A Meridian read token can read Helio tenant secret material.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "method": "GET",
+                                "path": f"/api/secrets/{refs['HELIO_SECRET_ID']}",
+                                "headers": {"Authorization": "Bearer not-a-seeded-token"},
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+
+    def test_api_token_actor_and_bearer_must_match(self) -> None:
+        task = load_json(ROOT / "tasks/api_tokens/tok_cross_tenant_secret_read.json")
+        context = build_context(task)
+        refs = context["refs"]
+        token = context["actors"]["helio_read_token"]["token"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "token_cross_tenant_secret_read",
+                    "boundary": {
+                        "attacker_actor": "meridian_read_token",
+                        "victim_tenant": "helio",
+                        "required_scope": "secrets:read",
+                    },
+                    "impact": "A Meridian read token can read Helio tenant secret material.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "meridian_read_token",
+                                "method": "GET",
+                                "path": f"/api/secrets/{refs['HELIO_SECRET_ID']}",
+                                "headers": {"Authorization": f"Bearer {token}"},
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+
     def test_boundary_mismatch_loses_boundary_reasoning_credit(self) -> None:
         task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json")
         refs = build_context(task)["refs"]

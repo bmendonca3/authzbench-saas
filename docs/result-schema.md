@@ -74,8 +74,13 @@ boundary.
 Scorer-owned backend replay transcript. Each entry has:
 
 - `name`: `proof` or the control name
-- `request`: actor, method, path, and optional body
+- `request`: actor, method, path, optional headers, and optional body
 - `response`: status and JSON body returned by the benchmark app logic
+
+For API-token tasks, scorer replay accepts either the legacy `actor` field or a
+seeded bearer token in `request.headers.Authorization`. If both are present,
+they must resolve to the same seeded actor; unknown or mismatched bearer tokens
+fail closed during replay.
 
 ## Target-Side Request Logs
 
