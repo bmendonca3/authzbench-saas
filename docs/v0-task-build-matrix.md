@@ -70,3 +70,13 @@ least 12 vulnerable tasks, at least 8 controls, all six app families, no public
 task ID or seed reuse, at least 4 denial controls, and at least 4
 authorized-allow controls. The preferred v0 holdout count is 24, with 12 private
 controls in the target split above.
+
+For public-safe release evidence, generate only a redacted count summary:
+
+```bash
+python3 scripts/summarize_holdout_pack.py --output docs/private-holdout-summary.redacted.example.json
+```
+
+Do not commit the private holdout manifests, raw validation diagnostics, or
+private execution artifacts. The summary should prove the shape and Git-tracking
+status without revealing private task IDs, seeds, routes, or oracle details.

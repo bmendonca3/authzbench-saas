@@ -51,6 +51,20 @@ Maintainers can validate an ignored local pack with:
 python3 scripts/validate_holdout_pack.py
 ```
 
+For release evidence or internal review packets, maintainers can emit a
+public-safe count summary without exposing private task bodies:
+
+```bash
+python3 scripts/summarize_holdout_pack.py \
+  --output docs/private-holdout-summary.redacted.example.json
+```
+
+Only publish a summary when it is count-level and redacted. It must not include
+task IDs, seeds, route paths, oracle bodies, private diagnostics, raw run
+artifacts, or local file paths. The summary is useful as supporting evidence
+that an ignored private pack exists and passes shape checks; it is not a
+substitute for protected private execution.
+
 They can also generate an ignored local rehearsal pack to verify the private
 pack workflow end to end:
 
@@ -73,6 +87,15 @@ manifest is treated as rehearsal only when it carries the generator-style
 rehearsal note plus rehearsal ID and seed prefixes. When rehearsal manifests or
 public-structure fingerprints are present, the validator reports warnings and
 sets `leaderboard_suitable: false`.
+
+The redacted summary utility wraps the same validator and reports only:
+
+- total manifest, vulnerable, control, denial-control, and authorized-allow
+  counts
+- app coverage, max tasks per app, route-variant count, and decoy-variant count
+- whether rehearsal manifests or public structural fingerprints were present
+- whether any private holdout manifests are tracked by Git
+- counts of validation errors and warnings, not the private diagnostics
 
 Default v0-shape validation requires:
 

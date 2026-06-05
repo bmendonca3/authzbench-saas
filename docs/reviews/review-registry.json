@@ -56,9 +56,10 @@
       "summary_paths": [
         "2026-06-05-holdout-rehearsal-panel-summary.md",
         "2026-06-05-holdout-anti-gaming-panel-summary.md",
-        "2026-06-05-route-alias-decoy-panel-summary.md"
+        "2026-06-05-route-alias-decoy-panel-summary.md",
+        "2026-06-05-private-holdout-summary-panel-summary.md"
       ],
-      "notes": "Holdout workflow and anti-gaming checks have alpha review, but real protected private holdouts are not present."
+      "notes": "Holdout workflow, anti-gaming checks, and redacted local private-pack evidence have alpha review, but the section is not v0-ready until final protected private execution and release evidence are complete."
     },
     {
       "id": "privacy_packaging_final_release_readiness",

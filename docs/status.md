@@ -51,14 +51,16 @@ python3 scripts/validate_baseline_registry.py
 python3 scripts/validate_v0_release.py --allow-incomplete
 python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
 python3 -m compileall -q authzbench apps tests scripts
-docker compose config
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
 python3 scripts/validate_public.py --include-scripted-baseline
+python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
 ```
 
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
 should be rerun before any tagged release. Docker runtime smoke requires a
-Docker daemon and is covered by the GitHub Actions public-validation workflow.
+Docker daemon; the `--include-container-smoke` path validates Docker Compose
+config, starts the target stack, checks request logs, and is covered by the
+GitHub Actions public-validation workflow.
 The live HTTP scripted baseline has been rerun on the current 44-task public
 split, but its target request-log coverage is 18/44 because the deterministic
 agent only exercises vulnerable proof requests before submitting.

@@ -52,7 +52,10 @@ def _is_private_holdout_path(path: Path) -> bool:
 
 def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
     errors: list[str] = []
-    data = load_json(path)
+    try:
+        data = load_json(path)
+    except Exception as exc:  # noqa: BLE001 - validators should report file failures without raw tracebacks.
+        return [f"{path}: failed to load JSON manifest: {type(exc).__name__}"]
     missing = sorted(REQUIRED_FIELDS - set(data))
     if missing:
         errors.append(f"{path}: missing fields: {', '.join(missing)}")
@@ -112,7 +115,11 @@ def validate_patterns(patterns: list[str]) -> dict[str, Any]:
     authorized_allow_controls = 0
     private = 0
     for path in paths:
-        data = load_json(path)
+        try:
+            data = load_json(path)
+        except Exception as exc:  # noqa: BLE001 - keep malformed private packs from dumping stack traces.
+            errors.append(f"{path}: failed to load JSON manifest: {type(exc).__name__}")
+            continue
         if data.get("expected_vulnerable") is True:
             vulnerable += 1
         else:

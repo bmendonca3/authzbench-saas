@@ -42,6 +42,9 @@
   keeping it non-eligible for leaderboard claims.
 - Hardened public validation so lightweight checks do not require Docker
   Compose unless container smoke validation is requested.
+- Added a public-safe private holdout summary utility so maintainers can produce
+  count-level release evidence without publishing private task bodies, seeds,
+  routes, or oracle details.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

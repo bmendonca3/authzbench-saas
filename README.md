@@ -93,10 +93,10 @@ python3 scripts/validate_public.py --include-scripted-baseline
 The validation script runs unit tests, manifest validation, baseline-registry
 validation, v0 release-gate auditing in explicit incomplete mode,
 artifact-backed leaderboard-submission example validation, compile checks,
-Docker Compose config validation, a Git-tracked privacy scan, and the
-deterministic scripted baseline. Add
+a Git-tracked privacy scan, and the deterministic scripted baseline. Add
 `--include-container-smoke` when a Docker daemon is available and you want the
-release-grade runtime gate:
+release-grade runtime gate; that heavier path validates Docker Compose config,
+starts the target stack, checks request logs, and tears the stack down:
 
 ```bash
 python3 scripts/validate_public.py \

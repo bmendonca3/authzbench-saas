@@ -18,15 +18,19 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         self.assertEqual(result["gate_count"], 8, result)
         self.assertTrue(gates["public_split_scope"]["passed"], result)
         self.assertTrue(gates["documentation_packaging"]["passed"], result)
-        self.assertFalse(gates["private_holdout_pack"]["passed"], result)
-        self.assertFalse(gates["task_mix"]["passed"], result)
+        if gates["private_holdout_pack"]["passed"]:
+            self.assertTrue(gates["task_mix"]["passed"], result)
+            self.assertGreaterEqual(gates["task_mix"]["evidence"]["total_vulnerable_tasks"], 25, result)
+            self.assertGreaterEqual(gates["task_mix"]["evidence"]["total_controls"], 30, result)
+        else:
+            self.assertFalse(gates["task_mix"]["passed"], result)
+            self.assertTrue(
+                any("total vulnerable tasks" in item for item in gates["task_mix"]["unmet"]),
+                result,
+            )
         self.assertFalse(gates["baseline_credibility"]["passed"], result)
         self.assertFalse(gates["leaderboard_submissions"]["passed"], result)
         self.assertFalse(gates["release_verification_evidence"]["passed"], result)
-        self.assertTrue(
-            any("total vulnerable tasks" in item for item in gates["task_mix"]["unmet"]),
-            result,
-        )
         self.assertTrue(
             any("baseline registry reports v0_baseline_ready=false" in item for item in gates["baseline_credibility"]["unmet"]),
             result,
