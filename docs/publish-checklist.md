@@ -5,6 +5,7 @@ intended public host is the public `github.com` account.
 
 ## Pre-Publish Gate
 
+- [ ] `python3 scripts/validate_public.py --include-scripted-baseline`
 - [ ] `python3 -Wd -m unittest discover -s tests`
 - [ ] `python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'`
 - [ ] `python3 -m compileall -q authzbench apps tests scripts`
@@ -18,9 +19,8 @@ intended public host is the public `github.com` account.
 - [ ] `docs/status.md` has no stale claims
 - [ ] private holdout manifests are absent from Git and ignored by `.gitignore`
 - [ ] secrets, personal paths, personal emails, browser artifacts, and unrelated local data are absent from the Git index
-- [ ] a fresh clone from public `github.com` passes the non-Docker checks
-- [ ] CI status is explicit: required for v0, optional for alpha tags when
-      credentials lack `workflow` scope
+- [ ] `python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline`
+- [ ] CI status is explicit and passing before any real v0 tag
 
 ## Suggested Repository Settings
 

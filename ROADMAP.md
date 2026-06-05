@@ -138,8 +138,9 @@ This milestone protects against gaming and accidental leakage.
 - [ ] Add isolated or containerized agent execution for leaderboard runs.
 - [ ] Add hosted, maintainer-run, or otherwise protected private-holdout
       execution so participants do not receive readable holdout manifests.
-- [ ] Add privacy and secret scanning to the release checklist or CI.
-- [ ] Add a reproducible fresh-clone validation script.
+- [x] Add privacy and secret scanning to the release validation script and
+      checklist.
+- [x] Add a reproducible fresh-clone validation script.
 
 Exit criteria:
 

@@ -30,15 +30,13 @@ python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
 python3 -m compileall -q authzbench apps tests scripts
 docker compose config
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
-python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model claude-sonnet-4.6 --timeout-seconds 90' --results-dir results/kiro-sonnet-full --timeout-seconds 120 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent kiro_baseline_agent --model claude-sonnet-4.6 --harness-type no-tools-model
-python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 90' --results-dir results/kiro-qwen-full --timeout-seconds 120 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent kiro_baseline_agent --model qwen3-coder-next --harness-type no-tools-model
-docker compose up --build -d
-python3 scripts/container_smoke.py
-docker compose down
+python3 scripts/validate_public.py --include-scripted-baseline
 ```
 
-The Kiro baseline commands exit nonzero when the model misses any benchmark
-task. Their generated `summary.json` files are still valid baseline evidence.
+The legacy Kiro baseline snapshots were run on the earlier 15-task split and
+should be rerun before any tagged release. Docker runtime smoke also requires a
+local Docker daemon; Docker Compose config validation is covered by the public
+validation script.
 
 ## Baseline Results
 
@@ -56,6 +54,8 @@ Ready:
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
+- reproducible fresh-clone validation script exists
+- Git-tracked privacy scan exists in the public validation script
 - private holdout JSON is excluded from the publishable repo
 - local-status paths and personal filesystem references have been removed from this document
 
@@ -67,5 +67,6 @@ Still required before the real v0 or a serious leaderboard:
 - Docker-backed validation of per-task request-log correlation in addition to
   deterministic replay
 - containerized or otherwise isolated model/agent execution for leaderboard runs
-- final secret/personal-info scan immediately before push
-- post-push clone check from public `github.com`
+- CI workflow for public validation gates
+- Docker-backed runtime smoke when a daemon is available
+- post-push clone check from public `github.com` before tags or releases

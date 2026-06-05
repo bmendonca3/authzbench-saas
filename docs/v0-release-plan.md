@@ -195,6 +195,7 @@ Do not tag the real `v0` until all required gates pass:
 - public manifests validate
 - public and private task counts meet the v0 target
 - unit tests pass
+- CI public-validation workflow passes
 - scripted baseline passes the public split
 - live HTTP scripted baseline passes against Docker
 - at least five distinct real model or agent families are present or linked,

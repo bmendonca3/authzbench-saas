@@ -79,10 +79,18 @@ python3 -m authzbench.score \
 Run the local validation suite:
 
 ```bash
-python3 -Wd -m unittest discover -s tests
-python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
-python3 -m compileall -q authzbench apps tests scripts
-docker compose config
+python3 scripts/validate_public.py --include-scripted-baseline
+```
+
+The validation script runs unit tests, manifest validation, compile checks,
+Docker Compose config validation, a Git-tracked privacy scan, and the
+deterministic scripted baseline. To validate the public repository from a clean
+checkout:
+
+```bash
+python3 scripts/validate_public.py \
+  --fresh-clone https://github.com/bmendonca3/authzbench-saas.git \
+  --include-scripted-baseline
 ```
 
 Run the deterministic scripted baseline:
