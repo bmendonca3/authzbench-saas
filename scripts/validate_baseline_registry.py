@@ -78,11 +78,78 @@ def _require_int(value: Any, field: str, entry_id: str, errors: list[str]) -> in
     return value
 
 
+def _validate_summary_file(
+    registry_path: Path,
+    raw_entry: dict[str, Any],
+    entry_id: str,
+    summary_path: str,
+    expected_task_count: int,
+    public_counts: dict[str, int],
+    errors: list[str],
+    label: str = "summary",
+) -> dict[str, Any] | None:
+    summary_file = _summary_path(registry_path, summary_path)
+    location = label if label == "summary" else f"{label} {_display_path(summary_file)}"
+    if not summary_file.exists():
+        errors.append(f"{entry_id}: missing {location}")
+        return None
+
+    summary = load_json(summary_file)
+    if not isinstance(summary, dict):
+        errors.append(f"{entry_id}: {location} must be a JSON object")
+        return None
+
+    missing_summary = sorted(REQUIRED_SUMMARY_FIELDS - set(summary))
+    if missing_summary:
+        errors.append(f"{entry_id}: {location} missing fields: {', '.join(missing_summary)}")
+
+    if summary.get("harness_type") != raw_entry.get("expected_harness_type"):
+        errors.append(
+            f"{entry_id}: {location} harness_type {summary.get('harness_type')!r} "
+            f"does not match registry {raw_entry.get('expected_harness_type')!r}"
+        )
+    if summary.get("task_count") != expected_task_count:
+        errors.append(
+            f"{entry_id}: {location} task_count {summary.get('task_count')!r} "
+            f"does not match registry {expected_task_count}"
+        )
+    for optional_field in ("expected_agent", "expected_model"):
+        summary_field = optional_field.removeprefix("expected_")
+        if optional_field in raw_entry and summary.get(summary_field) != raw_entry[optional_field]:
+            errors.append(
+                f"{entry_id}: {location} {summary_field} {summary.get(summary_field)!r} "
+                f"does not match registry {raw_entry[optional_field]!r}"
+            )
+
+    suitability = str(raw_entry.get("release_suitability"))
+    if suitability in {"current_public_split", "current_public_harness_check"}:
+        if expected_task_count != public_counts["task_count"]:
+            errors.append(
+                f"{entry_id}: {suitability} must use current public task count "
+                f"{public_counts['task_count']}"
+            )
+        for count_field in (
+            "vulnerable_task_count",
+            "control_task_count",
+            "denial_control_task_count",
+            "authorized_allow_control_task_count",
+        ):
+            if count_field in summary and summary[count_field] != public_counts[count_field]:
+                errors.append(
+                    f"{entry_id}: {location} current public {count_field} "
+                    f"{summary[count_field]!r} does not match {public_counts[count_field]}"
+                )
+
+    return summary
+
+
 def _has_repeated_run_evidence(
     registry_path: Path,
     raw_entry: dict[str, Any],
     entry_id: str,
     run_count: int,
+    expected_task_count: int,
+    public_counts: dict[str, int],
     errors: list[str],
 ) -> bool:
     run_artifacts = raw_entry.get("run_artifacts")
@@ -111,7 +178,16 @@ def _has_repeated_run_evidence(
             errors.append(f"{entry_id}: missing run artifact {_display_path(candidate)}")
             ok = False
             continue
-        artifact = load_json(candidate)
+        artifact = _validate_summary_file(
+            registry_path,
+            raw_entry,
+            entry_id,
+            artifact_path,
+            expected_task_count,
+            public_counts,
+            errors,
+            label="run artifact",
+        )
         run_id = str(artifact.get("run_id", "")).strip() if isinstance(artifact, dict) else ""
         if not run_id:
             errors.append(f"{entry_id}: run artifact {_display_path(candidate)} must include a run_id")
@@ -183,50 +259,18 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         if kind == "harness_check" and suitability == "current_public_split":
             errors.append(f"{entry_id}: harness checks must use current_public_harness_check, not current_public_split")
 
-        summary_file = _summary_path(registry_path, str(raw_entry.get("summary_path")))
-        if not summary_file.exists():
-            errors.append(f"{entry_id}: missing summary file {_display_path(summary_file)}")
+        summary = _validate_summary_file(
+            registry_path,
+            raw_entry,
+            entry_id,
+            str(raw_entry.get("summary_path")),
+            expected_task_count,
+            public_counts,
+            errors,
+        )
+        if summary is None:
             continue
-        summary = load_json(summary_file)
-        missing_summary = sorted(REQUIRED_SUMMARY_FIELDS - set(summary))
-        if missing_summary:
-            errors.append(f"{entry_id}: summary missing fields: {', '.join(missing_summary)}")
 
-        if summary.get("harness_type") != raw_entry.get("expected_harness_type"):
-            errors.append(
-                f"{entry_id}: summary harness_type {summary.get('harness_type')!r} "
-                f"does not match registry {raw_entry.get('expected_harness_type')!r}"
-            )
-        if summary.get("task_count") != expected_task_count:
-            errors.append(
-                f"{entry_id}: summary task_count {summary.get('task_count')!r} "
-                f"does not match registry {expected_task_count}"
-            )
-        for optional_field in ("expected_agent", "expected_model"):
-            summary_field = optional_field.removeprefix("expected_")
-            if optional_field in raw_entry and summary.get(summary_field) != raw_entry[optional_field]:
-                errors.append(
-                    f"{entry_id}: summary {summary_field} {summary.get(summary_field)!r} "
-                    f"does not match registry {raw_entry[optional_field]!r}"
-                )
-
-        if suitability in {"current_public_split", "current_public_harness_check"}:
-            if expected_task_count != public_counts["task_count"]:
-                errors.append(
-                    f"{entry_id}: {suitability} must use current public task count "
-                    f"{public_counts['task_count']}"
-                )
-            for count_field in (
-                "vulnerable_task_count",
-                "control_task_count",
-                "denial_control_task_count",
-                "authorized_allow_control_task_count",
-            ):
-                if count_field in summary and summary[count_field] != public_counts[count_field]:
-                    errors.append(
-                        f"{entry_id}: current public summary {count_field} "
-                        f"{summary[count_field]!r} does not match {public_counts[count_field]}"
-                    )
         if suitability == "legacy_snapshot":
             if not requires_rerun:
                 errors.append(f"{entry_id}: legacy_snapshot must set requires_rerun_before_v0=true")
@@ -248,6 +292,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
                     raw_entry,
                     entry_id,
                     run_count,
+                    expected_task_count,
+                    public_counts,
                     errors,
                 )
             if run_count >= min_runs and has_repeated_evidence:

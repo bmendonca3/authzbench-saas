@@ -12,16 +12,25 @@ from scripts.validate_baseline_registry import ROOT, validate_registry
 
 REGISTRY = ROOT / "baselines" / "baseline-registry.json"
 LEGACY_CLAUDE_ID = "kiro-claude-sonnet-4-6-legacy-15"
+CURRENT_QWEN_ID = "kiro-qwen3-coder-next-current-public-44"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
     source = load_json(REGISTRY)
     baseline_dir = tmp_path / "baselines"
     baseline_dir.mkdir(parents=True)
+    copied_paths: set[str] = set()
     for entry in source["baselines"]:
-        source_summary = REGISTRY.parent / entry["summary_path"]
-        target_summary = baseline_dir / entry["summary_path"]
-        target_summary.write_text(source_summary.read_text(encoding="utf-8"), encoding="utf-8")
+        artifact_paths = [entry["summary_path"]]
+        artifact_paths.extend(entry.get("run_artifacts", []))
+        for artifact_path in artifact_paths:
+            if artifact_path in copied_paths:
+                continue
+            source_summary = REGISTRY.parent / artifact_path
+            target_summary = baseline_dir / artifact_path
+            target_summary.parent.mkdir(parents=True, exist_ok=True)
+            target_summary.write_text(source_summary.read_text(encoding="utf-8"), encoding="utf-8")
+            copied_paths.add(artifact_path)
     registry_path = baseline_dir / "baseline-registry.json"
     registry_path.write_text(json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return registry_path
@@ -39,8 +48,10 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 5, result)
+        self.assertEqual(result["baseline_count"], 6, result)
         self.assertEqual(result["public_split"]["task_count"], 44, result)
+        self.assertEqual(result["current_public_model_family_count"], 1, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
         self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(any("current public model families" in item for item in result["unmet_v0_requirements"]), result)
         self.assertTrue(any("missing current public tool-agent baseline" in item for item in result["unmet_v0_requirements"]), result)
@@ -144,6 +155,23 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("unique files" in error for error in result["errors"]), result)
         self.assertTrue(any("distinct run_id" in error for error in result["errors"]), result)
+
+    def test_rejects_run_artifact_that_does_not_match_registry_claims(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            model_entry = _baseline_by_id(registry, CURRENT_QWEN_ID)
+            run2_path = registry_path.parent / model_entry["run_artifacts"][1]
+            run2_summary = load_json(run2_path)
+            run2_summary["model"] = "wrong-model"
+            run2_summary["task_count"] = 43
+            run2_path.write_text(json.dumps(run2_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("run artifact" in error and "model" in error for error in result["errors"]), result)
+        self.assertTrue(any("run artifact" in error and "task_count" in error for error in result["errors"]), result)
 
     def test_rejects_model_baseline_labeled_as_harness_check(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

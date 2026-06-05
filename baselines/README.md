@@ -34,10 +34,16 @@ not that the v0 baseline bar is complete.
   through the Kiro no-tools adapter.
 - `kiro-qwen3-coder-next-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
+- `kiro-qwen3-coder-next-current-public-44-run1-summary.json` and
+  `kiro-qwen3-coder-next-current-public-44-run2-summary.json`: repeated current
+  44-task public split no-tools Qwen runs through the Kiro adapter. They are
+  public-split model baselines, not private-holdout or leaderboard-eligible
+  submissions.
 
 The scripted and live scripted summaries should match the current public split.
-The Kiro summaries may temporarily be older alpha snapshots when the task set
-expands; rerun them before any tagged release.
+Legacy Kiro summaries may temporarily be older alpha snapshots when the task set
+expands; rerun them before any tagged release. Current public Kiro summaries
+must include distinct `run_artifacts` before they count as repeated evidence.
 
 For every model baseline, preserve:
 

@@ -193,14 +193,14 @@ python3 -m authzbench.run \
   --harness-type no-tools-model
 ```
 
-Run the second tracked no-tools Kiro baseline:
+Run the repeated current public no-tools Qwen baseline:
 
 ```bash
 python3 -m authzbench.run \
   --task 'tasks/*/*.json' \
-  --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 90' \
-  --results-dir results/kiro-qwen-full \
-  --timeout-seconds 120 \
+  --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 60' \
+  --results-dir results/kiro-qwen3-coder-next-current-public \
+  --timeout-seconds 75 \
   --benchmark-commit-sha "$(git rev-parse HEAD)" \
   --agent kiro_baseline_agent \
   --model qwen3-coder-next \
@@ -337,20 +337,24 @@ Harness sanity checks:
 | Scripted sanity baseline | 44 | 44 | 1.0 | 0.0 |
 | Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 |
 
-Initial no-tools model baselines:
+Tracked no-tools model baselines:
 
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
+| Kiro `qwen3-coder-next` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` no-tools current run 2 | 44 | 25 | 0.0 | 0.0385 |
 
 The scripted and live scripted baselines are harness checks, not model results.
 The current live HTTP run correlates target-side requests for the 18 vulnerable
 tasks; secure controls still have no live requests in that deterministic harness
-because it only exercises submitted findings. The Kiro snapshots were run on the
-earlier 15-task split and should be rerun for any release tag. The baseline
-registry is intentionally not v0-ready yet because the current public split
-still lacks repeated real model families and a tool-agent baseline.
+because it only exercises submitted findings. The 15-task Kiro snapshots were
+run on the earlier alpha split and should be rerun for any release tag. The
+current Qwen pair is repeated public-split evidence only, not private-holdout or
+leaderboard-eligible evidence. The baseline registry is intentionally not
+v0-ready yet because the current public split still lacks four more repeated
+real model or agent families and a tool-agent baseline.
 
 ## Private Holdouts
 

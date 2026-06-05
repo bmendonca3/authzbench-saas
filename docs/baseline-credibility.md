@@ -71,3 +71,11 @@ satisfy the v0 requirement for a real tool-agent baseline.
 The Kiro model summaries are legacy 15-task alpha snapshots. They are useful
 historical evidence, but they must be rerun on the current 44-task split and
 repeated before any v0 tag or serious public leaderboard claim.
+
+The first repeated current model family is Qwen through Kiro. The two
+`qwen3-coder-next` no-tools runs are public-split baselines only: both showed
+strong control restraint and zero control false-report findings. Run 2 still had
+one failed denial-control score, and neither run proved vulnerable exploits.
+They improve model-baseline credibility while still leaving four repeated
+model/agent families, a true tool-agent baseline, and private-holdout
+leaderboard submissions missing.

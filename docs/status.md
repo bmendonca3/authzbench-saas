@@ -74,6 +74,8 @@ agent only exercises vulnerable proof requests before submitting.
 | Heuristic live HTTP prober | 44 | 33 | 0.6111 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 | not tracked |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 | not tracked |
+| Kiro `qwen3-coder-next` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools current run 2 | 44 | 25 | 0.0 | 0.0385 | 1.0 |
 
 ## Publication Readiness
 
@@ -88,6 +90,8 @@ Ready:
 - a heuristic live HTTP prober now provides 44/44 target-request correlation
   across vulnerable and control public tasks, but it is classified as a harness
   check rather than a v0 tool-agent baseline
+- one repeated current public model family exists: Kiro `qwen3-coder-next`
+  no-tools, with two distinct 44-task run summaries
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
   still fails honestly
@@ -120,6 +124,7 @@ Still required before the real v0 or a serious leaderboard:
 - leaderboard-grade live-agent validation of per-task request-log correlation in
   addition to deterministic replay and CI smoke checks
 - repeated model baselines on the current 44-task public split
+- four additional repeated current model or agent families
 - at least one current public tool-agent baseline
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile

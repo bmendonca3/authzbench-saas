@@ -84,6 +84,25 @@
       "expected_task_count": 15,
       "requires_rerun_before_v0": true,
       "notes": "Initial no-tools model snapshot from the earlier 15-task alpha split. Not repeated and not leaderboard eligible."
+    },
+    {
+      "id": "kiro-qwen3-coder-next-current-public-44",
+      "summary_path": "kiro-qwen3-coder-next-current-public-44-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-qwen",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-qwen3-coder-next-current-public-44-run1-summary.json",
+        "kiro-qwen3-coder-next-current-public-44-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "qwen3-coder-next",
+      "expected_task_count": 44,
+      "requires_rerun_before_v0": false,
+      "notes": "Repeated current 44-task public split no-tools Kiro baseline. Non-leaderboard public evidence only; private holdout results are still missing."
     }
   ]
 }

@@ -43,6 +43,8 @@
 - Added a heuristic live HTTP prober harness check with per-task probe artifacts
   and 44/44 target-request correlation, while keeping it out of the v0
   tool-agent baseline gate.
+- Added two current 44-task Kiro `qwen3-coder-next` no-tools model baseline
+  summaries and registered them as the first repeated public model family.
 - Hardened public validation so lightweight checks do not require Docker
   Compose unless container smoke validation is requested.
 - Added a public-safe private holdout summary utility so maintainers can produce
