@@ -29,11 +29,11 @@ sectional review, and clean release validation.
 
 | Area | Alpha preview | v0 target |
 | --- | ---: | ---: |
-| Synthetic SaaS apps | 3 | 5-6 |
-| Public tasks | 21 | 40-50 |
+| Synthetic SaaS apps | 4 | 5-6 |
+| Public tasks | 29 | 40-50 |
 | Private holdout tasks | 0 tracked | 20-30 unpublished |
-| Vulnerability classes | BOLA, BFLA, invite abuse | BOLA, BFLA, tenant isolation, invite/membership, sharing, API-token scope |
-| Secure controls | 12 | At least 40 percent of all tasks |
+| Vulnerability classes | BOLA, BFLA, invite abuse, sharing | BOLA, BFLA, tenant isolation, invite/membership, sharing, API-token scope |
+| Secure controls | 17 | At least 40 percent of all tasks |
 | Model baselines | 2 no-tools runs | 5+ distinct model/agent families plus harness checks, repeated runs |
 | Live-target proof | replayable requests | replayable requests plus target request logs |
 | Anti-gaming | seeded IDs | seeded IDs, route aliases, decoys, private holdouts |

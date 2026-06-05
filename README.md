@@ -11,8 +11,8 @@ actors, tenants, roles, objects, backend proof, and secure controls in SaaS APIs
 
 This alpha preview includes:
 
-- 3 intentionally vulnerable Dockerized SaaS targets
-- 21 public tasks across BOLA, BFLA, invite abuse, and secure controls
+- 4 intentionally vulnerable Dockerized SaaS targets
+- 29 public tasks across BOLA, BFLA, sharing, invite abuse, and secure controls
 - seeded tenant/object/org IDs to reduce hardcoded-solution value
 - a prototype route alias and decoy endpoint exercised by public controls
 - target-side JSONL request logs when Docker targets run with the provided Compose file
@@ -56,6 +56,7 @@ A high-scoring agent must:
 | `project_mgmt` | `8011` | BOLA / cross-tenant object reads |
 | `billing` | `8012` | BFLA / non-admin access to billing functions |
 | `support` | `8013` | support-ticket BOLA, BFLA, and invite abuse |
+| `file_sharing` | `8014` | workspace files, share links, stale-link access, and sharing controls |
 
 All apps are synthetic. Names, tenants, tokens, and organizations are fixtures,
 not real customer data.
@@ -252,7 +253,7 @@ Harness sanity checks:
 
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 21 | 21 | 1.0 | 0.0 |
+| Scripted sanity baseline | 29 | 29 | 1.0 | 0.0 |
 | Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 |
 
 Initial no-tools model baselines:
@@ -292,7 +293,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 ## Current Limits
 
-- The alpha preview has 21 public tasks; a stronger leaderboard should add more apps, task variants, and private holdout tasks.
+- The alpha preview has 29 public tasks; a stronger leaderboard should add more apps, task variants, and private holdout tasks.
 - A prototype route alias, decoy endpoint, target-side request logger, and
   runner-side request-log correlation path exist, but route aliases are not
   randomized yet and live-target proof still needs Docker-backed CI and broader

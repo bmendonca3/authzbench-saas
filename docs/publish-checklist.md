@@ -38,8 +38,8 @@ Tag: `alpha-0.0.1-public-scaffold`
 
 Release notes:
 
-- 3 Docker-ready intentionally vulnerable SaaS targets
-- 21 public seeded tasks
+- 4 Docker-ready intentionally vulnerable SaaS targets
+- 29 public seeded tasks
 - deterministic scorer with backend replay transcripts
 - secure-control tasks for false-positive measurement
 - scripted baseline and two initial model baselines

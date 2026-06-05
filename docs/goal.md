@@ -38,6 +38,12 @@ The real `v0` goal is to turn this alpha preview into a release-worthy
 authorization benchmark with enough scale, protected holdouts, live-target proof,
 and baseline evidence for other researchers to rely on it.
 
+The current execution goal is to move deliberately from a useful public alpha
+into a top-benchmark candidate: add realistic SaaS surfaces section by section,
+validate each section with local tests plus panel review, preserve a roadmap
+that explains the path to v0, and commit at natural SDLC checkpoints so the
+history is auditable.
+
 To call the project `v0`, the repo should have:
 
 - 5-6 synthetic SaaS apps

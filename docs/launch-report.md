@@ -16,10 +16,10 @@ The benchmark is designed around a narrow question:
 
 The current public split contains:
 
-- 3 Dockerized target apps
-- 21 seeded tasks
-- 9 vulnerable tasks
-- 12 secure-control tasks
+- 4 Dockerized target apps
+- 29 seeded tasks
+- 12 vulnerable tasks
+- 17 secure-control tasks
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - prototype route alias and decoy endpoint coverage
@@ -54,6 +54,14 @@ The current public split contains:
 | `sup_secure_cross_org_ticket_control` | Support | Secure control | Correct cross-org ticket denial | API1:2023 BOLA control | CWE-639 control |
 | `sup_secure_viewer_status_control` | Support | Secure control | Correct viewer write denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
 | `sup_secure_agent_invite_control` | Support | Secure control | Correct invite-role denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
+| `fs_bola_northstar_reads_apex_file` | File sharing | Vulnerable | Cross-workspace file read | API1:2023 BOLA | CWE-639, CWE-863 |
+| `fs_stale_expired_share_link_access` | File sharing | Vulnerable | Expired share link still resolves | API1/API5 control failure | CWE-863, CWE-285 |
+| `fs_bfla_viewer_creates_public_link` | File sharing | Vulnerable | Viewer creates public share link | API5:2023 BFLA | CWE-862, CWE-863 |
+| `fs_secure_cross_workspace_file_control` | File sharing | Secure control | Correct cross-workspace file denial | API1:2023 BOLA control | CWE-639 control |
+| `fs_secure_expired_share_link_control` | File sharing | Secure control | Correct expired-link denial | Link-state control | CWE-863 control |
+| `fs_secure_viewer_share_control` | File sharing | Secure control | Correct viewer share-link denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
+| `fs_same_workspace_file_read_control` | File sharing | Secure control | Authorized same-workspace file read | API1:2023 BOLA control | CWE-639 control |
+| `fs_active_share_link_control` | File sharing | Secure control | Authorized active share-link read | Link-state control | CWE-863 control |
 
 ## Scoring
 
@@ -97,8 +105,8 @@ python3 -m authzbench.run \
 
 Expected current result:
 
-- `task_count`: 21
-- `passed_count`: 21
+- `task_count`: 29
+- `passed_count`: 29
 - `mean_score`: 1.0
 - `exploit_proven_success_rate`: 1.0
 - `false_positive_rate`: 0.0
@@ -121,7 +129,7 @@ Tracked summaries:
 - [kiro-qwen3-coder-next-full-summary.json](../baselines/kiro-qwen3-coder-next-full-summary.json)
 
 These 15-task snapshots are public-split baselines from the earlier alpha split,
-not private leaderboard results. They should be rerun on the 21-task split
+not private leaderboard results. They should be rerun on the 29-task split
 before any release tag.
 
 ## Publication Status
@@ -135,7 +143,7 @@ not yet have private holdout scoring.
 
 ## Release Criteria For The Real v0
 
-- expand beyond the current 3-app/21-task alpha split
+- expand beyond the current 4-app/29-task alpha split
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs
@@ -154,4 +162,5 @@ not yet have private holdout scoring.
 - HAR browser capture is not implemented yet; backend replay transcripts are
   implemented through `transcript.json`.
 - A prototype route alias and decoy endpoint are present, but route aliases are
-  not randomized yet; object, tenant, org, invoice, and token IDs are seeded.
+  not randomized yet; object, tenant, org, invoice, file, link, workspace, and
+  token IDs are seeded.

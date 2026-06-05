@@ -45,11 +45,11 @@ AuthZBench-SaaS does not claim to measure:
 
 ## Current Public Split
 
-- 3 Dockerized synthetic SaaS apps
-- 21 public tasks
-- 9 vulnerable tasks
-- 12 secure-control tasks
-- seeded IDs for tenants, objects, orgs, invoices, and actors
+- 4 Dockerized synthetic SaaS apps
+- 29 public tasks
+- 12 vulnerable tasks
+- 17 secure-control tasks
+- seeded IDs for tenants, objects, orgs, invoices, files, links, workspaces, and actors
 - deterministic scorer-owned replay transcripts
 - prototype route alias and decoy endpoint controls
 - target-side JSONL request logs for Docker HTTP targets

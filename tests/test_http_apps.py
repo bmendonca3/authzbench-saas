@@ -12,6 +12,7 @@ from typing import Any
 from unittest.mock import patch
 
 from apps.billing import app as billing
+from apps.file_sharing import app as file_sharing
 from apps.project_mgmt import app as project_mgmt
 from apps.support import app as support
 
@@ -280,6 +281,95 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(invalid_status, 400)
         self.assertEqual(invalid_body["error"], "invalid_json")
+
+    def test_file_sharing_http_vulnerable_and_secure_paths(self) -> None:
+        server, base_url = _serve(file_sharing.Handler)
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        refs = file_sharing.public_refs(file_sharing.Handler.state)
+
+        cross_workspace_status, cross_workspace_body = _request(
+            f"{base_url}/api/files/{refs['APEX_PRIVATE_FILE_ID']}",
+            "northstar_viewer",
+        )
+        self.assertEqual(cross_workspace_status, 200)
+        self.assertEqual(cross_workspace_body["viewer"], "northstar_viewer")
+        self.assertEqual(cross_workspace_body["file"]["workspace_id"], refs["APEX_WORKSPACE_ID"])
+
+        secure_cross_status, secure_cross_body = _request(
+            f"{base_url}/api/secure/files/{refs['APEX_PRIVATE_FILE_ID']}",
+            "northstar_viewer",
+        )
+        self.assertEqual(secure_cross_status, 403)
+        self.assertEqual(secure_cross_body["error"], "forbidden")
+
+        expired_status, expired_body = _request(
+            f"{base_url}/api/share-links/{refs['EXPIRED_LINK_ID']}",
+            "northstar_viewer",
+        )
+        self.assertEqual(expired_status, 200)
+        self.assertEqual(expired_body["link"]["status"], "expired")
+        self.assertEqual(expired_body["file"]["id"], refs["NORTHSTAR_SECRET_FILE_ID"])
+
+        secure_expired_status, secure_expired_body = _request(
+            f"{base_url}/api/secure/share-links/{refs['EXPIRED_LINK_ID']}",
+            "northstar_viewer",
+        )
+        self.assertEqual(secure_expired_status, 410)
+        self.assertEqual(secure_expired_body["error"], "expired")
+
+        viewer_share_status, viewer_share_body = _request(
+            f"{base_url}/api/workspaces/{refs['NORTHSTAR_WORKSPACE_ID']}/files/{refs['NORTHSTAR_SECRET_FILE_ID']}/share-links",
+            "northstar_viewer",
+            method="POST",
+            body={"visibility": "public"},
+        )
+        self.assertEqual(viewer_share_status, 201)
+        self.assertEqual(viewer_share_body["link"]["visibility"], "public")
+        self.assertEqual(viewer_share_body["link"]["created_by"], "northstar_viewer")
+        self.assertEqual(file_sharing.public_refs(file_sharing.Handler.state)["ACTIVE_LINK_ID"], refs["ACTIVE_LINK_ID"])
+
+        secure_viewer_share_status, secure_viewer_share_body = _request(
+            f"{base_url}/api/secure/workspaces/{refs['NORTHSTAR_WORKSPACE_ID']}/files/{refs['NORTHSTAR_SECRET_FILE_ID']}/share-links",
+            "northstar_viewer",
+            method="POST",
+            body={"visibility": "public"},
+        )
+        self.assertEqual(secure_viewer_share_status, 403)
+        self.assertEqual(secure_viewer_share_body["error"], "forbidden")
+
+        same_workspace_status, same_workspace_body = _request(
+            f"{base_url}/api/secure/files/{refs['NORTHSTAR_SECRET_FILE_ID']}",
+            "northstar_viewer",
+        )
+        self.assertEqual(same_workspace_status, 200)
+        self.assertEqual(same_workspace_body["file"]["workspace_id"], refs["NORTHSTAR_WORKSPACE_ID"])
+
+        active_link_status, active_link_body = _request(
+            f"{base_url}/api/secure/share-links/{refs['ACTIVE_LINK_ID']}",
+            "apex_viewer",
+        )
+        self.assertEqual(active_link_status, 200)
+        self.assertEqual(active_link_body["link"]["status"], "active")
+        self.assertEqual(active_link_body["file"]["id"], refs["NORTHSTAR_PUBLIC_FILE_ID"])
+
+        wrong_file_method_status, wrong_file_method_body = _request(
+            f"{base_url}/api/files/{refs['APEX_PRIVATE_FILE_ID']}",
+            "northstar_viewer",
+            method="POST",
+            body={},
+        )
+        self.assertEqual(wrong_file_method_status, 405)
+        self.assertEqual(wrong_file_method_body["error"], "method_not_allowed")
+
+        wrong_share_method_status, wrong_share_method_body = _request(
+            f"{base_url}/api/share-links/{refs['ACTIVE_LINK_ID']}",
+            "northstar_viewer",
+            method="POST",
+            body={},
+        )
+        self.assertEqual(wrong_share_method_status, 405)
+        self.assertEqual(wrong_share_method_body["error"], "method_not_allowed")
 
 
 if __name__ == "__main__":

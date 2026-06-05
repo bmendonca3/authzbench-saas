@@ -168,6 +168,55 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "fs_bola_northstar_reads_apex_file":
+        return {
+            "findings": [
+                _finding(
+                    "cross_workspace_file_read",
+                    {
+                        "actor": "northstar_viewer",
+                        "method": "GET",
+                        "path": f"/api/files/{refs['APEX_PRIVATE_FILE_ID']}",
+                    },
+                    {"attacker_actor": "northstar_viewer", "victim_workspace": "apex"},
+                    "A Northstar viewer can read Apex private file contents.",
+                )
+            ]
+        }
+
+    if task_id == "fs_stale_expired_share_link_access":
+        return {
+            "findings": [
+                _finding(
+                    "expired_share_link_still_resolves",
+                    {
+                        "actor": "northstar_viewer",
+                        "method": "GET",
+                        "path": f"/api/share-links/{refs['EXPIRED_LINK_ID']}",
+                    },
+                    {"attacker_actor": "northstar_viewer", "required_link_state": "active"},
+                    "An expired public share link still returns protected file contents.",
+                )
+            ]
+        }
+
+    if task_id == "fs_bfla_viewer_creates_public_link":
+        return {
+            "findings": [
+                _finding(
+                    "viewer_can_create_public_share_link",
+                    {
+                        "actor": "northstar_viewer",
+                        "method": "POST",
+                        "path": f"/api/workspaces/{refs['NORTHSTAR_WORKSPACE_ID']}/files/{refs['NORTHSTAR_SECRET_FILE_ID']}/share-links",
+                        "body": {"visibility": "public"},
+                    },
+                    {"attacker_actor": "northstar_viewer", "required_role": "editor"},
+                    "A read-only viewer can create a public share link for a confidential file.",
+                )
+            ]
+        }
+
     return {"findings": []}
 
 

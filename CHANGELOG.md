@@ -23,6 +23,9 @@
 - Added a third synthetic SaaS target, `support`, with six public tasks covering
   cross-organization ticket reads, viewer status writes, invite-role abuse, and
   matching secure controls.
+- Added a fourth synthetic SaaS target, `file_sharing`, with eight public tasks
+  covering cross-workspace file reads, expired share-link access, viewer-created
+  public links, matching secure controls, and authorized-allow controls.
 - Added scorer support for control request bodies so write and invite controls
   can be replayed accurately.
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.

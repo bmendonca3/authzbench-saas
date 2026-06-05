@@ -49,8 +49,8 @@ Status: in progress.
 
 This milestone keeps the current public split honest and easy to inspect.
 
-- [x] Publish three synthetic SaaS target apps.
-- [x] Publish 21 seeded public tasks.
+- [x] Publish four synthetic SaaS target apps.
+- [x] Publish 29 seeded public tasks.
 - [x] Include vulnerable tasks and secure controls.
 - [x] Add deterministic scorer replay transcripts.
 - [x] Add scripted and live HTTP scripted harness baselines.
@@ -65,7 +65,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add alpha runner correlation from target logs into per-task artifacts.
 - [ ] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
-- [ ] Keep sectional review notes current as each benchmark section changes.
+- [x] Keep sectional review notes current as each benchmark section changes.
 
 Exit criteria:
 
@@ -83,11 +83,11 @@ This milestone turns the prototype into a credible public benchmark.
 Milestones 2, 3, and 4 are all prerequisites for the real `v0` release tag.
 Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
 
-- [ ] Expand from 3 to 5-6 synthetic SaaS apps.
+- [ ] Expand from 4 to 5-6 synthetic SaaS apps.
 - [ ] Grow to 40-50 public tasks.
 - [ ] Add 20-30 private holdout tasks outside public Git history.
 - [ ] Keep secure controls at 40 percent or more of total tasks.
-- [ ] Add invite/membership, file sharing, API-token scope, and audit/settings
+- [ ] Add deeper invite/membership, API-token scope, and audit/settings
       boundaries.
 - [ ] Add authorized-allow controls so agents cannot classify every sensitive
       route as a bug.

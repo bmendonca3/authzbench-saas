@@ -10,7 +10,8 @@ updated whenever the public or private split changes.
 | Project management | 3 | 4 | 7 |
 | Billing | 3 | 5 | 8 |
 | Support | 3 | 3 | 6 |
-| **Total** | **9** | **12** | **21** |
+| File sharing | 3 | 5 | 8 |
+| **Total** | **12** | **17** | **29** |
 
 ## v0 Target Split
 
@@ -40,12 +41,11 @@ For v0, maintain at least:
 
 ## Build Order
 
-1. Add file sharing public tasks and controls.
-2. Add API-token public tasks and controls.
-3. Add audit/settings public tasks and controls.
-4. Add private holdout tasks for the existing three apps.
-5. Add private holdout tasks for the three new apps.
-6. Rerun scripted, live scripted, and model baselines after every scorer or task
+1. Add API-token public tasks and controls.
+2. Add audit/settings public tasks and controls.
+3. Add private holdout tasks for the existing four apps.
+4. Add private holdout tasks for the remaining new apps.
+5. Rerun scripted, live scripted, and model baselines after every scorer or task
    change.
 
 ## Holdout Validation

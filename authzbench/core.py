@@ -10,12 +10,14 @@ APP_MODULES = {
     "project_mgmt": "apps.project_mgmt.app",
     "billing": "apps.billing.app",
     "support": "apps.support.app",
+    "file_sharing": "apps.file_sharing.app",
 }
 
 APP_TARGETS = {
     "project_mgmt": {"base_url": "http://127.0.0.1:8011", "container_base_url": "http://project_mgmt:8011"},
     "billing": {"base_url": "http://127.0.0.1:8012", "container_base_url": "http://billing:8012"},
     "support": {"base_url": "http://127.0.0.1:8013", "container_base_url": "http://support:8013"},
+    "file_sharing": {"base_url": "http://127.0.0.1:8014", "container_base_url": "http://file_sharing:8014"},
 }
 
 
