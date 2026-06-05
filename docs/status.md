@@ -33,6 +33,8 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - release evidence registry for local validation, fresh-clone validation, remote
   CI, Docker smoke, privacy scan, release-note separation, and protected
   private-holdout execution
+- repeated protected-private redacted evidence validation, including a no-tools
+  private run and a live tool-agent private run with target-request coverage
 - leaderboard submission validation with a tracked public harness-check example
   that is schema-valid, cross-checked against a source run summary, and not
   leaderboard eligible
@@ -135,6 +137,8 @@ Ready:
 - protected private-holdout execution can optionally correlate live target
   request logs into per-task artifacts without exposing target-log paths to the
   agent workspace
+- two redacted protected-private execution summaries validate as repeated
+  aggregate evidence without publishing private task rows or raw result bundles
 - local-status paths and personal filesystem references have been removed from this document
 
 Still required before the real v0 or a serious leaderboard:

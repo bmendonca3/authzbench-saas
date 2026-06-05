@@ -65,6 +65,21 @@ artifacts, or local file paths. The summary is useful as supporting evidence
 that an ignored private pack exists and passes shape checks; it is not a
 substitute for protected private execution.
 
+Redacted protected-execution summaries can be checked with:
+
+```bash
+python3 scripts/validate_protected_private_evidence.py \
+  --summary 'docs/protected-private*-2026-06-05.redacted.json'
+```
+
+That validator requires repeated redacted private-holdout runs, unique run IDs,
+consistent private-holdout counts, no tracked private manifests, no tracked raw
+private result bundles, rendered-context-only agent execution, zero invalid
+submissions, zero secure-control false reports, and at least one protected
+tool-agent summary with target-request coverage. It rejects task rows, raw
+transcripts, target-log paths, local result paths, private manifest paths, and
+other non-redacted evidence.
+
 They can also generate an ignored local rehearsal pack to verify the private
 pack workflow end to end:
 

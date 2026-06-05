@@ -96,6 +96,15 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
     run([sys.executable, "-Wd", "-m", "unittest", "discover", "-s", "tests"], cwd)
     run([sys.executable, "-m", "authzbench.validate_manifests", "--task", "tasks/*/*.json"], cwd)
     run([sys.executable, "scripts/validate_baseline_registry.py"], cwd)
+    run(
+        [
+            sys.executable,
+            "scripts/validate_protected_private_evidence.py",
+            "--summary",
+            "docs/protected-private*-2026-06-05.redacted.json",
+        ],
+        cwd,
+    )
     run([sys.executable, "scripts/validate_v0_release.py", "--allow-incomplete"], cwd)
     run(
         [
