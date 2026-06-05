@@ -23,3 +23,7 @@ Local validation command:
 ```bash
 python3 scripts/validate_holdout_pack.py
 ```
+
+The validator checks schema, `split=private_holdout`, non-public seeds, public
+task ID/seed overlap, app-family coverage, per-app concentration, and denial
+plus authorized-allow control minimums.

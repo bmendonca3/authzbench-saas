@@ -160,6 +160,8 @@ This milestone protects against gaming and accidental leakage.
 - [x] Add privacy and secret scanning to the release validation script and
       checklist.
 - [x] Add a reproducible fresh-clone validation script.
+- [x] Harden private holdout pack validation for app coverage, control subtype
+      mix, and public ID/seed overlap.
 - [ ] Add a release-readiness panel review with explicit dispositions for
       privacy, holdouts, anti-gaming, and baseline claims.
 

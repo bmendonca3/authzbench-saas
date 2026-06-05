@@ -65,5 +65,7 @@ python3 scripts/validate_holdout_pack.py
 ```
 
 The default expects `tasks_private/holdout/**/*.json`, 20-30 private tasks, at
-least 12 vulnerable tasks, and at least 8 controls. The preferred v0 holdout
-count is 24, with 12 private controls in the target split above.
+least 12 vulnerable tasks, at least 8 controls, all six app families, no public
+task ID or seed reuse, at least 4 denial controls, and at least 4
+authorized-allow controls. The preferred v0 holdout count is 24, with 12 private
+controls in the target split above.

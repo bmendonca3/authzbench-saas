@@ -52,7 +52,19 @@ python3 scripts/validate_holdout_pack.py
 ```
 
 The validator checks the normal task schema, requires `split=private_holdout`,
-rejects public seed prefixes, and enforces the v0 holdout count range.
+rejects public seed prefixes, rejects public task ID and seed reuse, requires
+coverage across all six app families, limits over-concentration in one app, and
+enforces denial-control and authorized-allow-control minimums.
+
+Default v0-shape validation requires:
+
+- 20-30 private tasks, with 24 preferred
+- a minimum of twelve vulnerability-bearing tasks
+- at least 8 secure controls
+- at least 6 covered apps
+- no more than 8 tasks in a single app family
+- at least 4 denial controls
+- at least 4 authorized-allow controls
 
 ## Holdout Execution Model
 
