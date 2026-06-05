@@ -81,6 +81,11 @@ def public_api_docs() -> list[dict[str, str]]:
             "description": "Read a task from the non-secure project task API.",
         },
         {
+            "method": "GET",
+            "path": "/api/workspaces/{PROJECT_ID}/work-items/{TASK_ID}",
+            "description": "Alias for reading a task through workspace/work-item naming.",
+        },
+        {
             "method": "PATCH",
             "path": "/api/projects/{PROJECT_ID}/tasks/{TASK_ID}",
             "description": "Update task status for authorized same-tenant owner/member actors.",
@@ -109,7 +114,9 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
         return _json(401, {"error": "missing_or_unknown_actor"})
 
     parts = [part for part in urlparse(path).path.split("/") if part]
-    if len(parts) == 5 and parts[:2] == ["api", "projects"] and parts[3] == "tasks":
+    project_task_route = len(parts) == 5 and parts[:2] == ["api", "projects"] and parts[3] == "tasks"
+    workspace_item_route = len(parts) == 5 and parts[:2] == ["api", "workspaces"] and parts[3] == "work-items"
+    if project_task_route or workspace_item_route:
         project_id = parts[2]
         task_id = parts[4]
         task = state["tasks"].get(task_id)
@@ -117,8 +124,11 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
             return _json(404, {"error": "not_found"})
         if method == "GET":
             # Intentional BOLA: project/task tenant is not checked against actor tenant.
-            return _json(200, {"task": task | {"id": task_id}, "viewer": actor_name})
+            route_name = "workspace_work_item_alias" if workspace_item_route else "project_task"
+            return _json(200, {"task": task | {"id": task_id}, "viewer": actor_name, "route": route_name})
         if method == "PATCH":
+            if workspace_item_route:
+                return _json(405, {"error": "method_not_allowed"})
             if task["tenant_id"] != actor["tenant_id"] or actor["role"] not in {"owner", "member"}:
                 return _json(403, {"error": "forbidden"})
             task["status"] = str((body or {}).get("status", task["status"]))

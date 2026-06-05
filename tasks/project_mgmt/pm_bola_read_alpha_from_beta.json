@@ -30,6 +30,13 @@
       "method": "GET",
       "path": "/api/secure/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
       "status": 403
+    },
+    {
+      "name": "alias_route_exposes_same_cross_tenant_read",
+      "actor": "beta_member",
+      "method": "GET",
+      "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
+      "status": 200
     }
   ]
 }

@@ -75,6 +75,11 @@ def public_api_docs() -> list[dict[str, str]]:
             "path": "/api/secure/orgs/{ORG_ID}/settings/plan",
             "description": "Read plan settings through the secure route that requires admin role.",
         },
+        {
+            "method": "GET",
+            "path": "/api/orgs/{ORG_ID}/settings/admin-export",
+            "description": "Decoy admin export route; sensitive-looking but requires same-org admin role.",
+        },
     ]
 
 
@@ -107,8 +112,16 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
 
     if len(parts) == 5 and parts[:2] == ["api", "orgs"] and parts[3] == "settings":
         org_id = parts[2]
-        if org_id not in state["orgs"] or parts[4] != "plan":
+        if org_id not in state["orgs"]:
             return _json(404, {"error": "not_found"})
+        if parts[4] != "plan":
+            if parts[4] != "admin-export":
+                return _json(404, {"error": "not_found"})
+            if method != "GET":
+                return _json(405, {"error": "method_not_allowed"})
+            if actor["org_id"] != org_id or actor["role"] != "admin":
+                return _json(403, {"error": "forbidden"})
+            return _json(200, {"export": {"org_id": org_id, "status": "queued"}, "viewer": actor_name})
         if method == "GET":
             # Intentional BFLA: org membership is checked, but admin role is not.
             if actor["org_id"] != org_id:

@@ -14,6 +14,7 @@ This alpha preview includes:
 - 2 intentionally vulnerable Dockerized SaaS targets
 - 15 public tasks across BOLA, BFLA, and secure controls
 - seeded tenant/object/org IDs to reduce hardcoded-solution value
+- a prototype route alias and decoy endpoint exercised by public controls
 - machine-verifiable backend proof and denial-control scoring
 - false-positive controls where the correct answer is no finding
 - structured result artifacts, including scorer-owned replay transcripts
@@ -263,7 +264,8 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 ## Current Limits
 
 - The alpha preview has 15 public tasks; a stronger leaderboard should add more private holdout tasks.
-- Route aliases are not randomized yet.
+- A prototype route alias and decoy endpoint exist, but route aliases are not
+  randomized yet.
 - The runner executes local agent commands and should be used only with trusted
   commands or inside an isolated environment.
 - Docker container smoke depends on a local Docker daemon.

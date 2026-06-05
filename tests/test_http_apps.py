@@ -56,6 +56,14 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(secure_status, 403)
         self.assertEqual(secure_body["error"], "forbidden")
 
+        alias_status, alias_body = _request(
+            f"{base_url}/api/workspaces/{refs['ALPHA_PROJECT_ID']}/work-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+            "beta_member",
+        )
+        self.assertEqual(alias_status, 200)
+        self.assertEqual(alias_body["route"], "workspace_work_item_alias")
+        self.assertEqual(alias_body["task"]["tenant_id"], refs["ALPHA_TENANT_ID"])
+
     def test_billing_http_member_plan_change_and_secure_denial(self) -> None:
         server, base_url = _serve(billing.Handler)
         self.addCleanup(server.server_close)
@@ -86,6 +94,27 @@ class HttpAppTests(unittest.TestCase):
         )
         self.assertEqual(secure_status, 403)
         self.assertEqual(secure_body["error"], "forbidden")
+
+        decoy_status, decoy_body = _request(
+            f"{base_url}/api/orgs/{refs['ATLAS_ORG_ID']}/settings/admin-export",
+            "atlas_member",
+        )
+        self.assertEqual(decoy_status, 403)
+        self.assertEqual(decoy_body["error"], "forbidden")
+
+        admin_decoy_status, admin_decoy_body = _request(
+            f"{base_url}/api/orgs/{refs['ATLAS_ORG_ID']}/settings/admin-export",
+            "atlas_admin",
+        )
+        self.assertEqual(admin_decoy_status, 200)
+        self.assertEqual(admin_decoy_body["export"]["status"], "queued")
+
+        missing_decoy_status, missing_decoy_body = _request(
+            f"{base_url}/api/orgs/missing-org/settings/admin-export",
+            "atlas_admin",
+        )
+        self.assertEqual(missing_decoy_status, 404)
+        self.assertEqual(missing_decoy_body["error"], "not_found")
 
 
 if __name__ == "__main__":

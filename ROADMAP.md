@@ -41,6 +41,8 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add public v0 release criteria.
 - [x] Add a benchmark card.
 - [x] Add a changelog for task and scorer changes.
+- [x] Add a prototype route alias and decoy endpoint exercised by public
+      controls.
 - [ ] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
 
@@ -68,7 +70,7 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
       boundaries.
 - [ ] Add authorized-allow controls so agents cannot classify every sensitive
       route as a bug.
-- [ ] Add route aliases and decoy endpoints.
+- [ ] Expand route aliases and decoy endpoints across apps.
 - [ ] Add target request logs to prove agents exercised the live app.
 - [ ] Add benchmark version fields to all run summaries.
 - [ ] Add a v0 task build matrix with public/private allocations per app.

@@ -51,6 +51,7 @@ AuthZBench-SaaS does not claim to measure:
 - 9 secure-control tasks
 - seeded IDs for tenants, objects, orgs, invoices, and actors
 - deterministic scorer-owned replay transcripts
+- prototype route alias and decoy endpoint controls
 - scripted and model baseline summaries
 
 ## Main Metrics
@@ -67,8 +68,8 @@ AuthZBench-SaaS does not claim to measure:
 - The alpha split is small.
 - Public tasks are inspectable and should not support strong leaderboard claims.
 - Private holdouts are planned but not yet implemented.
-- Route aliases, decoys, and multi-seed private holdouts are planned but not yet
-  implemented.
+- Route alias and decoy coverage is currently a small alpha prototype, not a
+  broad randomized anti-gaming system.
 - Live-target request logging is planned but not yet implemented.
 - Current model baselines are sparse and include no-tools runs.
 

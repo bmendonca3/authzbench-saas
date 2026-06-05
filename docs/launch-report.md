@@ -22,6 +22,7 @@ The current public split contains:
 - 9 secure-control tasks
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
+- prototype route alias and decoy endpoint coverage
 - scripted baseline agent for harness validation
 - two initial Kiro no-tools model baselines
 
@@ -141,5 +142,5 @@ not yet have private holdout scoring.
   daemon is available.
 - HAR browser capture is not implemented yet; backend replay transcripts are
   implemented through `transcript.json`.
-- Route aliases are not randomized yet; object, tenant, org, invoice, and token
-  IDs are seeded.
+- A prototype route alias and decoy endpoint are present, but route aliases are
+  not randomized yet; object, tenant, org, invoice, and token IDs are seeded.

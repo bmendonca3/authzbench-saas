@@ -21,6 +21,13 @@
       "method": "GET",
       "path": "/api/secure/orgs/{ATLAS_ORG_ID}/settings/plan",
       "status": 403
+    },
+    {
+      "name": "decoy_admin_export_denies_member",
+      "actor": "atlas_member",
+      "method": "GET",
+      "path": "/api/orgs/{ATLAS_ORG_ID}/settings/admin-export",
+      "status": 403
     }
   ]
 }

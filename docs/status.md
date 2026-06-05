@@ -11,6 +11,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - 6 vulnerable tasks
 - 9 secure-control tasks
 - seeded runtime fixtures for tenant, object, organization, invoice, and actor IDs
+- prototype route alias and decoy endpoint coverage
 - deterministic scorer with backend replay transcripts
 - result and leaderboard schema documentation
 - public holdout strategy documentation
@@ -59,7 +60,7 @@ Still required before the real v0 or a serious leaderboard:
 
 - expansion beyond the current 2-app/15-task alpha split
 - larger private holdout pack outside public Git history
-- route alias randomization or decoy endpoints
+- route alias expansion and randomization
 - live-target request logging in addition to deterministic replay
 - containerized or otherwise isolated model/agent execution for leaderboard runs
 - final secret/personal-info scan immediately before push

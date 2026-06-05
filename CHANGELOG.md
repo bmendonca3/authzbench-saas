@@ -14,4 +14,6 @@
 - Updated baseline summaries to use the alpha benchmark-version label.
 - Added runner metadata support for benchmark version, agent, model, and harness
   type.
+- Added a prototype project-management route alias and billing decoy endpoint,
+  both exercised by public task controls.
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.
