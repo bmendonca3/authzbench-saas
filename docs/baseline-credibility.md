@@ -61,6 +61,13 @@ is still not leaderboard-grade live-agent evidence: the deterministic agent only
 submits findings for vulnerable tasks, so secure controls are scored by replay
 but are not live-exercised as agent requests.
 
+The heuristic live HTTP prober is a stronger current harness check for live
+target proof. It probes documented routes for every public task and writes a
+per-task `tool-probes.json` artifact, giving full target-request correlation
+across vulnerable and control tasks. Panel review classified it as deterministic
+harness evidence because it uses phrase and route heuristics, so it does not
+satisfy the v0 requirement for a real tool-agent baseline.
+
 The Kiro model summaries are legacy 15-task alpha snapshots. They are useful
 historical evidence, but they must be rerun on the current 44-task split and
 repeated before any v0 tag or serious public leaderboard claim.

@@ -71,6 +71,7 @@ agent only exercises vulnerable proof requests before submitting.
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 44 | 44 | 1.0 | 0.0 | 1.0 |
 | Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 | 1.0 |
+| Heuristic live HTTP prober | 44 | 33 | 0.6111 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 | not tracked |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 | not tracked |
 
@@ -84,6 +85,9 @@ Ready:
 - current live HTTP scripted harness summary exists for the 44-task public split
 - baseline registry exists and passes consistency validation while explicitly
   reporting `v0_baseline_ready: false`
+- a heuristic live HTTP prober now provides 44/44 target-request correlation
+  across vulnerable and control public tasks, but it is classified as a harness
+  check rather than a v0 tool-agent baseline
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass while strict v0 readiness
   still fails honestly

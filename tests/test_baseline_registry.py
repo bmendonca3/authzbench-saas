@@ -11,6 +11,7 @@ from scripts.validate_baseline_registry import ROOT, validate_registry
 
 
 REGISTRY = ROOT / "baselines" / "baseline-registry.json"
+LEGACY_CLAUDE_ID = "kiro-claude-sonnet-4-6-legacy-15"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
@@ -26,16 +27,24 @@ def _copy_registry_workspace(tmp_path: Path) -> Path:
     return registry_path
 
 
+def _baseline_by_id(registry: dict, baseline_id: str) -> dict:
+    for entry in registry["baselines"]:
+        if entry["id"] == baseline_id:
+            return entry
+    raise AssertionError(f"missing baseline fixture: {baseline_id}")
+
+
 class BaselineRegistryTests(unittest.TestCase):
     def test_current_registry_is_honest_but_not_v0_ready(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 4, result)
+        self.assertEqual(result["baseline_count"], 5, result)
         self.assertEqual(result["public_split"]["task_count"], 44, result)
         self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(any("current public model families" in item for item in result["unmet_v0_requirements"]), result)
         self.assertTrue(any("missing current public tool-agent baseline" in item for item in result["unmet_v0_requirements"]), result)
+        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
 
     def test_rejects_harness_check_mislabeled_as_current_public_split(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -56,7 +65,7 @@ class BaselineRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            model_entry = copy.deepcopy(registry["baselines"][2])
+            model_entry = copy.deepcopy(_baseline_by_id(registry, LEGACY_CLAUDE_ID))
             model_entry["id"] = "bad-one-off-current-model"
             model_entry["release_suitability"] = "current_public_split"
             model_entry["expected_task_count"] = 44
@@ -82,7 +91,7 @@ class BaselineRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            model_entry = copy.deepcopy(registry["baselines"][2])
+            model_entry = copy.deepcopy(_baseline_by_id(registry, LEGACY_CLAUDE_ID))
             model_entry["id"] = "bad-inflated-repeated-model"
             model_entry["release_suitability"] = "current_public_split"
             model_entry["expected_task_count"] = 44
@@ -109,7 +118,7 @@ class BaselineRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            model_entry = copy.deepcopy(registry["baselines"][2])
+            model_entry = copy.deepcopy(_baseline_by_id(registry, LEGACY_CLAUDE_ID))
             model_entry["id"] = "bad-duplicated-run-artifacts"
             model_entry["release_suitability"] = "current_public_split"
             model_entry["expected_task_count"] = 44
@@ -140,7 +149,7 @@ class BaselineRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            model_entry = copy.deepcopy(registry["baselines"][2])
+            model_entry = copy.deepcopy(_baseline_by_id(registry, LEGACY_CLAUDE_ID))
             model_entry["id"] = "bad-model-as-harness-check"
             model_entry["release_suitability"] = "current_public_harness_check"
             model_entry["expected_task_count"] = 44

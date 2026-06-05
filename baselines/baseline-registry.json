@@ -42,6 +42,20 @@
       "notes": "Current 44-task live HTTP harness check against Docker targets. Vulnerable proof requests correlate to target logs, but secure controls are not live-exercised by this deterministic finding-only agent, so this is not leaderboard-grade live-agent evidence."
     },
     {
+      "id": "heuristic-live-http-prober-public-44",
+      "summary_path": "heuristic-live-http-prober-public-44-summary.json",
+      "kind": "harness_check",
+      "release_suitability": "current_public_harness_check",
+      "leaderboard_eligible": false,
+      "run_count": 1,
+      "expected_harness_type": "heuristic-live-http",
+      "expected_agent": "heuristic_live_http_prober",
+      "expected_model": "heuristic-http-prober-v1",
+      "expected_task_count": 44,
+      "requires_rerun_before_v0": true,
+      "notes": "Current 44-task live HTTP heuristic harness check. It produces per-task probe artifacts and target-log correlation across vulnerable and secure-control tasks, but panel review classified it as deterministic harness evidence, not the real v0 tool-agent baseline."
+    },
+    {
       "id": "kiro-claude-sonnet-4-6-legacy-15",
       "summary_path": "kiro-claude-sonnet-4.6-full-summary.json",
       "kind": "model_baseline",

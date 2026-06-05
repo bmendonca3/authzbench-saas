@@ -25,6 +25,11 @@ not that the v0 baseline bar is complete.
   vulnerable tasks. Secure controls still have no agent-side live requests in
   this harness because the deterministic agent only exercises submitted
   findings.
+- `heuristic-live-http-prober-public-44-summary.json`: deterministic live HTTP
+  probe harness that exercises documented routes on every public task and writes
+  per-task probe artifacts. The current run has 44/44 target-side request
+  correlation and zero control false reports, but panel review classified it as
+  a harness check, not the real v0 tool-agent baseline.
 - `kiro-claude-sonnet-4.6-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
 - `kiro-qwen3-coder-next-full-summary.json`: legacy 15-task alpha snapshot

@@ -45,9 +45,10 @@
       "summary_paths": [
         "2026-06-05-baseline-registry-panel-summary.md",
         "2026-06-05-leaderboard-submission-panel-summary.md",
-        "2026-06-05-leaderboard-artifact-validation-panel-summary.md"
+        "2026-06-05-leaderboard-artifact-validation-panel-summary.md",
+        "2026-06-05-tool-agent-baseline-panel-summary.md"
       ],
-      "notes": "Registry and leaderboard validators have review coverage, but repeated real baselines and tool-agent baselines are still missing."
+      "notes": "Registry and leaderboard validators have review coverage. The heuristic live HTTP prober improves live-target proof, but panel review classified it as deterministic harness evidence, so repeated real baselines and a true tool-agent baseline are still missing."
     },
     {
       "id": "holdout_contamination_anti_gaming",

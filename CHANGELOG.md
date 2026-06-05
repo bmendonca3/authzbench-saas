@@ -40,6 +40,9 @@
 - Reran the live HTTP scripted baseline on the current 44-task public split and
   updated the baseline registry to treat it as a current harness check, while
   keeping it non-eligible for leaderboard claims.
+- Added a heuristic live HTTP prober harness check with per-task probe artifacts
+  and 44/44 target-request correlation, while keeping it out of the v0
+  tool-agent baseline gate.
 - Hardened public validation so lightweight checks do not require Docker
   Compose unless container smoke validation is requested.
 - Added a public-safe private holdout summary utility so maintainers can produce
