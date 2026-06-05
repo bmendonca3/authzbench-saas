@@ -79,7 +79,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add route aliases and decoy endpoints exercised by public controls.
 - [x] Add target-side JSONL request logs for Docker HTTP targets.
 - [x] Add alpha runner correlation from target logs into per-task artifacts.
-- [ ] Add CI for unit tests, manifest validation, compile checks, and Docker
+- [x] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
 - [x] Keep sectional review notes current as each benchmark section changes.
 - [x] Preserve a public roadmap and goal contract for the path to v0.

@@ -24,7 +24,8 @@ intended public host is the public `github.com` account.
 - [ ] private holdout manifests are absent from Git and ignored by `.gitignore`
 - [ ] secrets, personal paths, personal emails, browser artifacts, and unrelated local data are absent from the Git index
 - [ ] `python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline`
-- [ ] CI status is explicit and passing before any real v0 tag
+- [ ] GitHub Actions public-validation workflow exists and remote CI status is
+      explicit and passing before any real v0 tag
 
 ## Suggested Repository Settings
 

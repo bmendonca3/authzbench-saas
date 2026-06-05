@@ -101,6 +101,10 @@ python3 scripts/validate_public.py \
   --include-scripted-baseline
 ```
 
+The repository also includes a GitHub Actions public-validation workflow for
+pushes, pull requests, and manual dispatch. Remote CI status should still be
+checked before any release tag.
+
 Run the deterministic scripted baseline:
 
 ```bash

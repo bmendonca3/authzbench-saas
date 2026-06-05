@@ -1,0 +1,35 @@
+name: Validate AuthZBench-SaaS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-validation:
+    name: Public validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Show tool versions
+        run: |
+          python --version
+          docker --version
+          docker compose version
+
+      - name: Run public validation gates
+        run: python scripts/validate_public.py --include-scripted-baseline

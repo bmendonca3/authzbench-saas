@@ -24,6 +24,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - result and leaderboard schema documentation
 - public holdout strategy documentation
 - v0 task build matrix documentation
+- GitHub Actions workflow for public validation gates
 - scripted and model baseline summaries
 
 ## Verified Locally
@@ -82,6 +83,6 @@ Still required before the real v0 or a serious leaderboard:
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs
-- CI workflow for public validation gates
+- remote CI status must be explicit and passing before any real v0 tag
 - Docker-backed runtime smoke when a daemon is available
 - post-push clone check from public `github.com` before tags or releases
