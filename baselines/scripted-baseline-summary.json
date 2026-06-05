@@ -4,7 +4,7 @@
   "authorized_allow_control_task_count": 10,
   "authorized_allow_pass_rate": 1.0,
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
-  "benchmark_commit_sha": "f4d570f4e63d7c62d66336bc99e0ed0d403472dc",
+  "benchmark_commit_sha": "817e829e4c1540ea6f2b2197c3e3957633b3dfd8",
   "harness_type": "scripted",
   "control_task_count": 26,
   "denial_control_task_count": 16,
