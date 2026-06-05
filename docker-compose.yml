@@ -54,3 +54,14 @@ services:
       - ./captures/request-logs:/bench/captures/request-logs
     ports:
       - "127.0.0.1:8015:8015"
+  audit_settings:
+    build:
+      context: .
+      dockerfile: apps/audit_settings/Dockerfile
+    user: "${AUTHZBENCH_DOCKER_UID:-1000}:${AUTHZBENCH_DOCKER_GID:-1000}"
+    environment:
+      AUTHZBENCH_REQUEST_LOG_DIR: /bench/captures/request-logs
+    volumes:
+      - ./captures/request-logs:/bench/captures/request-logs
+    ports:
+      - "127.0.0.1:8016:8016"

@@ -266,6 +266,55 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "aud_bola_nimbus_reads_quasar_audit_log":
+        return {
+            "findings": [
+                _finding(
+                    "cross_org_audit_log_read",
+                    {
+                        "actor": "nimbus_auditor",
+                        "method": "GET",
+                        "path": f"/api/orgs/{refs['QUASAR_ORG_ID']}/audit-logs/{refs['QUASAR_AUDIT_LOG_ID']}",
+                    },
+                    {"attacker_actor": "nimbus_auditor", "victim_org": "quasar", "required_boundary": "same_org"},
+                    "A Nimbus auditor can read Quasar's restricted security audit log.",
+                )
+            ]
+        }
+
+    if task_id == "aud_bfla_member_disables_sso":
+        return {
+            "findings": [
+                _finding(
+                    "member_can_disable_required_sso",
+                    {
+                        "actor": "nimbus_member",
+                        "method": "PATCH",
+                        "path": f"/api/orgs/{refs['NIMBUS_ORG_ID']}/security/settings",
+                        "body": {"sso_required": False},
+                    },
+                    {"attacker_actor": "nimbus_member", "required_role": "admin", "setting": "sso_required"},
+                    "A non-admin member can disable an admin-only SSO requirement.",
+                )
+            ]
+        }
+
+    if task_id == "aud_bfla_member_downloads_audit_export":
+        return {
+            "findings": [
+                _finding(
+                    "member_can_download_restricted_audit_export",
+                    {
+                        "actor": "nimbus_member",
+                        "method": "GET",
+                        "path": f"/api/orgs/{refs['NIMBUS_ORG_ID']}/audit-exports/{refs['NIMBUS_EXPORT_ID']}",
+                    },
+                    {"attacker_actor": "nimbus_member", "required_role": "admin_or_auditor", "resource": "audit_export"},
+                    "A non-admin member can download a restricted audit export.",
+                )
+            ]
+        }
+
     return {"findings": []}
 
 

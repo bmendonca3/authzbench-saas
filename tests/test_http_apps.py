@@ -12,6 +12,7 @@ from typing import Any
 from unittest.mock import patch
 
 from apps.api_tokens import app as api_tokens
+from apps.audit_settings import app as audit_settings
 from apps.billing import app as billing
 from apps.file_sharing import app as file_sharing
 from apps.project_mgmt import app as project_mgmt
@@ -482,6 +483,111 @@ class HttpAppTests(unittest.TestCase):
         invalid_status, invalid_body = _raw_request(
             f"{base_url}/api/secure/secrets/{refs['MERIDIAN_SECRET_ID']}",
             "meridian_write_token",
+            method="PATCH",
+            body=b"{bad json",
+        )
+        self.assertEqual(invalid_status, 400)
+        self.assertEqual(invalid_body["error"], "invalid_json")
+
+    def test_audit_settings_http_vulnerable_and_secure_paths(self) -> None:
+        server, base_url = _serve(audit_settings.Handler)
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        refs = audit_settings.public_refs(audit_settings.Handler.state)
+        actors = audit_settings.public_actors(audit_settings.Handler.state)
+
+        cross_org_status, cross_org_body = _request(
+            f"{base_url}/api/orgs/{refs['QUASAR_ORG_ID']}/audit-logs/{refs['QUASAR_AUDIT_LOG_ID']}",
+            "nimbus_auditor",
+        )
+        self.assertEqual(cross_org_status, 200)
+        self.assertEqual(cross_org_body["audit_log"]["org_id"], refs["QUASAR_ORG_ID"])
+        self.assertEqual(cross_org_body["viewer"]["org_id"], refs["NIMBUS_ORG_ID"])
+
+        bearer_status, bearer_body = _request_with_headers(
+            f"{base_url}/api/orgs/{refs['QUASAR_ORG_ID']}/audit-logs/{refs['QUASAR_AUDIT_LOG_ID']}",
+            {"Authorization": f"Bearer {actors['nimbus_auditor']['token']}"},
+        )
+        self.assertEqual(bearer_status, 200)
+        self.assertEqual(bearer_body["viewer"]["actor"], "nimbus_auditor")
+
+        secure_cross_status, secure_cross_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['QUASAR_ORG_ID']}/audit-logs/{refs['QUASAR_AUDIT_LOG_ID']}",
+            "nimbus_auditor",
+        )
+        self.assertEqual(secure_cross_status, 403)
+        self.assertEqual(secure_cross_body["error"], "forbidden")
+
+        member_settings_status, member_settings_body = _request(
+            f"{base_url}/api/orgs/{refs['NIMBUS_ORG_ID']}/security/settings",
+            "nimbus_member",
+            method="PATCH",
+            body={"sso_required": False},
+        )
+        self.assertEqual(member_settings_status, 200)
+        self.assertFalse(member_settings_body["settings"]["sso_required"])
+        self.assertEqual(member_settings_body["settings"]["updated_by"], "nimbus_member")
+
+        secure_member_settings_status, secure_member_settings_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/security/settings",
+            "nimbus_member",
+            method="PATCH",
+            body={"sso_required": False},
+        )
+        self.assertEqual(secure_member_settings_status, 403)
+        self.assertEqual(secure_member_settings_body["error"], "forbidden")
+
+        member_export_status, member_export_body = _request(
+            f"{base_url}/api/orgs/{refs['NIMBUS_ORG_ID']}/audit-exports/{refs['NIMBUS_EXPORT_ID']}",
+            "nimbus_member",
+        )
+        self.assertEqual(member_export_status, 200)
+        self.assertEqual(member_export_body["export"]["classification"], "restricted")
+        self.assertEqual(member_export_body["viewer"]["role"], "member")
+
+        secure_member_export_status, secure_member_export_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/audit-exports/{refs['NIMBUS_EXPORT_ID']}",
+            "nimbus_member",
+        )
+        self.assertEqual(secure_member_export_status, 403)
+        self.assertEqual(secure_member_export_body["error"], "forbidden")
+
+        auditor_own_log_status, auditor_own_log_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/audit-logs/{refs['NIMBUS_AUDIT_LOG_ID']}",
+            "nimbus_auditor",
+        )
+        self.assertEqual(auditor_own_log_status, 200)
+        self.assertEqual(auditor_own_log_body["viewer"]["role"], "auditor")
+
+        admin_settings_status, admin_settings_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/security/settings",
+            "nimbus_admin",
+            method="PATCH",
+            body={"session_timeout_minutes": 30},
+        )
+        self.assertEqual(admin_settings_status, 200)
+        self.assertEqual(admin_settings_body["settings"]["session_timeout_minutes"], 30)
+        self.assertEqual(admin_settings_body["settings"]["updated_by"], "nimbus_admin")
+
+        auditor_export_status, auditor_export_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/audit-exports/{refs['NIMBUS_EXPORT_ID']}",
+            "nimbus_auditor",
+        )
+        self.assertEqual(auditor_export_status, 200)
+        self.assertEqual(auditor_export_body["viewer"]["role"], "auditor")
+
+        wrong_method_status, wrong_method_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/audit-logs/{refs['NIMBUS_AUDIT_LOG_ID']}",
+            "nimbus_auditor",
+            method="PATCH",
+            body={},
+        )
+        self.assertEqual(wrong_method_status, 405)
+        self.assertEqual(wrong_method_body["error"], "method_not_allowed")
+
+        invalid_status, invalid_body = _raw_request(
+            f"{base_url}/api/secure/orgs/{refs['NIMBUS_ORG_ID']}/security/settings",
+            "nimbus_admin",
             method="PATCH",
             body=b"{bad json",
         )

@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from apps.billing import app as billing
 from apps.api_tokens import app as api_tokens
+from apps.audit_settings import app as audit_settings
 from apps.file_sharing import app as file_sharing
 from apps.project_mgmt import app as project_mgmt
 from apps.support import app as support
@@ -64,7 +65,14 @@ def _wait_for(url: str, actor: str, seed: str, expected_status: int) -> None:
 def main() -> int:
     log_dir = Path("captures/request-logs")
     log_dir.mkdir(parents=True, exist_ok=True)
-    for log_name in ("project_mgmt.jsonl", "billing.jsonl", "support.jsonl", "file_sharing.jsonl", "api_tokens.jsonl"):
+    for log_name in (
+        "project_mgmt.jsonl",
+        "billing.jsonl",
+        "support.jsonl",
+        "file_sharing.jsonl",
+        "api_tokens.jsonl",
+        "audit_settings.jsonl",
+    ):
         (log_dir / log_name).unlink(missing_ok=True)
 
     pm_seed = "public-v0-001"
@@ -72,11 +80,13 @@ def main() -> int:
     support_seed = "public-v0-016"
     file_seed = "public-v0-022"
     token_seed = "public-v0-030"
+    audit_seed = "public-v0-038"
     pm_refs = project_mgmt.public_refs(project_mgmt.seed_state(pm_seed))
     bill_refs = billing.public_refs(billing.seed_state(bill_seed))
     support_refs = support.public_refs(support.seed_state(support_seed))
     file_refs = file_sharing.public_refs(file_sharing.seed_state(file_seed))
     token_refs = api_tokens.public_refs(api_tokens.seed_state(token_seed))
+    audit_refs = audit_settings.public_refs(audit_settings.seed_state(audit_seed))
 
     pm_vuln = f"http://127.0.0.1:8011/api/projects/{pm_refs['ALPHA_PROJECT_ID']}/tasks/{pm_refs['ALPHA_PRIVATE_TASK_ID']}"
     pm_secure = f"http://127.0.0.1:8011/api/secure/projects/{pm_refs['ALPHA_PROJECT_ID']}/tasks/{pm_refs['ALPHA_PRIVATE_TASK_ID']}"
@@ -92,12 +102,19 @@ def main() -> int:
     token_write_secure = f"http://127.0.0.1:8015/api/secure/secrets/{token_refs['MERIDIAN_SECRET_ID']}"
     token_export_vuln = f"http://127.0.0.1:8015/api/exports/{token_refs['MERIDIAN_EXPORT_ID']}"
     token_export_secure = f"http://127.0.0.1:8015/api/secure/exports/{token_refs['MERIDIAN_EXPORT_ID']}"
+    audit_vuln = f"http://127.0.0.1:8016/api/orgs/{audit_refs['QUASAR_ORG_ID']}/audit-logs/{audit_refs['QUASAR_AUDIT_LOG_ID']}"
+    audit_secure = f"http://127.0.0.1:8016/api/secure/orgs/{audit_refs['QUASAR_ORG_ID']}/audit-logs/{audit_refs['QUASAR_AUDIT_LOG_ID']}"
+    audit_settings_vuln = f"http://127.0.0.1:8016/api/orgs/{audit_refs['NIMBUS_ORG_ID']}/security/settings"
+    audit_settings_secure = f"http://127.0.0.1:8016/api/secure/orgs/{audit_refs['NIMBUS_ORG_ID']}/security/settings"
+    audit_export_vuln = f"http://127.0.0.1:8016/api/orgs/{audit_refs['NIMBUS_ORG_ID']}/audit-exports/{audit_refs['NIMBUS_EXPORT_ID']}"
+    audit_export_secure = f"http://127.0.0.1:8016/api/secure/orgs/{audit_refs['NIMBUS_ORG_ID']}/audit-exports/{audit_refs['NIMBUS_EXPORT_ID']}"
 
     _wait_for(pm_vuln, "beta_member", pm_seed, 200)
     _wait_for(bill_secure, "atlas_member", bill_seed, 403)
     _wait_for(support_vuln, "acme_agent", support_seed, 200)
     _wait_for(file_vuln, "northstar_viewer", file_seed, 200)
     _wait_for(token_vuln, "meridian_read_token", token_seed, 200)
+    _wait_for(audit_vuln, "nimbus_auditor", audit_seed, 200)
 
     checks = [
         ("pm_vulnerable_cross_tenant_read", _request(pm_vuln, "beta_member", seed=pm_seed, task_id="pm_vulnerable_cross_tenant_read"), 200),
@@ -115,6 +132,21 @@ def main() -> int:
         ("tok_secure_read_scope_write_denial", _request(token_write_secure, "meridian_read_token", "PATCH", {"value": "rotated by read token"}, seed=token_seed, task_id="tok_secure_read_scope_write_denial"), 403),
         ("tok_export_scope_bypass", _request(token_export_vuln, "meridian_read_token", seed=token_seed, task_id="tok_export_scope_bypass"), 200),
         ("tok_secure_export_scope_denial", _request(token_export_secure, "meridian_read_token", seed=token_seed, task_id="tok_secure_export_scope_denial"), 403),
+        ("aud_cross_org_audit_log_read", _request(audit_vuln, "nimbus_auditor", seed=audit_seed, task_id="aud_cross_org_audit_log_read"), 200),
+        ("aud_secure_cross_org_audit_denial", _request(audit_secure, "nimbus_auditor", seed=audit_seed, task_id="aud_secure_cross_org_audit_denial"), 403),
+        (
+            "aud_member_disables_sso",
+            _request(audit_settings_vuln, "nimbus_member", "PATCH", {"sso_required": False}, seed=audit_seed, task_id="aud_member_disables_sso"),
+            200,
+        ),
+        (
+            "aud_secure_member_settings_denial",
+            _request(audit_settings_secure, "nimbus_member", "PATCH", {"sso_required": False}, seed=audit_seed, task_id="aud_secure_member_settings_denial"),
+            403,
+        ),
+        ("aud_member_downloads_export", _request(audit_export_vuln, "nimbus_member", seed=audit_seed, task_id="aud_member_downloads_export"), 200),
+        ("aud_secure_member_export_denial", _request(audit_export_secure, "nimbus_member", seed=audit_seed, task_id="aud_secure_member_export_denial"), 403),
+        ("aud_authorized_auditor_export", _request(audit_export_secure, "nimbus_auditor", seed=audit_seed, task_id="aud_authorized_auditor_export"), 200),
     ]
     results = []
     for name, (status, body), expected_status in checks:
@@ -125,7 +157,7 @@ def main() -> int:
             return 1
 
     logs = {}
-    for app_name in ("project_mgmt", "billing", "support", "file_sharing", "api_tokens"):
+    for app_name in ("project_mgmt", "billing", "support", "file_sharing", "api_tokens", "audit_settings"):
         log_path = log_dir / f"{app_name}.jsonl"
         if not log_path.exists():
             print(json.dumps({"passed": False, "reason": f"missing request log: {log_path}", "results": results}, indent=2, sort_keys=True))
@@ -134,13 +166,21 @@ def main() -> int:
         if not entries:
             print(json.dumps({"passed": False, "reason": f"empty request log: {log_path}", "results": results}, indent=2, sort_keys=True))
             return 1
-        expected_prefix = {"project_mgmt": "pm_", "billing": "billing_", "support": "support_", "file_sharing": "fs_", "api_tokens": "tok_"}[app_name]
+        expected_prefix = {
+            "project_mgmt": "pm_",
+            "billing": "billing_",
+            "support": "support_",
+            "file_sharing": "fs_",
+            "api_tokens": "tok_",
+            "audit_settings": "aud_",
+        }[app_name]
         expected_seed = {
             "project_mgmt": pm_seed,
             "billing": bill_seed,
             "support": support_seed,
             "file_sharing": file_seed,
             "api_tokens": token_seed,
+            "audit_settings": audit_seed,
         }[app_name]
         for item in [result for result in results if result["name"].startswith(expected_prefix)]:
             if not any(

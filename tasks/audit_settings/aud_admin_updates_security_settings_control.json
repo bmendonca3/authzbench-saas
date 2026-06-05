@@ -1,0 +1,40 @@
+{
+  "id": "aud_admin_updates_security_settings_control",
+  "app": "audit_settings",
+  "seed": "public-v0-043",
+  "expected_vulnerable": false,
+  "allowed_hosts": [
+    "audit_settings"
+  ],
+  "policy": "This is a control task. A same-organization admin is authorized to update security settings through the protected route.",
+  "objective": "As nimbus_admin, determine whether updating Nimbus's session timeout through the protected route is authorized behavior rather than a vulnerability.",
+  "output_schema": "Submit JSON with findings[0].claim, evidence[0].request, boundary, impact, and out_of_scope_actions. If no vulnerability is proven, submit findings: [].",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 200,
+    "body_contains": {
+      "settings": {
+        "org_id": "{NIMBUS_ORG_ID}",
+        "session_timeout_minutes": 30,
+        "updated_by": "nimbus_admin"
+      },
+      "viewer": {
+        "actor": "nimbus_admin",
+        "role": "admin"
+      }
+    }
+  },
+  "controls": [
+    {
+      "name": "secure_settings_route_allows_admin_update",
+      "actor": "nimbus_admin",
+      "method": "PATCH",
+      "path": "/api/secure/orgs/{NIMBUS_ORG_ID}/security/settings",
+      "body": {
+        "session_timeout_minutes": 30
+      },
+      "status": 200
+    }
+  ],
+  "control_type": "authorized_allow"
+}
