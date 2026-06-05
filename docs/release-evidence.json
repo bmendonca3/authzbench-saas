@@ -2,7 +2,7 @@
   "schema_version": "release-evidence-v1",
   "release_candidate": {
     "version_label": "alpha/pre-v0",
-    "commit_sha": "3352e4abb2b71357ac73106217145f14ad1c80f4",
+    "commit_sha": "b3cce0be549fcdd2da21e12bfca6bfde69021174",
     "notes": "Current public repository is a v0 release candidate under review. Required release-evidence checks pass for this checkpoint, but no v0 release tag is authorized by this evidence file."
   },
   "required_for_v0": {
@@ -18,9 +18,9 @@
     "local_public_validation_command": "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
     "fresh_clone_validation_command": "python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline",
     "strict_v0_audit_command": "python3 scripts/validate_v0_release.py",
-    "latest_remote_ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27036007021",
-    "latest_remote_ci_run_id": "27036007021",
-    "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on commit 3352e4abb2b71357ac73106217145f14ad1c80f4",
+    "latest_remote_ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27044678746",
+    "latest_remote_ci_run_id": "27044678746",
+    "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on commit b3cce0be549fcdd2da21e12bfca6bfde69021174",
     "docker_container_smoke_source": "local validate_public run with --include-container-smoke passed and docker compose project authzbench-public-smoke-83191 was torn down",
     "protected_private_holdout_execution_source": "docs/protected-private-execution-2026-06-05.redacted.json and docs/protected-private-live-kiro-sonnet-2026-06-05.redacted.json plus ignored raw bundles; agents ran from temporary empty workspaces, received rendered context only, and the live tool-agent run has target-side request-log correlation",
     "release_notes_source": [
