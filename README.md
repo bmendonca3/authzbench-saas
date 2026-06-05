@@ -285,6 +285,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use, scope, and known limits
 - [`docs/launch-report.md`](docs/launch-report.md): alpha preview report and known limits
 - [`docs/v0-release-plan.md`](docs/v0-release-plan.md): concrete criteria for the real v0 release
+- [`docs/v0-task-build-matrix.md`](docs/v0-task-build-matrix.md): concrete public/private task allocation plan
 - [`docs/reviews/2026-06-05-panel-summary.md`](docs/reviews/2026-06-05-panel-summary.md): grounded model-panel review and implemented follow-ups
 - [`docs/publish-checklist.md`](docs/publish-checklist.md): pre-publication checklist
 - [`SECURITY.md`](SECURITY.md): safe handling for intentionally vulnerable apps

@@ -45,6 +45,15 @@ Those local files prove the private split mechanism during development but do
 not satisfy the final holdout size target unless a separate private pack contains
 at least 20 tasks, with 24 preferred for balanced coverage.
 
+Maintainers can validate an ignored local pack with:
+
+```bash
+python3 scripts/validate_holdout_pack.py
+```
+
+The validator checks the normal task schema, requires `split=private_holdout`,
+rejects public seed prefixes, and enforces the v0 holdout count range.
+
 ## Holdout Execution Model
 
 Private holdouts should not be handed to participants as readable local JSON.

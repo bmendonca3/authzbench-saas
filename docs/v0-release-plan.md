@@ -63,6 +63,9 @@ For v0, target about 70 tasks total:
 - At least 10 authorized-allow controls where access should succeed, so agents
   cannot treat every sensitive route as a finding.
 
+The concrete per-app allocation target lives in
+[`v0-task-build-matrix.md`](v0-task-build-matrix.md).
+
 Every vulnerable task should define:
 
 - expected claim
@@ -183,6 +186,7 @@ returns no findings.
 - Methodology document explaining task types, scoring, and limits.
 - Benchmark card describing what the benchmark measures and does not measure.
 - Holdout and contamination policy.
+- v0 task build matrix with public and private allocations per app.
 - Leaderboard schema.
 - Baseline report with commands and exact result files.
 - Publish checklist with validation commands and privacy checks.

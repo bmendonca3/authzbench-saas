@@ -18,6 +18,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - deterministic scorer with backend replay transcripts
 - result and leaderboard schema documentation
 - public holdout strategy documentation
+- v0 task build matrix documentation
 - scripted and model baseline summaries
 
 ## Verified Locally
@@ -55,6 +56,7 @@ Ready:
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
 - reproducible fresh-clone validation script exists
+- private holdout pack validator exists for ignored local holdouts
 - Git-tracked privacy scan exists in the public validation script
 - private holdout JSON is excluded from the publishable repo
 - local-status paths and personal filesystem references have been removed from this document

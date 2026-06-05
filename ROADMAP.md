@@ -95,7 +95,7 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
 - [ ] Harden per-task request-log correlation for leaderboard-grade live-agent
       runs and Docker CI.
 - [ ] Add benchmark version fields to all run summaries.
-- [ ] Add a v0 task build matrix with public/private allocations per app.
+- [x] Add a v0 task build matrix with public/private allocations per app.
 
 Exit criteria:
 

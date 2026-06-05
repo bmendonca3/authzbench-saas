@@ -12,6 +12,8 @@ intended public host is the public `github.com` account.
 - [ ] `docker compose config`
 - [ ] `python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted`
 - [ ] scripted baseline summary in `baselines/` matches the latest verified run
+- [ ] if a private pack exists locally, `python3 scripts/validate_holdout_pack.py`
+      passes and no private manifests are staged
 - [ ] older model/live baseline snapshots are clearly labeled, or rerun before a
       tagged release
 - [ ] Docker daemon running and `python3 scripts/container_smoke.py` passes against `docker compose up --build -d`

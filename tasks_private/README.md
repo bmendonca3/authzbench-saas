@@ -17,3 +17,9 @@ The public repository should contain:
 Before serious public leaderboard claims, maintain a separate private holdout
 pack with 20-30 private tasks, with 24 preferred for balanced coverage, as
 described in `docs/holdout-and-contamination.md`.
+
+Local validation command:
+
+```bash
+python3 scripts/validate_holdout_pack.py
+```
