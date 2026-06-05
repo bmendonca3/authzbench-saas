@@ -13,6 +13,10 @@ Tracked baseline files summarize reproducible runs without committing the full
 - `kiro-qwen3-coder-next-full-summary.json`: full public split through the Kiro
   no-tools adapter.
 
+The scripted baseline summary should match the current public split. The live
+scripted and Kiro summaries may temporarily be older alpha snapshots when the
+task set expands; rerun them before any tagged release.
+
 For every model baseline, preserve:
 
 - exact command or agent harness

@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from apps.billing import app as billing
 from apps.project_mgmt import app as project_mgmt
+from apps.support import app as support
 
 
 def _serve(handler_cls) -> tuple[ThreadingHTTPServer, str]:
@@ -37,6 +38,25 @@ def _request(
         data = json.dumps(body).encode()
         request_headers["content-type"] = "application/json"
     request = urllib.request.Request(url, data=data, headers=request_headers, method=method)
+    try:
+        with urllib.request.urlopen(request, timeout=3) as response:
+            return response.status, json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        return exc.code, json.loads(exc.read())
+
+
+def _raw_request(
+    url: str,
+    actor: str,
+    method: str,
+    body: bytes | None = None,
+) -> tuple[int, dict[str, Any]]:
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={"x-authzbench-actor": actor, "content-type": "application/json"},
+        method=method,
+    )
     try:
         with urllib.request.urlopen(request, timeout=3) as response:
             return response.status, json.loads(response.read())
@@ -171,6 +191,95 @@ class HttpAppTests(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(body["viewer"], "beta_member")
+
+    def test_support_http_vulnerable_and_secure_paths(self) -> None:
+        server, base_url = _serve(support.Handler)
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        refs = support.public_refs(support.Handler.state)
+
+        cross_org_status, cross_org_body = _request(
+            f"{base_url}/api/tickets/{refs['ORBIT_TICKET_ID']}",
+            "acme_agent",
+        )
+        self.assertEqual(cross_org_status, 200)
+        self.assertEqual(cross_org_body["viewer"], "acme_agent")
+        self.assertEqual(cross_org_body["ticket"]["org_id"], refs["ORBIT_ORG_ID"])
+
+        secure_cross_status, secure_cross_body = _request(
+            f"{base_url}/api/secure/tickets/{refs['ORBIT_TICKET_ID']}",
+            "acme_agent",
+        )
+        self.assertEqual(secure_cross_status, 403)
+        self.assertEqual(secure_cross_body["error"], "forbidden")
+
+        viewer_write_status, viewer_write_body = _request(
+            f"{base_url}/api/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
+            "acme_viewer",
+            method="PATCH",
+            body={"status": "closed"},
+        )
+        self.assertEqual(viewer_write_status, 200)
+        self.assertEqual(viewer_write_body["ticket"]["status"], "closed")
+
+        secure_viewer_write_status, secure_viewer_write_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
+            "acme_viewer",
+            method="PATCH",
+            body={"status": "closed"},
+        )
+        self.assertEqual(secure_viewer_write_status, 403)
+        self.assertEqual(secure_viewer_write_body["error"], "forbidden")
+
+        invite_status, invite_body = _request(
+            f"{base_url}/api/orgs/{refs['ACME_ORG_ID']}/invites",
+            "acme_agent",
+            method="POST",
+            body={"email": "new-admin@example.test", "role": "admin"},
+        )
+        self.assertEqual(invite_status, 201)
+        self.assertEqual(invite_body["invite"]["role"], "admin")
+        self.assertEqual(invite_body["invite"]["created_by"], "acme_agent")
+
+        secure_invite_status, secure_invite_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}/invites",
+            "acme_agent",
+            method="POST",
+            body={"email": "new-admin@example.test", "role": "admin"},
+        )
+        self.assertEqual(secure_invite_status, 403)
+        self.assertEqual(secure_invite_body["error"], "forbidden")
+
+    def test_support_secure_routes_reject_wrong_methods_and_invalid_json(self) -> None:
+        server, base_url = _serve(support.Handler)
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        refs = support.public_refs(support.Handler.state)
+
+        wrong_read_status, wrong_read_body = _request(
+            f"{base_url}/api/secure/tickets/{refs['ACME_TICKET_ID']}",
+            "acme_agent",
+            method="POST",
+            body={},
+        )
+        self.assertEqual(wrong_read_status, 405)
+        self.assertEqual(wrong_read_body["error"], "method_not_allowed")
+
+        wrong_status_status, wrong_status_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
+            "acme_agent",
+        )
+        self.assertEqual(wrong_status_status, 405)
+        self.assertEqual(wrong_status_body["error"], "method_not_allowed")
+
+        invalid_status, invalid_body = _raw_request(
+            f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
+            "acme_agent",
+            method="PATCH",
+            body=b"{bad json",
+        )
+        self.assertEqual(invalid_status, 400)
+        self.assertEqual(invalid_body["error"], "invalid_json")
 
 
 if __name__ == "__main__":

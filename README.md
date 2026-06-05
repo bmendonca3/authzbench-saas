@@ -11,8 +11,8 @@ actors, tenants, roles, objects, backend proof, and secure controls in SaaS APIs
 
 This alpha preview includes:
 
-- 2 intentionally vulnerable Dockerized SaaS targets
-- 15 public tasks across BOLA, BFLA, and secure controls
+- 3 intentionally vulnerable Dockerized SaaS targets
+- 21 public tasks across BOLA, BFLA, invite abuse, and secure controls
 - seeded tenant/object/org IDs to reduce hardcoded-solution value
 - a prototype route alias and decoy endpoint exercised by public controls
 - target-side JSONL request logs when Docker targets run with the provided Compose file
@@ -32,7 +32,8 @@ idea, run the harness, and compare early agents on a small public split.
 
 The next serious milestone is the real `v0` release. That release needs a larger
 task set, private holdouts, stronger live-target proof, more model baselines, and
-clear release gates. See [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
+clear release gates. See [`docs/goal.md`](docs/goal.md) and
+[`docs/v0-release-plan.md`](docs/v0-release-plan.md).
 
 ## Why This Exists
 
@@ -54,8 +55,9 @@ A high-scoring agent must:
 | --- | ---: | --- |
 | `project_mgmt` | `8011` | BOLA / cross-tenant object reads |
 | `billing` | `8012` | BFLA / non-admin access to billing functions |
+| `support` | `8013` | support-ticket BOLA, BFLA, and invite abuse |
 
-Both apps are synthetic. Names, tenants, tokens, and organizations are fixtures,
+All apps are synthetic. Names, tenants, tokens, and organizations are fixtures,
 not real customer data.
 
 ## Quick Start
@@ -242,18 +244,19 @@ Harness sanity checks:
 
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 15 | 15 | 1.0 | 0.0 |
-| Live HTTP scripted baseline | 15 | 15 | 1.0 | 0.0 |
+| Scripted sanity baseline | 21 | 21 | 1.0 | 0.0 |
+| Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 |
 
 Initial no-tools model baselines:
 
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Kiro `claude-sonnet-4.6` no-tools | 15 | 11 | 0.3333 | 0.0 |
-| Kiro `qwen3-coder-next` no-tools | 15 | 8 | 0.0 | 0.1111 |
+| Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
+| Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
 
-The scripted baseline is a harness check, not a model result. The Kiro runs are
-initial alpha public-split baselines and should be rerun for any release tag.
+The scripted baseline is a harness check, not a model result. The live scripted
+and Kiro snapshots were run on the earlier 15-task split and should be rerun for
+any release tag.
 
 ## Private Holdouts
 
@@ -266,6 +269,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 ## Documentation
 
 - [`docs/methodology.md`](docs/methodology.md): benchmark thesis and scoring model
+- [`docs/goal.md`](docs/goal.md): project goal and working v0 definition
 - [`ROADMAP.md`](ROADMAP.md): public path from alpha preview to a top-tier benchmark
 - [`CHANGELOG.md`](CHANGELOG.md): task, scorer, baseline, and release-note changes
 - [`docs/result-schema.md`](docs/result-schema.md): runner artifact schema
@@ -279,7 +283,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 ## Current Limits
 
-- The alpha preview has 15 public tasks; a stronger leaderboard should add more private holdout tasks.
+- The alpha preview has 21 public tasks; a stronger leaderboard should add more apps, task variants, and private holdout tasks.
 - A prototype route alias, decoy endpoint, target-side request logger, and
   runner-side request-log correlation path exist, but route aliases are not
   randomized yet and live-target proof still needs Docker-backed CI and broader

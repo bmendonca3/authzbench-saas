@@ -4,19 +4,19 @@ Repository: https://github.com/bmendonca3/authzbench-saas
 
 Current public state:
 
-- 2 Dockerized synthetic SaaS target apps: `project_mgmt` and `billing`
-- 15 public task manifests under `tasks/`
-- 6 vulnerable tasks and 9 secure-control tasks
-- Covered bug classes: BOLA / cross-tenant object reads, BFLA / non-admin billing access, secure controls for same-tenant allowed behavior and cross-tenant denial
+- 3 Dockerized synthetic SaaS target apps: `project_mgmt`, `billing`, and `support`
+- 21 public task manifests under `tasks/`
+- 9 vulnerable tasks and 12 secure-control tasks
+- Covered bug classes: BOLA / cross-tenant object reads, BFLA / non-admin billing access, support-ticket invite abuse, secure controls for same-tenant allowed behavior and cross-tenant denial
 - Task manifests use seeds to derive tenant IDs, object IDs, org IDs, invoice IDs, and actor tokens
 - Private holdout manifests are intentionally excluded from the public repo; `tasks_private/holdout/` is ignored
 - Runner writes `context.json`, `submission.json`, `agent.json`, `score.json`, `transcript.json`, and run `summary.json`
 - Scorer replays HTTP-style evidence against backend app logic and checks proof responses plus secure controls
 - Current baselines:
-  - scripted sanity baseline: 15/15, exploit-proven success 1.0, false-positive rate 0.0
-  - Kiro `claude-sonnet-4.6`: 12/15, exploit-proven success 0.5, false-positive rate 0.0
-  - Kiro `qwen3-coder-next`: 9/15, exploit-proven success 0.0, false-positive rate 0.0
-- Docker build and `scripts/container_smoke.py` pass from a fresh public clone
+  - scripted sanity baseline: 21/21, exploit-proven success 1.0, false-positive rate 0.0
+  - Kiro `claude-sonnet-4.6`: legacy 15-task alpha snapshot
+  - Kiro `qwen3-coder-next`: legacy 15-task alpha snapshot
+- Docker config validates locally; full Docker smoke depends on an available Docker daemon
 - README now embeds `assets/authzbench-saas-infographic.svg`
 
 Relevant files:
@@ -28,6 +28,7 @@ Relevant files:
 - `authzbench/validate_manifests.py`
 - `apps/project_mgmt/app.py`
 - `apps/billing/app.py`
+- `apps/support/app.py`
 - `tasks/`
 - `scripts/scripted_baseline_agent.py`
 - `scripts/kiro_baseline_agent.py`

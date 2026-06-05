@@ -52,21 +52,21 @@
 
   <g transform="translate(70 238)" filter="url(#shadow)">
     <rect width="275" height="118" rx="18" fill="#0f2138" stroke="#2dd4bf" stroke-width="2"/>
-    <text x="28" y="43" class="metric">15</text>
+    <text x="28" y="43" class="metric">21</text>
     <text x="85" y="43" class="metric-label">public tasks</text>
-    <text x="28" y="82" class="body">6 vulnerable, 9 controls</text>
+    <text x="28" y="82" class="body">9 vulnerable, 12 controls</text>
   </g>
   <g transform="translate(375 238)" filter="url(#shadow)">
     <rect width="275" height="118" rx="18" fill="#0f2138" stroke="#22c55e" stroke-width="2"/>
-    <text x="28" y="43" class="metric">2</text>
+    <text x="28" y="43" class="metric">3</text>
     <text x="72" y="43" class="metric-label">Dockerized apps</text>
-    <text x="28" y="82" class="body">project_mgmt + billing</text>
+    <text x="28" y="82" class="body">project_mgmt, billing, support</text>
   </g>
   <g transform="translate(680 238)" filter="url(#shadow)">
     <rect width="305" height="118" rx="18" fill="#0f2138" stroke="#fbbf24" stroke-width="2"/>
     <text x="28" y="43" class="metric">0.0</text>
     <text x="118" y="43" class="metric-label">false-positive rate</text>
-    <text x="28" y="82" class="body">for current model baselines</text>
+    <text x="28" y="82" class="body">scripted sanity baseline</text>
   </g>
 
   <g transform="translate(70 430)">

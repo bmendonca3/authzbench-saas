@@ -6,10 +6,10 @@ AuthZBench-SaaS is currently public at:
 
 Current alpha preview facts:
 
-- 2 synthetic Dockerized SaaS apps
-- 15 public tasks
-- 6 vulnerable tasks
-- 9 secure-control tasks
+- 3 synthetic Dockerized SaaS apps
+- 21 public tasks
+- 9 vulnerable tasks
+- 12 secure-control tasks
 - deterministic scorer replay transcripts
 - seeded tenant/object/org/invoice/token IDs
 - scripted, live HTTP scripted, and two Kiro no-tools baseline summaries
@@ -36,7 +36,9 @@ Parent changes prepared for review:
 Known current limits:
 
 - no private holdout tasks are public or tracked
-- route aliases and decoys are planned but not implemented
-- live-target request logging is planned but not implemented
+- route aliases and decoys exist as alpha prototypes but need broader
+  randomization and coverage
+- target-side request logging and runner-side per-task correlation exist as
+  alpha prototypes but need Docker CI and isolated live-agent validation
 - model baselines are initial and sparse
 - CI is not present yet

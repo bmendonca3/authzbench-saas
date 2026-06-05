@@ -18,7 +18,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_all_task_manifests_render(self) -> None:
         paths = self.task_paths()
-        self.assertEqual(len(paths), 15)
+        self.assertEqual(len(paths), 21)
         for path in paths:
             with self.subTest(path=path.name):
                 context = build_context(load_json(path))
@@ -145,6 +145,42 @@ class HarnessTests(unittest.TestCase):
                 }
             ]
         }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["score"], 0)
+
+    def test_control_request_bodies_are_replayed(self) -> None:
+        task = load_json(ROOT / "tasks/support/sup_bfla_viewer_closes_ticket.json")
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "viewer_can_close_ticket",
+                    "boundary": {"attacker_actor": "acme_viewer", "required_role": "agent"},
+                    "impact": "A read-only support viewer can close a support ticket.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "acme_viewer",
+                                "method": "PATCH",
+                                "path": f"/api/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
+                                "body": {"status": "closed"},
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertTrue(result["passed"], result)
+        secure_control = [entry for entry in result["transcript"] if entry["name"] == "secure_status_route_denies_viewer_write"][0]
+        self.assertEqual(secure_control["request"]["body"], {"status": "closed"})
+
+    def test_secure_control_oracle_body_must_match(self) -> None:
+        task = load_json(ROOT / "tasks/support/sup_secure_viewer_status_control.json")
+        task["oracle"]["body_contains"] = {"error": "not_the_expected_error"}
+        submission = load_json(ROOT / "examples/submissions/secure_control.no_findings.json")
         result = score_submission(task, submission)
         self.assertFalse(result["passed"], result)
         self.assertEqual(result["score"], 0)

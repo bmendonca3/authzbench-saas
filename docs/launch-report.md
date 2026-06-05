@@ -16,10 +16,10 @@ The benchmark is designed around a narrow question:
 
 The current public split contains:
 
-- 2 Dockerized target apps
-- 15 seeded tasks
-- 6 vulnerable tasks
-- 9 secure-control tasks
+- 3 Dockerized target apps
+- 21 seeded tasks
+- 9 vulnerable tasks
+- 12 secure-control tasks
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - prototype route alias and decoy endpoint coverage
@@ -48,6 +48,12 @@ The current public split contains:
 | `bill_cross_org_plan_write_control` | Billing | Secure control | Correct cross-org write denial | API1/API5 control | CWE-639, CWE-862 control |
 | `bill_admin_plan_access_control` | Billing | Secure control | Authorized admin access | API5:2023 BFLA control | CWE-862 control |
 | `bill_same_org_invoice_read_control` | Billing | Secure control | Authorized same-org invoice read | API1:2023 BOLA control | CWE-639 control |
+| `sup_bola_acme_reads_orbit_ticket` | Support | Vulnerable | Cross-org ticket read | API1:2023 BOLA | CWE-639, CWE-863 |
+| `sup_bfla_viewer_closes_ticket` | Support | Vulnerable | Viewer changes ticket status | API5:2023 BFLA | CWE-862, CWE-863 |
+| `sup_invite_agent_creates_admin_invite` | Support | Vulnerable | Agent creates admin invite | API5:2023 BFLA / invite abuse | CWE-862, CWE-863 |
+| `sup_secure_cross_org_ticket_control` | Support | Secure control | Correct cross-org ticket denial | API1:2023 BOLA control | CWE-639 control |
+| `sup_secure_viewer_status_control` | Support | Secure control | Correct viewer write denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
+| `sup_secure_agent_invite_control` | Support | Secure control | Correct invite-role denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
 
 ## Scoring
 
@@ -91,8 +97,8 @@ python3 -m authzbench.run \
 
 Expected current result:
 
-- `task_count`: 15
-- `passed_count`: 15
+- `task_count`: 21
+- `passed_count`: 21
 - `mean_score`: 1.0
 - `exploit_proven_success_rate`: 1.0
 - `false_positive_rate`: 0.0
@@ -105,16 +111,18 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
-| Live HTTP scripted baseline | 15 | 15 | 1.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` | 15 | 11 | 0.3333 | 0.0 |
-| Kiro `qwen3-coder-next` | 15 | 8 | 0.0 | 0.1111 |
+| Live HTTP scripted baseline legacy snapshot | 15 | 15 | 1.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | 0.0 |
+| Kiro `qwen3-coder-next` legacy snapshot | 15 | 8 | 0.0 | 0.1111 |
 
 Tracked summaries:
 
 - [kiro-claude-sonnet-4.6-full-summary.json](../baselines/kiro-claude-sonnet-4.6-full-summary.json)
 - [kiro-qwen3-coder-next-full-summary.json](../baselines/kiro-qwen3-coder-next-full-summary.json)
 
-These are public-split baselines, not private leaderboard results.
+These 15-task snapshots are public-split baselines from the earlier alpha split,
+not private leaderboard results. They should be rerun on the 21-task split
+before any release tag.
 
 ## Publication Status
 
@@ -127,7 +135,7 @@ not yet have private holdout scoring.
 
 ## Release Criteria For The Real v0
 
-- expand beyond the current 2-app/15-task alpha split
+- expand beyond the current 3-app/21-task alpha split
 - add a private holdout pack outside public Git history
 - add stronger anti-gaming, including route aliases or decoys
 - harden target-side request-log correlation for Docker-backed leaderboard runs

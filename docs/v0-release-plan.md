@@ -20,15 +20,20 @@ The benchmark should stay narrow. It is not a general CTF benchmark, malware
 benchmark, cloud benchmark, or code-generation benchmark. Its value is the
 authorization boundary.
 
+The public working goal is captured in [`docs/goal.md`](goal.md). The short
+version: keep the current repo honest as alpha/pre-v0, then earn the `v0` label
+by adding scale, private holdouts, live-target proof, repeated baselines,
+sectional review, and clean release validation.
+
 ## Scope Target
 
 | Area | Alpha preview | v0 target |
 | --- | ---: | ---: |
-| Synthetic SaaS apps | 2 | 5-6 |
-| Public tasks | 15 | 40-50 |
+| Synthetic SaaS apps | 3 | 5-6 |
+| Public tasks | 21 | 40-50 |
 | Private holdout tasks | 0 tracked | 20-30 unpublished |
-| Vulnerability classes | BOLA, BFLA | BOLA, BFLA, tenant isolation, invite/membership, sharing, API-token scope |
-| Secure controls | 9 | At least 40 percent of all tasks |
+| Vulnerability classes | BOLA, BFLA, invite abuse | BOLA, BFLA, tenant isolation, invite/membership, sharing, API-token scope |
+| Secure controls | 12 | At least 40 percent of all tasks |
 | Model baselines | 2 no-tools runs | 5+ distinct model/agent families plus harness checks, repeated runs |
 | Live-target proof | replayable requests | replayable requests plus target request logs |
 | Anti-gaming | seeded IDs | seeded IDs, route aliases, decoys, private holdouts |
@@ -202,6 +207,8 @@ Do not tag the real `v0` until all required gates pass:
 - at least two seeds are used for each scored private-holdout task
 - at least one independent review of task design, scorer behavior, and
   leaderboard schema is completed with disposition logged
+- sectional review notes exist for roadmap/goal, task design, scoring/harness
+  behavior, baseline methodology, privacy, and release readiness
 - no private holdout manifests are committed
 - no secrets, personal emails, personal filesystem paths, cookies, tokens, or
   unrelated local data are committed

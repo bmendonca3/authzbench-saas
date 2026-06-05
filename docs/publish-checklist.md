@@ -10,7 +10,9 @@ intended public host is the public `github.com` account.
 - [ ] `python3 -m compileall -q authzbench apps tests scripts`
 - [ ] `docker compose config`
 - [ ] `python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted`
-- [ ] model baseline summaries in `baselines/` match the latest verified runs
+- [ ] scripted baseline summary in `baselines/` matches the latest verified run
+- [ ] older model/live baseline snapshots are clearly labeled, or rerun before a
+      tagged release
 - [ ] Docker daemon running and `python3 scripts/container_smoke.py` passes against `docker compose up --build -d`
 - [ ] `docs/launch-report.md` updated with the latest verified baseline results
 - [ ] `docs/status.md` has no stale claims
@@ -34,8 +36,8 @@ Tag: `alpha-0.0.1-public-scaffold`
 
 Release notes:
 
-- 2 Docker-ready intentionally vulnerable SaaS targets
-- 15 public seeded tasks
+- 3 Docker-ready intentionally vulnerable SaaS targets
+- 21 public seeded tasks
 - deterministic scorer with backend replay transcripts
 - secure-control tasks for false-positive measurement
 - scripted baseline and two initial model baselines

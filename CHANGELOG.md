@@ -20,4 +20,9 @@
   smoke validation for those logs.
 - Added alpha runner-side correlation of target logs into per-task
   `target-requests.jsonl` artifacts when `--target-log-dir` is supplied.
+- Added a third synthetic SaaS target, `support`, with six public tasks covering
+  cross-organization ticket reads, viewer status writes, invite-role abuse, and
+  matching secure controls.
+- Added scorer support for control request bodies so write and invite controls
+  can be replayed accurately.
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.

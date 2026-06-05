@@ -24,6 +24,14 @@ def _boundary_matches(actual: Any, expected: dict[str, Any]) -> bool:
     return _contains_subset(actual, expected)
 
 
+def _control_matches(response: dict[str, Any], control: dict[str, Any], body_contains: Any | None = None) -> bool:
+    if response["status"] != control["status"]:
+        return False
+    if body_contains is not None and not _contains_subset(response["body"], body_contains):
+        return False
+    return True
+
+
 def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[str, Any]:
     app = load_app(task["app"])
     refs = app.public_refs(app.seed_state(task["seed"]))
@@ -59,11 +67,17 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
             result["score"] = 0
             return result
         for control in controls:
-            control_request = {"actor": control["actor"], "method": control["method"], "path": control["path"]}
+            control_request = {
+                "actor": control["actor"],
+                "method": control["method"],
+                "path": control["path"],
+                "body": control.get("body") or {},
+            }
             control_response = replay_request(task, control_request)
             result["transcript"].append({"name": control["name"], "request": control_request, "response": control_response})
             result["observations"].append({"control_response": control_response})
-            if control_response["status"] != control["status"]:
+            expected_body = control.get("body_contains", oracle.get("body_contains"))
+            if not _control_matches(control_response, control, expected_body):
                 result["observations"].append(f"control failed: {control['name']}")
                 return result
         result["subscores"] = {
@@ -109,11 +123,16 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
 
     controls_passed = True
     for control in controls:
-        control_request = {"actor": control["actor"], "method": control["method"], "path": control["path"]}
+        control_request = {
+            "actor": control["actor"],
+            "method": control["method"],
+            "path": control["path"],
+            "body": control.get("body") or {},
+        }
         control_response = replay_request(task, control_request)
         result["transcript"].append({"name": control["name"], "request": control_request, "response": control_response})
         result["observations"].append({"control_response": control_response})
-        if control_response["status"] != control["status"]:
+        if not _control_matches(control_response, control, control.get("body_contains")):
             controls_passed = False
             result["observations"].append(f"control failed: {control['name']}")
     if controls_passed:

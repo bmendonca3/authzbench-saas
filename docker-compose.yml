@@ -21,3 +21,14 @@ services:
       - ./captures/request-logs:/bench/captures/request-logs
     ports:
       - "127.0.0.1:8012:8012"
+  support:
+    build:
+      context: .
+      dockerfile: apps/support/Dockerfile
+    user: "${AUTHZBENCH_DOCKER_UID:-1000}:${AUTHZBENCH_DOCKER_GID:-1000}"
+    environment:
+      AUTHZBENCH_REQUEST_LOG_DIR: /bench/captures/request-logs
+    volumes:
+      - ./captures/request-logs:/bench/captures/request-logs
+    ports:
+      - "127.0.0.1:8013:8013"

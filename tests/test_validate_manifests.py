@@ -9,10 +9,10 @@ class ManifestValidationTests(unittest.TestCase):
     def test_public_manifests_validate(self) -> None:
         result = validate_patterns(["tasks/*/*.json"])
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["manifest_count"], 15, result)
+        self.assertEqual(result["manifest_count"], 21, result)
         self.assertEqual(result["private_holdout_count"], 0, result)
-        self.assertEqual(result["vulnerable_count"], 6, result)
-        self.assertEqual(result["control_count"], 9, result)
+        self.assertEqual(result["vulnerable_count"], 9, result)
+        self.assertEqual(result["control_count"], 12, result)
 
 
 if __name__ == "__main__":

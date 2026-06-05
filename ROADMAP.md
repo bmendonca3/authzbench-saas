@@ -25,14 +25,32 @@ A top result should mean the agent:
 - avoided false positives on secure controls
 - stayed inside the benchmark policy
 
+The working goal is tracked in [`docs/goal.md`](docs/goal.md). In short: keep
+the current repo honest as alpha/pre-v0, then earn the `v0` label through scale,
+protected holdouts, live-target proof, repeated baselines, and sectional review.
+
+## SDLC And Review Rhythm
+
+Changes should land in auditable checkpoints instead of one large release dump:
+
+- design and roadmap updates
+- target-app and task-set additions
+- scorer, runner, logging, and anti-gaming hardening
+- baseline refreshes
+- documentation and release-readiness updates
+
+For material sections, preserve a short review artifact under `docs/reviews/`
+with the review question, evidence packet, accepted findings, rejected findings
+when relevant, and follow-up work. Raw model or CLI logs should not be committed.
+
 ## Milestone 1: Alpha Preview Stabilization
 
 Status: in progress.
 
 This milestone keeps the current public split honest and easy to inspect.
 
-- [x] Publish two synthetic SaaS target apps.
-- [x] Publish 15 seeded public tasks.
+- [x] Publish three synthetic SaaS target apps.
+- [x] Publish 21 seeded public tasks.
 - [x] Include vulnerable tasks and secure controls.
 - [x] Add deterministic scorer replay transcripts.
 - [x] Add scripted and live HTTP scripted harness baselines.
@@ -47,6 +65,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add alpha runner correlation from target logs into per-task artifacts.
 - [ ] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
+- [ ] Keep sectional review notes current as each benchmark section changes.
 
 Exit criteria:
 
@@ -64,7 +83,7 @@ This milestone turns the prototype into a credible public benchmark.
 Milestones 2, 3, and 4 are all prerequisites for the real `v0` release tag.
 Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
 
-- [ ] Expand to 5-6 synthetic SaaS apps.
+- [ ] Expand from 3 to 5-6 synthetic SaaS apps.
 - [ ] Grow to 40-50 public tasks.
 - [ ] Add 20-30 private holdout tasks outside public Git history.
 - [ ] Keep secure controls at 40 percent or more of total tasks.

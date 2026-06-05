@@ -97,7 +97,8 @@ Disposition:
 ## Remaining Open Items
 
 - Implement CI.
-- Implement route aliases and decoy endpoints.
-- Implement target/proxy-side request logging.
+- Expand route aliases and decoy endpoints beyond the alpha prototype.
+- Harden target/proxy-side request logging with Docker CI and isolated
+  live-agent validation.
 - Add a protected private-holdout execution path.
 - Run tool-equipped and repeated model baselines.

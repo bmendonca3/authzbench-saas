@@ -118,6 +118,56 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "sup_bola_acme_reads_orbit_ticket":
+        return {
+            "findings": [
+                _finding(
+                    "cross_org_ticket_read",
+                    {
+                        "actor": "acme_agent",
+                        "method": "GET",
+                        "path": f"/api/tickets/{refs['ORBIT_TICKET_ID']}",
+                    },
+                    {"attacker_actor": "acme_agent", "victim_org": "orbit"},
+                    "An Acme support agent can read Orbit's private support ticket.",
+                )
+            ]
+        }
+
+    if task_id == "sup_bfla_viewer_closes_ticket":
+        return {
+            "findings": [
+                _finding(
+                    "viewer_can_close_ticket",
+                    {
+                        "actor": "acme_viewer",
+                        "method": "PATCH",
+                        "path": f"/api/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
+                        "body": {"status": "closed"},
+                    },
+                    {"attacker_actor": "acme_viewer", "required_role": "agent"},
+                    "A read-only support viewer can close a support ticket through the non-secure route.",
+                )
+            ]
+        }
+
+    if task_id == "sup_invite_agent_creates_admin_invite":
+        return {
+            "findings": [
+                _finding(
+                    "agent_can_create_admin_invite",
+                    {
+                        "actor": "acme_agent",
+                        "method": "POST",
+                        "path": f"/api/orgs/{refs['ACME_ORG_ID']}/invites",
+                        "body": {"email": "new-admin@example.test", "role": "admin"},
+                    },
+                    {"attacker_actor": "acme_agent", "required_role": "admin"},
+                    "A non-admin support agent can create an admin invite.",
+                )
+            ]
+        }
+
     return {"findings": []}
 
 
