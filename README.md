@@ -81,6 +81,18 @@ python3 -m authzbench.run \
   --timeout-seconds 10
 ```
 
+Run the live HTTP scripted baseline against Docker targets:
+
+```bash
+docker compose up --build -d
+python3 -m authzbench.run \
+  --task 'tasks/*/*.json' \
+  --agent-cmd 'python3 scripts/live_scripted_baseline_agent.py' \
+  --results-dir results/live-scripted-baseline \
+  --timeout-seconds 10
+docker compose down
+```
+
 Run a no-tools Kiro model baseline:
 
 ```bash
@@ -175,6 +187,7 @@ Tracked summaries live in [`baselines/`](baselines).
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 15 | 15 | 1.0 | 0.0 |
+| Live HTTP scripted baseline | 15 | 15 | 1.0 | 0.0 |
 | Kiro `claude-sonnet-4.6` no-tools | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` no-tools | 15 | 8 | 0.0 | 0.1111 |
 

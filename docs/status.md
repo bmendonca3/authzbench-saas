@@ -41,6 +41,7 @@ task. Their generated `summary.json` files are still valid baseline evidence.
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 15 | 15 | 1.0 | 0.0 |
+| Live HTTP scripted baseline | 15 | 15 | 1.0 | 0.0 |
 | Kiro `claude-sonnet-4.6` no-tools | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` no-tools | 15 | 8 | 0.0 | 0.1111 |
 

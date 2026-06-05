@@ -97,6 +97,7 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 
 | Baseline | Tasks | Passed | Exploit-proven success | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
+| Live HTTP scripted baseline | 15 | 15 | 1.0 | 0.0 |
 | Kiro `claude-sonnet-4.6` | 15 | 11 | 0.3333 | 0.0 |
 | Kiro `qwen3-coder-next` | 15 | 8 | 0.0 | 0.1111 |
 

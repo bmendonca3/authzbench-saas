@@ -43,6 +43,8 @@ read-only inspection only.
 - Fixed vulnerable-task control scoring so all controls must pass before
   `false_positive_control` receives credit.
 - Reran scripted and model baselines under the stricter scorer.
+- Added a live HTTP scripted baseline that exercises vulnerable proof requests
+  against the running Docker targets before writing submissions.
 
 ## Still Open
 
