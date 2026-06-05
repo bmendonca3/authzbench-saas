@@ -92,3 +92,11 @@ The third repeated current model family is DeepSeek through Kiro. The two
 and proved no vulnerable exploits. They improve baseline breadth while still
 leaving two repeated model/agent families, a true tool-agent baseline, and
 private-holdout leaderboard submissions missing.
+
+The fourth repeated current model family is Haiku through Kiro. The two
+`claude-haiku-4.5` no-tools runs are also public-split baselines only: both
+passed 26 of 44 tasks, proved 4 of 18 vulnerable replays, kept a zero
+false-positive rate, and had no full vulnerable-task passes because boundary
+reasoning was `0.0`. They improve baseline breadth while still leaving one
+repeated model/agent family, a true tool-agent baseline, and private-holdout
+leaderboard submissions missing.

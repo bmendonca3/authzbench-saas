@@ -49,6 +49,8 @@
   summaries and registered them as the second repeated public model family.
 - Added two current 44-task Kiro `deepseek-3.2` no-tools model baseline
   summaries and registered them as the third repeated public model family.
+- Added two current 44-task Kiro `claude-haiku-4.5` no-tools model baseline
+  summaries and registered them as the fourth repeated public model family.
 - Hardened public validation so lightweight checks do not require Docker
   Compose unless container smoke validation is requested.
 - Added a public-safe private holdout summary utility so maintainers can produce
