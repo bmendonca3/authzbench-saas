@@ -14,7 +14,7 @@ jobs:
   public-validation:
     name: Public validation
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
 
     steps:
       - name: Check out repository
@@ -32,4 +32,4 @@ jobs:
           docker compose version
 
       - name: Run public validation gates
-        run: python scripts/validate_public.py --include-scripted-baseline
+        run: python scripts/validate_public.py --include-scripted-baseline --include-container-smoke

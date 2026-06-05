@@ -31,9 +31,15 @@ PRIVACY_PATTERN_PARTS = [
 PRIVACY_PATTERNS = [re.compile("".join(parts)) for parts in PRIVACY_PATTERN_PARTS]
 
 
-def run(cmd: list[str], cwd: Path = ROOT) -> None:
+def run(
+    cmd: list[str],
+    cwd: Path = ROOT,
+    *,
+    check: bool = True,
+    env: dict[str, str] | None = None,
+) -> None:
     print("+", " ".join(cmd), flush=True)
-    subprocess.run(cmd, cwd=cwd, check=True)
+    subprocess.run(cmd, cwd=cwd, check=check, env=env)
 
 
 def git_files(cwd: Path) -> list[Path]:
@@ -65,7 +71,27 @@ def scan_privacy(cwd: Path) -> None:
         raise SystemExit(f"privacy scan found disallowed text:\n{joined}")
 
 
-def validate(cwd: Path, include_scripted_baseline: bool) -> None:
+def run_container_smoke(cwd: Path) -> None:
+    if shutil.which("docker") is None:
+        raise SystemExit("docker is required for --include-container-smoke")
+    compose_env = os.environ.copy()
+    if hasattr(os, "getuid") and hasattr(os, "getgid"):
+        compose_env.setdefault("AUTHZBENCH_DOCKER_UID", str(os.getuid()))
+        compose_env.setdefault("AUTHZBENCH_DOCKER_GID", str(os.getgid()))
+    (cwd / "captures" / "request-logs").mkdir(parents=True, exist_ok=True)
+    project_name = f"authzbench-public-smoke-{os.getpid()}"
+    try:
+        run(["docker", "compose", "-p", project_name, "up", "--build", "-d"], cwd, env=compose_env)
+        try:
+            run([sys.executable, "scripts/container_smoke.py"], cwd)
+        except Exception:
+            run(["docker", "compose", "-p", project_name, "logs", "--no-color", "--tail", "200"], cwd, check=False, env=compose_env)
+            raise
+    finally:
+        run(["docker", "compose", "-p", project_name, "down"], cwd, check=False, env=compose_env)
+
+
+def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke: bool) -> None:
     run([sys.executable, "-Wd", "-m", "unittest", "discover", "-s", "tests"], cwd)
     run([sys.executable, "-m", "authzbench.validate_manifests", "--task", "tasks/*/*.json"], cwd)
     run([sys.executable, "-m", "compileall", "-q", "authzbench", "apps", "tests", "scripts"], cwd)
@@ -103,15 +129,17 @@ def validate(cwd: Path, include_scripted_baseline: bool) -> None:
             ],
             cwd,
         )
+    if include_container_smoke:
+        run_container_smoke(cwd)
 
 
-def validate_fresh_clone(repo_url: str, include_scripted_baseline: bool) -> None:
+def validate_fresh_clone(repo_url: str, include_scripted_baseline: bool, include_container_smoke: bool) -> None:
     if shutil.which("git") is None:
         raise SystemExit("git is required for --fresh-clone")
     with tempfile.TemporaryDirectory(prefix="authzbench-public-clone.") as tmp:
         clone_dir = Path(tmp) / "authzbench-saas"
         run(["git", "clone", "--depth", "1", repo_url, str(clone_dir)], Path.cwd())
-        validate(clone_dir, include_scripted_baseline)
+        validate(clone_dir, include_scripted_baseline, include_container_smoke)
 
 
 def main() -> int:
@@ -122,6 +150,11 @@ def main() -> int:
         help="Run the deterministic scripted baseline after static validation.",
     )
     parser.add_argument(
+        "--include-container-smoke",
+        action="store_true",
+        help="Build and start Docker Compose targets, run container_smoke.py, and tear them down.",
+    )
+    parser.add_argument(
         "--fresh-clone",
         metavar="REPO_URL",
         help="Clone the public repository into a temporary directory and validate that clone.",
@@ -129,9 +162,9 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.fresh_clone:
-        validate_fresh_clone(args.fresh_clone, args.include_scripted_baseline)
+        validate_fresh_clone(args.fresh_clone, args.include_scripted_baseline, args.include_container_smoke)
     else:
-        validate(ROOT, args.include_scripted_baseline)
+        validate(ROOT, args.include_scripted_baseline, args.include_container_smoke)
     return 0
 
 

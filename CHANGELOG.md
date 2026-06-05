@@ -24,7 +24,7 @@
   `v0_mean_score` require control replay as an integrity gate without giving
   vulnerable tasks separate agent-independent control credit.
 - Added a GitHub Actions public-validation workflow for pushes, pull requests,
-  and manual dispatch.
+  and manual dispatch, now including Docker container smoke validation.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

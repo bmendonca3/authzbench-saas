@@ -92,8 +92,16 @@ python3 scripts/validate_public.py --include-scripted-baseline
 
 The validation script runs unit tests, manifest validation, compile checks,
 Docker Compose config validation, a Git-tracked privacy scan, and the
-deterministic scripted baseline. To validate the public repository from a clean
-checkout:
+deterministic scripted baseline. Add `--include-container-smoke` when a Docker
+daemon is available and you want the release-grade runtime gate:
+
+```bash
+python3 scripts/validate_public.py \
+  --include-scripted-baseline \
+  --include-container-smoke
+```
+
+To validate the public repository from a clean checkout:
 
 ```bash
 python3 scripts/validate_public.py \
@@ -102,7 +110,8 @@ python3 scripts/validate_public.py \
 ```
 
 The repository also includes a GitHub Actions public-validation workflow for
-pushes, pull requests, and manual dispatch. Remote CI status should still be
+pushes, pull requests, and manual dispatch. That workflow runs the scripted
+baseline and Docker container smoke gate. Remote CI status should still be
 checked before any release tag.
 
 Run the deterministic scripted baseline:
@@ -340,12 +349,13 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
   `Authorization: Bearer ...` evidence while remaining actor-compatible for
   deterministic local evaluation.
 - Route aliases, decoy endpoints, target-side request logging, and runner-side
-  request-log correlation exist, but aliases are not randomized yet and
-  live-target proof still needs Docker-backed CI and broader live-agent
-  coverage.
+  request-log correlation exist, and CI now runs Docker container smoke. Aliases
+  are not randomized yet, and leaderboard-grade live-agent proof still needs
+  isolated execution plus broader repeated model coverage.
 - The runner executes local agent commands and should be used only with trusted
   commands or inside an isolated environment.
-- Docker container smoke depends on a local Docker daemon.
+- Local Docker container smoke requires a Docker daemon; the GitHub Actions
+  public-validation workflow runs the same smoke gate on its runner.
 - Browser HAR capture is not implemented; scorer-owned backend replay
   transcripts are implemented.
 

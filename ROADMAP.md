@@ -81,6 +81,7 @@ This milestone keeps the current public split honest and easy to inspect.
 - [x] Add alpha runner correlation from target logs into per-task artifacts.
 - [x] Add CI for unit tests, manifest validation, compile checks, and Docker
       config.
+- [x] Add Docker runtime smoke to the public CI gate.
 - [x] Keep sectional review notes current as each benchmark section changes.
 - [x] Preserve a public roadmap and goal contract for the path to v0.
 
@@ -117,7 +118,7 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
 - [ ] Add route-alias randomization and additional decoy variation across
       private-holdout seeds.
 - [ ] Harden per-task request-log correlation for leaderboard-grade live-agent
-      runs and Docker CI.
+      runs.
 - [x] Add benchmark version fields to all run summaries.
 - [x] Add v0-candidate run-summary metrics that separate exploit proof,
       boundary reasoning, secure-control false reports, secure-control

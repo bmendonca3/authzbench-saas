@@ -176,8 +176,9 @@ not yet have private holdout scoring.
   enforcement yet.
 - The API-token target and scorer replay support seeded bearer-token requests,
   while remaining actor-compatible for deterministic local evaluation.
-- Docker Compose config validation passes locally. Docker container runtime
-  smoke requires a local Docker daemon and should be rerun before release tags.
+- Docker Compose config validation passes locally, and the public GitHub Actions
+  validation workflow runs Docker container smoke. Manual local smoke reruns
+  still require a Docker daemon.
 - HAR browser capture is not implemented yet; backend replay transcripts are
   implemented through `transcript.json`.
 - Route aliases and decoy endpoints are present across the public target apps,

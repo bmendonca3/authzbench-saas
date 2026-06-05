@@ -5,7 +5,7 @@ intended public host is the public `github.com` account.
 
 ## Pre-Publish Gate
 
-- [ ] `python3 scripts/validate_public.py --include-scripted-baseline`
+- [ ] `python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke`
 - [ ] `python3 -Wd -m unittest discover -s tests`
 - [ ] `python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'`
 - [ ] `python3 -m compileall -q authzbench apps tests scripts`
@@ -18,12 +18,13 @@ intended public host is the public `github.com` account.
       test and not as private leaderboard evidence
 - [ ] older model/live baseline snapshots are clearly labeled, or rerun before a
       tagged release
-- [ ] Docker daemon running and `python3 scripts/container_smoke.py` passes against `docker compose up --build -d`
+- [ ] Docker daemon running; if debugging manually, `python3 scripts/container_smoke.py`
+      passes against `docker compose up --build -d`
 - [ ] `docs/launch-report.md` updated with the latest verified baseline results
 - [ ] `docs/status.md` has no stale claims
 - [ ] private holdout manifests are absent from Git and ignored by `.gitignore`
 - [ ] secrets, personal paths, personal emails, browser artifacts, and unrelated local data are absent from the Git index
-- [ ] `python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline`
+- [ ] `python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline --include-container-smoke`
 - [ ] GitHub Actions public-validation workflow exists and remote CI status is
       explicit and passing before any real v0 tag
 

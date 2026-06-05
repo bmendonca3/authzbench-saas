@@ -244,7 +244,7 @@ Do not tag the real `v0` until all required gates pass:
 - public manifests validate
 - public and private task counts meet the v0 target
 - unit tests pass
-- CI public-validation workflow passes
+- CI public-validation workflow passes, including the Docker container smoke gate
 - scripted baseline passes the public split
 - live HTTP scripted baseline passes against Docker
 - at least five distinct real model or agent families are present or linked,
@@ -265,8 +265,8 @@ Do not tag the real `v0` until all required gates pass:
 - no private holdout manifests are committed
 - no secrets, personal emails, personal filesystem paths, cookies, tokens, or
   unrelated local data are committed
-- fresh public clone passes non-Docker validation
-- Docker smoke passes from a clean checkout when Docker is available
+- fresh public clone passes validation
+- Docker smoke passes from a clean checkout or remote CI runner with Docker
 - release notes clearly say which results are public-split and which are private
   holdout results
 

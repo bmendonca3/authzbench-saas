@@ -18,14 +18,15 @@ class CiWorkflowTests(unittest.TestCase):
         self.assertRegex(text, r"(?m)^\s+pull_request:\s*$")
         self.assertRegex(text, r"(?m)^\s+workflow_dispatch:\s*$")
         self.assertRegex(text, r"(?m)^\s+- main\s*$")
+        self.assertRegex(text, r"(?m)^jobs:\s*$")
         self.assertIn("actions/checkout@v4", text)
         self.assertIn("actions/setup-python@v5", text)
         self.assertRegex(text, r"(?m)^\s+python-version:\s*[\"']?3\.11[\"']?\s*$")
         self.assertIn("docker compose version", text)
-        self.assertIn("python scripts/validate_public.py --include-scripted-baseline", text)
+        self.assertIn("python scripts/validate_public.py --include-scripted-baseline --include-container-smoke", text)
         self.assertIn("contents: read", text)
         self.assertNotIn("secrets.", text)
-        self.assertRegex(text, r"(?m)^\s+timeout-minutes:\s*15\s*$")
+        self.assertRegex(text, r"(?m)^\s+timeout-minutes:\s*25\s*$")
 
 
 if __name__ == "__main__":

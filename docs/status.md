@@ -24,7 +24,8 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - result and leaderboard schema documentation
 - public holdout strategy documentation
 - v0 task build matrix documentation
-- GitHub Actions workflow for public validation gates
+- GitHub Actions workflow for public validation gates, including Docker runtime
+  smoke
 - scripted and model baseline summaries
 
 ## Verified Locally
@@ -41,9 +42,8 @@ python3 scripts/validate_public.py --include-scripted-baseline
 ```
 
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
-should be rerun before any tagged release. Docker runtime smoke also requires a
-local Docker daemon; Docker Compose config validation is covered by the public
-validation script.
+should be rerun before any tagged release. Docker runtime smoke requires a
+Docker daemon and is covered by the GitHub Actions public-validation workflow.
 
 ## Baseline Results
 
@@ -78,11 +78,11 @@ Still required before the real v0 or a serious leaderboard:
 - real non-public holdout tasks and protected execution; the local rehearsal
   generator is only a workflow test
 - route-alias randomization and additional private-holdout decoy variation
-- Docker-backed validation of per-task request-log correlation in addition to
-  deterministic replay
+- leaderboard-grade live-agent validation of per-task request-log correlation in
+  addition to deterministic replay and CI smoke checks
 - decision on whether v0-candidate metrics become the default tagged-release
   scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs
-- remote CI status must be explicit and passing before any real v0 tag
-- Docker-backed runtime smoke when a daemon is available
+- remote CI status must stay explicit and passing before any real v0 tag
+- repeated remote Docker runtime smoke on release-candidate commits
 - post-push clone check from public `github.com` before tags or releases
