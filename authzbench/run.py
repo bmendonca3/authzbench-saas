@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 import glob
+import json
 import os
 import shlex
 import subprocess
 import time
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -15,12 +17,57 @@ from .score import score_submission
 
 
 def _utc_run_id() -> str:
-    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    return f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}-{uuid.uuid4().hex[:8]}"
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(dump_json(data) + "\n", encoding="utf-8")
+
+
+def _write_jsonl(path: Path, entries: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = [json.dumps(entry, sort_keys=True) for entry in entries]
+    path.write_text(("\n".join(lines) + "\n") if lines else "", encoding="utf-8")
+
+
+def _target_log_offset(target_log_dir: Path, app_name: str) -> int:
+    log_path = target_log_dir / f"{app_name}.jsonl"
+    if not log_path.exists():
+        return 0
+    return log_path.stat().st_size
+
+
+def _target_requests(
+    target_log_dir: Path,
+    app_name: str,
+    run_id: str,
+    task_id: str,
+    agent_id: str,
+    start_offset: int,
+) -> list[dict[str, Any]]:
+    log_path = target_log_dir / f"{app_name}.jsonl"
+    if not log_path.exists():
+        return []
+    entries = []
+    with log_path.open("r", encoding="utf-8") as fh:
+        fh.seek(start_offset)
+        lines = fh.read().splitlines()
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if (
+            entry.get("app") == app_name
+            and entry.get("run_id") == run_id
+            and entry.get("task_id") == task_id
+            and entry.get("agent_id") == agent_id
+        ):
+            entries.append(entry | {"correlation": {"matched_on": ["run_id", "task_id", "agent_id"], "source_log": str(log_path)}})
+    return entries
 
 
 def _task_paths(patterns: list[str]) -> list[Path]:
@@ -30,7 +77,17 @@ def _task_paths(patterns: list[str]) -> list[Path]:
     return sorted({path for path in paths if path.is_file()})
 
 
-def _run_agent(agent_cmd: str, cwd: Path, context_path: Path, submission_path: Path, timeout_seconds: int) -> dict[str, Any]:
+def _run_agent(
+    agent_cmd: str,
+    cwd: Path,
+    context_path: Path,
+    submission_path: Path,
+    timeout_seconds: int,
+    *,
+    run_id: str,
+    task_id: str,
+    agent_id: str,
+) -> dict[str, Any]:
     command = agent_cmd.format(
         context=shlex.quote(str(context_path)),
         submission=shlex.quote(str(submission_path)),
@@ -40,6 +97,9 @@ def _run_agent(agent_cmd: str, cwd: Path, context_path: Path, submission_path: P
         {
             "AUTHZBENCH_CONTEXT": str(context_path),
             "AUTHZBENCH_SUBMISSION": str(submission_path),
+            "AUTHZBENCH_RUN_ID": run_id,
+            "AUTHZBENCH_TASK_ID": task_id,
+            "AUTHZBENCH_AGENT_ID": agent_id,
         }
     )
     started = time.time()
@@ -72,8 +132,10 @@ def run_benchmark(
     agent: str | None = None,
     model: str | None = None,
     harness_type: str | None = None,
+    target_log_dir: Path | None = None,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
-    run_id = _utc_run_id()
+    run_id = run_id or _utc_run_id()
     run_dir = results_dir / run_id
     task_results = []
     root = Path.cwd()
@@ -84,9 +146,20 @@ def run_benchmark(
         context_path = task_dir / "context.json"
         submission_path = task_dir / "submission.json"
         _write_json(context_path, build_context(task))
+        agent_id = agent or Path(shlex.split(agent_cmd)[0]).name
+        target_log_start_offset = _target_log_offset(target_log_dir, task["app"]) if target_log_dir is not None else 0
 
         try:
-            agent_result = _run_agent(agent_cmd, root, context_path, submission_path, timeout_seconds)
+            agent_result = _run_agent(
+                agent_cmd,
+                root,
+                context_path,
+                submission_path,
+                timeout_seconds,
+                run_id=run_id,
+                task_id=task["id"],
+                agent_id=agent_id,
+            )
         except subprocess.TimeoutExpired as exc:
             agent_result = {
                 "command": agent_cmd,
@@ -118,6 +191,18 @@ def run_benchmark(
 
         _write_json(task_dir / "score.json", score)
         _write_json(task_dir / "transcript.json", {"task_id": task["id"], "entries": score.get("transcript", [])})
+        target_request_count: int | None = None
+        target_request_warning: str | None = None
+        if target_log_dir is not None:
+            target_log_exists = (target_log_dir / f"{task['app']}.jsonl").exists()
+            requests = _target_requests(target_log_dir, task["app"], run_id, task["id"], agent_id, target_log_start_offset)
+            _write_jsonl(task_dir / "target-requests.jsonl", requests)
+            target_request_count = len(requests)
+            if not target_log_exists:
+                target_request_warning = "target_log_missing"
+            elif target_request_count == 0:
+                target_request_warning = "no_target_requests_correlated"
+
         task_results.append(
             {
                 "task_id": task["id"],
@@ -127,6 +212,8 @@ def run_benchmark(
                 "passed": bool(score.get("passed")),
                 "agent_returncode": agent_result["returncode"],
             }
+            | ({"target_request_count": target_request_count} if target_request_count is not None else {})
+            | ({"target_request_warning": target_request_warning} if target_request_warning is not None else {})
         )
 
     vulnerable = [item for item in task_results if item["expected_vulnerable"]]
@@ -141,6 +228,7 @@ def run_benchmark(
         "agent": agent,
         "model": model,
         "harness_type": harness_type,
+        "target_log_dir": str(target_log_dir) if target_log_dir is not None else None,
         "timeout_seconds": timeout_seconds,
         "task_count": len(task_results),
         "passed_count": sum(1 for item in task_results if item["passed"]),
@@ -168,6 +256,7 @@ def main() -> int:
     parser.add_argument("--agent", help="Agent or harness name to record in summary.json.")
     parser.add_argument("--model", help="Model label to record in summary.json, when applicable.")
     parser.add_argument("--harness-type", help="Harness/tooling category, such as scripted, no-tools, or tool-agent.")
+    parser.add_argument("--target-log-dir", help="Directory containing target-side <app>.jsonl logs to correlate per task.")
     args = parser.parse_args()
 
     summary = run_benchmark(
@@ -180,6 +269,7 @@ def main() -> int:
         agent=args.agent,
         model=args.model,
         harness_type=args.harness_type,
+        target_log_dir=Path(args.target_log_dir).resolve() if args.target_log_dir else None,
     )
     print(dump_json(summary))
     return 0 if summary["passed_count"] == summary["task_count"] else 1

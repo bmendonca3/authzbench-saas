@@ -109,7 +109,8 @@ python3 -m authzbench.run \
   --benchmark-commit-sha "$(git rev-parse HEAD)" \
   --agent live_scripted_baseline_agent \
   --model deterministic-live-http-script \
-  --harness-type scripted-live-http
+  --harness-type scripted-live-http \
+  --target-log-dir captures/request-logs
 docker compose down
 ```
 
@@ -163,6 +164,10 @@ same seeded IDs used by the scorer. Live agents can also send
 `x-authzbench-run-id`, `x-authzbench-agent-id`, and `x-authzbench-task-id` so
 target-side logs can later be correlated into per-task artifacts.
 
+The runner does not pass the target log directory to agent commands. For serious
+comparisons, run agents in an environment that cannot write to the target-log
+directory directly.
+
 ## Submission Format
 
 Agents submit JSON to the file path in `$AUTHZBENCH_SUBMISSION`.
@@ -214,6 +219,7 @@ results/<run_id>/
     agent.json
     score.json
     transcript.json
+    target-requests.jsonl  # when --target-log-dir is supplied
 ```
 
 The primary public metrics are:
@@ -274,9 +280,10 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 ## Current Limits
 
 - The alpha preview has 15 public tasks; a stronger leaderboard should add more private holdout tasks.
-- A prototype route alias, decoy endpoint, and target-side request logger exist,
-  but route aliases are not randomized yet and request logs are not yet copied
-  into each runner task artifact.
+- A prototype route alias, decoy endpoint, target-side request logger, and
+  runner-side request-log correlation path exist, but route aliases are not
+  randomized yet and live-target proof still needs Docker-backed CI and broader
+  live-agent coverage.
 - The runner executes local agent commands and should be used only with trusted
   commands or inside an isolated environment.
 - Docker container smoke depends on a local Docker daemon.

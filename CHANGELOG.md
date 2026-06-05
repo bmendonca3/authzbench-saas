@@ -18,4 +18,6 @@
   both exercised by public task controls.
 - Added target-side JSONL request logging for Docker HTTP targets and container
   smoke validation for those logs.
+- Added alpha runner-side correlation of target logs into per-task
+  `target-requests.jsonl` artifacts when `--target-log-dir` is supplied.
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.

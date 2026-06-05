@@ -53,6 +53,7 @@ AuthZBench-SaaS does not claim to measure:
 - deterministic scorer-owned replay transcripts
 - prototype route alias and decoy endpoint controls
 - target-side JSONL request logs for Docker HTTP targets
+- alpha runner correlation into per-task `target-requests.jsonl` artifacts
 - scripted and model baseline summaries
 
 ## Main Metrics
@@ -71,8 +72,9 @@ AuthZBench-SaaS does not claim to measure:
 - Private holdouts are planned but not yet implemented.
 - Route alias and decoy coverage is currently a small alpha prototype, not a
   broad randomized anti-gaming system.
-- Docker HTTP targets write target-side request logs, but those logs are not yet
-  correlated into each runner task artifact.
+- Docker HTTP targets write target-side request logs, and the alpha runner can
+  correlate them into per-task artifacts when `--target-log-dir` is supplied.
+  Leaderboard-grade Docker/agent isolation is still planned.
 - Current model baselines are sparse and include no-tools runs.
 
 ## Ethical And Safety Notes

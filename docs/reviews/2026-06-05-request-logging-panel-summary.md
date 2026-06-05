@@ -46,10 +46,10 @@ The logs currently live under `captures/request-logs/` and are useful for Docker
 target inspection. For v0, the runner should extract only relevant request
 records and write them into each task result directory.
 
-Disposition: partially improved before commit by adding optional `task_id`,
-`run_id`, and `agent_id` fields to target-side logs and teaching the live
-scripted baseline/container smoke to send them. Full per-task artifact
-correlation remains a roadmap/release-gate item.
+Disposition: improved in a later alpha checkpoint by adding runner-side
+correlation into each task's `target-requests.jsonl` artifact when
+`--target-log-dir` is supplied. Full Docker-backed leaderboard validation
+remains a roadmap/release-gate item.
 
 ### Low: container smoke checked existence more than fidelity
 
@@ -79,9 +79,9 @@ Disposition: documented as a verification gap.
 
 ## V0 Follow-Up
 
-- Add runner-side request correlation into each task's `target-requests.jsonl`.
-- Include `run_id`, `task_id`, and `agent_id` consistently in all live HTTP
-  agent paths.
+- Exercise runner-side request correlation in Docker-backed CI.
+- Include `run_id`, `task_id`, and `agent_id` consistently in broader live HTTP
+  agent paths beyond the scripted baseline.
 - Add CI or release validation that runs Docker targets and confirms request-log
   entries are produced.
 - Keep raw response bodies out of target logs unless a future privacy review

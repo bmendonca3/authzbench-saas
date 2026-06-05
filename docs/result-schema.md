@@ -95,10 +95,19 @@ apps write JSONL logs under `captures/request-logs/`. Each entry includes:
 - optional `agent_id`
 - optional `task_id`
 
-The real v0 runner should copy or correlate these target-side logs into
-per-task `target-requests.jsonl` artifacts. The alpha preview keeps them as
-Docker target logs so the mechanism can be tested without pretending it is a
-complete leaderboard proof system.
+When `python3 -m authzbench.run` is called with `--target-log-dir`, the runner
+records the relevant app log offset before each task starts, then filters only
+newly appended entries by `run_id`, `task_id`, and `agent_id`. Matching entries
+are written into the task's `target-requests.jsonl` artifact. Scoring still
+comes from deterministic replay in `transcript.json`.
+
+If `--target-log-dir` is omitted, the runner does not create
+`target-requests.jsonl`.
+
+The runner does not expose `AUTHZBENCH_TARGET_LOG_DIR` to the agent process.
+Leaderboard-grade runs should still isolate the agent from the target-log
+filesystem path so the artifact remains target-side evidence rather than
+self-reported output.
 
 ## `summary.json`
 
@@ -111,6 +120,7 @@ Run-level aggregate:
 - `agent`
 - `model`
 - `harness_type`
+- `target_log_dir`
 - `timeout_seconds`
 - `task_count`
 - `passed_count`
@@ -120,3 +130,9 @@ Run-level aggregate:
 - `exploit_proven_success_rate`
 - `false_positive_rate`
 - per-task score records
+
+When `--target-log-dir` is supplied, each per-task summary record also includes:
+
+- `target_request_count`
+- optional `target_request_warning`, such as `target_log_missing` or
+  `no_target_requests_correlated`
