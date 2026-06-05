@@ -18,6 +18,9 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
   `--target-log-dir` is supplied
 - deterministic scorer with backend replay transcripts
+- v0-candidate run-summary metrics for exploit proof, boundary reasoning,
+  secure-control false reports, secure-control execution, and target-request
+  coverage, plus invalid-submission tracking
 - result and leaderboard schema documentation
 - public holdout strategy documentation
 - v0 task build matrix documentation
@@ -76,6 +79,8 @@ Still required before the real v0 or a serious leaderboard:
 - route-alias randomization and additional private-holdout decoy variation
 - Docker-backed validation of per-task request-log correlation in addition to
   deterministic replay
+- decision on whether v0-candidate metrics become the default tagged-release
+  scoring profile
 - containerized or otherwise isolated model/agent execution for leaderboard runs
 - CI workflow for public validation gates
 - Docker-backed runtime smoke when a daemon is available

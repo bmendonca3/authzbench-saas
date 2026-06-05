@@ -17,6 +17,12 @@
 - Updated baseline summaries to use the alpha benchmark-version label.
 - Added runner metadata support for benchmark version, agent, model, and harness
   type.
+- Added v0-candidate runner metrics for exploit proof, boundary reasoning,
+  secure-control false reports, secure-control execution, and target-request
+  coverage, while keeping the legacy alpha `mean_score` for compatibility.
+- Added invalid-submission summary metrics and made vulnerable-task
+  `v0_mean_score` require control replay as an integrity gate without giving
+  vulnerable tasks separate agent-independent control credit.
 - Added a prototype project-management route alias and billing decoy endpoint,
   both exercised by public task controls.
 - Expanded route aliases and decoy endpoint controls across all six public

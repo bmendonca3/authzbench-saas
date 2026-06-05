@@ -118,7 +118,11 @@ Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md
       private-holdout seeds.
 - [ ] Harden per-task request-log correlation for leaderboard-grade live-agent
       runs and Docker CI.
-- [ ] Add benchmark version fields to all run summaries.
+- [x] Add benchmark version fields to all run summaries.
+- [x] Add v0-candidate run-summary metrics that separate exploit proof,
+      boundary reasoning, secure-control false reports, secure-control
+      execution, and target-request coverage from the legacy blended alpha
+      score.
 - [x] Add a v0 task build matrix with public/private allocations per app.
 - [ ] Require sectional panel review before declaring any new app/task family
       release-ready.
@@ -146,8 +150,10 @@ inspection.
 - [ ] Add leaderboard examples that do not rank by blended score alone.
 - [ ] Preserve one public baseline report per serious model/agent family.
 - [ ] Re-run legacy model baselines after task-set changes before release tags.
-- [ ] Replace alpha compatibility subscores with v0 metrics that avoid
-      agent-independent control credit on vulnerable tasks.
+- [x] Add v0-candidate metrics that avoid agent-independent control credit on
+      vulnerable tasks.
+- [ ] Decide whether to make v0-candidate metrics the default release scoring
+      profile for the first tagged `v0`.
 
 Exit criteria:
 

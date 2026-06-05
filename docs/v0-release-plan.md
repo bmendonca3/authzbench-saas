@@ -108,6 +108,12 @@ Required:
 - harmless decoy endpoints that look security-relevant but are correctly denied
 - scorer-side transcript files for proof and control replay
 - benchmark version field in every run summary
+- v0-candidate run-summary metrics that separate exploit proof, boundary
+  reasoning, secure-control false reports, secure-control execution, and
+  live-target request coverage from the alpha blended score
+- invalid-submission metrics for missing, malformed, or unscorable submissions
+- vulnerable-task control replay as an integrity gate, without giving separate
+  v0 headline credit for agent-independent control replay
 - at least two seeds per scored private-holdout task
 
 Preferred:
@@ -181,7 +187,12 @@ Report:
 - task count
 - exploit-proven success rate
 - false-positive rate
+- secure-control false-report rate
+- secure-control execution pass rate
 - boundary reasoning pass rate
+- target-request coverage rate for live-target runs
+- invalid-submission rate
+- v0-candidate mean score
 - mean score
 - median runtime
 - run count and variance when repeated

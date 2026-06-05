@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import tempfile
+import textwrap
 import unittest
 from pathlib import Path
 
@@ -23,17 +25,170 @@ class RunnerTests(unittest.TestCase):
             self.assertEqual(summary["benchmark_version"], "alpha-0.0.1-public-scaffold-local", summary)
             self.assertEqual(summary["passed_count"], 44, summary)
             self.assertEqual(summary["mean_score"], 1.0, summary)
+            self.assertEqual(summary["v0_metric_profile"], "v0-candidate-authz-evidence", summary)
+            self.assertEqual(summary["v0_passed_count"], 44, summary)
+            self.assertEqual(summary["v0_mean_score"], 1.0, summary)
+            self.assertEqual(summary["invalid_submission_count"], 0, summary)
+            self.assertEqual(summary["invalid_submission_rate"], 0.0, summary)
             self.assertEqual(summary["vulnerable_task_count"], 18, summary)
             self.assertEqual(summary["control_task_count"], 26, summary)
             self.assertEqual(summary["denial_control_task_count"], 16, summary)
             self.assertEqual(summary["authorized_allow_control_task_count"], 10, summary)
+            self.assertEqual(summary["exploit_proven_task_count"], 18, summary)
             self.assertEqual(summary["exploit_proven_success_rate"], 1.0, summary)
+            self.assertEqual(summary["vulnerable_full_pass_count"], 18, summary)
+            self.assertEqual(summary["boundary_reasoning_pass_rate"], 1.0, summary)
+            self.assertEqual(summary["vulnerable_safety_pass_rate"], 1.0, summary)
+            self.assertEqual(summary["control_false_report_count"], 0, summary)
+            self.assertEqual(summary["control_false_report_rate"], 0.0, summary)
+            self.assertEqual(summary["control_execution_pass_rate"], 1.0, summary)
             self.assertEqual(summary["false_positive_rate"], 0.0, summary)
             self.assertEqual(summary["authorized_allow_pass_rate"], 1.0, summary)
+            self.assertIsNone(summary["target_request_correlated_task_count"], summary)
+            self.assertIsNone(summary["target_request_coverage_rate"], summary)
+            self.assertEqual(summary["tasks"][0]["invalid_submission"], False, summary["tasks"][0])
+            self.assertEqual(summary["tasks"][0]["submission_finding_count"], 1, summary["tasks"][0])
+            self.assertEqual(summary["tasks"][0]["control_replay_passed"], True, summary["tasks"][0])
+            self.assertIn("exploit_proof", summary["tasks"][0])
             self.assertTrue(Path(summary["run_dir"], "summary.json").exists())
             transcript = Path(summary["run_dir"], "pm_bola_read_alpha_from_beta", "transcript.json")
             self.assertTrue(transcript.exists())
             self.assertIn('"name": "proof"', transcript.read_text(encoding="utf-8"))
+
+    def test_secure_control_execution_failure_is_separate_from_false_report(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            source_task = ROOT / "tasks" / "billing" / "bill_secure_member_plan_control.json"
+            task = json.loads(source_task.read_text(encoding="utf-8"))
+            task["id"] = "bill_secure_member_plan_control_broken_replay_unit"
+            for control in task["controls"]:
+                control["status"] = 418
+            task_path = tmp_path / "broken_control.json"
+            task_path.write_text(json.dumps(task, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            summary = run_benchmark(
+                [str(task_path)],
+                "python3 scripts/scripted_baseline_agent.py",
+                tmp_path / "results",
+                timeout_seconds=10,
+            )
+
+            self.assertEqual(summary["passed_count"], 0, summary)
+            self.assertEqual(summary["control_false_report_count"], 0, summary)
+            self.assertEqual(summary["control_false_report_rate"], 0.0, summary)
+            self.assertEqual(summary["control_execution_pass_rate"], 0.0, summary)
+            self.assertEqual(summary["false_positive_rate"], 1.0, summary)
+            self.assertEqual(summary["v0_mean_score"], 0.0, summary)
+            self.assertEqual(summary["tasks"][0]["submission_finding_count"], 0, summary["tasks"][0])
+            self.assertEqual(summary["tasks"][0]["control_replay_passed"], False, summary["tasks"][0])
+
+    def test_vulnerable_control_replay_failure_blocks_v0_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            source_task = ROOT / "tasks" / "project_mgmt" / "pm_bola_read_alpha_from_beta.json"
+            task = json.loads(source_task.read_text(encoding="utf-8"))
+            for control in task["controls"]:
+                control["status"] = 418
+            task_path = tmp_path / "broken_vulnerable_control.json"
+            task_path.write_text(json.dumps(task, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            summary = run_benchmark(
+                [str(task_path)],
+                "python3 scripts/scripted_baseline_agent.py",
+                tmp_path / "results",
+                timeout_seconds=10,
+            )
+
+            self.assertEqual(summary["passed_count"], 0, summary)
+            self.assertEqual(summary["exploit_proven_success_rate"], 1.0, summary)
+            self.assertEqual(summary["boundary_reasoning_pass_rate"], 1.0, summary)
+            self.assertEqual(summary["v0_passed_count"], 0, summary)
+            self.assertEqual(summary["v0_mean_score"], 0.0, summary)
+            self.assertEqual(summary["tasks"][0]["control_replay_passed"], False, summary["tasks"][0])
+
+    def test_secure_control_false_report_is_separate_from_control_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            agent_path = tmp_path / "false_report_agent.py"
+            agent_path.write_text(
+                textwrap.dedent(
+                    """
+                    from __future__ import annotations
+
+                    import json
+                    import os
+                    from pathlib import Path
+
+                    submission = {
+                        "findings": [
+                            {
+                                "claim": "incorrect_secure_control_report",
+                                "boundary": {},
+                                "evidence": [],
+                                "out_of_scope_actions": [],
+                            }
+                        ]
+                    }
+                    Path(os.environ["AUTHZBENCH_SUBMISSION"]).write_text(
+                        json.dumps(submission, indent=2, sort_keys=True) + "\\n",
+                        encoding="utf-8",
+                    )
+                    """
+                ),
+                encoding="utf-8",
+            )
+
+            summary = run_benchmark(
+                [str(ROOT / "tasks" / "billing" / "bill_secure_member_plan_control.json")],
+                f"python3 {agent_path}",
+                tmp_path / "results",
+                timeout_seconds=10,
+            )
+
+            self.assertEqual(summary["passed_count"], 0, summary)
+            self.assertEqual(summary["control_false_report_count"], 1, summary)
+            self.assertEqual(summary["control_false_report_rate"], 1.0, summary)
+            self.assertEqual(summary["control_execution_pass_rate"], 1.0, summary)
+            self.assertEqual(summary["false_positive_rate"], 1.0, summary)
+            self.assertEqual(summary["v0_mean_score"], 0.0, summary)
+            self.assertEqual(summary["tasks"][0]["submission_finding_count"], 1, summary["tasks"][0])
+            self.assertEqual(summary["tasks"][0]["control_replay_passed"], True, summary["tasks"][0])
+
+    def test_invalid_submission_has_own_summary_metric(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            agent_path = tmp_path / "invalid_submission_agent.py"
+            agent_path.write_text(
+                textwrap.dedent(
+                    """
+                    from __future__ import annotations
+
+                    import json
+                    import os
+                    from pathlib import Path
+
+                    Path(os.environ["AUTHZBENCH_SUBMISSION"]).write_text(
+                        json.dumps({"findings": "not-a-list"}, indent=2, sort_keys=True) + "\\n",
+                        encoding="utf-8",
+                    )
+                    """
+                ),
+                encoding="utf-8",
+            )
+
+            summary = run_benchmark(
+                [str(ROOT / "tasks" / "billing" / "bill_secure_member_plan_control.json")],
+                f"python3 {agent_path}",
+                tmp_path / "results",
+                timeout_seconds=10,
+            )
+
+            self.assertEqual(summary["passed_count"], 0, summary)
+            self.assertEqual(summary["invalid_submission_count"], 1, summary)
+            self.assertEqual(summary["invalid_submission_rate"], 1.0, summary)
+            self.assertEqual(summary["control_false_report_count"], 0, summary)
+            self.assertEqual(summary["control_false_report_rate"], 0.0, summary)
+            self.assertEqual(summary["tasks"][0]["invalid_submission"], True, summary["tasks"][0])
 
     def test_runner_records_leaderboard_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

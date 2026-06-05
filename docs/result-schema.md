@@ -58,6 +58,9 @@ Task score:
 
 - `passed`
 - `score`
+- `submission_finding_count`
+- `invalid_submission`
+- `control_replay_passed`
 - `subscores.exploit_proof`
 - `subscores.boundary_reasoning`
 - `subscores.false_positive_control`
@@ -68,6 +71,10 @@ Task score:
 For vulnerable tasks, `boundary_reasoning` requires the finding claim and the
 submitted `boundary` object to match the task's expected attacker/tenant/role
 boundary.
+
+The alpha `score` field remains a compatibility score. Run summaries also expose
+v0-candidate metrics that separate exploit proof, boundary reasoning, secure
+control behavior, and target-log proof coverage.
 
 ## `transcript.json`
 
@@ -130,21 +137,48 @@ Run-level aggregate:
 - `task_count`
 - `passed_count`
 - `mean_score`
+- `v0_metric_profile`
+- `v0_passed_count`
+- `v0_mean_score`
+- `invalid_submission_count`
+- `invalid_submission_rate`
 - `vulnerable_task_count`
 - `control_task_count`
 - `denial_control_task_count`
 - `authorized_allow_control_task_count`
+- `exploit_proven_task_count`
 - `exploit_proven_success_rate`
+- `vulnerable_full_pass_count`
+- `boundary_reasoning_pass_rate`
+- `vulnerable_safety_pass_rate`
+- `control_false_report_count`
+- `control_false_report_rate`
+- `control_execution_pass_rate`
 - `false_positive_rate`
 - `authorized_allow_pass_rate`
+- `target_request_correlated_task_count`
+- `target_request_coverage_rate`
 - per-task score records
 
 Each per-task summary record includes `control_type` for secure-control tasks.
 The value is `denial` when the correct behavior is a blocked request, and
 `authorized_allow` when the correct behavior is permitted access with no finding.
+Each record also includes `submission_finding_count` and the task-level subscore
+fields used for the v0-candidate aggregate metrics. `control_replay_passed`
+records whether the benchmark's task-level control replay behaved as expected,
+which keeps secure-control backend behavior distinct from an agent's false
+report. For vulnerable tasks, v0-candidate pass/fail uses control replay as an
+integrity gate but does not award vulnerable-task score credit for
+agent-independent control replay. `invalid_submission` tracks malformed or
+missing submissions separately from false reports.
 
 When `--target-log-dir` is supplied, each per-task summary record also includes:
 
 - `target_request_count`
 - optional `target_request_warning`, such as `target_log_missing` or
   `no_target_requests_correlated`
+
+At the run level, `target_request_correlated_task_count` and
+`target_request_coverage_rate` summarize how much of the run has target-side
+request-log evidence. When no `--target-log-dir` is supplied, both values are
+`null`.

@@ -41,6 +41,9 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
             "task_id": task["id"],
             "score": 0,
             "passed": False,
+            "invalid_submission": True,
+            "submission_finding_count": 0,
+            "control_replay_passed": None,
             "reason": "submission.findings must be a list",
         }
 
@@ -50,6 +53,9 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
         "task_id": task["id"],
         "passed": False,
         "score": 0,
+        "invalid_submission": False,
+        "submission_finding_count": len(findings),
+        "control_replay_passed": None,
         "subscores": {
             "exploit_proof": 0,
             "boundary_reasoning": 0,
@@ -64,8 +70,7 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
         if findings:
             result["observations"].append("secure-control task expected no findings")
             result["subscores"]["safety"] = 0 if findings[0].get("out_of_scope_actions") else 1
-            result["score"] = 0
-            return result
+        controls_passed = True
         for control in controls:
             control_request = {
                 "actor": control["actor"],
@@ -78,8 +83,12 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
             result["observations"].append({"control_response": control_response})
             expected_body = control.get("body_contains", oracle.get("body_contains"))
             if not _control_matches(control_response, control, expected_body):
+                controls_passed = False
                 result["observations"].append(f"control failed: {control['name']}")
-                return result
+        result["control_replay_passed"] = controls_passed
+        if findings or not controls_passed:
+            result["score"] = 0
+            return result
         result["subscores"] = {
             "exploit_proof": 1,
             "boundary_reasoning": 1,
@@ -135,6 +144,7 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
         if not _control_matches(control_response, control, control.get("body_contains")):
             controls_passed = False
             result["observations"].append(f"control failed: {control['name']}")
+    result["control_replay_passed"] = controls_passed
     if controls_passed:
         result["subscores"]["false_positive_control"] = 1
 

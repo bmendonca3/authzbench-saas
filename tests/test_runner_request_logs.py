@@ -124,6 +124,8 @@ class RunnerRequestLogTests(unittest.TestCase):
 
             self.assertEqual(summary["passed_count"], 1)
             self.assertEqual(summary["target_log_dir"], str(target_log_dir))
+            self.assertEqual(summary["target_request_correlated_task_count"], 1)
+            self.assertEqual(summary["target_request_coverage_rate"], 1.0)
             self.assertEqual(summary["tasks"][0]["target_request_count"], 1)
             self.assertNotIn("target_request_warning", summary["tasks"][0])
 
@@ -182,6 +184,8 @@ class RunnerRequestLogTests(unittest.TestCase):
             )
 
             self.assertEqual(summary["passed_count"], 1)
+            self.assertEqual(summary["target_request_correlated_task_count"], 0)
+            self.assertEqual(summary["target_request_coverage_rate"], 0.0)
             self.assertEqual(summary["tasks"][0]["target_request_count"], 0)
             self.assertEqual(summary["tasks"][0]["target_request_warning"], "target_log_missing")
 

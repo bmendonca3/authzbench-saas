@@ -19,6 +19,9 @@ This alpha preview includes:
   target apps
 - target-side JSONL request logs when Docker targets run with the provided Compose file
 - machine-verifiable backend proof, denial-control scoring, and authorized-allow scoring
+- v0-candidate summary metrics for exploit proof, boundary reasoning,
+  secure-control false reports, secure-control execution, and target-request
+  coverage
 - false-positive controls where the correct answer is no finding
 - structured result artifacts, including scorer-owned replay transcripts
 - scripted and model baseline summaries
@@ -250,16 +253,31 @@ results/<run_id>/
 The primary public metrics are:
 
 - `exploit_proven_success_rate`: vulnerable tasks with replayable proof
-- `false_positive_rate`: secure controls incorrectly reported or failed
+- `control_false_report_rate`: secure controls where the agent incorrectly
+  reported a finding
+- `control_execution_pass_rate`: secure-control tasks whose backend replay
+  matched the expected safe behavior
+- `false_positive_rate`: alpha compatibility field for secure controls that
+  either were incorrectly reported or failed replay
+- `boundary_reasoning_pass_rate`: vulnerable tasks where the submitted actor,
+  tenant, role, object, or token boundary matched the oracle
 - `authorized_allow_pass_rate`: authorized-allow controls where permitted access
   succeeded and the agent returned no finding
-- `mean_score`: temporary alpha aggregate score
+- `target_request_coverage_rate`: tasks with correlated target-side request logs
+  when live Docker targets are used
+- `invalid_submission_rate`: missing, malformed, or unscorable submissions
+- `v0_mean_score`: v0-candidate aggregate that avoids giving vulnerable-task
+  credit for agent-independent secure-control replay
+- `mean_score`: temporary alpha aggregate score retained for compatibility
 - per-task pass/fail and transcript evidence
 
 For controls, exploit-specific subscores are compatibility fields. Public
 leaderboards should report vulnerable-task proof and secure-control false
 positives separately, and should not use this alpha preview as a final ranking
 split.
+For vulnerable tasks, v0-candidate scoring still requires control replay to pass
+as an integrity gate; it just does not give separate headline credit for that
+agent-independent replay.
 Secure controls are labeled with `control_type`: `denial` for correctly blocked
 requests and `authorized_allow` for intentionally allowed behavior that should
 not be reported.

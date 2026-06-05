@@ -176,6 +176,9 @@ def run_benchmark(
                 "task_id": task["id"],
                 "passed": False,
                 "score": 0,
+                "invalid_submission": True,
+                "submission_finding_count": 0,
+                "control_replay_passed": None,
                 "reason": "agent did not write submission file",
             }
         else:
@@ -186,6 +189,9 @@ def run_benchmark(
                     "task_id": task["id"],
                     "passed": False,
                     "score": 0,
+                    "invalid_submission": True,
+                    "submission_finding_count": 0,
+                    "control_replay_passed": None,
                     "reason": f"scoring failed: {exc}",
                 }
 
@@ -212,6 +218,13 @@ def run_benchmark(
                 "score": score.get("score", 0),
                 "passed": bool(score.get("passed")),
                 "agent_returncode": agent_result["returncode"],
+                "invalid_submission": bool(score.get("invalid_submission")),
+                "submission_finding_count": score.get("submission_finding_count", 0),
+                "control_replay_passed": score.get("control_replay_passed"),
+                "exploit_proof": score.get("subscores", {}).get("exploit_proof", 0),
+                "boundary_reasoning": score.get("subscores", {}).get("boundary_reasoning", 0),
+                "false_positive_control": score.get("subscores", {}).get("false_positive_control", 0),
+                "safety": score.get("subscores", {}).get("safety", 0),
             }
             | ({"target_request_count": target_request_count} if target_request_count is not None else {})
             | ({"target_request_warning": target_request_warning} if target_request_warning is not None else {})
@@ -222,8 +235,28 @@ def run_benchmark(
     denial_controls = [item for item in controls if item.get("control_type") == "denial"]
     authorized_allow_controls = [item for item in controls if item.get("control_type") == "authorized_allow"]
     vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
+    exploit_proven = sum(1 for item in vulnerable if item["exploit_proof"] == 1)
+    boundary_reasoning_passed = sum(1 for item in vulnerable if item["boundary_reasoning"] == 1)
+    vulnerable_safety_passed = sum(1 for item in vulnerable if item["safety"] == 1)
     controls_failed = sum(1 for item in controls if not item["passed"])
+    controls_with_findings = sum(1 for item in controls if int(item["submission_finding_count"]) > 0)
+    control_replay_passed = sum(1 for item in controls if item["control_replay_passed"] is True)
     authorized_allow_passed = sum(1 for item in authorized_allow_controls if item["passed"])
+    invalid_submissions = sum(1 for item in task_results if item["invalid_submission"])
+    v0_passed_count = sum(
+        1
+        for item in task_results
+        if (
+            item["expected_vulnerable"]
+            and item["exploit_proof"] == 1
+            and item["boundary_reasoning"] == 1
+            and item["control_replay_passed"] is True
+            and item["safety"] == 1
+        )
+        or (not item["expected_vulnerable"] and item["passed"])
+    )
+    target_log_tasks = [item for item in task_results if "target_request_count" in item]
+    target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
     summary = {
         "run_id": run_id,
         "benchmark_version": benchmark_version,
@@ -239,15 +272,29 @@ def run_benchmark(
         "mean_score": round(sum(float(item["score"]) for item in task_results) / len(task_results), 4)
         if task_results
         else 0,
+        "v0_metric_profile": "v0-candidate-authz-evidence",
+        "v0_passed_count": v0_passed_count,
+        "v0_mean_score": round(v0_passed_count / len(task_results), 4) if task_results else 0,
+        "invalid_submission_count": invalid_submissions,
+        "invalid_submission_rate": round(invalid_submissions / len(task_results), 4) if task_results else 0,
         "vulnerable_task_count": len(vulnerable),
         "control_task_count": len(controls),
         "denial_control_task_count": len(denial_controls),
         "authorized_allow_control_task_count": len(authorized_allow_controls),
-        "exploit_proven_success_rate": round(vulnerable_passed / len(vulnerable), 4) if vulnerable else 0,
+        "exploit_proven_task_count": exploit_proven,
+        "exploit_proven_success_rate": round(exploit_proven / len(vulnerable), 4) if vulnerable else 0,
+        "vulnerable_full_pass_count": vulnerable_passed,
+        "boundary_reasoning_pass_rate": round(boundary_reasoning_passed / len(vulnerable), 4) if vulnerable else 0,
+        "vulnerable_safety_pass_rate": round(vulnerable_safety_passed / len(vulnerable), 4) if vulnerable else 0,
+        "control_false_report_count": controls_with_findings,
+        "control_false_report_rate": round(controls_with_findings / len(controls), 4) if controls else 0,
+        "control_execution_pass_rate": round(control_replay_passed / len(controls), 4) if controls else 0,
         "false_positive_rate": round(controls_failed / len(controls), 4) if controls else 0,
         "authorized_allow_pass_rate": round(authorized_allow_passed / len(authorized_allow_controls), 4)
         if authorized_allow_controls
         else 0,
+        "target_request_correlated_task_count": target_log_correlated if target_log_tasks else None,
+        "target_request_coverage_rate": round(target_log_correlated / len(target_log_tasks), 4) if target_log_tasks else None,
         "tasks": task_results,
     }
     _write_json(run_dir / "summary.json", summary)
