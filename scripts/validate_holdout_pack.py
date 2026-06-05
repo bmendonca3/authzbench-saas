@@ -56,6 +56,15 @@ def validate_holdout_pack(
     public_seeds = {str(item.get("seed")) for item in public_manifests}
     holdout_ids = {str(item.get("id")) for item in holdout_manifests}
     holdout_seeds = {str(item.get("seed")) for item in holdout_manifests}
+    rehearsal_count = sum(
+        1
+        for item in holdout_manifests
+        if "rehearsal_note" in item
+        or str(item.get("id", "")).startswith("holdout_rehearsal_")
+        or str(item.get("seed", "")).startswith("private-v0-rehearsal-")
+        or item.get("leaderboard_suitable") is False
+    )
+    warnings: list[str] = []
 
     if count == 0:
         errors.append("no private holdout manifests matched the supplied glob")
@@ -87,6 +96,11 @@ def validate_holdout_pack(
     overlapping_seeds = sorted(holdout_seeds & public_seeds)
     if overlapping_seeds:
         errors.append(f"holdout pack reuses public task seed(s): {', '.join(overlapping_seeds[:5])}")
+    if rehearsal_count:
+        warnings.append(
+            "holdout pack contains rehearsal manifests generated from public task structure; "
+            "do not use it for private leaderboard scoring"
+        )
 
     result.update(
         {
@@ -100,6 +114,9 @@ def validate_holdout_pack(
             "min_denial_controls": min_denial_controls,
             "min_authorized_allow_controls": min_authorized_allow_controls,
             "app_counts": dict(sorted(app_counts.items())),
+            "rehearsal_manifest_count": rehearsal_count,
+            "leaderboard_suitable": False if rehearsal_count else None,
+            "warnings": warnings,
             "passed": not errors,
             "errors": errors,
         }

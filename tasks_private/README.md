@@ -37,3 +37,5 @@ python3 scripts/generate_holdout_rehearsal_pack.py --force
 That rehearsal pack is generated from public task structure and exists only to
 test the private-pack workflow. It is not a real private leaderboard holdout and
 should not be used for v0 scoring claims.
+Generated rehearsal manifests include `leaderboard_suitable: false`, and the
+holdout validator reports a warning when rehearsal manifests are present.

@@ -42,6 +42,9 @@ class HoldoutRehearsalGeneratorTests(unittest.TestCase):
         self.assertEqual(result["vulnerable_count"], 12, result)
         self.assertEqual(result["control_count"], 12, result)
         self.assertEqual(len(result["app_counts"]), 6, result)
+        self.assertEqual(result["rehearsal_manifest_count"], 24, result)
+        self.assertEqual(result["leaderboard_suitable"], False, result)
+        self.assertTrue(any("rehearsal manifests" in warning for warning in result["warnings"]), result)
 
     def test_generator_refuses_public_tasks_output_path(self) -> None:
         tasks = generate_holdout_rehearsal_tasks([str(ROOT / "tasks" / "*" / "*.json")])
@@ -49,6 +52,11 @@ class HoldoutRehearsalGeneratorTests(unittest.TestCase):
             public_tasks_path = Path(tmp) / "tasks" / "holdout"
             with self.assertRaises(ValueError):
                 write_rehearsal_pack(tasks, public_tasks_path, force=False)
+
+    def test_generator_refuses_in_repo_nonignored_tasks_private_path(self) -> None:
+        tasks = generate_holdout_rehearsal_tasks([str(ROOT / "tasks" / "*" / "*.json")])
+        with self.assertRaises(ValueError):
+            write_rehearsal_pack(tasks, ROOT / "docs" / "tasks_private" / "holdout" / "rehearsal", force=False)
 
 
 if __name__ == "__main__":

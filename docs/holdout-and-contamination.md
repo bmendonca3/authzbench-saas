@@ -67,6 +67,8 @@ The validator checks the normal task schema, requires `split=private_holdout`,
 rejects public seed prefixes, rejects public task ID and seed reuse, requires
 coverage across all six app families, limits over-concentration in one app, and
 enforces denial-control and authorized-allow-control minimums.
+When rehearsal manifests are present, the validator also reports a rehearsal
+warning and `leaderboard_suitable: false`.
 
 Default v0-shape validation requires:
 

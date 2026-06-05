@@ -62,6 +62,8 @@ Ready:
   app coverage, control subtype mix, and public ID/seed overlap checks
 - ignored local holdout rehearsal generator exists for maintainers to test the
   private-pack workflow without committing private JSON
+- rehearsal manifests and validation output are machine-marked as not suitable
+  for leaderboard scoring
 - Git-tracked privacy scan exists in the public validation script
 - private holdout JSON is excluded from the publishable repo
 - local-status paths and personal filesystem references have been removed from this document

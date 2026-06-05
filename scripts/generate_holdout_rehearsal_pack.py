@@ -53,6 +53,7 @@ def _private_rehearsal_copy(task: dict[str, Any], index: int) -> dict[str, Any]:
     private_task["id"] = _private_id(index, str(task["id"]))
     private_task["seed"] = _private_seed(index, str(task["id"]))
     private_task["split"] = "private_holdout"
+    private_task["leaderboard_suitable"] = False
     private_task["rehearsal_note"] = (
         "Generated from public task structure for local private-pack workflow validation only; "
         "not suitable for private leaderboard scoring."
@@ -89,11 +90,14 @@ def generate_holdout_rehearsal_tasks(public_patterns: list[str]) -> list[dict[st
 
 def _assert_ignored_holdout_path(output_dir: Path) -> None:
     resolved = output_dir.resolve()
+    repo_root = ROOT.resolve()
+    ignored_holdout_root = (ROOT / "tasks_private" / "holdout").resolve()
+    if resolved == repo_root or repo_root in resolved.parents:
+        if resolved != ignored_holdout_root and ignored_holdout_root not in resolved.parents:
+            raise ValueError("in-repo output directory must be under the ignored tasks_private/holdout path")
+        return
     if "tasks_private" not in resolved.parts or "holdout" not in resolved.parts:
-        raise ValueError("output directory must be under an ignored tasks_private/holdout path")
-    public_tasks = (ROOT / "tasks").resolve()
-    if resolved == public_tasks or public_tasks in resolved.parents:
-        raise ValueError("refusing to write private rehearsal manifests under public tasks/")
+        raise ValueError("out-of-repo output directory must include a tasks_private/holdout path")
 
 
 def write_rehearsal_pack(tasks: list[dict[str, Any]], output_dir: Path, *, force: bool) -> list[Path]:
@@ -140,7 +144,11 @@ def main() -> int:
         print(dump_json(summary))
         return 0
 
-    written = write_rehearsal_pack(tasks, output_dir, force=args.force)
+    try:
+        written = write_rehearsal_pack(tasks, output_dir, force=args.force)
+    except (FileExistsError, ValueError) as exc:
+        print(dump_json(summary | {"passed": False, "error": str(exc)}))
+        return 1
     validation = validate_holdout_pack(
         [str(output_dir / "**" / "*.json")],
         public_patterns=args.public_task,
