@@ -43,6 +43,8 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
         errors.append(f"{path}: controls must be a non-empty list")
     if data.get("expected_vulnerable") is True and data["oracle"].get("claim") == "no_vulnerability":
         errors.append(f"{path}: vulnerable task has no_vulnerability oracle")
+    if data.get("expected_vulnerable") is True and not isinstance(data.get("expected_boundary"), dict):
+        errors.append(f"{path}: vulnerable task must include expected_boundary")
     if data.get("expected_vulnerable") is False and data["oracle"].get("claim") != "no_vulnerability":
         errors.append(f"{path}: secure-control task must use no_vulnerability oracle")
     try:
@@ -92,4 +94,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

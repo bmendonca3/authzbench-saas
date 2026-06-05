@@ -1,5 +1,7 @@
 # AuthZBench-SaaS
 
+![AuthZBench-SaaS benchmark flow](assets/authzbench-saas-infographic.svg)
+
 AuthZBench-SaaS is a benchmark for evaluating whether AI agents can find,
 prove, and avoid over-reporting multi-tenant SaaS authorization bugs.
 
@@ -97,6 +99,11 @@ python3 scripts/container_smoke.py
 docker compose down
 ```
 
+Rendered task contexts include a `target` object with the local base URL,
+container-network base URL, task seed, and `x-authzbench-seed` header name.
+Tool-using agents should send that seed header so live Docker requests match the
+same seeded IDs used by the scorer.
+
 ## Submission Format
 
 Agents submit JSON to the file path in `$AUTHZBENCH_SUBMISSION`.
@@ -168,8 +175,8 @@ Tracked summaries live in [`baselines/`](baselines).
 | Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
 | --- | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline | 15 | 15 | 1.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` no-tools | 15 | 12 | 0.5 | 0.0 |
-| Kiro `qwen3-coder-next` no-tools | 15 | 9 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools | 15 | 11 | 0.3333 | 0.0 |
+| Kiro `qwen3-coder-next` no-tools | 15 | 8 | 0.0 | 0.1111 |
 
 The scripted baseline is a harness check, not a model result. The Kiro runs are
 initial public-split baselines and should be rerun for any release tag.
@@ -188,6 +195,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 - [`docs/result-schema.md`](docs/result-schema.md): runner artifact schema
 - [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): suggested leaderboard columns
 - [`docs/launch-report.md`](docs/launch-report.md): v0 release narrative and known limits
+- [`docs/reviews/2026-06-05-panel-summary.md`](docs/reviews/2026-06-05-panel-summary.md): grounded model-panel review and implemented follow-ups
 - [`docs/publish-checklist.md`](docs/publish-checklist.md): pre-publication checklist
 - [`SECURITY.md`](SECURITY.md): safe handling for intentionally vulnerable apps
 

@@ -19,6 +19,10 @@
       "viewer": "beta_member"
     }
   },
+  "expected_boundary": {
+    "attacker_actor": "beta_member",
+    "victim_tenant": "alpha"
+  },
   "controls": [
     {
       "name": "secure_route_denies_cross_tenant_read",

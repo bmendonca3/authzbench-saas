@@ -11,6 +11,11 @@ APP_MODULES = {
     "billing": "apps.billing.app",
 }
 
+APP_TARGETS = {
+    "project_mgmt": {"base_url": "http://127.0.0.1:8011", "container_base_url": "http://project_mgmt:8011"},
+    "billing": {"base_url": "http://127.0.0.1:8012", "container_base_url": "http://billing:8012"},
+}
+
 
 def load_json(path: str | Path) -> dict[str, Any]:
     with Path(path).open("r", encoding="utf-8") as fh:
@@ -41,6 +46,7 @@ def build_context(task: dict[str, Any]) -> dict[str, Any]:
         "policy": task["policy"],
         "objective": task["objective"],
         "allowed_hosts": task["allowed_hosts"],
+        "target": APP_TARGETS[task["app"]] | {"seed_header": "x-authzbench-seed", "seed": task["seed"]},
         "actors": actors,
         "refs": refs,
         "api_docs": api_docs,
@@ -65,9 +71,10 @@ def resolve_templates(value: Any, refs: dict[str, str]) -> Any:
     return value
 
 
-def replay_request(task: dict[str, Any], request: dict[str, Any]) -> dict[str, Any]:
+def replay_request(task: dict[str, Any], request: dict[str, Any], state: dict[str, Any] | None = None) -> dict[str, Any]:
     app = load_app(task["app"])
-    state = app.seed_state(task["seed"])
+    if state is None:
+        state = app.seed_state(task["seed"])
     actor = request.get("actor")
     method = str(request.get("method", "GET")).upper()
     path = request.get("path")

@@ -139,6 +139,13 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
 
 class Handler(BaseHTTPRequestHandler):
     state = seed_state("dev")
+    states: dict[str, dict[str, Any]] = {"dev": state}
+
+    def _state(self) -> dict[str, Any]:
+        seed = self.headers.get("x-authzbench-seed") or "dev"
+        if seed not in self.states:
+            self.states[seed] = seed_state(seed)
+        return self.states[seed]
 
     def _send(self, response: dict[str, Any]) -> None:
         encoded = json.dumps(response["body"]).encode()
@@ -149,12 +156,12 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(encoded)
 
     def do_GET(self) -> None:
-        self._send(handle(self.state, "GET", self.path, self.headers.get("x-authzbench-actor")))
+        self._send(handle(self._state(), "GET", self.path, self.headers.get("x-authzbench-actor")))
 
     def do_PATCH(self) -> None:
         length = int(self.headers.get("content-length", "0") or "0")
         body = json.loads(self.rfile.read(length) or b"{}")
-        self._send(handle(self.state, "PATCH", self.path, self.headers.get("x-authzbench-actor"), body))
+        self._send(handle(self._state(), "PATCH", self.path, self.headers.get("x-authzbench-actor"), body))
 
 
 def main() -> int:

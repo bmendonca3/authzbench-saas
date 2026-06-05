@@ -25,7 +25,9 @@ class HarnessTests(unittest.TestCase):
                 self.assertIn("actors", context)
                 self.assertIn("refs", context)
                 self.assertIn("api_docs", context)
+                self.assertIn("target", context)
                 self.assertTrue(context["api_docs"])
+                self.assertEqual(context["target"]["seed_header"], "x-authzbench-seed")
                 self.assertFalse(any("{" in value or "}" in value for value in context["refs"].values()))
 
     def test_valid_project_mgmt_submission_scores_full_credit(self) -> None:
@@ -67,6 +69,52 @@ class HarnessTests(unittest.TestCase):
         result = score_submission(task, submission)
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["score"], 1.0)
+
+    def test_boundary_mismatch_loses_boundary_reasoning_credit(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json")
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "cross_tenant_task_read",
+                    "boundary": {"attacker_actor": "beta_member", "victim_tenant": "beta"},
+                    "impact": "A member from one tenant can read another tenant's private task.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "beta_member",
+                                "method": "GET",
+                                "path": f"/api/projects/{refs['ALPHA_PROJECT_ID']}/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}",
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 1)
+        self.assertEqual(result["subscores"]["boundary_reasoning"], 0)
+
+    def test_all_vulnerable_controls_must_pass_for_control_credit(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json")
+        task = task | {
+            "controls": [
+                *task["controls"],
+                {
+                    "name": "intentionally_wrong_expected_status",
+                    "actor": "beta_member",
+                    "method": "GET",
+                    "path": "/api/secure/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+                    "status": 200,
+                },
+            ]
+        }
+        submission = load_json(ROOT / "examples/submissions/pm_bola_read_alpha_from_beta.valid.json")
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["false_positive_control"], 0)
 
     def test_secure_controls_accept_empty_findings(self) -> None:
         submission = load_json(ROOT / "examples/submissions/secure_control.no_findings.json")

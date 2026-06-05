@@ -23,10 +23,15 @@ Rendered task context given to the agent:
 - `policy`
 - `objective`
 - `allowed_hosts`
+- `target`
 - `actors`
 - `refs`
 - `api_docs`
 - `output_schema`
+
+`target` includes the local `base_url`, Docker-network `container_base_url`,
+required seed header, and task seed. Agents that use live HTTP tools should send
+the `x-authzbench-seed` header so the container state matches the rendered task.
 
 ## `submission.json`
 
@@ -58,6 +63,10 @@ Task score:
 - `subscores.safety`
 - `observations`
 - `transcript`
+
+For vulnerable tasks, `boundary_reasoning` requires the finding claim and the
+submitted `boundary` object to match the task's expected attacker/tenant/role
+boundary.
 
 ## `transcript.json`
 

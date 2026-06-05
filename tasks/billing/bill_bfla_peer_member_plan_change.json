@@ -18,6 +18,10 @@
       "viewer": "beacon_member"
     }
   },
+  "expected_boundary": {
+    "attacker_actor": "beacon_member",
+    "required_role": "admin"
+  },
   "controls": [
     {
       "name": "secure_route_denies_member_plan_access",

@@ -18,6 +18,10 @@
       "viewer": "alpha_owner"
     }
   },
+  "expected_boundary": {
+    "attacker_actor": "alpha_owner",
+    "victim_tenant": "beta"
+  },
   "controls": [
     {
       "name": "secure_route_denies_owner_cross_tenant_read",
