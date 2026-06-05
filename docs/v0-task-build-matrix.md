@@ -40,8 +40,9 @@ should land at 20-30 tasks, with 24 preferred for balanced coverage.
 For v0, maintain at least:
 
 - 25 vulnerable tasks across public and private splits
-- 28 total secure controls across public and private splits, counting denial and
-  authorized-allow controls together
+- at least 40 percent secure controls across public and private splits. For the
+  74-task target above, that means at least 30 total secure controls, counting
+  denial and authorized-allow controls together
 - 10 authorized-allow controls where access should succeed
 - 8 private BOLA or tenant/object-boundary holdouts
 - 8 private BFLA, invite/membership, token-scope, or role-boundary holdouts

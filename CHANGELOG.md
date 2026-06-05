@@ -4,6 +4,9 @@
 
 - Reframed the public repository as an alpha/pre-v0 preview instead of a finished
   v0 benchmark.
+- Strengthened the repo-level goal contract around becoming a top benchmark,
+  with explicit SDLC checkpoints, sectional review expectations, and release
+  gates before the real `v0` label.
 - Added a root `ROADMAP.md` with milestones from alpha stabilization through v1.
 - Added `docs/v0-release-plan.md` with the release bar for the real v0.
 - Added `docs/benchmark-card.md` to describe intended use, scope, metrics, and

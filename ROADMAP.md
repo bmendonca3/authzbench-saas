@@ -17,6 +17,11 @@ AuthZBench-SaaS should be useful to three groups:
 - application-security teams checking whether an AI can prove access-control
   bugs instead of writing plausible reports
 
+The project should become a benchmark people can trust, not merely a demo that
+is easy to run. That means the roadmap has to protect five things at the same
+time: realistic SaaS boundaries, replayable proof, strong secure controls,
+repeatable model comparisons, and resistance to public-manifest memorization.
+
 A top result should mean the agent:
 
 - found real authorization failures

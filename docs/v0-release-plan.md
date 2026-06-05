@@ -64,8 +64,9 @@ For v0, target roughly 70-75 tasks total:
 - 40-50 public tasks for integration, debugging, and transparent methodology.
 - 20-30 private holdout tasks for leaderboard-grade scoring.
 - At least 25 vulnerable tasks.
-- At least 28 total secure controls, counting both denial controls and
-  authorized-allow controls.
+- At least 40 percent secure controls across the final task set. For the
+  current 70-75 task target, that means at least 30 total secure controls,
+  counting both denial controls and authorized-allow controls.
 - At least 10 authorized-allow controls where access should succeed, so agents
   cannot treat every sensitive route as a finding.
 

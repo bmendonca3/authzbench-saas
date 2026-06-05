@@ -11,6 +11,22 @@ reviewing the idea, running the harness, and comparing early agents on a
 medium-size public split. It is not yet a finished leaderboard benchmark, and the project
 should not claim the real `v0` label until the release gates below are met.
 
+## Current Goal Statement
+
+Build AuthZBench-SaaS into a public benchmark that serious AI-agent and
+application-security researchers can trust for SaaS authorization testing. The
+work should move through normal SDLC checkpoints: goal and roadmap design,
+target/task expansion, scorer and runner hardening, baseline refreshes,
+sectional panel review, privacy validation, fresh-clone validation, and
+release-readiness review. The repository should include a clear roadmap and
+should use commits that match those checkpoints instead of burying the work in
+one large change.
+
+The ambition is to become a top benchmark, but the label has to be earned. The
+current repo remains alpha/pre-v0 until it has protected private holdouts,
+strong live-target proof, repeated real model and agent baselines, anti-gaming
+controls, clean packaging, and review artifacts for each major section.
+
 ## Operating Contract
 
 ### Outcome
@@ -52,6 +68,24 @@ Progress toward a release-worthy benchmark must be backed by concrete evidence:
   tokens, or unrelated local data are committed
 - sectional panel review notes under `docs/reviews/` for major benchmark areas
 - fresh public-clone validation before public release claims
+
+### Top-Benchmark Bar
+
+To be worth citing, AuthZBench-SaaS has to do more than run. It has to be
+harder to game than a task list, clearer than a demo repo, and fair enough that
+model comparisons mean something.
+
+The benchmark should be judged on five qualities:
+
+- realism: tasks should resemble real SaaS authorization mistakes without using
+  real customer, employer, school, bounty, or personal data
+- proof: successful findings should replay against the backend, not just read
+  well as vulnerability reports
+- controls: safe behavior should be tested as carefully as vulnerable behavior
+- comparability: model and agent runs should preserve exact commands, settings,
+  commit SHAs, result bundles, and repeated-run notes
+- resilience: private holdouts, seeds, route aliases, decoys, and protected
+  execution should reduce the value of memorizing public manifests
 
 ### Constraints
 
