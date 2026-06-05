@@ -2,14 +2,14 @@
   "agent": "scripted_baseline_agent",
   "agent_cmd": "python3.11 scripts/scripted_baseline_agent.py",
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
-  "benchmark_commit_sha": "45414beab06559aed5e47efabc850327ce49c774",
+  "benchmark_commit_sha": "1d478894d721d86e596f6debd14bdff4cef6cf72",
   "harness_type": "scripted",
-  "control_task_count": 17,
+  "control_task_count": 22,
   "exploit_proven_success_rate": 1.0,
   "false_positive_rate": 0.0,
   "mean_score": 1.0,
   "model": "deterministic-script",
-  "passed_count": 29,
-  "task_count": 29,
-  "vulnerable_task_count": 12
+  "passed_count": 37,
+  "task_count": 37,
+  "vulnerable_task_count": 15
 }
