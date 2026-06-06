@@ -69,7 +69,18 @@ def run_kiro_plan(context: dict[str, Any], model: str, timeout_seconds: int, max
         "never",
         _prompt(context, max_probes),
     ]
-    completed = subprocess.run(command, text=True, capture_output=True, timeout=timeout_seconds, check=False)
+    try:
+        completed = subprocess.run(command, text=True, capture_output=True, timeout=timeout_seconds, check=False)
+    except subprocess.TimeoutExpired as exc:
+        metadata = {
+            "model": model,
+            "command": "kiro chat --model <model> --no-interactive --trust-tools= --wrap never <prompt>",
+            "returncode": None,
+            "stdout": exc.stdout or "",
+            "stderr": (exc.stderr or "") + "\nTIMEOUT",
+            "parse_error": f"kiro command timed out after {timeout_seconds}s",
+        }
+        return {"probes": [], "finding": None}, metadata
     metadata = {
         "model": model,
         "command": "kiro chat --model <model> --no-interactive --trust-tools= --wrap never <prompt>",

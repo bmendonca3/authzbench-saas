@@ -59,6 +59,35 @@ def _git_ls_files(pathspec: str) -> list[str]:
     return [line for line in completed.stdout.splitlines() if line.strip()]
 
 
+def _optional_int(data: dict[str, Any] | None, *keys: str) -> int:
+    if not isinstance(data, dict):
+        return 0
+    for key in keys:
+        value = data.get(key)
+        if isinstance(value, int):
+            return value
+    return 0
+
+
+def _planner_returncode(model_tool_plan: dict[str, Any] | None) -> int | None:
+    if not isinstance(model_tool_plan, dict):
+        return None
+    metadata = model_tool_plan.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    value = metadata.get("returncode")
+    return value if isinstance(value, int) else None
+
+
+def _planner_parse_error(model_tool_plan: dict[str, Any] | None) -> Any | None:
+    if not isinstance(model_tool_plan, dict):
+        return None
+    metadata = model_tool_plan.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    return metadata.get("parse_error")
+
+
 def _target_log_offset(target_log_dir: Path, app_name: str) -> int:
     log_path = target_log_dir / f"{app_name}.jsonl"
     if not log_path.exists():
@@ -232,10 +261,17 @@ def _metric_summary(
     task_count = len(task_results)
     vulnerable_count = len(vulnerable)
     control_count = len(controls)
-    executed_probe_count = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
-    fallback_probe_count = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
+    executed_tool_probe_total = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
+    fallback_probe_total = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
+    submitted_finding_total = sum(int(item.get("submitted_finding_count", 0)) for item in task_results)
     model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
     per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
+    planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
+    planner_failure_count = sum(
+        1
+        for item in task_results
+        if item.get("model_tool_plan_artifact") and item.get("planner_returncode") not in {None, 0}
+    )
     return {
         "agent": agent,
         "authorized_allow_control_task_count": len(authorized_allow_controls),
@@ -254,10 +290,10 @@ def _metric_summary(
         "control_false_report_rate": round(controls_with_findings / control_count, 4) if control_count else None,
         "control_task_count": control_count,
         "denial_control_task_count": len(denial_controls),
-        "executed_probe_count": executed_probe_count,
+        "executed_tool_probe_total": executed_tool_probe_total,
         "exploit_proven_success_rate": round(exploit_proven / vulnerable_count, 4) if vulnerable_count else None,
         "exploit_proven_task_count": exploit_proven,
-        "fallback_probe_count": fallback_probe_count,
+        "fallback_probe_total": fallback_probe_total,
         "false_positive_rate": round(controls_with_findings / control_count, 4) if control_count else None,
         "harness_type": harness_type,
         "invalid_submission_count": invalid_submissions,
@@ -267,6 +303,8 @@ def _metric_summary(
         "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
         "passed_count": sum(1 for item in task_results if item["passed"]),
         "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
+        "planner_failure_count": planner_failure_count,
+        "planner_parse_error_count": planner_parse_error_count,
         "protected_execution": {
             "agent_cwd": "temporary-empty-workspace",
             "agent_received": "rendered-context-only",
@@ -276,6 +314,7 @@ def _metric_summary(
         },
         "run_id": run_id,
         "split": "private-holdout",
+        "submitted_finding_total": submitted_finding_total,
         "target_request_coverage_rate": None,
         "task_count": task_count,
         "tasks": task_results,
@@ -301,10 +340,10 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "control_false_report_rate": summary.get("control_false_report_rate"),
         "control_task_count": summary.get("control_task_count"),
         "denial_control_task_count": summary.get("denial_control_task_count"),
-        "executed_probe_count": summary.get("executed_probe_count"),
+        "executed_tool_probe_total": summary.get("executed_tool_probe_total"),
         "exploit_proven_success_rate": summary.get("exploit_proven_success_rate"),
         "exploit_proven_task_count": summary.get("exploit_proven_task_count"),
-        "fallback_probe_count": summary.get("fallback_probe_count"),
+        "fallback_probe_total": summary.get("fallback_probe_total"),
         "false_positive_rate": summary.get("false_positive_rate"),
         "full_result_bundle_tracked": bool(protected.get("raw_result_bundle_tracked")),
         "harness_type": summary.get("harness_type"),
@@ -314,6 +353,8 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "model": summary.get("model"),
         "model_tool_plan_artifact_count": summary.get("model_tool_plan_artifact_count"),
         "per_task_tool_probe_artifact_count": summary.get("per_task_tool_probe_artifact_count"),
+        "planner_failure_count": summary.get("planner_failure_count"),
+        "planner_parse_error_count": summary.get("planner_parse_error_count"),
         "private_holdout_task_count": summary.get("task_count"),
         "protected_execution": {
             "agent_cwd": protected.get("agent_cwd"),
@@ -330,6 +371,7 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "run_id": str(summary.get("run_id", "")) + "-redacted",
         "safety_violations": 0,
         "split": "private-holdout",
+        "submitted_finding_total": summary.get("submitted_finding_total"),
         "target_request_correlated_task_count": summary.get("target_request_correlated_task_count"),
         "target_request_coverage_rate": summary.get("target_request_coverage_rate"),
         "task_count": summary.get("task_count"),
@@ -385,6 +427,11 @@ def run_protected_private_eval(
         tool_probe_data = protected_artifacts["artifacts"].get("tool-probes.json")
         if not isinstance(tool_probe_data, dict):
             tool_probe_data = {}
+        model_tool_plan_data = protected_artifacts["artifacts"].get("model-tool-plan.json")
+        if not isinstance(model_tool_plan_data, dict):
+            model_tool_plan_data = {}
+        planner_returncode = _planner_returncode(model_tool_plan_data)
+        planner_parse_error = _planner_parse_error(model_tool_plan_data)
 
         try:
             score = score_submission(task, submission)
@@ -425,19 +472,22 @@ def run_protected_private_eval(
                 "control_replay_passed": score.get("control_replay_passed"),
                 "control_type": task.get("control_type") if not task.get("expected_vulnerable") else None,
                 "expected_vulnerable": bool(task.get("expected_vulnerable")),
-                "executed_probe_count": int(tool_probe_data.get("executed_probe_count", 0)),
+                "executed_probe_count": _optional_int(tool_probe_data, "executed_probe_count", "probe_count"),
                 "exploit_proof": score.get("subscores", {}).get("exploit_proof", 0),
-                "fallback_probe_count": int(tool_probe_data.get("fallback_probe_count", 0)),
+                "fallback_probe_count": _optional_int(tool_probe_data, "fallback_probe_count"),
                 "false_positive_control": score.get("subscores", {}).get("false_positive_control", 0),
                 "invalid_submission": bool(score.get("invalid_submission")),
                 "model_tool_plan_artifact": "model-tool-plan.json" in protected_artifacts["artifacts"],
                 "passed": bool(score.get("passed")),
                 "safety": score.get("subscores", {}).get("safety", 0),
                 "score": score.get("score", 0),
+                "submitted_finding_count": _optional_int(tool_probe_data, "submitted_finding_count"),
                 "submission_finding_count": score.get("submission_finding_count", 0),
                 "task_id": task["id"],
                 "tool_probe_artifact": "tool-probes.json" in protected_artifacts["artifacts"],
             }
+            | ({"planner_returncode": planner_returncode} if planner_returncode is not None else {})
+            | ({"planner_parse_error": planner_parse_error} if planner_parse_error else {})
             | ({"target_request_count": target_request_count} if target_request_count is not None else {})
             | ({"target_request_warning": target_request_warning} if target_request_warning else {})
         )

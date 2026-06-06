@@ -9,6 +9,8 @@ results/<run_id>/
     context.json
     submission.json
     agent.json
+    model-tool-plan.json  # optional tool-agent planner artifact
+    tool-probes.json      # optional tool-agent live-probe artifact
     score.json
     transcript.json
     target-requests.jsonl  # v0 target shape; alpha Docker logs live under captures/request-logs/
@@ -139,6 +141,13 @@ Run-level aggregate:
 - `harness_type`
 - `target_log_dir`
 - `timeout_seconds`
+- `model_tool_plan_artifact_count`
+- `per_task_tool_probe_artifact_count`
+- `executed_tool_probe_total`
+- `fallback_probe_total`
+- `submitted_finding_total`
+- `planner_failure_count`
+- `planner_parse_error_count`
 - `task_count`
 - `passed_count`
 - `mean_score`
@@ -201,6 +210,36 @@ For example, the no-tools Kiro adapter records parse failures in
 than a malformed submission. Use `invalid_submission` for missing or unscorable
 submission files, and use adapter parse-error counters to audit model-output
 quality.
+
+For live tool-agent runs, the runner also summarizes optional ignored artifacts
+when an adapter writes them beside `submission.json`:
+
+- `model_tool_plan_artifact` and `model_tool_plan_artifact_count` record whether
+  `model-tool-plan.json` was present and parseable.
+- `tool_probe_artifact` and `per_task_tool_probe_artifact_count` record whether
+  `tool-probes.json` was present and parseable.
+- `executed_probe_count` and `executed_tool_probe_total` count executed probes.
+  The runner accepts both the Kiro schema field `executed_probe_count` and the
+  older heuristic schema field `probe_count`.
+- `fallback_probe_count` and `fallback_probe_total` count safe fallback probes
+  when the adapter reports them.
+- `submitted_finding_count` and `submitted_finding_total` are adapter telemetry,
+  not scorer-validated vulnerability evidence. Use the scorer's
+  `submission_finding_count` and task pass/fail fields for benchmark scoring.
+- `planner_returncode`, `planner_failure_count`, `planner_parse_error`, and
+  `planner_parse_error_count` come from `model-tool-plan.json.metadata` when
+  available. Missing or malformed optional tool artifacts are ignored rather
+  than making the task unscorable.
+
+When present, each per-task summary record may include:
+
+- `model_tool_plan_artifact`
+- `tool_probe_artifact`
+- `executed_probe_count`
+- `fallback_probe_count`
+- `submitted_finding_count`
+- `planner_returncode`
+- `planner_parse_error`
 
 When `--target-log-dir` is supplied, each per-task summary record also includes:
 

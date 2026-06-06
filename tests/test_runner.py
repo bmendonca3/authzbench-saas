@@ -247,6 +247,100 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(summary["benchmark_fingerprint"], root_summary["benchmark_fingerprint"])
         self.assertEqual(summary["tasks"][0]["agent_returncode"], 0, summary["tasks"][0])
 
+    def test_runner_summarizes_tool_agent_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            agent_path = tmp_path / "tool_agent.py"
+            agent_path.write_text(
+                textwrap.dedent(
+                    """
+                    from __future__ import annotations
+
+                    import json
+                    import os
+                    from pathlib import Path
+
+                    submission_path = Path(os.environ["AUTHZBENCH_SUBMISSION"])
+                    submission_path.parent.mkdir(parents=True, exist_ok=True)
+                    submission_path.write_text(json.dumps({"findings": []}))
+                    (submission_path.parent / "model-tool-plan.json").write_text(
+                        json.dumps({"metadata": {"returncode": 7, "parse_error": "bad planner json"}, "plan": {"probes": []}})
+                    )
+                    (submission_path.parent / "tool-probes.json").write_text(
+                        json.dumps(
+                            {
+                                "probe_count": 2,
+                                "fallback_probe_count": 1,
+                                "submitted_finding_count": 1,
+                            }
+                        )
+                    )
+                    """
+                ),
+                encoding="utf-8",
+            )
+
+            summary = run_benchmark(
+                [str(ROOT / "tasks" / "project_mgmt" / "pm_same_tenant_read_control.json")],
+                f"python3 {agent_path}",
+                tmp_path / "results",
+                timeout_seconds=10,
+                agent="test_tool_agent",
+                model="test-model",
+                harness_type="tool-agent",
+            )
+
+        self.assertEqual(summary["model_tool_plan_artifact_count"], 1, summary)
+        self.assertEqual(summary["per_task_tool_probe_artifact_count"], 1, summary)
+        self.assertEqual(summary["executed_tool_probe_total"], 2, summary)
+        self.assertEqual(summary["fallback_probe_total"], 1, summary)
+        self.assertEqual(summary["submitted_finding_total"], 1, summary)
+        self.assertEqual(summary["planner_failure_count"], 1, summary)
+        self.assertEqual(summary["planner_parse_error_count"], 1, summary)
+        self.assertTrue(summary["tasks"][0]["model_tool_plan_artifact"], summary["tasks"][0])
+        self.assertTrue(summary["tasks"][0]["tool_probe_artifact"], summary["tasks"][0])
+        self.assertEqual(summary["tasks"][0]["executed_probe_count"], 2, summary["tasks"][0])
+        self.assertEqual(summary["tasks"][0]["planner_returncode"], 7, summary["tasks"][0])
+        self.assertEqual(summary["tasks"][0]["planner_parse_error"], "bad planner json", summary["tasks"][0])
+
+    def test_runner_ignores_malformed_optional_tool_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            agent_path = tmp_path / "tool_agent.py"
+            agent_path.write_text(
+                textwrap.dedent(
+                    """
+                    from __future__ import annotations
+
+                    import json
+                    import os
+                    from pathlib import Path
+
+                    submission_path = Path(os.environ["AUTHZBENCH_SUBMISSION"])
+                    submission_path.parent.mkdir(parents=True, exist_ok=True)
+                    submission_path.write_text(json.dumps({"findings": []}))
+                    (submission_path.parent / "model-tool-plan.json").write_text("{not-json")
+                    (submission_path.parent / "tool-probes.json").write_text("{also-not-json")
+                    """
+                ),
+                encoding="utf-8",
+            )
+
+            summary = run_benchmark(
+                [str(ROOT / "tasks" / "project_mgmt" / "pm_same_tenant_read_control.json")],
+                f"python3 {agent_path}",
+                tmp_path / "results",
+                timeout_seconds=10,
+                agent="test_tool_agent",
+                model="test-model",
+                harness_type="tool-agent",
+            )
+
+        self.assertEqual(summary["model_tool_plan_artifact_count"], 0, summary)
+        self.assertEqual(summary["per_task_tool_probe_artifact_count"], 0, summary)
+        self.assertEqual(summary["executed_tool_probe_total"], 0, summary)
+        self.assertEqual(summary["planner_failure_count"], 0, summary)
+
 
 if __name__ == "__main__":
     unittest.main()

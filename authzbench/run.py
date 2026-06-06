@@ -34,6 +34,45 @@ def _write_jsonl(path: Path, entries: list[dict[str, Any]]) -> None:
     path.write_text(("\n".join(lines) + "\n") if lines else "", encoding="utf-8")
 
 
+def _load_optional_json(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        data = load_json(path)
+    except Exception:  # noqa: BLE001 - optional tool artifacts should not invalidate scoring.
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _optional_int(data: dict[str, Any] | None, *keys: str) -> int | None:
+    if not isinstance(data, dict):
+        return None
+    for key in keys:
+        value = data.get(key)
+        if isinstance(value, int):
+            return value
+    return None
+
+
+def _planner_returncode(model_tool_plan: dict[str, Any] | None) -> int | None:
+    if not isinstance(model_tool_plan, dict):
+        return None
+    metadata = model_tool_plan.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    value = metadata.get("returncode")
+    return value if isinstance(value, int) else None
+
+
+def _planner_parse_error(model_tool_plan: dict[str, Any] | None) -> Any | None:
+    if not isinstance(model_tool_plan, dict):
+        return None
+    metadata = model_tool_plan.get("metadata")
+    if not isinstance(metadata, dict):
+        return None
+    return metadata.get("parse_error")
+
+
 def _target_log_offset(target_log_dir: Path, app_name: str) -> int:
     log_path = target_log_dir / f"{app_name}.jsonl"
     if not log_path.exists():
@@ -209,6 +248,13 @@ def run_benchmark(
 
         _write_json(task_dir / "score.json", score)
         _write_json(task_dir / "transcript.json", {"task_id": task["id"], "entries": score.get("transcript", [])})
+        model_tool_plan = _load_optional_json(task_dir / "model-tool-plan.json")
+        tool_probes = _load_optional_json(task_dir / "tool-probes.json")
+        executed_probe_count = _optional_int(tool_probes, "executed_probe_count", "probe_count")
+        fallback_probe_count = _optional_int(tool_probes, "fallback_probe_count")
+        submitted_finding_count = _optional_int(tool_probes, "submitted_finding_count")
+        planner_returncode = _planner_returncode(model_tool_plan)
+        planner_parse_error = _planner_parse_error(model_tool_plan)
         target_request_count: int | None = None
         target_request_warning: str | None = None
         if target_log_dir is not None:
@@ -237,7 +283,34 @@ def run_benchmark(
                 "boundary_reasoning": score.get("subscores", {}).get("boundary_reasoning", 0),
                 "false_positive_control": score.get("subscores", {}).get("false_positive_control", 0),
                 "safety": score.get("subscores", {}).get("safety", 0),
+                "model_tool_plan_artifact": model_tool_plan is not None,
+                "tool_probe_artifact": tool_probes is not None,
             }
+            | (
+                {"executed_probe_count": executed_probe_count}
+                if executed_probe_count is not None
+                else {}
+            )
+            | (
+                {"fallback_probe_count": fallback_probe_count}
+                if fallback_probe_count is not None
+                else {}
+            )
+            | (
+                {"submitted_finding_count": submitted_finding_count}
+                if submitted_finding_count is not None
+                else {}
+            )
+            | (
+                {"planner_returncode": planner_returncode}
+                if planner_returncode is not None
+                else {}
+            )
+            | (
+                {"planner_parse_error": planner_parse_error}
+                if planner_parse_error
+                else {}
+            )
             | ({"target_request_count": target_request_count} if target_request_count is not None else {})
             | ({"target_request_warning": target_request_warning} if target_request_warning is not None else {})
         )
@@ -255,6 +328,17 @@ def run_benchmark(
     control_replay_passed = sum(1 for item in controls if item["control_replay_passed"] is True)
     authorized_allow_passed = sum(1 for item in authorized_allow_controls if item["passed"])
     invalid_submissions = sum(1 for item in task_results if item["invalid_submission"])
+    executed_tool_probe_total = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
+    fallback_probe_total = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
+    submitted_finding_total = sum(int(item.get("submitted_finding_count", 0)) for item in task_results)
+    model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
+    per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
+    planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
+    planner_failure_count = sum(
+        1
+        for item in task_results
+        if item.get("model_tool_plan_artifact") and item.get("planner_returncode") not in {None, 0}
+    )
     v0_passed_count = sum(
         1
         for item in task_results
@@ -280,6 +364,13 @@ def run_benchmark(
         "harness_type": harness_type,
         "target_log_dir": str(target_log_dir) if target_log_dir is not None else None,
         "timeout_seconds": timeout_seconds,
+        "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
+        "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
+        "executed_tool_probe_total": executed_tool_probe_total,
+        "fallback_probe_total": fallback_probe_total,
+        "submitted_finding_total": submitted_finding_total,
+        "planner_failure_count": planner_failure_count,
+        "planner_parse_error_count": planner_parse_error_count,
         "task_count": len(task_results),
         "passed_count": sum(1 for item in task_results if item["passed"]),
         "mean_score": round(sum(float(item["score"]) for item in task_results) / len(task_results), 4)

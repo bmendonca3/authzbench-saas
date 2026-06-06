@@ -97,6 +97,26 @@ class KiroLiveToolAgentTests(unittest.TestCase):
         self.assertTrue(records["artifact"]["probes"][0]["fallback"])
         self.assertEqual(request.call_args.args[1]["method"], "GET")
 
+    def test_planner_timeout_runs_safe_fallback_probe_without_finding(self) -> None:
+        task = load_json(ROOT / "tasks" / "billing" / "bill_bfla_member_reads_plan_settings.json")
+        context = build_context(task)
+
+        with patch.object(
+            kiro_live_tool_agent.subprocess,
+            "run",
+            side_effect=kiro_live_tool_agent.subprocess.TimeoutExpired(["kiro"], 1),
+        ), patch.object(
+            kiro_live_tool_agent,
+            "_request",
+            return_value={"status": 200, "body": {"plan": {"id": "x"}}},
+        ):
+            submission, records = kiro_live_tool_agent.solve(context, "qwen3-coder-next", 1, 4)
+
+        self.assertEqual(submission, {"findings": []})
+        self.assertEqual(records["artifact"]["executed_probe_count"], 1)
+        self.assertEqual(records["artifact"]["fallback_probe_count"], 1)
+        self.assertIn("timed out", records["metadata"]["parse_error"])
+
     def test_main_writes_submission_plan_and_probe_artifacts(self) -> None:
         task = load_json(ROOT / "tasks" / "api_tokens" / "tok_secure_cross_tenant_secret_control.json")
         context = build_context(task)
