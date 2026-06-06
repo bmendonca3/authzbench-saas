@@ -8,3 +8,4 @@ results/
 captures/
 tasks_private/holdout/
 docs/reviews/panel-logs/
+.kiro/

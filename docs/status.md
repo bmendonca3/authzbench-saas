@@ -28,6 +28,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
   current public split summaries, and leaderboard eligibility
 - current 46-task deterministic scripted harness check
 - repeated current 46-task no-tools Kiro `qwen3-coder-next` model baseline
+- repeated current 46-task no-tools Kiro `claude-haiku-4.5` model baseline
 - stale 44-task live HTTP scripted, heuristic, model, and tool-agent summaries
   retained as context until rerun on the current split
 - v0 release-gate audit script that reports strict readiness from the current
@@ -76,9 +77,11 @@ starts the target stack, checks request logs, and is covered by the GitHub
 Actions public-validation workflow.
 The deterministic scripted baseline has been rerun on the current 46-task
 public split. The `qwen3-coder-next` no-tools Kiro baseline has also been
-rerun twice on the current 46-task split. The older live HTTP scripted,
-heuristic, other Kiro model, and Kiro tool-agent summaries are now stale 44-task
-snapshots because the public split changed.
+rerun twice on the current 46-task split. The `claude-haiku-4.5` no-tools Kiro
+baseline has also been rerun twice on the 46-task split; the two runs span
+adjacent commits where only chart rendering/status text changed. The older live
+HTTP scripted, heuristic, other Kiro model, and Kiro tool-agent summaries are
+now stale 44-task snapshots because the public split changed.
 The second Qwen run also had one invalid submission on a vulnerable task
 (`invalid_submission_rate: 0.0217`), so the current Qwen evidence should be read
 as repeatability evidence, not a polished model ranking.
@@ -90,6 +93,8 @@ as repeatability evidence, not a polished model ranking.
 | Scripted sanity baseline, current | 46 | 46 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools current run 1 | 46 | 27 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools current run 1 | 46 | 26 | 0.2632 | 0.0 | 0.037 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Heuristic live HTTP prober, stale 44-task snapshot | 44 | 33 | 0.6111 | 0.6667 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 | not tracked |
@@ -110,6 +115,10 @@ a strong model result. Run 2 found one replay-proven vulnerable task but still
 had `boundary_reasoning_pass_rate: 0.0` and one invalid vulnerable-task
 submission; `v0_mean_score` remains a full-pass aggregate, separate from
 partial-credit `mean_score`.
+The current Haiku repeat adds a second current public no-tools model family. It
+showed some exploit-proof success but still produced no fully passed vulnerable
+tasks because vulnerable boundary reasoning remained `0.0`; run 1 also had one
+secure-control false report.
 
 ## Publication Readiness
 
@@ -123,10 +132,10 @@ needed after the 46-task split change.
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
 - current deterministic scripted harness summary exists for the 46-task public split
-- one repeated current no-tools model-family baseline exists on the 46-task
+- two repeated current no-tools model-family baselines exist on the 46-task
   public split
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: false` because four more current repeated model/agent
+  `v0_baseline_ready: false` because three more current repeated model/agent
   families and one current tool-agent baseline are still needed
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence

@@ -26,6 +26,13 @@ that current model/tool-agent evidence is complete.
   current 46-task public split no-tools Qwen runs through the Kiro adapter.
   These count as one current repeated public model-family baseline, but they are
   not private-holdout, tool-agent, or leaderboard-eligible submissions.
+- `kiro-claude-haiku-4.5-current-public-46-run1-summary.json` and
+  `kiro-claude-haiku-4.5-current-public-46-run2-summary.json`: repeated
+  current 46-task public split no-tools Haiku runs through the Kiro adapter.
+  These count as one current repeated public model-family baseline, but they
+  are not private-holdout, tool-agent, or leaderboard-eligible submissions.
+  The paired runs span adjacent chart-only commits; task, app, scorer, runner,
+  and harness behavior did not change between the paired SHAs.
 - `scripted-baseline-summary.json`: earlier deterministic 44-task harness
   sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises

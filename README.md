@@ -44,7 +44,7 @@ public internet.
 
 | Status | What exists | How to verify |
 | --- | --- | --- |
-| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, one repeated current model-family baseline, stale 44-task model/tool snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
+| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, two repeated current model-family baselines, stale 44-task model/tool snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
 | Maintainer-only | private holdout pack, protected private-run summaries, strict release-candidate gate | `python3 scripts/validate_v0_release.py` in a maintainer checkout |
 | Not yet | tagged v0 release, hosted public leaderboard, rotating multi-pack holdouts | [`ROADMAP.md`](ROADMAP.md) |
 
@@ -233,11 +233,15 @@ Current public-split snapshot:
 
 - scripted harness checks pass all 46 public tasks
 - `qwen3-coder-next` has two current no-tools Kiro runs on the 46-task split
+- `claude-haiku-4.5` has two current no-tools Kiro runs on the 46-task split
 - repeated model/tool-agent baselines from the previous 44-task split are kept
   as stale snapshots
 - the current Qwen runs pass 27 of 46 tasks, with one exploit-proven vulnerable
   replay across two repeats, zero fully passed vulnerable tasks, and zero false
   positives
+- the current Haiku runs pass 26-27 of 46 tasks, with 1-5 exploit-proven
+  vulnerable replays per run, zero fully passed vulnerable tasks, and 0-1 false
+  positives; one paired run used the immediately preceding chart-only commit
 - stale model runs pass 25-29 of 44 public tasks
 - the stale public live HTTP tool-agent baseline has 44/44 target-request
   correlation
@@ -249,10 +253,10 @@ methodology review, but they are not private-holdout leaderboard results.
 
 Current registry status:
 
-- 1 of 5 required current repeated model/agent families after the task-wave
+- 2 of 5 required current repeated model/agent families after the task-wave
   change
 - no current public live HTTP tool-agent baseline after the task-wave change
-- `v0_baseline_ready: false` until four more model/agent families and one
+- `v0_baseline_ready: false` until three more model/agent families and one
   current tool-agent baseline are rerun on the 46-task split
 
 That status covers only the baseline registry. Full v0-candidate readiness also
@@ -305,7 +309,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 AuthZBench-SaaS is still alpha/pre-v0, not a tagged v0 release. Maintainer-only
 private-holdout evidence exists, but strict v0 validation is currently blocked
-until four more current model/agent families and one current public tool-agent
+until three more current model/agent families and one current public tool-agent
 baseline are rerun on the 46-task split.
 
 Do not describe the repo as leaderboard-ready or as a validated model benchmark

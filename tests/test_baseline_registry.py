@@ -51,13 +51,13 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 12, result)
+        self.assertEqual(result["baseline_count"], 13, result)
         self.assertEqual(result["public_split"]["task_count"], 46, result)
-        self.assertEqual(result["current_public_model_family_count"], 1, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
+        self.assertEqual(result["current_public_model_family_count"], 2, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 2, result)
         self.assertFalse(result["v0_baseline_ready"], result)
-        self.assertIn("current public model families: 1 of 5", result["unmet_v0_requirements"])
-        self.assertIn("repeated model baselines: 1 of 5", result["unmet_v0_requirements"])
+        self.assertIn("current public model families: 2 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 2 of 5", result["unmet_v0_requirements"])
         self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
         self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
 
