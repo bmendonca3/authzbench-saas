@@ -10,11 +10,11 @@ baseline handling, chart updates, and related docs/tests.
 
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
+- Kiro CLI `claude-opus-4.8`, verified against the live Kiro model catalog
 - ChatGPT reviewer, read-only staged-diff review
 
-Kiro was skipped for this checkpoint because it hung during the previous
-sectional review. Claude Antigravity reviewers were not run for this bounded
-follow-up panel.
+Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels propagated, but they
+returned no substantive review output, so they were not counted.
 
 Raw prompts and logs are kept under ignored `docs/reviews/panel-logs/` and are
 not part of the public release artifact.
@@ -29,6 +29,10 @@ The new vulnerable task requires a same-tenant Beta status update followed by a
 cross-tenant Alpha alias read. The scorer now has an actual public manifest that
 uses the multi-step evidence contract, and the matching control keeps normal
 same-tenant owner updates from being treated as vulnerabilities.
+
+Reviewers also agreed on the boundary: this is workflow evidence sequencing, not
+a causal stateful exploit chain. The setup step is authorized workflow context;
+the alias read remains the vulnerable authorization failure.
 
 The public split has changed from 44 to 46 tasks. Reviewers agreed that the old
 44-task model and tool-agent baselines must be treated as stale comparison
@@ -59,6 +63,12 @@ report `v0_ready: false` until the 46-task model/tool-agent baselines are rerun.
 Disposition: accepted and hardened. The harness tests now exercise the new
 `pm_multistep_beta_update_then_alpha_alias_read` manifest directly for full
 credit, missing-step failure, and duplicate-final-step failure.
+
+4. Stale model/tool-agent chart rows could still look current if readers skimmed
+   only the metric bars.
+
+Disposition: accepted and fixed. Stale baseline rows now render in muted gray,
+and the chart text still marks them as rerun-required.
 
 ## Claim Boundary
 
