@@ -145,6 +145,8 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `qwen3-coder-next` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
 | Kiro `claude-haiku-4.5` current run 1 | 46 | 26 | 0.2632 | 0.0 | 0.037 |
 | Kiro `claude-haiku-4.5` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools current run 1 | 46 | 27 | 0.6316 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools current run 2 | 46 | 26 | 0.4211 | 0.0 | 0.037 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 1 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 2 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 |
@@ -163,10 +165,11 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `qwen3-coder-next` stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6`, stale 44-task snapshot | 44 | 26 | 0.7778 | 0.0 | 0.0 |
 
-The current Qwen and Haiku rows are public-split repeatability evidence, not
-rankings. Qwen run 2 had one invalid submission on a vulnerable task
-(`invalid_submission_rate: 0.0217`). Haiku run 1 had one secure-control false
-report, and both Haiku runs had `boundary_reasoning_pass_rate: 0.0`.
+The current Qwen, Haiku, and Sonnet no-tools rows are public-split
+repeatability evidence, not rankings. Qwen run 2 had one invalid submission on
+a vulnerable task (`invalid_submission_rate: 0.0217`). Haiku run 1 and Sonnet
+run 2 each had one secure-control false report, and all three no-tools families
+had `boundary_reasoning_pass_rate: 0.0`.
 
 Tracked summaries:
 
@@ -175,6 +178,8 @@ Tracked summaries:
 - [kiro-qwen3-coder-next-current-public-46-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run2-summary.json)
 - [kiro-claude-haiku-4.5-current-public-46-run1-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-46-run1-summary.json)
 - [kiro-claude-haiku-4.5-current-public-46-run2-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-46-run2-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-46-run1-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-46-run1-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-46-run2-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-46-run2-summary.json)
 - [kiro-live-tool-agent-sonnet-current-public-46-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-46-summary.json)
 - [kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json)
 - [live-scripted-baseline-summary.json](../baselines/live-scripted-baseline-summary.json)
@@ -203,7 +208,7 @@ including secure controls. Panel review classified it as deterministic harness
 evidence, not a v0 tool-agent baseline.
 
 The Kiro snapshots are public-split baselines, not private leaderboard results.
-Qwen and Haiku now have two current 46-task no-tools runs. Opus, Sonnet, and
+Qwen, Haiku, and Sonnet now have two current 46-task no-tools runs. Opus and
 DeepSeek remain repeated 44-task public model baseline families. The stale
 families are useful historical diagnostics, but they are public-only no-tools
 runs, stale against the current split, and not leaderboard eligible.
@@ -219,13 +224,15 @@ evidence.
 
 The current Haiku runs proved 1-5 of 19 vulnerable replays, but no vulnerable
 task fully passed because boundary reasoning stayed at `0.0`; run 1 also had
-one false positive. The stale 44-task Opus no-tools runs proved 12 of 18
-vulnerable replays in both runs and kept zero false positives, but only 1
-vulnerable task fully passed because boundary reasoning remained weak at
-`0.0556`. The stale 44-task Sonnet no-tools runs show why AuthZBench-SaaS
-separates exploit replay from boundary reasoning: both runs proved 14 of 18
-vulnerable replays, but only 3 vulnerable tasks fully passed because boundary
-reasoning remained weak at `0.1667`. The stale 44-task Haiku runs proved 4 of
+one false positive. The current Sonnet no-tools runs proved 8-12 of 19
+vulnerable replays, but no vulnerable task fully passed because boundary
+reasoning stayed at `0.0`; run 2 also had one false positive. The stale
+44-task Opus no-tools runs proved 12 of 18 vulnerable replays in both runs and
+kept zero false positives, but only 1 vulnerable task fully passed because
+boundary reasoning remained weak at `0.0556`. The stale 44-task Sonnet no-tools
+runs remain useful historical contrast: both proved 14 of 18 vulnerable
+replays, but only 3 vulnerable tasks fully passed because boundary reasoning
+remained weak at `0.1667`. The stale 44-task Haiku runs proved 4 of
 18 vulnerable replays in both runs, kept zero false positives, and had no full
 vulnerable-task passes because boundary reasoning was `0.0`. The DeepSeek rows
 provide another control-restrained contrast: both stale runs kept zero false
@@ -235,8 +242,8 @@ Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
 consistency checks and reports `v0_baseline_ready: false` because current
-baseline coverage is still incomplete after the task-wave change: two more
-current repeated model/agent families are still required. The full strict v0
+baseline coverage is still incomplete after the task-wave change: one more
+current repeated model/agent family is still required. The full strict v0
 release gate remains intentionally blocked.
 
 Leaderboard submission shape is now validated by

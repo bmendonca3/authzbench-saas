@@ -33,6 +33,11 @@ that current model/tool-agent evidence is complete.
   are not private-holdout, tool-agent, or leaderboard-eligible submissions.
   The paired runs span adjacent chart-only commits; task, app, scorer, runner,
   and harness behavior did not change between the paired SHAs.
+- `kiro-claude-sonnet-4.6-current-public-46-run1-summary.json` and
+  `kiro-claude-sonnet-4.6-current-public-46-run2-summary.json`: repeated
+  current 46-task public split no-tools Sonnet runs through the Kiro adapter.
+  These count as one current repeated public model-family baseline, but they
+  are not private-holdout, tool-agent, or leaderboard-eligible submissions.
 - `kiro-live-tool-agent-sonnet-current-public-46-summary.json` and
   `kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json`: repeated
   current 46-task public split live HTTP tool-agent runs using

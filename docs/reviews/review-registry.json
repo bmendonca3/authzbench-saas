@@ -67,7 +67,7 @@
         "2026-06-06-chart-assets-panel-summary.md",
         "2026-06-06-tool-agent-repeat-panel-summary.md"
       ],
-      "notes": "Review coverage for registry, leaderboard validators, current 46-task public model summaries, the repeated current 46-task public tool-agent baseline, chart readability, and current-public benchmark fingerprint comparability is complete. This does not mean the baseline gate is complete: two repeated current 46-task public no-tools model families and one repeated current public tool-agent family now exist; two more current repeated model/agent families are still required before this evidence can support a v0 claim."
+      "notes": "Review coverage for registry, leaderboard validators, current 46-task public model summaries, the repeated current 46-task public tool-agent baseline, chart readability, and current-public benchmark fingerprint comparability is complete. This does not mean the baseline gate is complete: three repeated current 46-task public no-tools model families and one repeated current public tool-agent family now exist; one more current repeated model/agent family is still required before this evidence can support a v0 claim."
     },
     {
       "id": "holdout_contamination_anti_gaming",

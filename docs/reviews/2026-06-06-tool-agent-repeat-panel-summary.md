@@ -29,8 +29,9 @@ repeated current-public tool-agent evidence because:
   same score policy and evidence contract, and the same agent/model labels
 - both runs include 46/46 model-plan artifacts, 46/46 tool-probe artifacts, and
   46/46 target-request correlation
-- the registry still reports `v0_baseline_ready: false` with only 3 of 5
-  required repeated current model/agent families
+- the registry still reports `v0_baseline_ready: false`; after the later
+  Sonnet no-tools repeat checkpoint, 4 of 5 required repeated current
+  model/agent families exist
 
 ## Accepted Caveat
 

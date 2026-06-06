@@ -44,7 +44,7 @@ public internet.
 
 | Status | What exists | How to verify |
 | --- | --- | --- |
-| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, three repeated current model/agent-family baselines including one live HTTP tool-agent family, stale 44-task snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
+| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, four repeated current model/agent-family baselines including one live HTTP tool-agent family, stale 44-task snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
 | Maintainer-only | private holdout pack, protected private-run summaries, strict release-candidate gate | `python3 scripts/validate_v0_release.py` in a maintainer checkout |
 | Not yet | tagged v0 release, hosted public leaderboard, rotating multi-pack holdouts | [`ROADMAP.md`](ROADMAP.md) |
 
@@ -244,6 +244,7 @@ Current public-split snapshot:
 - scripted harness checks pass all 46 public tasks
 - `qwen3-coder-next` has two current no-tools Kiro runs on the 46-task split
 - `claude-haiku-4.5` has two current no-tools Kiro runs on the 46-task split
+- `claude-sonnet-4.6` has two current no-tools Kiro runs on the 46-task split
 - `claude-sonnet-4.6` has two current live HTTP tool-agent runs on the 46-task
   split, with plan/probe artifacts and correlated target requests for every
   task in both runs
@@ -255,6 +256,9 @@ Current public-split snapshot:
 - the current Haiku runs pass 26-27 of 46 tasks, with 1-5 exploit-proven
   vulnerable replays per run, zero fully passed vulnerable tasks, and 0-1 false
   positives; one paired run used the immediately preceding chart-only commit
+- the current Sonnet no-tools runs pass 26-27 of 46 tasks, with 8-12
+  exploit-proven vulnerable replays per run, zero fully passed vulnerable
+  tasks, and 0-1 false positives
 - the current live HTTP tool-agent runs each pass 27 of 46 tasks, prove 14 of
   19 vulnerable replays, produce zero control false reports, and correlate
   target requests for all 46 tasks; they fully pass zero vulnerable tasks
@@ -269,10 +273,10 @@ methodology review, but they are not private-holdout leaderboard results.
 
 Current registry status:
 
-- 3 of 5 required current repeated model/agent families after the task-wave
+- 4 of 5 required current repeated model/agent families after the task-wave
   change
 - current public live HTTP tool-agent baseline present and repeated
-- `v0_baseline_ready: false` until two more model/agent families are rerun on
+- `v0_baseline_ready: false` until one more model/agent family is rerun on
   the 46-task split with repeated evidence
 
 That status covers only the baseline registry. Full v0-candidate readiness also
@@ -325,7 +329,7 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 AuthZBench-SaaS is still alpha/pre-v0, not a tagged v0 release. Maintainer-only
 private-holdout evidence exists, but strict v0 validation is currently blocked
-until two more current model/agent families are rerun on the 46-task split
+until one more current model/agent family is rerun on the 46-task split
 with repeated evidence.
 
 Do not describe the repo as leaderboard-ready or as a validated model benchmark
