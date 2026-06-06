@@ -34,6 +34,29 @@ The working goal is tracked in [`docs/goal.md`](docs/goal.md). In short: keep
 the current repo honest as alpha/pre-v0, then earn the `v0` label through scale,
 protected holdouts, live-target proof, repeated baselines, and sectional review.
 
+## Maturity Levels
+
+AuthZBench-SaaS uses three maturity levels so contributors do not confuse a
+legitimate first release with a finished research or community benchmark.
+
+**Level 1: v0 benchmark.** This is the first legitimate public benchmark
+release. It requires current repeated baselines on the frozen public split,
+frozen scoring and evidence contracts, methodology and benchmark-card docs,
+verified private-holdout separation, privacy checks, release validation, CI, and
+a `v0.0` tag. It does not require a hosted leaderboard or broad external
+adoption.
+
+**Level 2: research artifact.** This is the version that should interest
+academic and industry researchers. It needs independent reviewer feedback,
+reproducibility evidence, a public benchmark paper or technical report,
+comparison against existing security benchmarks, and statistical analysis of
+baseline variance.
+
+**Level 3: community benchmark.** This is the harder adoption layer. It needs a
+public submission pipeline, hosted or fully containerized evaluation, rotating
+private holdouts, multiple task packs, outside contributors, and governance for
+leaderboard changes.
+
 ## SDLC And Review Rhythm
 
 Changes should land in auditable checkpoints instead of one large release dump.
@@ -140,7 +163,7 @@ Exit criteria:
 
 ## Milestone 3: Baseline Credibility
 
-Status: v0-candidate.
+Status: v0-candidate evidence complete; final release validation still required.
 
 This milestone makes the benchmark useful for comparison rather than only
 inspection.
@@ -164,6 +187,8 @@ inspection.
       vulnerable tasks.
 - [x] Decide whether to make v0-candidate metrics the default release scoring
       profile for the first tagged `v0`.
+- [x] Restore the current-public repeated baseline count after the 46-task
+      split change.
 
 Exit criteria:
 

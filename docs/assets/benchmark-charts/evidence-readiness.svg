@@ -12,7 +12,7 @@
 <rect x="42.0" y="143.0" width="22.0" height="22.0" rx="11" fill="#64748b"/>
 <text x="78.0" y="160.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Repeated model families</text>
 <text x="360.0" y="160.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Not yet</text>
-<text x="520.0" y="160.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">3 repeated current model families</text>
+<text x="520.0" y="160.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">4 repeated current model families</text>
 <rect x="42.0" y="191.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
 <text x="78.0" y="208.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Public tool-agent baseline</text>
 <text x="360.0" y="208.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>

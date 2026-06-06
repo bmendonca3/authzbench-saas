@@ -30,6 +30,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - repeated current 46-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated current 46-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated current 46-task no-tools Kiro `claude-sonnet-4.6` model baseline
+- repeated current 46-task no-tools Kiro `glm-5` model baseline
 - repeated current 46-task live HTTP Kiro `claude-sonnet-4.6` tool-agent baseline with
   per-task plan/probe artifacts and 46/46 target-request correlation
 - stale 44-task live HTTP scripted, heuristic, model, and tool-agent summaries
@@ -53,9 +54,9 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 ## Verified Locally
 
 The following checks have been run successfully on the current local scaffold.
-The release gate is listed with `--allow-incomplete` because strict v0 readiness
-is intentionally blocked until enough repeated current model/agent-family
-baselines exist:
+The release gate is listed with `--allow-incomplete` for public alpha
+validation; maintainers should run the strict gate again immediately before a
+real tag:
 
 ```bash
 python3 -Wd -m unittest discover -s tests
@@ -69,9 +70,9 @@ python3 scripts/validate_public.py --include-scripted-baseline
 python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
 ```
 
-The strict `python3 scripts/validate_v0_release.py` gate is expected to report
-`v0_ready: false` in this checkpoint because the baseline credibility gate still
-needs one more current repeated model/agent-family baseline.
+The baseline credibility gate now has five repeated current model/agent
+families. Strict `python3 scripts/validate_v0_release.py` should be rerun before
+any tag because release evidence and CI references are time-sensitive.
 
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
 are retained only as historical context. Docker runtime smoke requires a Docker
@@ -84,7 +85,8 @@ rerun twice on the current 46-task split. The `claude-haiku-4.5` no-tools Kiro
 baseline has also been rerun twice on the 46-task split; the two runs span
 adjacent commits where only chart rendering/status text changed. The
 `claude-sonnet-4.6` no-tools Kiro baseline has also been rerun twice on the
-46-task split. The older live
+46-task split. The `glm-5` no-tools Kiro baseline has also been rerun twice on
+the 46-task split. The older live
 HTTP scripted, heuristic, and older Kiro model/tool-agent summaries are now
 stale 44-task snapshots because the public split changed. The current
 `claude-sonnet-4.6` live HTTP tool-agent baseline now has two 46-task
@@ -106,6 +108,8 @@ as repeatability evidence, not a polished model ranking.
 | Kiro `claude-haiku-4.5` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools current run 1 | 46 | 27 | 0.6316 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools current run 2 | 46 | 26 | 0.4211 | 0.0 | 0.037 | 1.0 |
+| Kiro `glm-5` no-tools current run 1 | 46 | 27 | 0.2105 | 0.0 | 0.0 | 1.0 |
+| Kiro `glm-5` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 1 | 46 | 27 | 0.7368 | 0.0 | 0.0 | 1.0 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 2 | 46 | 27 | 0.7368 | 0.0 | 0.0 | 1.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 | 1.0 |
@@ -137,26 +141,29 @@ family. It proved stronger vulnerable replay evidence than Qwen or Haiku in
 these public runs, but still produced no fully passed vulnerable tasks because
 vulnerable boundary reasoning remained `0.0`; run 2 also had one secure-control
 false report.
+The current GLM repeat adds a fourth current public no-tools model family and
+the fifth repeated current model/agent family overall when counted with the
+tool-agent family. It produced 1-4 exploit-proven vulnerable replays per run,
+zero fully passed vulnerable tasks, and zero secure-control false reports.
 
 ## Publication Readiness
 
 Ready public and release-candidate infrastructure:
 
-This list is not a v0-ready claim. The current strict blocker is the baseline
-credibility gate: enough repeated current-public model/agent-family baselines
-are still needed after the 46-task split change.
+This list is not a tagged-release or hosted-leaderboard claim. The baseline
+credibility sub-gate now has five repeated current-public model/agent-family
+baselines after the 46-task split change.
 
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
 - current deterministic scripted harness summary exists for the 46-task public split
-- three repeated current no-tools model-family baselines exist on the 46-task
+- four repeated current no-tools model-family baselines exist on the 46-task
   public split
 - one repeated current live HTTP tool-agent baseline exists on the 46-task
   public split, with plan/probe artifacts and full target-request correlation
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: false` because one more current repeated model/agent
-  family is still needed
+  `v0_baseline_ready: true`
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence
 - repeated Kiro model-family summaries remain useful 44-task snapshots, but they

@@ -259,6 +259,9 @@ Current public-split snapshot:
 - the current Sonnet no-tools runs pass 26-27 of 46 tasks, with 8-12
   exploit-proven vulnerable replays per run, zero fully passed vulnerable
   tasks, and 0-1 false positives
+- the current GLM no-tools runs each pass 27 of 46 tasks, with 1-4
+  exploit-proven vulnerable replays per run, zero fully passed vulnerable
+  tasks, and zero false positives
 - the current live HTTP tool-agent runs each pass 27 of 46 tasks, prove 14 of
   19 vulnerable replays, produce zero control false reports, and correlate
   target requests for all 46 tasks; they fully pass zero vulnerable tasks
@@ -273,11 +276,10 @@ methodology review, but they are not private-holdout leaderboard results.
 
 Current registry status:
 
-- 4 of 5 required current repeated model/agent families after the task-wave
+- 5 of 5 required current repeated model/agent families after the task-wave
   change
 - current public live HTTP tool-agent baseline present and repeated
-- `v0_baseline_ready: false` until one more model/agent family is rerun on
-  the 46-task split with repeated evidence
+- `v0_baseline_ready: true` for the baseline sub-gate
 
 That status covers only the baseline registry. Full v0-candidate readiness also
 depends on private holdouts, leaderboard-submission evidence, release evidence,
@@ -328,9 +330,10 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 ## v0 Candidate Status
 
 AuthZBench-SaaS is still alpha/pre-v0, not a tagged v0 release. Maintainer-only
-private-holdout evidence exists, but strict v0 validation is currently blocked
-until one more current model/agent family is rerun on the 46-task split
-with repeated evidence.
+private-holdout evidence exists, and the public baseline credibility sub-gate
+now has five repeated current model/agent families. A maintainer still needs to
+run the final release validation, privacy checks, post-push CI, and release/tag
+process before calling this a tagged v0.
 
 Do not describe the repo as leaderboard-ready or as a validated model benchmark
 until a maintainer publishes the v0 release and leaderboard process.

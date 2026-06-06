@@ -226,13 +226,15 @@ The current Haiku runs proved 1-5 of 19 vulnerable replays, but no vulnerable
 task fully passed because boundary reasoning stayed at `0.0`; run 1 also had
 one false positive. The current Sonnet no-tools runs proved 8-12 of 19
 vulnerable replays, but no vulnerable task fully passed because boundary
-reasoning stayed at `0.0`; run 2 also had one false positive. The stale
-44-task Opus no-tools runs proved 12 of 18 vulnerable replays in both runs and
-kept zero false positives, but only 1 vulnerable task fully passed because
-boundary reasoning remained weak at `0.0556`. The stale 44-task Sonnet no-tools
-runs remain useful historical contrast: both proved 14 of 18 vulnerable
-replays, but only 3 vulnerable tasks fully passed because boundary reasoning
-remained weak at `0.1667`. The stale 44-task Haiku runs proved 4 of
+reasoning stayed at `0.0`; run 2 also had one false positive. The current GLM
+no-tools runs proved 1-4 of 19 vulnerable replays, kept zero false positives,
+and had no vulnerable full-pass tasks because boundary reasoning stayed at
+`0.0`. The stale 44-task Opus no-tools runs proved 12 of 18 vulnerable replays
+in both runs and kept zero false positives, but only 1 vulnerable task fully
+passed because boundary reasoning remained weak at `0.0556`. The stale 44-task
+Sonnet no-tools runs remain useful historical contrast: both proved 14 of 18
+vulnerable replays, but only 3 vulnerable tasks fully passed because boundary
+reasoning remained weak at `0.1667`. The stale 44-task Haiku runs proved 4 of
 18 vulnerable replays in both runs, kept zero false positives, and had no full
 vulnerable-task passes because boundary reasoning was `0.0`. The DeepSeek rows
 provide another control-restrained contrast: both stale runs kept zero false
@@ -241,10 +243,10 @@ positives but proved no vulnerable exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks and reports `v0_baseline_ready: false` because current
-baseline coverage is still incomplete after the task-wave change: one more
-current repeated model/agent family is still required. The full strict v0
-release gate remains intentionally blocked.
+consistency checks and reports `v0_baseline_ready: true` after the GLM repeat
+restored five current repeated model/agent families on the 46-task split. That
+is a baseline sub-gate claim, not a hosted-leaderboard or v1-scale community
+benchmark claim.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

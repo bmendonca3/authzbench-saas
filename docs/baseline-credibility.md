@@ -34,12 +34,11 @@ It also labels every summary as one of:
 
 ## v0 Baseline Bar
 
-The baseline sub-gate currently reports `v0_baseline_ready: false`. That is
-intentional after the public split moved from 44 to 46 tasks for the first
-project-management multi-step workflow wave. Three repeated current no-tools
-model-family baselines and one repeated current live HTTP tool-agent family now
-exist, but one more current repeated family is still required before the
-baseline gate is credible enough for v0.
+The baseline sub-gate currently reports `v0_baseline_ready: true`. After the
+public split moved from 44 to 46 tasks for the first project-management
+multi-step workflow wave, the current evidence now includes four repeated
+current no-tools model-family baselines and one repeated current live HTTP
+tool-agent family.
 
 The v0 baseline bar is:
 
@@ -55,8 +54,9 @@ The v0 baseline bar is:
 - public-split and private-holdout results reported separately
 - one-off or legacy snapshots excluded from leaderboard eligibility
 
-The validator can pass while reporting `v0_baseline_ready: false`. That means
-the registry is internally honest, not that the baseline sub-gate is complete.
+The validator reports `v0_baseline_ready` separately from registry consistency.
+That means the registry can remain internally honest even when a future task or
+scoring change temporarily makes current baseline coverage incomplete again.
 
 The validator now enforces `benchmark_fingerprint` on current public split
 evidence. The fingerprint binds the result to the public task manifests and the
@@ -94,6 +94,14 @@ vulnerable replays and produced one secure-control false report. Both runs had
 They are public-split model evidence only, not private-holdout or leaderboard
 rows.
 
+The current `glm-5` no-tools Kiro baseline has two 46-task public runs. It adds
+a fourth repeated current no-tools model family and satisfies the fifth repeated
+current model/agent-family requirement when counted with the repeated
+tool-agent family. Run 1 proved four vulnerable replays; run 2 proved one. Both
+runs had zero control false reports and `boundary_reasoning_pass_rate: 0.0`, so
+neither fully passed a vulnerable task. They are public-split model evidence
+only, not private-holdout or leaderboard rows.
+
 For these summaries, `boundary_reasoning_pass_rate` is evaluated over
 vulnerable tasks. Controls can still have task-level boundary checks, but they
 do not turn Qwen's 0.0 vulnerable-boundary rate into a broader reasoning claim.
@@ -117,14 +125,14 @@ The older live scripted, heuristic live HTTP, no-tools Kiro model, and Kiro live
 tool-agent summaries were run on the previous 44-task public split. They are
 retained as stale public snapshots because they are still useful for
 methodology review, but they no longer count toward current public model-family
-coverage beyond the new Qwen, Haiku, and Sonnet reruns or repeated-baseline
-coverage beyond those reruns.
+coverage beyond the new Qwen, Haiku, Sonnet, and GLM reruns or
+repeated-baseline coverage beyond those reruns.
 
 The stale 44-task snapshots still show useful signals: zero or low false
 positive rates on controls, uneven exploit-proof success, and weak boundary
 reasoning for several model families. They should be read as historical
 diagnostics, not current rankings.
 
-The next baseline milestone is to rerun one more model/agent family twice on
-the 46-task split. Only after that rerun should the registry return to
-`v0_baseline_ready: true`.
+The next baseline milestone is not another count-filling rerun. It is to freeze
+the release scoring/version contract, run final release validation, and keep
+future comparisons from mixing task or scoring versions.

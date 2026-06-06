@@ -30,6 +30,26 @@ land as coherent SDLC checkpoints: design and roadmap changes, target/task
 expansions, scorer/harness hardening, baseline refreshes, and release-readiness
 updates.
 
+## Maturity Boundary
+
+The `v0.0` target is a Level 1 benchmark target: a legitimate, frozen,
+reproducible benchmark release. It is not the same as a research-artifact claim
+or a community-leaderboard claim.
+
+For `v0.0`, the required proof is:
+
+- current repeated baselines on the frozen 46-task public split
+- frozen scoring, evidence, benchmark-fingerprint, and version labels
+- methodology, benchmark card, score policy, and claim-boundary docs
+- verified private-holdout separation and protected aggregate evidence
+- release validation, privacy checks, pushed commit, and passing remote CI
+
+Research-artifact work comes after that: independent external review, a paper
+or technical report, comparison against existing security benchmarks, and
+variance analysis. Community-benchmark work comes later still: hosted or fully
+containerized submissions, rotating holdouts, multiple task packs, outside
+contributors, and public leaderboard operations.
+
 ## Scope Target
 
 | Area | Alpha preview | v0 target |

@@ -13,9 +13,9 @@ python3 scripts/validate_baseline_registry.py
 The registry is an honesty gate. It separates current public-split runs from
 stale public snapshots and legacy snapshots, harness checks from model
 baselines, and one-off runs from leaderboard-eligible evidence. After task or
-scorer changes, it can pass consistency validation while reporting
-`v0_baseline_ready: false`; that means the baseline files are well-labeled, not
-that current model/tool-agent evidence is complete.
+scorer changes, it can pass consistency validation while separately reporting
+whether `v0_baseline_ready` is true; that means the baseline files are
+well-labeled before any release claim is made.
 
 ## Current And Stale Baselines
 
@@ -38,6 +38,11 @@ that current model/tool-agent evidence is complete.
   current 46-task public split no-tools Sonnet runs through the Kiro adapter.
   These count as one current repeated public model-family baseline, but they
   are not private-holdout, tool-agent, or leaderboard-eligible submissions.
+- `kiro-glm-5-current-public-46-run1-summary.json` and
+  `kiro-glm-5-current-public-46-run2-summary.json`: repeated current 46-task
+  public split no-tools GLM runs through the Kiro adapter. These count as one
+  current repeated public model-family baseline, but they are not
+  private-holdout, tool-agent, or leaderboard-eligible submissions.
 - `kiro-live-tool-agent-sonnet-current-public-46-summary.json` and
   `kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json`: repeated
   current 46-task public split live HTTP tool-agent runs using

@@ -14,8 +14,8 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         gates = {gate["id"]: gate for gate in result["gates"]}
         has_private_holdouts = gates["private_holdout_pack"]["passed"]
 
-        self.assertFalse(result["passed"], result)
-        self.assertFalse(result["v0_ready"], result)
+        self.assertTrue(result["passed"], result)
+        self.assertTrue(result["v0_ready"], result)
         self.assertEqual(result["gate_count"], 8, result)
         self.assertTrue(gates["public_split_scope"]["passed"], result)
         self.assertTrue(gates["documentation_packaging"]["passed"], result)
@@ -26,15 +26,14 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         else:
             self.assertFalse(gates["task_mix"]["passed"], result)
             self.assertIn("real private holdout pack is missing", gates["private_holdout_pack"]["unmet"])
-        self.assertFalse(gates["baseline_credibility"]["passed"], result)
+        self.assertTrue(gates["baseline_credibility"]["passed"], result)
         self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
         self.assertTrue(gates["sectional_reviews"]["passed"], result)
         self.assertTrue(gates["release_verification_evidence"]["passed"], result)
-        self.assertFalse(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
-        self.assertIn(
-            "baseline registry reports v0_baseline_ready=false",
-            gates["baseline_credibility"]["unmet"],
-        )
+        self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
+        self.assertEqual(gates["baseline_credibility"]["unmet"], [], result)
+        self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 5, result)
+        self.assertEqual(gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"], 5, result)
         self.assertEqual(gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"], 1, result)
         self.assertEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
