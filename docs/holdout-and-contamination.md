@@ -141,6 +141,9 @@ For serious leaderboard use, prefer one of these execution models:
 
 ## Future Randomization
 
+Private-pack rotation should follow
+[`holdout-rotation-protocol.md`](holdout-rotation-protocol.md).
+
 Add procedural randomization for:
 
 - route aliases, such as `/api/tasks/<id>` versus `/api/work-items/<id>`

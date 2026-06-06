@@ -321,6 +321,10 @@ evidence.
   evidence does and does not prove
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task review
   rubric for public tasks and external review
+- [`docs/multistep-workflow-task-plan.md`](docs/multistep-workflow-task-plan.md):
+  next-wave stateful SaaS task design
+- [`docs/holdout-rotation-protocol.md`](docs/holdout-rotation-protocol.md):
+  private-pack rotation and leakage-response rules
 - [`docs/agent-evaluator-kit.md`](docs/agent-evaluator-kit.md): minimal agent
   integration path
 - [`docs/score-policy.md`](docs/score-policy.md): headline metric policy

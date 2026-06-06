@@ -197,7 +197,8 @@ This milestone protects against gaming and accidental leakage.
 
 Post-v0 hardening:
 
-- [ ] Add rotating multi-pack private holdouts.
+- [x] Document rotating multi-pack private holdout protocol.
+- [ ] Implement rotating multi-pack private holdouts.
 - [ ] Add a hosted or fully containerized leaderboard execution service.
 
 Exit criteria:
@@ -214,6 +215,7 @@ Save the `v1` label for a version with external feedback and enough scale to be
 used seriously.
 
 - [ ] At least 100 total tasks across public and private splits.
+- [x] Public multi-step workflow task expansion plan.
 - [ ] Independent external review of task design and scoring.
 - [x] External-review-ready benchmark card with limitations and intended use.
 - [ ] Stable leaderboard submission schema.
