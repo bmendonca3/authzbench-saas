@@ -76,5 +76,17 @@ Leaderboard rows are comparable only when they use the same:
 - task set
 - leaderboard eligibility policy
 
+The validator encodes those inputs in `comparability_key`. Compare rows directly
+only when that key matches. The key includes the benchmark version and commit,
+not only task hashes. A runner-emitted `benchmark_fingerprint` is required for
+eligibility; post-hoc reconstructed fingerprints are historical evidence, not
+proof of the exact task/scoring contract used during execution. Repeated
+eligible rows also need one matching source summary per run so variance can be
+recomputed. Protected summaries include a deterministic runner-integrity
+envelope to detect altered execution metadata; it is not a signature and does
+not replace a hosted submission trust boundary. Private-row eligibility also
+requires host private-path denial; older workspace-only runs remain historical
+evidence.
+
 Public-split development runs must not be mixed with private-holdout
 leaderboard rows as if they are the same evidence class.

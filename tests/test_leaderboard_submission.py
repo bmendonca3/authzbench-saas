@@ -6,8 +6,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from authzbench.core import load_json
-from scripts.validate_leaderboard_submission import ROOT, validate_submission
+from authzbench.core import load_json, runner_integrity_envelope
+from scripts.validate_leaderboard_submission import ROOT, comparability_key, validate_submission
 
 
 EXAMPLE = ROOT / "examples" / "leaderboard" / "scripted-sanity-public.leaderboard.json"
@@ -27,14 +27,14 @@ class LeaderboardSubmissionTests(unittest.TestCase):
         self.assertTrue(result["passed"], result)
         self.assertFalse(result["leaderboard_eligible"], result)
         self.assertTrue(any("not marked leaderboard_eligible" in item for item in result["warnings"]), result)
-        self.assertTrue(any("identity cross-check is limited" in item for item in result["warnings"]), result)
+        self.assertFalse(any("identity cross-check is limited" in item for item in result["warnings"]), result)
 
-    def test_current_private_holdout_release_candidate_is_eligible(self) -> None:
+    def test_historical_private_holdout_row_is_valid_but_not_eligible_without_runner_fingerprint(self) -> None:
         result = validate_submission(RELEASE_CANDIDATE, require_source_summary=True)
 
         self.assertTrue(result["passed"], result)
-        self.assertTrue(result["leaderboard_eligible"], result)
-        self.assertEqual(result["warnings"], [], result)
+        self.assertFalse(result["leaderboard_eligible"], result)
+        self.assertTrue(any("not marked leaderboard_eligible" in item for item in result["warnings"]), result)
 
     def test_rejects_missing_required_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -334,6 +334,65 @@ class LeaderboardSubmissionTests(unittest.TestCase):
         self.assertTrue(any("v0_mean_score" in error for error in result["errors"]), result)
         self.assertTrue(any("exploit_proven_success_rate" in error for error in result["errors"]), result)
 
+    def test_rejects_fingerprint_count_or_comparability_key_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = load_json(EXAMPLE)
+            data["benchmark_fingerprint"]["task_count"] = 45
+            path = _write_submission(Path(tmp), data)
+
+            result = validate_submission(path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("benchmark_fingerprint.task_count" in error for error in result["errors"]), result)
+        self.assertTrue(any("comparability_key" in error for error in result["errors"]), result)
+
+    def test_comparability_key_binds_benchmark_commit_and_version(self) -> None:
+        data = load_json(EXAMPLE)
+        original = comparability_key(data)
+
+        data["benchmark_commit_sha"] = "0" * 40
+        self.assertNotEqual(comparability_key(data), original)
+
+        data = load_json(EXAMPLE)
+        data["benchmark_version"] = "different-version"
+        self.assertNotEqual(comparability_key(data), original)
+
+    def test_eligible_row_requires_runner_emitted_fingerprint(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = load_json(RELEASE_CANDIDATE)
+            data["leaderboard_eligible"] = True
+            path = _write_submission(Path(tmp), data)
+
+            result = validate_submission(path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("runner-emitted benchmark fingerprints" in error for error in result["errors"]), result)
+
+    def test_eligible_repeat_requires_one_matching_source_summary_per_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = load_json(EXAMPLE)
+            data["leaderboard_eligible"] = True
+            data["baseline_kind"] = "model_baseline"
+            data["harness_type"] = "no-tools-model"
+            data["split"] = "private-holdout"
+            data["public_task_count"] = 0
+            data["private_holdout_task_count"] = data["task_count"]
+            data["run_count"] = 2
+            data["variance_or_ci"] = "stddev=0.0000"
+            data["repeat_evidence"] = {
+                "aggregation": "primary_run",
+                "primary_run_id": data["run_id"],
+                "source_run_ids": ["missing-repeat", data["run_id"]],
+                "variance_metric": "v0_mean_score",
+            }
+            data["comparability_key"] = comparability_key(data)
+            path = _write_submission(Path(tmp), data)
+
+            result = validate_submission(path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("one source summary per run" in error for error in result["errors"]), result)
+
     def test_tool_agent_leaderboard_entry_requires_target_request_coverage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             data = load_json(EXAMPLE)
@@ -467,12 +526,21 @@ class LeaderboardSubmissionTests(unittest.TestCase):
             data["harness_type"] = "no-tools-model"
             data["split"] = "private-holdout"
             data["public_task_count"] = 0
-            data["private_holdout_task_count"] = 44
+            data["private_holdout_task_count"] = 46
             data["leaderboard_eligible"] = True
             data["run_count"] = 2
             data["variance_or_ci"] = "stddev=0.0000"
             data["run_id"] = "private-model-run"
+            data["repeat_evidence"] = {
+                "aggregation": "primary_run",
+                "primary_run_id": "private-model-run",
+                "source_run_ids": ["private-model-repeat", "private-model-run"],
+                "variance_metric": "v0_mean_score",
+            }
+            data["split"] = "private-holdout"
+            data["comparability_key"] = comparability_key(data)
             data["source_run_summary"] = "summary.json"
+            data["source_run_summaries"] = ["repeat-summary.json", "summary.json"]
             source = {
                 field: data[field]
                 for field in (
@@ -504,8 +572,35 @@ class LeaderboardSubmissionTests(unittest.TestCase):
                 )
             }
             source["run_id"] = data["run_id"]
+            for field in (
+                "leaderboard_schema_version",
+                "eligibility_policy_version",
+                "benchmark_fingerprint",
+                "benchmark_fingerprint_provenance",
+                "comparability_key",
+                "repeat_evidence",
+            ):
+                source[field] = data[field]
+            source["runner_integrity"] = runner_integrity_envelope(
+                source,
+                generator="scripts/protected_private_eval.py",
+            )
+            source["protected_execution"] = {
+                "host_private_paths_denied": True,
+                "isolation_backend": "unit-test",
+            }
             (tmp_path / "summary.json").write_text(
                 json.dumps(source, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            repeat_source = copy.deepcopy(source)
+            repeat_source["run_id"] = "private-model-repeat"
+            repeat_source["runner_integrity"] = runner_integrity_envelope(
+                repeat_source,
+                generator="scripts/protected_private_eval.py",
+            )
+            (tmp_path / "repeat-summary.json").write_text(
+                json.dumps(repeat_source, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
             )
             path = _write_submission(tmp_path, data)

@@ -244,7 +244,9 @@ used seriously.
 - [x] Public multi-step workflow task expansion plan.
 - [ ] Independent external review of task design and scoring.
 - [x] External-review-ready benchmark card with limitations and intended use.
-- [ ] Stable leaderboard submission schema.
+- [x] Stable `leaderboard-submission-v1` schema with runner-emitted benchmark
+      fingerprints, deterministic comparability keys, and explicit repeated-run
+      provenance.
 - [x] Documented policy for task additions, removals, and deprecated scores.
 - [x] Public task-quality rubric and external-review packet guidance.
 - [x] Public agent evaluator kit for minimal third-party integration.

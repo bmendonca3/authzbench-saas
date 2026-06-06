@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import argparse
 import glob
+import hashlib
+import json
+import re
+import statistics
 import sys
 from pathlib import Path
 from typing import Any
@@ -10,10 +14,17 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import dump_json, load_json
+from authzbench.core import dump_json, load_json, runner_integrity_envelope
 
 
 REQUIRED_FIELDS = {
+    "leaderboard_schema_version",
+    "eligibility_policy_version",
+    "benchmark_fingerprint",
+    "benchmark_fingerprint_provenance",
+    "comparability_key",
+    "repeat_evidence",
+    "source_run_summaries",
     "agent",
     "model",
     "harness_type",
@@ -52,6 +63,10 @@ REQUIRED_FIELDS = {
 }
 
 STRING_FIELDS = {
+    "leaderboard_schema_version",
+    "eligibility_policy_version",
+    "comparability_key",
+    "benchmark_fingerprint_provenance",
     "agent",
     "model",
     "harness_type",
@@ -64,6 +79,33 @@ STRING_FIELDS = {
     "baseline_kind",
     "source_run_summary",
 }
+
+LEADERBOARD_SCHEMA_VERSION = "leaderboard-submission-v1"
+ELIGIBILITY_POLICY_VERSION = "leaderboard-eligibility-v1"
+FINGERPRINT_SCHEMA_VERSION = "benchmark-fingerprint-v1"
+FINGERPRINT_FIELDS = {
+    "schema_version",
+    "task_set_sha256",
+    "task_path_set_sha256",
+    "score_policy_version",
+    "scorer_contract",
+    "evidence_contract_version",
+    "task_count",
+    "vulnerable_task_count",
+    "control_task_count",
+    "denial_control_task_count",
+    "authorized_allow_control_task_count",
+}
+FINGERPRINT_COUNT_FIELDS = {
+    "task_count",
+    "vulnerable_task_count",
+    "control_task_count",
+    "denial_control_task_count",
+    "authorized_allow_control_task_count",
+}
+FINGERPRINT_STRING_FIELDS = FINGERPRINT_FIELDS - FINGERPRINT_COUNT_FIELDS
+REPEAT_AGGREGATIONS = {"single_run", "primary_run"}
+COMPARABILITY_KEY_PATTERN = re.compile(r"^authzbench-cmp-v1:[0-9a-f]{64}$")
 
 INT_FIELDS = {
     "task_count",
@@ -131,6 +173,20 @@ SOURCE_SUMMARY_FIELDS = {
     "target_request_coverage_rate",
     "mean_score",
 }
+
+
+def comparability_key(submission: dict[str, Any]) -> str:
+    payload = {
+        "benchmark_fingerprint": submission.get("benchmark_fingerprint"),
+        "benchmark_commit_sha": submission.get("benchmark_commit_sha"),
+        "benchmark_version": submission.get("benchmark_version"),
+        "eligibility_policy_version": submission.get("eligibility_policy_version"),
+        "leaderboard_schema_version": submission.get("leaderboard_schema_version"),
+        "split": submission.get("split"),
+        "v0_metric_profile": submission.get("v0_metric_profile"),
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    return f"authzbench-cmp-v1:{hashlib.sha256(encoded).hexdigest()}"
 
 
 def _is_int(value: Any) -> bool:
@@ -213,6 +269,199 @@ def _validate_types(submission: dict[str, Any], errors: list[str]) -> None:
         duration = submission["median_duration_seconds"]
         if duration is not None and (not _is_number(duration) or float(duration) < 0):
             errors.append("median_duration_seconds must be null or a non-negative number")
+
+
+def _validate_fingerprint(submission: dict[str, Any], errors: list[str]) -> None:
+    fingerprint = submission.get("benchmark_fingerprint")
+    if not isinstance(fingerprint, dict):
+        errors.append("benchmark_fingerprint must be an object")
+        return
+    missing = sorted(FINGERPRINT_FIELDS - set(fingerprint))
+    if missing:
+        errors.append(f"benchmark_fingerprint missing required fields: {', '.join(missing)}")
+    for field in sorted(FINGERPRINT_STRING_FIELDS & set(fingerprint)):
+        if not isinstance(fingerprint[field], str) or not fingerprint[field].strip():
+            errors.append(f"benchmark_fingerprint.{field} must be a non-empty string")
+    for field in sorted(FINGERPRINT_COUNT_FIELDS & set(fingerprint)):
+        if not _is_int(fingerprint[field]) or int(fingerprint[field]) < 0:
+            errors.append(f"benchmark_fingerprint.{field} must be a non-negative integer")
+    if fingerprint.get("schema_version") != FINGERPRINT_SCHEMA_VERSION:
+        errors.append(
+            f"benchmark_fingerprint.schema_version must be {FINGERPRINT_SCHEMA_VERSION}"
+        )
+    for field in ("task_set_sha256", "task_path_set_sha256"):
+        value = fingerprint.get(field)
+        if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is None:
+            errors.append(f"benchmark_fingerprint.{field} must be a lowercase SHA-256 digest")
+
+    for field in FINGERPRINT_COUNT_FIELDS:
+        if field in fingerprint and field in submission and fingerprint[field] != submission[field]:
+            errors.append(f"benchmark_fingerprint.{field} must match submission {field}")
+
+
+def _validate_repeat_evidence(submission: dict[str, Any], errors: list[str]) -> None:
+    repeat = submission.get("repeat_evidence")
+    if not isinstance(repeat, dict):
+        errors.append("repeat_evidence must be an object")
+        return
+    allowed_fields = {"aggregation", "primary_run_id", "source_run_ids", "variance_metric"}
+    unexpected = sorted(set(repeat) - allowed_fields)
+    if unexpected:
+        errors.append(f"repeat_evidence has unsupported fields: {', '.join(unexpected)}")
+
+    aggregation = repeat.get("aggregation")
+    if aggregation not in REPEAT_AGGREGATIONS:
+        errors.append(f"repeat_evidence.aggregation must be one of {', '.join(sorted(REPEAT_AGGREGATIONS))}")
+    source_run_ids = repeat.get("source_run_ids")
+    if not isinstance(source_run_ids, list) or not source_run_ids:
+        errors.append("repeat_evidence.source_run_ids must be a non-empty list")
+        source_run_ids = []
+    elif any(not isinstance(item, str) or not item.strip() for item in source_run_ids):
+        errors.append("repeat_evidence.source_run_ids entries must be non-empty strings")
+    elif len(set(source_run_ids)) != len(source_run_ids):
+        errors.append("repeat_evidence.source_run_ids must be unique")
+
+    run_count = submission.get("run_count")
+    if _is_int(run_count) and len(source_run_ids) != int(run_count):
+        errors.append("repeat_evidence.source_run_ids length must equal run_count")
+
+    primary_run_id = repeat.get("primary_run_id")
+    if not isinstance(primary_run_id, str) or not primary_run_id.strip():
+        errors.append("repeat_evidence.primary_run_id must be a non-empty string")
+    elif source_run_ids and primary_run_id not in source_run_ids:
+        errors.append("repeat_evidence.primary_run_id must appear in source_run_ids")
+    if submission.get("run_id") != primary_run_id:
+        errors.append("run_id must equal repeat_evidence.primary_run_id")
+
+    if aggregation == "single_run":
+        if run_count != 1:
+            errors.append("single_run repeat evidence requires run_count=1")
+        if submission.get("variance_or_ci") != "not_repeated":
+            errors.append("single_run repeat evidence requires variance_or_ci=not_repeated")
+    elif aggregation == "primary_run":
+        if not _is_int(run_count) or int(run_count) < 2:
+            errors.append("primary_run repeat evidence requires run_count>=2")
+        variance_metric = repeat.get("variance_metric")
+        if variance_metric not in RATE_FIELDS:
+            errors.append("primary_run repeat evidence requires variance_metric naming a rate field")
+
+
+def _resolve_source_summaries(
+    submission_path: Path,
+    submission: dict[str, Any],
+    errors: list[str],
+) -> list[tuple[Path, dict[str, Any]]]:
+    raw_paths = submission.get("source_run_summaries")
+    if not isinstance(raw_paths, list) or not raw_paths:
+        errors.append("source_run_summaries must be a non-empty list")
+        return []
+    if any(not isinstance(item, str) or not item.strip() for item in raw_paths):
+        errors.append("source_run_summaries entries must be non-empty relative path strings")
+        return []
+    if len(set(raw_paths)) != len(raw_paths):
+        errors.append("source_run_summaries entries must be unique")
+
+    primary_path = submission.get("source_run_summary")
+    if isinstance(primary_path, str) and primary_path not in raw_paths:
+        errors.append("source_run_summary must also appear in source_run_summaries")
+
+    resolved: list[tuple[Path, dict[str, Any]]] = []
+    for raw_path in raw_paths:
+        summary_path = _resolve_source_summary(submission_path, raw_path, errors)
+        if summary_path is None:
+            continue
+        summary = load_json(summary_path)
+        if not isinstance(summary, dict):
+            errors.append(f"source summary must contain a JSON object: {_display_path(summary_path)}")
+            continue
+        resolved.append((summary_path, summary))
+    return resolved
+
+
+def _validate_repeat_sources(
+    submission_path: Path,
+    submission: dict[str, Any],
+    errors: list[str],
+    warnings: list[str],
+) -> None:
+    sources = _resolve_source_summaries(submission_path, submission, errors)
+    repeat = submission.get("repeat_evidence")
+    if not isinstance(repeat, dict):
+        return
+    source_run_ids = repeat.get("source_run_ids")
+    if not isinstance(source_run_ids, list):
+        return
+
+    resolved_run_ids: list[str] = []
+    for summary_path, summary in sources:
+        run_id = summary.get("run_id")
+        if not isinstance(run_id, str) or not run_id.strip():
+            errors.append(f"{_display_path(summary_path)}: run_id is required")
+            continue
+        resolved_run_ids.append(run_id)
+        for field in (
+            "agent",
+            "model",
+            "harness_type",
+            "benchmark_version",
+            "benchmark_commit_sha",
+            "benchmark_fingerprint",
+            "v0_metric_profile",
+        ):
+            if summary.get(field) != submission.get(field):
+                message = f"{_display_path(summary_path)}: {field} does not match submission"
+                if submission.get("leaderboard_eligible") is True:
+                    errors.append(message)
+                else:
+                    warnings.append(message)
+        if submission.get("leaderboard_eligible") is True:
+            if summary.get("benchmark_fingerprint_provenance") != "runner-emitted":
+                errors.append(f"{_display_path(summary_path)}: eligible source requires runner-emitted fingerprint")
+            integrity = summary.get("runner_integrity")
+            expected_integrity = runner_integrity_envelope(
+                summary,
+                generator="scripts/protected_private_eval.py",
+            )
+            if integrity != expected_integrity:
+                errors.append(f"{_display_path(summary_path)}: runner_integrity is missing or invalid")
+            protected = summary.get("protected_execution")
+            if not isinstance(protected, dict) or protected.get("host_private_paths_denied") is not True:
+                errors.append(f"{_display_path(summary_path)}: eligible private source requires host private-path denial")
+
+    if sorted(resolved_run_ids) != sorted(source_run_ids):
+        message = "source_run_summaries run_id values must exactly match repeat_evidence.source_run_ids"
+        if submission.get("leaderboard_eligible") is True:
+            errors.append(message)
+        else:
+            warnings.append(message)
+
+    if submission.get("leaderboard_eligible") is not True:
+        return
+    if len(sources) != submission.get("run_count"):
+        errors.append("leaderboard_eligible submissions require one source summary per run")
+        return
+    variance_metric = repeat.get("variance_metric")
+    values: list[float] = []
+    for summary_path, summary in sources:
+        value = summary.get(variance_metric)
+        if not _is_number(value) or value is None:
+            errors.append(f"{_display_path(summary_path)}: {variance_metric} must be numeric for variance evidence")
+            continue
+        values.append(float(value))
+    if len(values) != len(sources):
+        return
+    variance = submission.get("variance_or_ci")
+    if isinstance(variance, str) and variance.startswith("stddev="):
+        expected = round(statistics.pstdev(values), 4)
+        try:
+            actual = float(variance.split("=", 1)[1])
+        except ValueError:
+            return
+        if abs(actual - expected) > 0.0001:
+            errors.append(
+                f"variance_or_ci stddev must equal the population standard deviation of "
+                f"{variance_metric} across source runs ({expected:.4f})"
+            )
 
 
 def _display_path(path: Path) -> str:
@@ -311,36 +560,36 @@ def _recompute_from_tasks(summary: dict[str, Any], errors: list[str]) -> dict[st
             4,
         )
         if vulnerable
-        else 0,
+        else None,
         "vulnerable_full_pass_count": sum(1 for item in vulnerable if item.get("passed") is True),
         "boundary_reasoning_pass_rate": round(
             sum(1 for item in vulnerable if item.get("boundary_reasoning") == 1) / len(vulnerable),
             4,
         )
         if vulnerable
-        else 0,
+        else None,
         "control_false_report_rate": round(
             sum(1 for item in controls if task_int(item, "submission_finding_count") > 0) / len(controls),
             4,
         )
         if controls
-        else 0,
+        else None,
         "control_execution_pass_rate": round(
             sum(1 for item in controls if item.get("control_replay_passed") is True) / len(controls),
             4,
         )
         if controls
-        else 0,
+        else None,
         "authorized_allow_pass_rate": round(
             sum(1 for item in authorized_allow_controls if item.get("passed") is True)
             / len(authorized_allow_controls),
             4,
         )
         if authorized_allow_controls
-        else 0,
+        else None,
         "false_positive_rate": round(sum(1 for item in controls if item.get("passed") is not True) / len(controls), 4)
         if controls
-        else 0,
+        else None,
         "mean_score": round(sum(task_float(item, "score") for item in tasks) / task_count, 4) if task_count else 0,
         "target_request_coverage_rate": round(target_log_correlated / len(target_log_tasks), 4)
         if target_log_tasks
@@ -411,6 +660,19 @@ def validate_submission(
     errors: list[str] = []
     warnings: list[str] = []
     _validate_types(submission, errors)
+    _validate_fingerprint(submission, errors)
+    _validate_repeat_evidence(submission, errors)
+
+    if submission.get("leaderboard_schema_version") != LEADERBOARD_SCHEMA_VERSION:
+        errors.append(f"leaderboard_schema_version must be {LEADERBOARD_SCHEMA_VERSION}")
+    if submission.get("eligibility_policy_version") != ELIGIBILITY_POLICY_VERSION:
+        errors.append(f"eligibility_policy_version must be {ELIGIBILITY_POLICY_VERSION}")
+    supplied_comparability_key = submission.get("comparability_key")
+    if isinstance(supplied_comparability_key, str):
+        if COMPARABILITY_KEY_PATTERN.fullmatch(supplied_comparability_key) is None:
+            errors.append("comparability_key must use authzbench-cmp-v1:<lowercase-sha256>")
+        elif supplied_comparability_key != comparability_key(submission):
+            errors.append("comparability_key does not match the submission comparability contract")
 
     split = submission.get("split")
     harness_type = submission.get("harness_type")
@@ -418,6 +680,7 @@ def validate_submission(
     leaderboard_eligible = submission.get("leaderboard_eligible") is True
 
     _validate_source_summary(submission_path, submission, errors, warnings, require_source_summary)
+    _validate_repeat_sources(submission_path, submission, errors, warnings)
 
     if split not in VALID_SPLITS:
         errors.append(f"split must be one of {', '.join(sorted(VALID_SPLITS))}")
@@ -501,6 +764,8 @@ def validate_submission(
     if not leaderboard_eligible:
         warnings.append("submission is schema-valid evidence but not marked leaderboard_eligible")
     else:
+        if submission.get("benchmark_fingerprint_provenance") != "runner-emitted":
+            errors.append("leaderboard_eligible submissions require runner-emitted benchmark fingerprints")
         if split != "private-holdout" or private_count <= 0:
             errors.append(
                 "leaderboard_eligible submissions must use split=private-holdout until private-only combined metrics exist"

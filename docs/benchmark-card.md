@@ -92,9 +92,10 @@ mixed with current evidence without a compatibility label.
 - Baseline registry validation is present and currently reports the baseline
   sub-gate as ready, while keeping public-split and private-holdout claims
   separate.
-- Leaderboard submission validation is present, and one redacted
-  private-holdout no-tools model row is currently eligible. It proves the
-  submission pipeline, not strong model performance.
+- Stable leaderboard submission validation is present. The historical redacted
+  private-holdout no-tools row remains schema-valid, but is temporarily
+  non-eligible because its fingerprint was reconstructed rather than emitted by
+  the runner. Fresh protected reruns are required to restore eligibility.
 
 ## Ethical And Safety Notes
 

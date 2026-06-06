@@ -3,6 +3,20 @@
   "authorized_allow_control_task_count": 6,
   "authorized_allow_pass_rate": 1.0,
   "benchmark_commit_sha": "5d30f48c83ae43d9931b88c2de898ed4ea4e35f5",
+  "benchmark_fingerprint": {
+    "authorized_allow_control_task_count": 6,
+    "control_task_count": 12,
+    "denial_control_task_count": 6,
+    "evidence_contract_version": "evidence-requirements-v1",
+    "schema_version": "benchmark-fingerprint-v1",
+    "score_policy_version": "score-policy-v1",
+    "scorer_contract": "v0-candidate-authz-evidence",
+    "task_count": 24,
+    "task_path_set_sha256": "3e685e2f23a11608b89c0a6e749fbc1a5cd124e1802a4bc78c848fc7991debb8",
+    "task_set_sha256": "2aea61da54f01d40a9df402d5b97aab12954156b58d566683825d0da517ab479",
+    "vulnerable_task_count": 12
+  },
+  "benchmark_fingerprint_provenance": "recomputed-from-maintained-private-pack",
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
   "boundary_reasoning_pass_rate": 0.0,
   "control_execution_pass_rate": 1.0,
@@ -27,6 +41,8 @@
   "protected_execution": {
     "agent_cwd": "temporary-empty-workspace",
     "agent_received": "rendered-context-only",
+    "host_private_paths_denied": false,
+    "isolation_backend": "workspace-only",
     "private_manifests_readable_in_agent_workspace": false,
     "tracked_private_manifest_count": 0
   },

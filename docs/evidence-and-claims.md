@@ -15,8 +15,8 @@ cards, LinkedIn posts, or external-review notes.
 | two current 46-task public live HTTP tool-agent runs | the tool-agent harness can repeatedly emit per-task plan/probe artifacts and target-request correlation on the current public split | private-holdout tool-agent performance or hosted leaderboard readiness |
 | stale 44-task public model/tool-agent baselines | the harness has historical comparison artifacts and visible failure modes | current 46-task model rankings or leaderboard eligibility |
 | target-side request logs | live target interaction can be observed and correlated when configured | target logs alone prove the exploit; replay remains authoritative |
-| protected private-holdout summaries | maintainers have private release-candidate evidence without publishing holdout internals | public users can reproduce private scores from the repo |
-| one eligible private-holdout leaderboard row | the submission validator can validate an artifact-backed private row | hosted public leaderboard readiness or broad model performance |
+| historical workspace-separated private summaries | maintainers exercised rendered-context-only evaluation without publishing holdout internals | host-level isolation or current leaderboard eligibility |
+| one historical private-holdout leaderboard row | the stable schema can validate its redacted source and repeated-run provenance | current eligibility, because its fingerprint was reconstructed after execution |
 | strict maintainer release gate with `--allow-incomplete` | the maintainer checkout can report exact pass/fail release-candidate gates while remaining alpha-safe | authorization to tag v0 or claim v1-scale external validation |
 
 ## Approved Public Framing

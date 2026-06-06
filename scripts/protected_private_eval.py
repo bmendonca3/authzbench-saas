@@ -19,7 +19,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import build_context, dump_json, load_json
+from authzbench.core import benchmark_fingerprint, build_context, dump_json, load_json, runner_integrity_envelope
 from authzbench.score import score_submission
 
 
@@ -185,9 +185,30 @@ def _run_agent_protected(
             }
         )
         started = time.time()
+        command_args = shlex.split(command)
+        isolation_backend = "workspace-only"
+        host_private_paths_denied = False
+        sandbox_exec = shutil.which("sandbox-exec")
+        if sandbox_exec:
+            profile_path = temp_root / "agent.sb"
+            denied_paths = [
+                ROOT / "tasks_private" / "holdout",
+                ROOT / "results",
+                ROOT / "captures",
+                ROOT / "docs" / "reviews" / "panel-logs",
+            ]
+            profile_lines = ["(version 1)", "(allow default)"]
+            profile_lines.extend(
+                f'(deny file-read* (subpath {json.dumps(str(path.resolve()))}))'
+                for path in denied_paths
+            )
+            profile_path.write_text("\n".join(profile_lines) + "\n", encoding="utf-8")
+            command_args = [sandbox_exec, "-f", str(profile_path), *command_args]
+            isolation_backend = "macos-sandbox-exec"
+            host_private_paths_denied = True
         try:
             completed = subprocess.run(
-                shlex.split(command),
+                command_args,
                 cwd=agent_workspace,
                 env=env,
                 text=True,
@@ -225,6 +246,8 @@ def _run_agent_protected(
             "context_location": "temporary-rendered-context",
             "private_manifest_location": "not-in-agent-workspace",
             "private_task_manifest_exposed_to_agent": False,
+            "host_private_paths_denied": host_private_paths_denied,
+            "isolation_backend": isolation_backend,
         }
         return agent_result, submission, {"artifacts": copied_artifacts, "protection": protection}
 
@@ -318,6 +341,18 @@ def _metric_summary(
         "protected_execution": {
             "agent_cwd": "temporary-empty-workspace",
             "agent_received": "rendered-context-only",
+            "host_private_paths_denied": all(
+                item.get("protected_execution", {}).get("host_private_paths_denied") is True
+                for item in task_results
+            ),
+            "isolation_backend": next(
+                (
+                    item.get("protected_execution", {}).get("isolation_backend")
+                    for item in task_results
+                    if item.get("protected_execution", {}).get("isolation_backend")
+                ),
+                "workspace-only",
+            ),
             "private_manifests_readable_in_agent_workspace": False,
             "raw_result_bundle_tracked": bool(_git_ls_files("results")),
             "tracked_private_manifest_count": len(_git_ls_files("tasks_private/holdout")),
@@ -338,11 +373,13 @@ def _metric_summary(
 
 def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
     protected = summary.get("protected_execution") if isinstance(summary.get("protected_execution"), dict) else {}
-    return {
+    redacted = {
         "agent": summary.get("agent"),
         "authorized_allow_control_task_count": summary.get("authorized_allow_control_task_count"),
         "authorized_allow_pass_rate": summary.get("authorized_allow_pass_rate"),
         "benchmark_commit_sha": summary.get("benchmark_commit_sha"),
+        "benchmark_fingerprint": summary.get("benchmark_fingerprint"),
+        "benchmark_fingerprint_provenance": "runner-emitted",
         "benchmark_version": summary.get("benchmark_version"),
         "boundary_reasoning_pass_rate": summary.get("boundary_reasoning_pass_rate"),
         "control_execution_pass_rate": summary.get("control_execution_pass_rate"),
@@ -369,6 +406,8 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "protected_execution": {
             "agent_cwd": protected.get("agent_cwd"),
             "agent_received": protected.get("agent_received"),
+            "host_private_paths_denied": protected.get("host_private_paths_denied"),
+            "isolation_backend": protected.get("isolation_backend"),
             "private_manifests_readable_in_agent_workspace": protected.get(
                 "private_manifests_readable_in_agent_workspace"
             ),
@@ -392,6 +431,11 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "vulnerable_full_pass_count": summary.get("vulnerable_full_pass_count"),
         "vulnerable_task_count": summary.get("vulnerable_task_count"),
     }
+    redacted["runner_integrity"] = runner_integrity_envelope(
+        redacted,
+        generator="scripts/protected_private_eval.py",
+    )
+    return redacted
 
 
 def run_protected_private_eval(
@@ -412,9 +456,10 @@ def run_protected_private_eval(
     run_dir = results_dir / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     task_results: list[dict[str, Any]] = []
+    task_paths = _task_paths(task_patterns)
+    loaded_tasks = [(path, load_json(path)) for path in task_paths]
 
-    for task_path in _task_paths(task_patterns):
-        task = load_json(task_path)
+    for task_path, task in loaded_tasks:
         if task.get("split") != "private_holdout":
             raise ValueError("protected private evaluation only accepts split=private_holdout manifests")
         task_dir = run_dir / task["id"]
@@ -495,6 +540,7 @@ def run_protected_private_eval(
                 "submission_finding_count": score.get("submission_finding_count", 0),
                 "task_id": task["id"],
                 "tool_probe_artifact": "tool-probes.json" in protected_artifacts["artifacts"],
+                "protected_execution": protected_artifacts["protection"],
             }
             | ({"executed_probe_count": executed_probe_count} if executed_probe_count is not None else {})
             | ({"fallback_probe_count": fallback_probe_count} if fallback_probe_count is not None else {})
@@ -513,6 +559,15 @@ def run_protected_private_eval(
         agent=agent,
         model=model,
         harness_type=harness_type,
+    )
+    summary["benchmark_fingerprint"] = benchmark_fingerprint(
+        [
+            (
+                str(task_path.relative_to(ROOT)) if task_path.is_relative_to(ROOT) else task_path.name,
+                task,
+            )
+            for task_path, task in loaded_tasks
+        ]
     )
     if target_log_dir is not None:
         target_log_tasks = [item for item in task_results if "target_request_count" in item]

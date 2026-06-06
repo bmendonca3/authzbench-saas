@@ -313,7 +313,12 @@ The alpha compatibility score weights are:
 See [`docs/methodology.md`](docs/methodology.md) and
 [`docs/result-schema.md`](docs/result-schema.md) for the full schema. See
 [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md) for leaderboard
-metric guidance.
+metric guidance. Stable `leaderboard-submission-v1` rows carry a
+runner-emitted benchmark fingerprint, deterministic comparability key, and
+explicit repeated-run provenance; matching model names or task counts alone do
+not make scores comparable. The protected private runner uses host private-path
+denial on macOS, and `scripts/build_leaderboard_submission.py` converts repeated
+runner summaries into a validator-ready row.
 
 For release-facing summaries, use the v0-candidate metric axes instead of
 ranking agents by legacy `mean_score` alone. See

@@ -2,7 +2,6 @@
   "agent": "scripted_baseline_agent",
   "authorized_allow_control_task_count": 11,
   "authorized_allow_pass_rate": 1.0,
-  "baseline_kind": "harness_check",
   "benchmark_commit_sha": "f179b1d243c7412b607a99f9f41d43a22141ea17",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 11,
@@ -32,13 +31,9 @@
   "harness_type": "scripted",
   "invalid_submission_count": 0,
   "invalid_submission_rate": 0.0,
-  "leaderboard_eligible": false,
   "leaderboard_schema_version": "leaderboard-submission-v1",
   "mean_score": 1.0,
-  "median_duration_seconds": null,
   "model": "deterministic-script",
-  "private_holdout_task_count": 0,
-  "public_task_count": 46,
   "repeat_evidence": {
     "aggregation": "single_run",
     "primary_run_id": "20260606T162619236943Z-b44f46ff",
@@ -47,20 +42,12 @@
     ],
     "variance_metric": "v0_mean_score"
   },
-  "run_count": 1,
   "run_id": "20260606T162619236943Z-b44f46ff",
-  "safety_violations": 0,
-  "source_run_summary": "leaderboard_sources/scripted-public-46-source-summary.json",
-  "source_run_summaries": [
-    "leaderboard_sources/scripted-public-46-source-summary.json"
-  ],
-  "split": "public",
   "target_request_coverage_rate": null,
   "task_count": 46,
   "v0_mean_score": 1.0,
   "v0_metric_profile": "v0-candidate-authz-evidence",
   "v0_passed_count": 46,
-  "variance_or_ci": "not_repeated",
   "vulnerable_full_pass_count": 19,
   "vulnerable_task_count": 19
 }

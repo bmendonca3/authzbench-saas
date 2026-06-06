@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Stabilized `leaderboard-submission-v1` with benchmark fingerprints,
+  deterministic comparability keys, eligibility-policy versioning, and explicit
+  repeated-run provenance.
+- Bound comparability keys to benchmark version and commit, required one
+  source summary per repeat, and recomputed reported standard deviation.
+- Added deterministic protected-run integrity envelopes while documenting that
+  they are not cryptographic submission signatures.
+- Added macOS host private-path denial for protected agents and an end-to-end
+  builder from repeated protected summaries to validator-ready leaderboard rows.
+- Added runner-emitted fingerprints to protected private evaluation summaries.
+- Demoted the historical private Haiku row until fresh protected runs provide
+  execution-time fingerprint evidence.
+
 - Reframed the public repository as an alpha/pre-v0 preview instead of a finished
   v0 benchmark.
 - Strengthened the repo-level goal contract around becoming a top benchmark,

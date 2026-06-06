@@ -71,6 +71,26 @@ def benchmark_fingerprint(task_items: list[tuple[str, dict[str, Any]]]) -> dict[
     }
 
 
+def runner_integrity_envelope(summary: dict[str, Any], *, generator: str) -> dict[str, str]:
+    """Bind public-safe execution identity fields without exposing task rows."""
+    payload = {
+        "agent": summary.get("agent"),
+        "benchmark_commit_sha": summary.get("benchmark_commit_sha"),
+        "benchmark_fingerprint": summary.get("benchmark_fingerprint"),
+        "benchmark_version": summary.get("benchmark_version"),
+        "generator": generator,
+        "harness_type": summary.get("harness_type"),
+        "model": summary.get("model"),
+        "run_id": summary.get("run_id"),
+        "v0_metric_profile": summary.get("v0_metric_profile"),
+    }
+    return {
+        "schema_version": "runner-integrity-v1",
+        "generator": generator,
+        "payload_sha256": stable_json_sha256(payload),
+    }
+
+
 def load_app(app_name: str):
     try:
         return importlib.import_module(APP_MODULES[app_name])

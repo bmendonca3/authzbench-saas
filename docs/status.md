@@ -180,10 +180,13 @@ baselines after the 46-task split change.
   instead of trusting hand-entered aggregate rows
 - leaderboard-eligible rows require source summaries plus both vulnerable-task
   and secure-control coverage
-- one redacted release-candidate private-holdout leaderboard row exists under
-  `leaderboard_submissions/`, backed by a tracked aggregate source summary and
-  validated without publishing private task bodies, IDs, seeds, refs, routes, or
-  raw result bundles
+- one historical redacted private-holdout row exists under
+  `leaderboard_submissions/`; it is source-backed and schema-valid but
+  non-eligible until fresh protected runs emit their benchmark fingerprint at
+  execution time
+- `leaderboard-submission-v1` now binds every row to an eligibility-policy
+  version, benchmark fingerprint, comparability key, and explicit source-run
+  provenance
 - reproducible fresh-clone validation script exists
 - private holdout pack validator exists for ignored local holdouts, including
   app coverage, control subtype mix, public ID/seed overlap checks, private
@@ -197,8 +200,12 @@ baselines after the 46-task split change.
 - protected private-holdout execution can optionally correlate live target
   request logs into per-task artifacts without exposing target-log paths to the
   agent workspace
-- two redacted protected-private execution summaries validate as repeated
-  aggregate evidence without publishing private task rows or raw result bundles
+- two redacted private execution summaries validate as repeated historical
+  aggregate evidence without publishing private task rows or raw result
+  bundles; they predate enforced host private-path denial
+- the protected private runner now uses macOS `sandbox-exec` when available to
+  deny agent reads of holdout and raw-evidence roots; fresh runs are required
+  before this can support eligibility
 - final holdout anti-gaming and final release-readiness review summaries exist
   and mark all required review-registry sections v0-candidate ready
 - local-status paths and personal filesystem references have been removed from this document

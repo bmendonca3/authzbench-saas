@@ -12,7 +12,7 @@
     "docker_container_smoke_passed": true,
     "privacy_scan_passed": true,
     "release_notes_separate_public_and_private_results": true,
-    "protected_private_holdout_execution_available": true
+    "protected_private_holdout_execution_available": false
   },
   "evidence": {
     "local_public_validation_command": "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
@@ -22,7 +22,7 @@
     "latest_remote_ci_run_id": "27044678746",
     "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on commit b3cce0be549fcdd2da21e12bfca6bfde69021174",
     "docker_container_smoke_source": "local validate_public run with --include-container-smoke passed and docker compose project authzbench-public-smoke-83191 was torn down",
-    "protected_private_holdout_execution_source": "docs/protected-private-execution-2026-06-05.redacted.json and docs/protected-private-live-kiro-sonnet-2026-06-05.redacted.json plus ignored raw bundles; agents ran from temporary empty workspaces, received rendered context only, and the live tool-agent run has target-side request-log correlation",
+    "protected_private_holdout_execution_source": "Historical redacted summaries prove workspace separation only. The runner now supports macOS host private-path denial, but fresh no-tools and live tool-agent runs are required before this field can return to true.",
     "release_notes_source": [
       "README.md",
       "docs/status.md",
@@ -30,6 +30,6 @@
       "docs/launch-report.md",
       "CHANGELOG.md"
     ],
-    "notes": "Strict v0 readiness depends on this evidence plus the review registry. This file records the latest reviewed commit and CI at the time of the release-candidate review; refresh it again before any release tag."
+    "notes": "Strict v0 readiness is intentionally false while fresh host-isolated private evidence and a runner-fingerprinted eligible leaderboard row are pending. Refresh all commit and CI evidence before any release tag."
   }
 }

@@ -257,10 +257,12 @@ The tracked public scripted example is schema-valid evidence, but it is
 explicitly not leaderboard eligible because deterministic harness checks and
 public-split examples are not serious leaderboard results.
 
-One redacted private-holdout release-candidate row is now tracked under
+One historical redacted private-holdout row is tracked under
 `leaderboard_submissions/`. It is a repeated Kiro `claude-haiku-4.5` no-tools
-baseline with zero false positives and zero exploit-proven vulnerable tasks. It
-is intentionally weak model evidence, but useful leaderboard-pipeline evidence.
+baseline with zero false positives and zero exploit-proven vulnerable tasks.
+The stable schema now keeps it non-eligible because its benchmark fingerprint
+was reconstructed after execution. Fresh runner-emitted protected runs are
+required before it can become an eligible row again.
 
 ## Publication Status
 
@@ -268,8 +270,8 @@ The repository is an alpha public scaffold, not a finished public leaderboard.
 It is already useful as a local integration and regression suite for agent
 builders who want to test authorization-bug proof workflows. It has enough
 structure for external reviewers to inspect the methodology and integrate a
-custom agent command. It has protected private-holdout evidence summarized in
-redacted public-safe form and one release-candidate leaderboard pipeline row,
+custom agent command. It has historical workspace-separated private evidence
+summarized in redacted public-safe form and one historical leaderboard row,
 but it does not publish raw private manifests and does not yet provide a hosted
 public leaderboard.
 
