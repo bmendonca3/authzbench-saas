@@ -4,6 +4,11 @@ Use this rubric when adding public tasks, reviewing private holdouts, or asking
 an external reviewer to evaluate AuthZBench-SaaS task quality. It is meant to
 raise benchmark quality without exposing private holdout details.
 
+For a generated public-task audit view, see
+[`task-quality-matrix.md`](task-quality-matrix.md). The matrix summarizes
+coverage and evidence-readiness signals; this rubric remains the qualitative
+review standard.
+
 ## Review Scores
 
 Score each category from 0 to 2:

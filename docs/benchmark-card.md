@@ -114,4 +114,6 @@ review.
 
 External reviewers should use [`task-quality-rubric.md`](task-quality-rubric.md)
 when assessing task realism, false-positive traps, replay proof, and anti-gaming
-risk.
+risk. The generated [`task-quality-matrix.md`](task-quality-matrix.md) provides
+a public-safe structural audit of the current task split, but it is not a
+leaderboard-readiness claim.

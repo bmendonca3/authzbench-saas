@@ -66,6 +66,12 @@ JSON artifacts. They are not hosted leaderboard rankings.
 - [Task mix](docs/assets/benchmark-charts/task-mix.svg)
 - [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
 
+## Task Quality Matrix
+
+[`docs/task-quality-matrix.md`](docs/task-quality-matrix.md) summarizes the
+public task mix, boundary coverage, control types, and workflow evidence
+readiness. It is an audit aid, not a leaderboard claim.
+
 ## Quick Start
 
 Prerequisites:
@@ -357,6 +363,8 @@ evidence.
   public-safe charts from tracked baseline and evidence JSON
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task review
   rubric for public tasks and external review
+- [`docs/task-quality-matrix.md`](docs/task-quality-matrix.md): generated
+  public-safe audit matrix for public task quality and evidence readiness
 - [`docs/multistep-workflow-task-plan.md`](docs/multistep-workflow-task-plan.md):
   next-wave stateful SaaS task design
 - [`docs/holdout-rotation-protocol.md`](docs/holdout-rotation-protocol.md):

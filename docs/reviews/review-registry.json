@@ -22,9 +22,10 @@
         "2026-06-05-api-tokens-panel-summary.md",
         "2026-06-05-audit-settings-panel-summary.md",
         "2026-06-05-final-task-mix-panel-summary.md",
-        "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md"
+        "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md",
+        "2026-06-06-task-quality-matrix-panel-summary.md"
       ],
-      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, and the first project-management multi-step workflow wave have review coverage. This section is reviewed; current model/tool-agent reruns remain tracked by the baseline credibility gate."
+      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, the first project-management multi-step workflow wave, and the generated public task-quality matrix have review coverage. This section is reviewed; current model/tool-agent reruns remain tracked by the baseline credibility gate."
     },
     {
       "id": "scorer_runner_request_logs_live_proof",

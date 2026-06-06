@@ -134,6 +134,21 @@ class ValidatePublicScriptTests(unittest.TestCase):
         self.assertIn([validate_public.sys.executable, "scripts/generate_benchmark_charts.py"], commands)
         self.assertIn(["git", "diff", "--exit-code", "--", "docs/assets/benchmark-charts"], commands)
 
+    def test_validate_regenerates_task_quality_matrix_and_checks_drift(self) -> None:
+        with (
+            patch.object(validate_public, "run") as run,
+            patch.object(validate_public, "scan_privacy"),
+            patch.object(validate_public, "run_container_smoke"),
+        ):
+            validate_public.validate(validate_public.ROOT, include_scripted_baseline=False, include_container_smoke=False)
+
+        commands = [call.args[0] for call in run.call_args_list]
+        self.assertIn([validate_public.sys.executable, "scripts/generate_task_quality_matrix.py"], commands)
+        self.assertIn(
+            ["git", "diff", "--exit-code", "--", "docs/task-quality-matrix.json", "docs/task-quality-matrix.md"],
+            commands,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
