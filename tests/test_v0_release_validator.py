@@ -14,8 +14,8 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         gates = {gate["id"]: gate for gate in result["gates"]}
         has_private_holdouts = gates["private_holdout_pack"]["passed"]
 
-        self.assertTrue(result["passed"], result)
-        self.assertTrue(result["v0_ready"], result)
+        self.assertEqual(result["passed"], has_private_holdouts, result)
+        self.assertEqual(result["v0_ready"], has_private_holdouts, result)
         self.assertEqual(result["gate_count"], 8, result)
         self.assertTrue(gates["public_split_scope"]["passed"], result)
         self.assertTrue(gates["documentation_packaging"]["passed"], result)
@@ -26,6 +26,8 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         else:
             self.assertFalse(gates["task_mix"]["passed"], result)
             self.assertIn("real private holdout pack is missing", gates["private_holdout_pack"]["unmet"])
+            self.assertIn("total vulnerable tasks must be at least 25; got 19", gates["task_mix"]["unmet"])
+            self.assertIn("total secure controls must be at least 30; got 27", gates["task_mix"]["unmet"])
         self.assertTrue(gates["baseline_credibility"]["passed"], result)
         self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
         self.assertTrue(gates["sectional_reviews"]["passed"], result)
