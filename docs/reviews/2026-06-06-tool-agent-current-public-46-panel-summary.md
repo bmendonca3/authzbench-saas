@@ -2,59 +2,75 @@
 
 Date: 2026-06-06
 
-Scope: `kiro-live-tool-agent-sonnet-current-public-46-summary.json`, its
-baseline-registry entry, docs/chart updates, and validation behavior.
+Scope: current 46-task public live HTTP Kiro `claude-sonnet-4.6` tool-agent
+baseline summary, baseline-registry entry, chart regeneration, and related
+README/docs wording.
 
 ## Counted Reviewers
 
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
 - Kiro CLI `claude-opus-4.8`, verified against the live Kiro model catalog
+- ChatGPT subagent reviewer
 - Parent ChatGPT synthesis
 
-Claude Antigravity labels propagated in logs but did not return substantive
-review output, so they are not counted. Raw prompts and logs are kept under
-ignored `docs/reviews/panel-logs/` and are not part of the public release
-artifact.
+Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels propagated in logs but
+did not return substantive review output, so they are not counted.
+
+Raw prompts and logs are kept under ignored `docs/reviews/panel-logs/` and are
+not part of the public release artifact.
 
 ## Findings And Fixes
 
-Reviewers agreed the current 46-task public tool-agent baseline is a real
-baseline increment, not a leaderboard result.
+Reviewers agreed the new summary honestly satisfies the current-public
+tool-agent registry gate:
 
-Accepted fixes:
+- `release_suitability: current_public_split`
+- `leaderboard_eligible: false`
+- `run_count: 1`
+- 46 of 46 tasks with `model-tool-plan.json`
+- 46 of 46 tasks with `tool-probes.json`
+- 46 of 46 tasks with target-request correlation
+- no planner failures or parse errors
 
-- updated `tests/test_baseline_registry.py` for the new registry state:
-  14 baselines, 3 current public model/agent families, 2 repeated families, and
-  a present current public tool-agent baseline
-- updated README, status, launch, benchmark-card, baseline, and evidence docs so
-  they no longer describe the current tool-agent baseline as missing
-- added focused charts for model pass rate, exploit-proven success,
-  false-positive rate, and boundary reasoning
+Accepted fixes before commit:
+
+- clarified that the run is public-split evidence only, not private-holdout or
+  leaderboard evidence
+- clarified that the run fully passed zero vulnerable tasks because vulnerable
+  boundary reasoning remained `0.0`
+- updated README and baseline-credibility docs to say the current public
+  tool-agent baseline is present but not repeated
+- tightened evidence-readiness chart wording so the repeated-model-family row
+  counts repeated current model baselines, not one-off current tool-agent rows
+- regenerated charts and chart data from the updated registry
 
 ## Claim Boundary
 
 Supported claim:
 
-`A current 46-task public live HTTP tool-agent baseline exists with per-task
-plan artifacts, probe artifacts, and target-request correlation for all tasks.`
+`AuthZBench-SaaS now has one current 46-task public live HTTP tool-agent
+baseline with per-task plan/probe artifacts and full target-request
+correlation.`
 
 Unsupported claims:
 
-- the baseline gate is v0-ready
-- the tool-agent row is repeated evidence
-- the tool-agent row is private-holdout evidence
-- the tool-agent row is leaderboard eligible
-- public-split scores are broad model rankings
+- private-holdout leaderboard readiness
+- v0 baseline readiness
+- repeated tool-agent stability
+- fully solved vulnerable workflow tasks; vulnerable full-pass count is `0`
+- hosted leaderboard readiness
 
 ## Verification
 
-Required before commit:
+Parent-verified before commit:
 
+- `docker info --format '{{.ServerVersion}}'`
+- `docker compose up --build -d`
+- `python3 scripts/container_smoke.py`
+- `python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/kiro_live_tool_agent.py --model claude-sonnet-4.6 --timeout-seconds 45 --max-probes 5' --results-dir results/kiro-live-tool-agent-sonnet-current-public-46 --timeout-seconds 75 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent kiro_live_tool_agent --model claude-sonnet-4.6 --harness-type tool-agent --target-log-dir captures/request-logs`
+- `docker compose down`
 - `python3 scripts/validate_baseline_registry.py`
-- `python3 -Wd -m unittest discover -s tests -p 'test_baseline_registry.py'`
-- `python3 scripts/validate_public.py --include-scripted-baseline`
-- `python3 scripts/validate_v0_release.py --allow-incomplete`
-- privacy checks proving raw results, captures, private holdouts, and raw panel
-  logs are untracked
-- remote CI after push
+
+Additional full validation is recorded in the commit verification output for
+this checkpoint.
