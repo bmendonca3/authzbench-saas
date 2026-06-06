@@ -12,8 +12,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .core import build_context, dump_json, load_json
+from .core import benchmark_fingerprint, build_context, dump_json, load_json
 from .score import score_submission
+
+
+BENCHMARK_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _utc_run_id() -> str:
@@ -77,6 +80,14 @@ def _task_paths(patterns: list[str]) -> list[Path]:
     return sorted({path for path in paths if path.is_file()})
 
 
+def _fingerprint_path(path: Path, root: Path) -> str:
+    resolved = path.resolve(strict=False)
+    try:
+        return resolved.relative_to(root.resolve(strict=False)).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
 def _run_agent(
     agent_cmd: str,
     cwd: Path,
@@ -138,10 +149,11 @@ def run_benchmark(
     run_id = run_id or _utc_run_id()
     run_dir = results_dir / run_id
     task_results = []
-    root = Path.cwd()
+    root = BENCHMARK_ROOT
+    loaded_tasks = [(_fingerprint_path(task_path, root), task_path, load_json(task_path)) for task_path in _task_paths(task_patterns)]
+    fingerprint = benchmark_fingerprint([(fingerprint_path, task) for fingerprint_path, _task_path, task in loaded_tasks])
 
-    for task_path in _task_paths(task_patterns):
-        task = load_json(task_path)
+    for _fingerprint_path_text, task_path, task in loaded_tasks:
         task_dir = run_dir / task["id"]
         context_path = task_dir / "context.json"
         submission_path = task_dir / "submission.json"
@@ -261,6 +273,7 @@ def run_benchmark(
         "run_id": run_id,
         "benchmark_version": benchmark_version,
         "benchmark_commit_sha": benchmark_commit_sha,
+        "benchmark_fingerprint": fingerprint,
         "agent_cmd": agent_cmd,
         "agent": agent,
         "model": model,

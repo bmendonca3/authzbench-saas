@@ -76,6 +76,22 @@ class BaselineRegistryTests(unittest.TestCase):
             result,
         )
 
+    def test_rejects_current_public_summary_with_mismatched_fingerprint(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            model_entry = _baseline_by_id(registry, CURRENT_QWEN_ID)
+            run1_path = registry_path.parent / model_entry["run_artifacts"][0]
+            summary = load_json(run1_path)
+            summary["benchmark_fingerprint"]["task_set_sha256"] = "0" * 64
+            run1_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("benchmark_fingerprint.task_set_sha256" in error for error in result["errors"]), result)
+
     def test_rejects_one_off_model_baseline_marked_leaderboard_eligible(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))

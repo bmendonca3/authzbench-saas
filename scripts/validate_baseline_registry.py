@@ -10,7 +10,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import dump_json, load_json
+from authzbench.core import benchmark_fingerprint, dump_json, load_json
 from authzbench.validate_manifests import validate_patterns
 
 
@@ -58,6 +58,15 @@ VALID_SUITABILITY = {
 }
 
 
+def _current_public_task_items() -> list[tuple[str, dict[str, Any]]]:
+    task_root = ROOT / "tasks"
+    return [
+        (path.relative_to(ROOT).as_posix(), load_json(path))
+        for path in sorted(task_root.glob("*/*.json"))
+        if path.is_file()
+    ]
+
+
 def _task_counts() -> dict[str, int]:
     result = validate_patterns([str(ROOT / "tasks" / "*" / "*.json")])
     if result["errors"]:
@@ -85,6 +94,38 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
+def _validate_current_fingerprint(
+    summary: dict[str, Any],
+    expected_fingerprint: dict[str, Any],
+    entry_id: str,
+    location: str,
+    errors: list[str],
+) -> None:
+    fingerprint = summary.get("benchmark_fingerprint")
+    if not isinstance(fingerprint, dict):
+        errors.append(f"{entry_id}: {location} missing benchmark_fingerprint")
+        return
+    for field in (
+        "schema_version",
+        "task_set_sha256",
+        "task_path_set_sha256",
+        "score_policy_version",
+        "scorer_contract",
+        "evidence_contract_version",
+        "task_count",
+        "vulnerable_task_count",
+        "control_task_count",
+        "denial_control_task_count",
+        "authorized_allow_control_task_count",
+    ):
+        if fingerprint.get(field) != expected_fingerprint.get(field):
+            errors.append(
+                f"{entry_id}: {location} benchmark_fingerprint.{field} "
+                f"{fingerprint.get(field)!r} does not match current public split "
+                f"{expected_fingerprint.get(field)!r}"
+            )
+
+
 def _require_int(value: Any, field: str, entry_id: str, errors: list[str]) -> int:
     if not isinstance(value, int):
         errors.append(f"{entry_id}: {field} must be an integer")
@@ -99,6 +140,7 @@ def _validate_summary_file(
     summary_path: str,
     expected_task_count: int,
     public_counts: dict[str, int],
+    current_fingerprint: dict[str, Any],
     errors: list[str],
     label: str = "summary",
 ) -> dict[str, Any] | None:
@@ -153,6 +195,7 @@ def _validate_summary_file(
                     f"{entry_id}: {location} current public {count_field} "
                     f"{summary[count_field]!r} does not match {public_counts[count_field]}"
                 )
+        _validate_current_fingerprint(summary, current_fingerprint, entry_id, location, errors)
 
     return summary
 
@@ -164,6 +207,7 @@ def _has_repeated_run_evidence(
     run_count: int,
     expected_task_count: int,
     public_counts: dict[str, int],
+    current_fingerprint: dict[str, Any],
     errors: list[str],
 ) -> bool:
     run_artifacts = raw_entry.get("run_artifacts")
@@ -199,6 +243,7 @@ def _has_repeated_run_evidence(
             artifact_path,
             expected_task_count,
             public_counts,
+            current_fingerprint,
             errors,
             label="run artifact",
         )
@@ -219,6 +264,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
     errors: list[str] = []
     warnings: list[str] = []
     public_counts = _task_counts()
+    current_fingerprint = benchmark_fingerprint(_current_public_task_items())
     v0_requirements = registry.get("v0_requirements", {})
     min_model_families = int(v0_requirements.get("min_real_model_families", 5))
     min_runs = int(v0_requirements.get("min_runs_per_serious_baseline", 2))
@@ -284,6 +330,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
             str(raw_entry.get("summary_path")),
             expected_task_count,
             public_counts,
+            current_fingerprint,
             errors,
         )
         if summary is None:
@@ -338,6 +385,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
                     run_count,
                     expected_task_count,
                     public_counts,
+                    current_fingerprint,
                     errors,
                 )
             if suitability == "current_public_split" and run_count >= min_runs and has_repeated_evidence:

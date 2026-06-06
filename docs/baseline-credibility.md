@@ -48,6 +48,8 @@ The v0 baseline bar is:
 - at least one tool-agent baseline, not only no-tools model runs
 - exact command, harness type, model label, benchmark version, commit SHA, and
   result path preserved
+- current public summaries include a matching `benchmark_fingerprint` for the
+  active task set, score policy, and evidence contract
 - repeated runs backed by distinct `run_artifacts` files with distinct `run_id`
   values, not just a self-declared run count
 - public-split and private-holdout results reported separately
@@ -55,6 +57,12 @@ The v0 baseline bar is:
 
 The validator can pass while reporting `v0_baseline_ready: false`. That means
 the registry is internally honest, not that the baseline sub-gate is complete.
+
+The validator now enforces `benchmark_fingerprint` on current public split
+evidence. The fingerprint binds the result to the public task manifests and the
+current scoring/evidence contract without exposing task IDs in the fingerprint
+object. Historical 44-task and legacy snapshots are allowed to remain useful
+diagnostics, but they do not satisfy this current-public comparability check.
 
 ## Current Interpretation
 

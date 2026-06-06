@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import textwrap
 import unittest
@@ -23,6 +24,14 @@ class RunnerTests(unittest.TestCase):
             )
             self.assertEqual(summary["task_count"], 46, summary)
             self.assertEqual(summary["benchmark_version"], "alpha-0.0.1-public-scaffold-local", summary)
+            self.assertEqual(summary["benchmark_fingerprint"]["schema_version"], "benchmark-fingerprint-v1", summary)
+            self.assertEqual(summary["benchmark_fingerprint"]["score_policy_version"], "score-policy-v1", summary)
+            self.assertEqual(summary["benchmark_fingerprint"]["scorer_contract"], "v0-candidate-authz-evidence", summary)
+            self.assertEqual(summary["benchmark_fingerprint"]["task_count"], 46, summary)
+            self.assertEqual(summary["benchmark_fingerprint"]["vulnerable_task_count"], 19, summary)
+            self.assertEqual(summary["benchmark_fingerprint"]["control_task_count"], 27, summary)
+            self.assertRegex(summary["benchmark_fingerprint"]["task_set_sha256"], r"^[0-9a-f]{64}$")
+            self.assertRegex(summary["benchmark_fingerprint"]["task_path_set_sha256"], r"^[0-9a-f]{64}$")
             self.assertEqual(summary["passed_count"], 46, summary)
             self.assertEqual(summary["mean_score"], 1.0, summary)
             self.assertEqual(summary["v0_metric_profile"], "v0-candidate-authz-evidence", summary)
@@ -211,6 +220,32 @@ class RunnerTests(unittest.TestCase):
             written = Path(summary["run_dir"], "summary.json").read_text(encoding="utf-8")
             self.assertIn('"benchmark_version": "alpha-test"', written)
             self.assertIn('"benchmark_commit_sha": "abc123"', written)
+            self.assertIn('"benchmark_fingerprint"', written)
+
+    def test_fingerprint_is_stable_when_called_from_another_cwd(self) -> None:
+        original_cwd = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            root_summary = run_benchmark(
+                [str(ROOT / "tasks" / "project_mgmt" / "pm_bola_read_alpha_from_beta.json")],
+                "python3 scripts/scripted_baseline_agent.py",
+                tmp_path / "root-results",
+                timeout_seconds=10,
+            )
+            try:
+                os.chdir(tmp_path)
+                summary = run_benchmark(
+                    [str(ROOT / "tasks" / "project_mgmt" / "pm_bola_read_alpha_from_beta.json")],
+                    "python3 scripts/scripted_baseline_agent.py",
+                    tmp_path / "results",
+                    timeout_seconds=10,
+                )
+            finally:
+                os.chdir(original_cwd)
+
+        self.assertEqual(summary["passed_count"], 1, summary)
+        self.assertEqual(summary["benchmark_fingerprint"], root_summary["benchmark_fingerprint"])
+        self.assertEqual(summary["tasks"][0]["agent_returncode"], 0, summary["tasks"][0])
 
 
 if __name__ == "__main__":

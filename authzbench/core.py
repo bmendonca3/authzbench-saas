@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -32,6 +33,42 @@ def load_json(path: str | Path) -> dict[str, Any]:
 
 def dump_json(data: dict[str, Any]) -> str:
     return json.dumps(data, indent=2, sort_keys=True)
+
+
+def stable_json_sha256(data: Any) -> str:
+    encoded = json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def benchmark_fingerprint(task_items: list[tuple[str, dict[str, Any]]]) -> dict[str, Any]:
+    """Return a comparable task/scoring fingerprint without exposing task ids."""
+    canonical_tasks = [
+        {
+            "path": path,
+            "manifest": task,
+        }
+        for path, task in sorted(task_items, key=lambda item: item[0])
+    ]
+    counts = {
+        "task_count": len(canonical_tasks),
+        "vulnerable_task_count": sum(1 for item in canonical_tasks if item["manifest"].get("expected_vulnerable") is True),
+        "control_task_count": sum(1 for item in canonical_tasks if item["manifest"].get("expected_vulnerable") is not True),
+        "denial_control_task_count": sum(
+            1 for item in canonical_tasks if item["manifest"].get("control_type") == "denial"
+        ),
+        "authorized_allow_control_task_count": sum(
+            1 for item in canonical_tasks if item["manifest"].get("control_type") == "authorized_allow"
+        ),
+    }
+    return {
+        "schema_version": "benchmark-fingerprint-v1",
+        "task_set_sha256": stable_json_sha256(canonical_tasks),
+        "task_path_set_sha256": stable_json_sha256([item["path"] for item in canonical_tasks]),
+        "score_policy_version": "score-policy-v1",
+        "scorer_contract": "v0-candidate-authz-evidence",
+        "evidence_contract_version": "evidence-requirements-v1",
+        **counts,
+    }
 
 
 def load_app(app_name: str):

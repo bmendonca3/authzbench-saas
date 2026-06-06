@@ -132,6 +132,7 @@ Run-level aggregate:
 - `run_id`
 - `benchmark_version`
 - `benchmark_commit_sha`
+- `benchmark_fingerprint`
 - `agent_cmd`
 - `agent`
 - `model`
@@ -163,6 +164,23 @@ Run-level aggregate:
 - `target_request_correlated_task_count`
 - `target_request_coverage_rate`
 - per-task score records
+
+`benchmark_fingerprint` is a machine-readable comparability contract for a run.
+It includes:
+
+- `schema_version`
+- `task_set_sha256`
+- `task_path_set_sha256`
+- `score_policy_version`
+- `scorer_contract`
+- `evidence_contract_version`
+- task, vulnerable, control, denial-control, and authorized-allow counts
+
+The fingerprint uses task-set hashes and counts rather than raw task IDs, so it
+can support private-holdout result comparison without leaking private manifest
+names in public-safe summaries. A matching fingerprint means the run used the
+same task manifests and scoring contract; it does not by itself make the run
+leaderboard eligible.
 
 Each per-task summary record includes `control_type` for secure-control tasks.
 The value is `denial` when the correct behavior is a blocked request, and
