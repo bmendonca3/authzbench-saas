@@ -38,8 +38,10 @@ that current model/tool-agent evidence is complete.
   current 46-task public split live HTTP tool-agent runs using
   `claude-sonnet-4.6` through the Kiro adapter. Both runs write one model-tool
   plan artifact and one tool-probe artifact per task, correlate target-side
-  requests for all 46 tasks, and remain public-split evidence only. They are
-  not private-holdout or leaderboard-eligible evidence.
+  requests for all 46 tasks, and share the same public task/scoring fingerprint.
+  They span adjacent public-doc/test/tool-agent-tooling commits rather than
+  identical SHAs, so they remain public-split evidence only. They are not
+  private-holdout or leaderboard-eligible evidence.
 - `scripted-baseline-summary.json`: earlier deterministic 44-task harness
   sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises

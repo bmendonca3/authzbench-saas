@@ -1,16 +1,16 @@
-# Repeated Tool-Agent Baseline Panel Summary
+# Tool-Agent Repeat Panel Summary
 
 Date: 2026-06-06
 
-Scope: second current public 46-task live HTTP tool-agent run, baseline registry
-updates, chart data, and public claim wording.
+Scope: second current-public live HTTP Kiro `claude-sonnet-4.6` tool-agent run,
+baseline registry update, generated chart data, and public claim wording.
 
 ## Counted Reviewers
 
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
 - Kiro CLI `claude-opus-4.8`, verified by live model catalog and Kiro output
-- Parent ChatGPT reviewer
+- ChatGPT sub-reviewer
 
 Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels were verified by logs
 but did not return substantive review text for this checkpoint, so they are not
@@ -21,67 +21,47 @@ not part of the public release artifact.
 
 ## Consensus
 
-Reviewers agreed that the second current public tool-agent run improves
-credibility because it is real repeated public-split evidence, not an inflated
-run count:
+Reviewers agreed that the second current-public tool-agent run can count as
+repeated current-public tool-agent evidence because:
 
-- both runs have distinct `run_id` values
-- both runs have the same 46-task benchmark fingerprint
-- both runs have 46/46 model-plan artifacts
-- both runs have 46/46 tool-probe artifacts
-- both runs have 46/46 target-request correlation
-- both runs pass 27 of 46 tasks, prove 14 of 19 vulnerable replays, produce zero
-  secure-control false reports, and keep vulnerable boundary reasoning at `0.0`
+- the registry lists two distinct run artifacts with distinct run IDs
+- both summaries have 46 public tasks, the same public task fingerprint, the
+  same score policy and evidence contract, and the same agent/model labels
+- both runs include 46/46 model-plan artifacts, 46/46 tool-probe artifacts, and
+  46/46 target-request correlation
+- the registry still reports `v0_baseline_ready: false` with only 3 of 5
+  required repeated current model/agent families
 
-The panel also agreed that the public claim boundary remains intact:
-`v0_baseline_ready` is still `false`, the runs are not private-holdout evidence,
-and the docs do not claim hosted leaderboard readiness.
+## Accepted Caveat
 
-## Accepted Findings
-
-1. `docs/launch-report.md` had one paragraph where stale 44-task Sonnet
-   no-tools runs could be confused with the current Sonnet tool-agent runs.
-
-Disposition: accepted. The paragraph now explicitly says "stale 44-task Opus
-no-tools" and "stale 44-task Sonnet no-tools" before discussing those rows.
-
-2. The repeated tool-agent outcome is deterministic in the headline metrics.
-
-Disposition: accepted as a claim boundary. The repeat supports reproducibility
-on the current public split, not variance robustness under randomized prompts or
-private holdouts.
-
-3. Uniform `0.0` vulnerable boundary reasoning should remain visible.
-
-Disposition: accepted. Public docs keep the `0.0` boundary-reasoning result and
-state that the tool-agent fully passes zero vulnerable tasks despite proving
-14/19 vulnerable replays.
+The strongest reviewer caveat was that the paired tool-agent runs are not
+same-SHA variance evidence. They span adjacent public-doc/test/tool-agent-tooling
+commits. The registry and baseline credibility docs now make the comparability
+basis explicit: matching task fingerprint, task count, score policy, evidence
+contract, agent/model labels, and artifact contract.
 
 ## Claim Boundary
 
-This checkpoint supports this claim:
+Supported claim:
 
-`AuthZBench-SaaS now has a repeated current public live HTTP tool-agent baseline
-with per-task planning artifacts, probe artifacts, and full target-request
-correlation.`
+`AuthZBench-SaaS has two current-public live HTTP tool-agent runs for the
+claude-sonnet-4.6 Kiro adapter, with repeated per-task plan/probe artifacts and
+target-request correlation on the 46-task public split.`
 
-It does not support:
+Unsupported claims:
 
-- v0 or v1 readiness
-- hosted leaderboard readiness
 - private-holdout tool-agent performance
-- variance robustness
-- strong authorization-boundary reasoning by the current tool-agent
+- hosted leaderboard readiness
+- v0 baseline readiness
+- same-SHA variance evidence
+- fully solved vulnerable workflow tasks; vulnerable full-pass count remains `0`
 
-## Verification
-
-Required verification for this checkpoint:
+## Required Parent Verification
 
 - `python3 scripts/validate_baseline_registry.py`
-- `python3 scripts/validate_v0_release.py --allow-incomplete`
-- `python3 scripts/generate_benchmark_charts.py`
 - `python3 -Wd -m unittest discover -s tests -p 'test_baseline_registry.py'`
-- full public validation
+- `python3 scripts/validate_public.py --include-scripted-baseline`
+- `python3 scripts/validate_v0_release.py --allow-incomplete`
 - privacy check proving raw panel logs, private holdouts, results, and captures
   are untracked
 - remote CI after commit

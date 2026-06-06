@@ -99,6 +99,12 @@ planner failures or parse errors. Both fully passed zero vulnerable tasks
 because vulnerable boundary reasoning remained `0.0`. It is still public-split
 evidence only, not a private-holdout leaderboard result.
 
+The two tool-agent runs span adjacent public-doc/test/tool-agent-tooling commits
+rather than identical SHAs. Their comparability rests on the matching public
+task fingerprint, score policy, evidence contract, task count, agent/model
+labels, and per-task artifact contract; it should not be read as exact same-SHA
+variance evidence.
+
 The older live scripted, heuristic live HTTP, no-tools Kiro model, and Kiro live
 tool-agent summaries were run on the previous 44-task public split. They are
 retained as stale public snapshots because they are still useful for
