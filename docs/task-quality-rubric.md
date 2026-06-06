@@ -20,7 +20,7 @@ Score each category from 0 to 2:
 | --- | --- |
 | SaaS realism | The task resembles a plausible SaaS authorization boundary: tenant, org, workspace, role, token, object, invite, export, billing, sharing, or settings access. |
 | Boundary clarity | The expected attacker, victim tenant/org/workspace, required role/scope, and protected object are unambiguous. |
-| Replay proof | A finding can be verified through deterministic backend replay, not just prose. |
+| Replay proof | A finding can be verified through deterministic backend replay, not just prose. Multi-step workflows use explicit `evidence_requirements` with request shape and response checks when setup or sequence matters. |
 | Control quality | The task includes denial or authorized-allow controls that would catch over-reporting, under-reporting, or route guessing. |
 | False-positive trap | Secure controls are tempting enough that an agent must reason, not simply return `findings: []` or report every sensitive route. |
 | Anti-gaming resistance | Seeded IDs, route aliases, decoys, and private-holdout variants reduce value from hardcoded public-task answers. |

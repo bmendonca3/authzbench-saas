@@ -99,9 +99,38 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
     if not context["refs"] or not context["actors"]:
         errors.append(f"{path}: rendered context missing refs or actors")
     refs = context["refs"]
-    for section_name in ("oracle", "controls"):
-        if _contains_unresolved_template(resolve_templates(data.get(section_name), refs)):
+    for section_name in ("oracle", "controls", "evidence_requirements"):
+        if section_name in data and _contains_unresolved_template(resolve_templates(data.get(section_name), refs)):
             errors.append(f"{path}: unresolved template in {section_name}")
+    evidence_requirements = data.get("evidence_requirements")
+    if evidence_requirements is not None:
+        if data.get("expected_vulnerable") is not True:
+            errors.append(f"{path}: evidence_requirements are only supported for vulnerable tasks")
+        elif not isinstance(evidence_requirements, list) or not evidence_requirements:
+            errors.append(f"{path}: evidence_requirements must be a non-empty list when supplied")
+        else:
+            seen_requirement_indexes: set[int] = set()
+            for index, requirement in enumerate(evidence_requirements):
+                if not isinstance(requirement, dict):
+                    errors.append(f"{path}: evidence_requirements[{index}] must be an object")
+                    continue
+                requirement_index = requirement.get("index")
+                if not isinstance(requirement_index, int) or requirement_index < 0:
+                    errors.append(f"{path}: evidence_requirements[{index}].index must be a non-negative integer")
+                elif requirement_index in seen_requirement_indexes:
+                    errors.append(f"{path}: duplicate evidence_requirements index: {requirement_index}")
+                else:
+                    seen_requirement_indexes.add(requirement_index)
+                if "request" not in requirement:
+                    errors.append(f"{path}: evidence_requirements[{index}].request is required")
+                elif not isinstance(requirement["request"], dict):
+                    errors.append(f"{path}: evidence_requirements[{index}].request must be an object")
+                if "status" in requirement and not isinstance(requirement["status"], int):
+                    errors.append(f"{path}: evidence_requirements[{index}].status must be an integer when supplied")
+                if "body_contains" not in requirement and "status" not in requirement:
+                    errors.append(f"{path}: evidence_requirements[{index}] must include status or body_contains")
+            if seen_requirement_indexes and seen_requirement_indexes != set(range(len(seen_requirement_indexes))):
+                errors.append(f"{path}: evidence_requirements indexes must be contiguous starting at 0")
     return errors
 
 

@@ -37,6 +37,195 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["score"], 1.0)
 
+    def test_multistep_project_mgmt_evidence_scores_full_credit(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json") | {
+            "evidence_requirements": [
+                {
+                    "name": "same_tenant_context_read",
+                    "index": 0,
+                    "request": {
+                        "actor": "beta_member",
+                        "method": "GET",
+                        "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
+                    },
+                    "status": 200,
+                    "body_contains": {
+                        "task": {
+                            "id": "{BETA_PRIVATE_TASK_ID}",
+                            "tenant_id": "{BETA_TENANT_ID}",
+                        },
+                        "viewer": "beta_member",
+                    },
+                },
+                {
+                    "name": "cross_tenant_alias_read",
+                    "index": 1,
+                    "request": {
+                        "actor": "beta_member",
+                        "method": "GET",
+                        "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
+                    },
+                    "status": 200,
+                    "body_contains": {
+                        "task": {
+                            "id": "{ALPHA_PRIVATE_TASK_ID}",
+                            "tenant_id": "{ALPHA_TENANT_ID}",
+                            "private_note": "board packet due friday",
+                        },
+                        "viewer": "beta_member",
+                        "route": "workspace_work_item_alias",
+                    },
+                },
+            ]
+        }
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "cross_tenant_task_read",
+                    "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                    "impact": "A Beta member can first establish normal same-tenant task access, then read Alpha task data through a workspace alias.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "beta_member",
+                                "method": "GET",
+                                "path": f"/api/projects/{refs['BETA_PROJECT_ID']}/tasks/{refs['BETA_PRIVATE_TASK_ID']}",
+                            }
+                        },
+                        {
+                            "request": {
+                                "actor": "beta_member",
+                                "method": "GET",
+                                "path": f"/api/workspaces/{refs['ALPHA_PROJECT_ID']}/work-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+                            }
+                        },
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 1, result)
+
+    def test_multistep_project_mgmt_evidence_requires_each_step(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json") | {
+            "evidence_requirements": [
+                {
+                    "name": "same_tenant_context_read",
+                    "index": 0,
+                    "request": {
+                        "actor": "beta_member",
+                        "method": "GET",
+                        "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
+                    },
+                    "status": 200,
+                },
+                {
+                    "name": "cross_tenant_alias_read",
+                    "index": 1,
+                    "request": {
+                        "actor": "beta_member",
+                        "method": "GET",
+                        "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
+                    },
+                    "status": 200,
+                },
+            ]
+        }
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "cross_tenant_task_read",
+                    "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                    "impact": "A Beta member can read Alpha task data.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "beta_member",
+                                "method": "GET",
+                                "path": f"/api/workspaces/{refs['ALPHA_PROJECT_ID']}/work-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+        self.assertTrue(any("missing evidence step" in str(item) for item in result["observations"]), result)
+
+    def test_multistep_project_mgmt_rejects_duplicate_final_step(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json") | {
+            "evidence_requirements": [
+                {
+                    "name": "same_tenant_context_read",
+                    "index": 0,
+                    "request": {
+                        "actor": "beta_member",
+                        "method": "GET",
+                        "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
+                    },
+                    "status": 200,
+                    "body_contains": {"task": {"id": "{BETA_PRIVATE_TASK_ID}"}},
+                },
+                {
+                    "name": "cross_tenant_alias_read",
+                    "index": 1,
+                    "request": {
+                        "actor": "beta_member",
+                        "method": "GET",
+                        "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
+                    },
+                    "status": 200,
+                    "body_contains": {"task": {"id": "{ALPHA_PRIVATE_TASK_ID}"}},
+                },
+            ]
+        }
+        refs = build_context(task)["refs"]
+        duplicate_final_request = {
+            "actor": "beta_member",
+            "method": "GET",
+            "path": f"/api/workspaces/{refs['ALPHA_PROJECT_ID']}/work-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+        }
+        submission = {
+            "findings": [
+                {
+                    "claim": "cross_tenant_task_read",
+                    "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                    "impact": "A Beta member can read Alpha task data.",
+                    "evidence": [{"request": duplicate_final_request}, {"request": duplicate_final_request}],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+        self.assertTrue(any("evidence request shape failed" in str(item) for item in result["observations"]), result)
+
+    def test_malformed_evidence_fails_without_crashing(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json")
+        submission = {
+            "findings": [
+                {
+                    "claim": "cross_tenant_task_read",
+                    "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                    "impact": "Malformed evidence should not crash scoring.",
+                    "evidence": {"request": {"actor": "beta_member"}},
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+        self.assertTrue(any("finding evidence must be a list" in str(item) for item in result["observations"]), result)
+
     def test_valid_billing_submission_scores_full_credit(self) -> None:
         task = load_json(ROOT / "tasks/billing/bill_bfla_member_plan_change.json")
         submission = load_json(ROOT / "examples/submissions/bill_bfla_member_plan_change.valid.json")

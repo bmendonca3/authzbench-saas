@@ -41,6 +41,10 @@ Every multi-step task should include:
 - a normal setup sequence with no hidden external dependency
 - one vulnerable path or one secure-control path
 - scorer-owned replay proof
+- `evidence_requirements` for vulnerable tasks that must prove each required
+  replay step before exploit-proof credit is awarded
+- expected request shape plus response expectations for every required evidence
+  step, so a repeated final exploit request cannot masquerade as setup proof
 - at least one decoy action that is plausible but not sufficient
 - a secure-control counterpart when practical
 - no need for brute force, credential theft, social engineering, or external

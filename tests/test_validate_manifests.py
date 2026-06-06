@@ -76,6 +76,85 @@ class ManifestValidationTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("unresolved template in controls" in error for error in result["errors"]), result)
 
+    def test_vulnerable_task_accepts_evidence_requirements(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            data = _minimal_task(
+                expected_vulnerable=True,
+                oracle={
+                    "claim": "cross_tenant_task_read",
+                    "status": 200,
+                    "body_contains": {"viewer": "beta_member"},
+                },
+                expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                evidence_requirements=[
+                    {
+                        "name": "same_tenant_context_read",
+                        "index": 0,
+                        "request": {
+                            "actor": "beta_member",
+                            "method": "GET",
+                            "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
+                        },
+                        "status": 200,
+                        "body_contains": {"task": {"id": "{BETA_PRIVATE_TASK_ID}"}},
+                    },
+                    {
+                        "name": "cross_tenant_alias_read",
+                        "index": 1,
+                        "request": {
+                            "actor": "beta_member",
+                            "method": "GET",
+                            "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
+                        },
+                        "status": 200,
+                        "body_contains": {"task": {"id": "{ALPHA_PRIVATE_TASK_ID}"}},
+                    },
+                ],
+            )
+            data.pop("control_type")
+            _write_json(path, data)
+            result = validate_patterns([str(path)])
+        self.assertTrue(result["passed"], result)
+
+    def test_rejects_bad_evidence_requirement_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            data = _minimal_task(
+                expected_vulnerable=True,
+                oracle={
+                    "claim": "cross_tenant_task_read",
+                    "status": 200,
+                    "body_contains": {"viewer": "beta_member"},
+                },
+                expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                evidence_requirements=[{"name": "bad_step", "index": -1, "request": {"method": "GET"}}],
+            )
+            data.pop("control_type")
+            _write_json(path, data)
+            result = validate_patterns([str(path)])
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("evidence_requirements[0].index" in error for error in result["errors"]), result)
+
+    def test_rejects_evidence_requirement_without_request_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            data = _minimal_task(
+                expected_vulnerable=True,
+                oracle={
+                    "claim": "cross_tenant_task_read",
+                    "status": 200,
+                    "body_contains": {"viewer": "beta_member"},
+                },
+                expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                evidence_requirements=[{"name": "weak_step", "index": 0, "status": 200}],
+            )
+            data.pop("control_type")
+            _write_json(path, data)
+            result = validate_patterns([str(path)])
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("evidence_requirements[0].request is required" in error for error in result["errors"]), result)
+
     def test_private_holdout_seed_must_not_use_public_prefix(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "task.json"

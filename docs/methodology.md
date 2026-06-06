@@ -41,12 +41,15 @@ Planned hardening for the real v0:
 
 ## Oracles
 
-Every task has a machine-verifiable oracle. For vulnerable tasks, the submitted
-evidence request must replay against the seeded backend and return the expected
-status and response subset. Vulnerable tasks also declare an `expected_boundary`
-so the scorer can check whether the agent named the correct attacker,
-victim tenant or organization, and required role. For secure controls, the
-submission must contain no findings and the control request must return the
+Every task has a machine-verifiable oracle. For vulnerable tasks, submitted
+evidence must replay against the seeded backend and return the expected status
+and response subset. When a vulnerable task depends on workflow sequence, it can
+declare `evidence_requirements`; each required replay step must match both the
+expected request shape and response expectation before the task receives
+exploit-proof credit. Vulnerable tasks also declare an
+`expected_boundary` so the scorer can check whether the agent named the correct
+attacker, victim tenant or organization, and required role. For secure controls,
+the submission must contain no findings and the control request must return the
 expected status and response subset.
 
 Secure-control manifests include `control_type` so result summaries can separate

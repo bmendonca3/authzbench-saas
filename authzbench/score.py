@@ -32,6 +32,24 @@ def _control_matches(response: dict[str, Any], control: dict[str, Any], body_con
     return True
 
 
+def _evidence_requirement_matches(response: dict[str, Any], requirement: dict[str, Any]) -> bool:
+    status = requirement.get("status")
+    if isinstance(status, int) and response["status"] != status:
+        return False
+    if "body_contains" in requirement and not _contains_subset(response["body"], requirement["body_contains"]):
+        return False
+    return True
+
+
+def _request_requirement_matches(request: dict[str, Any], requirement: dict[str, Any]) -> bool:
+    expected_request = requirement.get("request")
+    if not isinstance(expected_request, dict):
+        return False
+    normalized_request = request | {"method": str(request.get("method", "GET")).upper()}
+    normalized_expected = expected_request | {"method": str(expected_request.get("method", "GET")).upper()}
+    return _contains_subset(normalized_request, normalized_expected)
+
+
 def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[str, Any]:
     app = load_app(task["app"])
     refs = app.public_refs(app.seed_state(task["seed"]))
@@ -114,18 +132,49 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
             result["subscores"]["boundary_reasoning"] = 1
 
     evidence = finding.get("evidence") or []
+    if not isinstance(evidence, list):
+        result["observations"].append("finding evidence must be a list")
+        evidence = []
+    evidence_requirements = resolve_templates(task.get("evidence_requirements", []), refs)
     if not evidence:
         result["observations"].append("missing evidence request")
     else:
         proof_state = app.seed_state(task["seed"])
-        proof = None
+        proofs: list[dict[str, Any]] = []
+        proof_requests: list[dict[str, Any]] = []
         for index, item in enumerate(evidence):
+            if not isinstance(item, dict) or not isinstance(item.get("request"), dict):
+                result["observations"].append(f"malformed evidence item at index {index}")
+                continue
             proof_request = resolve_templates(item["request"], refs)
             proof = replay_request(task, proof_request, state=proof_state)
             name = "proof" if len(evidence) == 1 else f"proof_{index + 1}"
             result["transcript"].append({"name": name, "request": proof_request, "response": proof})
-        result["observations"].append({"proof_response": proof})
-        if proof and proof["status"] == oracle["status"] and _contains_subset(proof["body"], oracle["body_contains"]):
+            proof_requests.append(proof_request)
+            proofs.append(proof)
+        final_proof = proofs[-1] if proofs else None
+        result["observations"].append({"proof_response": final_proof})
+
+        requirements_passed = True
+        for requirement in evidence_requirements:
+            requirement_name = str(requirement.get("name") or "evidence_requirement")
+            requirement_index = requirement.get("index")
+            if not isinstance(requirement_index, int) or requirement_index < 0:
+                requirements_passed = False
+                result["observations"].append(f"evidence requirement has invalid index: {requirement_name}")
+                continue
+            if requirement_index >= len(proofs):
+                requirements_passed = False
+                result["observations"].append(f"missing evidence step: {requirement_name}")
+                continue
+            if not _request_requirement_matches(proof_requests[requirement_index], requirement):
+                requirements_passed = False
+                result["observations"].append(f"evidence request shape failed: {requirement_name}")
+            if not _evidence_requirement_matches(proofs[requirement_index], requirement):
+                requirements_passed = False
+                result["observations"].append(f"evidence step failed: {requirement_name}")
+
+        if final_proof and requirements_passed and final_proof["status"] == oracle["status"] and _contains_subset(final_proof["body"], oracle["body_contains"]):
             result["subscores"]["exploit_proof"] = 1
         else:
             result["observations"].append("final proof request did not satisfy backend oracle")
