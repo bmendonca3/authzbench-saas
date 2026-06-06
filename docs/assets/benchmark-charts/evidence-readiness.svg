@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="470" viewBox="0 0 980 470" role="img" aria-labelledby="title desc">
+<title id="title">Evidence Readiness</title>
+<desc id="desc">What existing public-safe artifacts support today, and what is still not claimed.</desc>
+<rect x="0.0" y="0.0" width="980.0" height="470.0" rx="0" fill="#ffffff"/>
+<rect x="18.0" y="18.0" width="944.0" height="434.0" rx="8" fill="#f6f8fb"/>
+<text x="36.0" y="54.0" fill="#0b1f4d" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Evidence Readiness</text>
+<text x="36.0" y="78.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">What existing public-safe artifacts support today, and what is still not claimed.</text>
+<rect x="42.0" y="95.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
+<text x="78.0" y="112.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Public split validated</text>
+<text x="360.0" y="112.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
+<text x="520.0" y="112.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">44 public tasks across 6 apps</text>
+<rect x="42.0" y="143.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
+<text x="78.0" y="160.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Repeated model families</text>
+<text x="360.0" y="160.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
+<text x="520.0" y="160.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">5 current public model families</text>
+<rect x="42.0" y="191.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
+<text x="78.0" y="208.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Public tool-agent baseline</text>
+<text x="360.0" y="208.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
+<text x="520.0" y="208.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Tracked public tool-agent summary with target correlation</text>
+<rect x="42.0" y="239.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
+<text x="78.0" y="256.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Protected private runs</text>
+<text x="360.0" y="256.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
+<text x="520.0" y="256.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">2 redacted protected-private summaries</text>
+<rect x="42.0" y="287.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
+<text x="78.0" y="304.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Private tool-agent coverage</text>
+<text x="360.0" y="304.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
+<text x="520.0" y="304.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Redacted private tool-agent summary reports 100% target coverage</text>
+<rect x="42.0" y="335.0" width="22.0" height="22.0" rx="11" fill="#64748b"/>
+<text x="78.0" y="352.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Hosted leaderboard service</text>
+<text x="360.0" y="352.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Not yet</text>
+<text x="520.0" y="352.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Planned; not claimed ready</text>
+<rect x="42.0" y="383.0" width="22.0" height="22.0" rx="11" fill="#64748b"/>
+<text x="78.0" y="400.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Independent third-party run</text>
+<text x="360.0" y="400.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Not yet</text>
+<text x="520.0" y="400.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Planned; not claimed complete</text>
+<text x="36.0" y="446.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">Source: tracked AuthZBench-SaaS baseline and redacted evidence JSON. Public-split evidence is not leaderboard ranking.</text>
+</svg>

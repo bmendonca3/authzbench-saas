@@ -1,0 +1,315 @@
+from __future__ import annotations
+
+import json
+from html import escape
+from pathlib import Path
+from statistics import mean
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[1]
+ASSET_DIR = ROOT / "docs" / "assets" / "benchmark-charts"
+
+COLORS = {
+    "navy": "#0b1f4d",
+    "teal": "#2ea8a1",
+    "blue": "#2f7de1",
+    "orange": "#f59e0b",
+    "green": "#2f9e44",
+    "red": "#d9480f",
+    "gray": "#64748b",
+    "light": "#f6f8fb",
+    "line": "#d8dee9",
+    "text": "#172033",
+    "muted": "#5b667a",
+}
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
+def fmt_pct(value: float | None) -> str:
+    if value is None:
+        return "n/a"
+    return f"{value * 100:.1f}%"
+
+
+def text(x: float, y: float, value: str, *, size: int = 13, color: str = "text", weight: str = "400") -> str:
+    return (
+        f'<text x="{x:.1f}" y="{y:.1f}" fill="{COLORS[color]}" '
+        f'font-family="Inter, Arial, sans-serif" font-size="{size}" '
+        f'font-weight="{weight}">{escape(value)}</text>'
+    )
+
+
+def rect(x: float, y: float, w: float, h: float, fill: str, *, rx: int = 3) -> str:
+    return f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{rx}" fill="{fill}"/>'
+
+
+def svg(title: str, subtitle: str, width: int, height: int, body: list[str]) -> str:
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
+        f"<title id=\"title\">{escape(title)}</title>",
+        f"<desc id=\"desc\">{escape(subtitle)}</desc>",
+        rect(0, 0, width, height, "#ffffff", rx=0),
+        rect(18, 18, width - 36, height - 36, COLORS["light"], rx=8),
+        text(36, 54, title, size=22, color="navy", weight="700"),
+        text(36, 78, subtitle, size=12, color="muted"),
+        *body,
+        text(36, height - 24, "Source: tracked AuthZBench-SaaS baseline and redacted evidence JSON. Public-split evidence is not leaderboard ranking.", size=11, color="muted"),
+        "</svg>",
+    ]
+    return "\n".join(parts) + "\n"
+
+
+def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for entry in registry["baselines"]:
+        if entry["release_suitability"] != "current_public_split":
+            continue
+        if entry["kind"] not in {"model_baseline", "tool_agent_baseline"}:
+            continue
+        artifact_names = entry.get("run_artifacts") or [entry["summary_path"]]
+        artifacts = [load_json(ROOT / "baselines" / name) for name in artifact_names]
+        model = str(entry.get("expected_model") or entry["id"])
+        label = {
+            "claude-sonnet-4.6": "Claude Sonnet 4.6",
+            "claude-opus-4.6": "Claude Opus 4.6",
+            "claude-haiku-4.5": "Claude Haiku 4.5",
+            "deepseek-3.2": "DeepSeek 3.2",
+            "qwen3-coder-next": "Qwen3 Coder Next",
+        }.get(model, model)
+        if entry["kind"] == "tool_agent_baseline":
+            label = f"Tool agent: {label}"
+        row = {
+            "id": entry["id"],
+            "label": label,
+            "kind": entry["kind"],
+            "run_count": len(artifacts),
+            "task_count": artifacts[0]["task_count"],
+            "pass_rate": mean(item["passed_count"] / item["task_count"] for item in artifacts),
+            "exploit_proven_success_rate": mean(item["exploit_proven_success_rate"] for item in artifacts),
+            "false_positive_rate": mean(item["false_positive_rate"] for item in artifacts),
+            "boundary_reasoning_pass_rate": mean(item["boundary_reasoning_pass_rate"] for item in artifacts),
+        }
+        rows.append(row)
+    rows.sort(key=lambda item: (item["kind"] != "tool_agent_baseline", -item["exploit_proven_success_rate"], item["label"]))
+    return rows
+
+
+def grouped_metric_chart(rows: list[dict[str, Any]]) -> str:
+    width = 1180
+    row_h = 56
+    height = 138 + len(rows) * row_h
+    left = 260
+    bar_w = 720
+    metrics = [
+        ("pass_rate", "Pass", COLORS["teal"]),
+        ("exploit_proven_success_rate", "Exploit proof", COLORS["blue"]),
+        ("boundary_reasoning_pass_rate", "Boundary", COLORS["orange"]),
+        ("false_positive_rate", "False positive (lower is better)", COLORS["red"]),
+    ]
+    body: list[str] = []
+    y0 = 118
+    for i, (_, label, color) in enumerate(metrics):
+        x = left + i * 150
+        body.append(rect(x, 94, 12, 12, color, rx=2))
+        body.append(text(x + 18, 105, label, size=12, color="muted"))
+    for idx, row in enumerate(rows):
+        y = y0 + idx * row_h
+        body.append(text(36, y + 22, row["label"], size=13, color="text", weight="600"))
+        body.append(text(36, y + 40, f'{row["kind"].replace("_", " ")}; {row["run_count"]} run(s)', size=11, color="muted"))
+        for i, (key, _, color) in enumerate(metrics):
+            value = float(row[key])
+            x = left + i * 150
+            body.append(rect(x, y + 12, 110, 12, "#e6ebf2", rx=3))
+            body.append(rect(x, y + 12, 110 * min(value, 1.0), 12, color, rx=3))
+            body.append(text(x, y + 34, fmt_pct(value), size=11, color="muted"))
+    return svg(
+        "Current Public Baseline Metrics",
+        "Averages over tracked current public-split model/tool-agent summaries; not private leaderboard results.",
+        width,
+        height,
+        body,
+    )
+
+
+def task_mix_chart(public_split: dict[str, Any], private_summaries: list[dict[str, Any]]) -> str:
+    width = 920
+    height = 360
+    body: list[str] = []
+    rows = [
+        {
+            "label": "Public development split",
+            "total": public_split["task_count"],
+            "vulnerable": public_split["vulnerable_task_count"],
+            "denial": public_split["denial_control_task_count"],
+            "allow": public_split["authorized_allow_control_task_count"],
+        }
+    ]
+    if private_summaries:
+        first = private_summaries[0]
+        rows.append(
+            {
+                "label": "Private holdout evidence",
+                "total": first["private_holdout_task_count"],
+                "vulnerable": first["vulnerable_task_count"],
+                "denial": first["denial_control_task_count"],
+                "allow": first["authorized_allow_control_task_count"],
+            }
+        )
+    x0 = 260
+    max_total = max(row["total"] for row in rows)
+    colors = [("vulnerable", "Vulnerable", COLORS["blue"]), ("denial", "Denial controls", COLORS["teal"]), ("allow", "Authorized-allow controls", COLORS["orange"])]
+    for i, (_, label, color) in enumerate(colors):
+        x = 260 + i * 170
+        body.append(rect(x, 96, 12, 12, color, rx=2))
+        body.append(text(x + 18, 107, label, size=12, color="muted"))
+    for idx, row in enumerate(rows):
+        y = 140 + idx * 84
+        body.append(text(36, y + 19, row["label"], size=14, color="text", weight="600"))
+        body.append(text(36, y + 39, f'{row["total"]} tasks', size=12, color="muted"))
+        x = x0
+        for key, _, color in colors:
+            segment = 520 * (row[key] / max_total)
+            body.append(rect(x, y + 8, segment, 26, color, rx=2))
+            if segment > 42:
+                body.append(text(x + 8, y + 26, str(row[key]), size=12, color="light", weight="700"))
+            x += segment
+        body.append(text(x + 12, y + 27, f'total {row["total"]}', size=12, color="muted"))
+    return svg(
+        "Task Mix",
+        "Public task mix plus redacted private-holdout count evidence; private task bodies are not included.",
+        width,
+        height,
+        body,
+    )
+
+
+def validate_private_summaries(private_summaries: list[dict[str, Any]]) -> None:
+    if not private_summaries:
+        return
+    required_flags = {
+        "redacted_private_holdout_source": True,
+        "raw_private_artifacts_tracked": False,
+        "tracked_private_manifest_count": 0,
+    }
+    expected_mix = {
+        key: private_summaries[0].get(key)
+        for key in (
+            "private_holdout_task_count",
+            "vulnerable_task_count",
+            "control_task_count",
+            "denial_control_task_count",
+            "authorized_allow_control_task_count",
+        )
+    }
+    for index, summary in enumerate(private_summaries, start=1):
+        for key, expected in required_flags.items():
+            if summary.get(key) != expected:
+                raise ValueError(f"private summary {index} is not public-safe: {key}={summary.get(key)!r}")
+        observed_mix = {key: summary.get(key) for key in expected_mix}
+        if observed_mix != expected_mix:
+            raise ValueError("redacted private summaries have inconsistent task mix; chart generation needs an explicit aggregation policy")
+
+
+def evidence_status_chart(registry: dict[str, Any], private_summaries: list[dict[str, Any]]) -> str:
+    public = registry["public_split"]
+    tool_entries = [entry for entry in registry["baselines"] if entry["kind"] == "tool_agent_baseline" and entry["release_suitability"] == "current_public_split"]
+    current_families = {
+        entry.get("model_family")
+        for entry in registry["baselines"]
+        if entry["kind"] == "model_baseline" and entry["release_suitability"] == "current_public_split"
+    }
+    private_tool = [item for item in private_summaries if item.get("harness_type") == "tool-agent"]
+    rows = [
+        ("Public split validated", public["task_count"] >= 40, f'{public["task_count"]} public tasks across 6 apps'),
+        ("Repeated model families", len(current_families) >= 5, f"{len(current_families)} current public model families"),
+        ("Public tool-agent baseline", bool(tool_entries), "Tracked public tool-agent summary with target correlation"),
+        ("Protected private runs", len(private_summaries) >= 2, f"{len(private_summaries)} redacted protected-private summaries"),
+        ("Private tool-agent coverage", bool(private_tool) and private_tool[0].get("target_request_coverage_rate") == 1.0, "Redacted private tool-agent summary reports 100% target coverage"),
+        ("Hosted leaderboard service", False, "Planned; not claimed ready"),
+        ("Independent third-party run", False, "Planned; not claimed complete"),
+    ]
+    width = 980
+    height = 470
+    body: list[str] = []
+    for idx, (label, ready, detail) in enumerate(rows):
+        y = 112 + idx * 48
+        color = COLORS["green"] if ready else COLORS["gray"]
+        status = "Ready evidence" if ready else "Not yet"
+        body.append(rect(42, y - 17, 22, 22, color, rx=11))
+        body.append(text(78, y, label, size=14, color="text", weight="600"))
+        body.append(text(360, y, status, size=13, color="green" if ready else "gray", weight="700"))
+        body.append(text(520, y, detail, size=12, color="muted"))
+    return svg(
+        "Evidence Readiness",
+        "What existing public-safe artifacts support today, and what is still not claimed.",
+        width,
+        height,
+        body,
+    )
+
+
+def main() -> int:
+    ASSET_DIR.mkdir(parents=True, exist_ok=True)
+    registry = load_json(ROOT / "baselines" / "baseline-registry.json")
+    private_summaries = [
+        load_json(path)
+        for path in sorted(ROOT.glob("docs/protected-private*-2026-06-05.redacted.json"))
+    ]
+    validate_private_summaries(private_summaries)
+    rows = baseline_rows(registry)
+    baseline_sources: list[str] = ["baselines/baseline-registry.json"]
+    for entry in registry["baselines"]:
+        for artifact in entry.get("run_artifacts") or [entry.get("summary_path")]:
+            if artifact:
+                source = f"baselines/{artifact}"
+                if source not in baseline_sources:
+                    baseline_sources.append(source)
+    chart_data = {
+        "source_files": [
+            *baseline_sources,
+            *[str(path.relative_to(ROOT)) for path in sorted(ROOT.glob("docs/protected-private*-2026-06-05.redacted.json"))],
+        ],
+        "public_split": registry["public_split"],
+        "current_public_baselines": rows,
+        "private_redacted_evidence_count": len(private_summaries),
+        "claim_boundary": "Charts summarize public-safe artifacts. They are not hosted leaderboard rankings.",
+    }
+    write(ASSET_DIR / "current-public-baselines.svg", grouped_metric_chart(rows))
+    write(ASSET_DIR / "task-mix.svg", task_mix_chart(registry["public_split"], private_summaries))
+    write(ASSET_DIR / "evidence-readiness.svg", evidence_status_chart(registry, private_summaries))
+    write(ASSET_DIR / "chart-data.json", json.dumps(chart_data, indent=2, sort_keys=True) + "\n")
+    write(
+        ASSET_DIR / "README.md",
+        "\n".join(
+            [
+                "# Benchmark Charts",
+                "",
+                "Generated public-safe charts for AuthZBench-SaaS.",
+                "",
+                "Regenerate with:",
+                "",
+                "```bash",
+                "python3 scripts/generate_benchmark_charts.py",
+                "```",
+                "",
+                "These charts summarize tracked public-split baselines and redacted",
+                "private-evidence summaries. They are not hosted leaderboard rankings.",
+                "",
+            ]
+        ),
+    )
+    print(f"wrote charts to {ASSET_DIR.relative_to(ROOT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

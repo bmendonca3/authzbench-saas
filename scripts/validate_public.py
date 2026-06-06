@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PRIVACY_PATTERN_PARTS = [
     ("at least", " 12"),
     ("v0", r"\.0\.1-public"),
-    ("non-", "Gatech"),
-    ("/Users/", "brianmendonca"),
+    ("non-", "Ga", "tech"),
+    ("/Users/", "bri", "an", "men", "donca"),
     ("Bri", "an"),
     ("Men", "donca"),
     ("Georgia", " Tech"),
@@ -106,6 +106,8 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         cwd,
     )
     run([sys.executable, "scripts/validate_v0_release.py", "--allow-incomplete"], cwd)
+    run([sys.executable, "scripts/generate_benchmark_charts.py"], cwd)
+    run(["git", "diff", "--exit-code", "--", "docs/assets/benchmark-charts"], cwd)
     run(
         [
             sys.executable,

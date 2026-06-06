@@ -1,0 +1,100 @@
+{
+  "claim_boundary": "Charts summarize public-safe artifacts. They are not hosted leaderboard rankings.",
+  "current_public_baselines": [
+    {
+      "boundary_reasoning_pass_rate": 0.0,
+      "exploit_proven_success_rate": 0.7778,
+      "false_positive_rate": 0.0,
+      "id": "kiro-live-tool-agent-sonnet-current-public-44",
+      "kind": "tool_agent_baseline",
+      "label": "Tool agent: Claude Sonnet 4.6",
+      "pass_rate": 0.5909090909090909,
+      "run_count": 1,
+      "task_count": 44
+    },
+    {
+      "boundary_reasoning_pass_rate": 0.1667,
+      "exploit_proven_success_rate": 0.7778,
+      "false_positive_rate": 0.0,
+      "id": "kiro-claude-sonnet-4-6-current-public-44",
+      "kind": "model_baseline",
+      "label": "Claude Sonnet 4.6",
+      "pass_rate": 0.6590909090909091,
+      "run_count": 2,
+      "task_count": 44
+    },
+    {
+      "boundary_reasoning_pass_rate": 0.0556,
+      "exploit_proven_success_rate": 0.6667,
+      "false_positive_rate": 0.0,
+      "id": "kiro-claude-opus-4-6-current-public-44",
+      "kind": "model_baseline",
+      "label": "Claude Opus 4.6",
+      "pass_rate": 0.6136363636363636,
+      "run_count": 2,
+      "task_count": 44
+    },
+    {
+      "boundary_reasoning_pass_rate": 0.0,
+      "exploit_proven_success_rate": 0.2222,
+      "false_positive_rate": 0.0,
+      "id": "kiro-claude-haiku-4-5-current-public-44",
+      "kind": "model_baseline",
+      "label": "Claude Haiku 4.5",
+      "pass_rate": 0.5909090909090909,
+      "run_count": 2,
+      "task_count": 44
+    },
+    {
+      "boundary_reasoning_pass_rate": 0.0,
+      "exploit_proven_success_rate": 0.0,
+      "false_positive_rate": 0.0,
+      "id": "kiro-deepseek-3-2-current-public-44",
+      "kind": "model_baseline",
+      "label": "DeepSeek 3.2",
+      "pass_rate": 0.5909090909090909,
+      "run_count": 2,
+      "task_count": 44
+    },
+    {
+      "boundary_reasoning_pass_rate": 0.0,
+      "exploit_proven_success_rate": 0.0,
+      "false_positive_rate": 0.01925,
+      "id": "kiro-qwen3-coder-next-current-public-44",
+      "kind": "model_baseline",
+      "label": "Qwen3 Coder Next",
+      "pass_rate": 0.5795454545454546,
+      "run_count": 2,
+      "task_count": 44
+    }
+  ],
+  "private_redacted_evidence_count": 2,
+  "public_split": {
+    "authorized_allow_control_task_count": 10,
+    "control_task_count": 26,
+    "denial_control_task_count": 16,
+    "task_count": 44,
+    "vulnerable_task_count": 18
+  },
+  "source_files": [
+    "baselines/baseline-registry.json",
+    "baselines/scripted-baseline-summary.json",
+    "baselines/live-scripted-baseline-summary.json",
+    "baselines/heuristic-live-http-prober-public-44-summary.json",
+    "baselines/kiro-claude-sonnet-4.6-full-summary.json",
+    "baselines/kiro-qwen3-coder-next-full-summary.json",
+    "baselines/kiro-claude-sonnet-4.6-current-public-44-run1-summary.json",
+    "baselines/kiro-claude-sonnet-4.6-current-public-44-run2-summary.json",
+    "baselines/kiro-claude-opus-4.6-current-public-44-run1-summary.json",
+    "baselines/kiro-claude-opus-4.6-current-public-44-run2-summary.json",
+    "baselines/kiro-claude-haiku-4.5-current-public-44-run1-summary.json",
+    "baselines/kiro-claude-haiku-4.5-current-public-44-run2-summary.json",
+    "baselines/kiro-deepseek-3.2-current-public-44-run1-summary.json",
+    "baselines/kiro-deepseek-3.2-current-public-44-run2-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-44-run1-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-44-run2-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-44-summary.json",
+    "docs/protected-private-execution-2026-06-05.redacted.json",
+    "docs/protected-private-live-kiro-sonnet-2026-06-05.redacted.json"
+  ]
+}

@@ -51,3 +51,24 @@ For release-facing summaries, prefer:
 - `v0_mean_score` as the compatibility aggregate
 
 Do not rank agents by legacy `mean_score` alone.
+
+## Generated Charts
+
+The generated charts under
+[`docs/assets/benchmark-charts/`](assets/benchmark-charts/) make the current
+evidence easier to inspect:
+
+![Current public baseline metrics](assets/benchmark-charts/current-public-baselines.svg)
+
+![Task mix](assets/benchmark-charts/task-mix.svg)
+
+![Evidence readiness](assets/benchmark-charts/evidence-readiness.svg)
+
+Regenerate them with:
+
+```bash
+python3 scripts/generate_benchmark_charts.py
+```
+
+These visuals summarize tracked public-safe artifacts only. They do not turn
+public-split scores into private-holdout leaderboard rankings.

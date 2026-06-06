@@ -51,6 +51,17 @@ public internet.
 Public checkouts intentionally do not include private holdout manifests. That is
 part of the contamination-control design, not a missing file.
 
+## Benchmark Charts
+
+Generated public-safe charts live under
+[`docs/assets/benchmark-charts/`](docs/assets/benchmark-charts/). They summarize
+tracked public-split baselines, task mix, and evidence readiness from existing
+JSON artifacts. They are not hosted leaderboard rankings.
+
+- [Current public baseline metrics](docs/assets/benchmark-charts/current-public-baselines.svg)
+- [Task mix](docs/assets/benchmark-charts/task-mix.svg)
+- [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
+
 ## Quick Start
 
 Prerequisites:
@@ -319,6 +330,8 @@ evidence.
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use and limits
 - [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): what current
   evidence does and does not prove
+- [`docs/assets/benchmark-charts/`](docs/assets/benchmark-charts/): generated
+  public-safe charts from tracked baseline and evidence JSON
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task review
   rubric for public tasks and external review
 - [`docs/multistep-workflow-task-plan.md`](docs/multistep-workflow-task-plan.md):
