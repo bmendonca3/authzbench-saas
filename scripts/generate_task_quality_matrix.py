@@ -111,8 +111,9 @@ def summarize_task(path: Path, data: dict[str, Any]) -> dict[str, Any]:
         "quality_flags": {
             "required_public_fields_present": not missing_public_fields,
             "missing_public_fields": missing_public_fields,
-            "vulnerable_boundary_present": (not expected_vulnerable) or bool(boundary),
-            "secure_control_type_present": expected_vulnerable or control_type in {"denial", "authorized_allow"},
+            "vulnerable_boundary_requirement_satisfied": (not expected_vulnerable) or bool(boundary),
+            "secure_control_type_requirement_satisfied": expected_vulnerable
+            or control_type in {"denial", "authorized_allow"},
             "has_controls": bool(controls),
             "has_scorer_oracle": bool(oracle),
             "has_replayable_check": isinstance(oracle.get("status"), int) or "body_contains" in oracle,
