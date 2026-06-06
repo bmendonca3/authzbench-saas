@@ -1,7 +1,6 @@
 # AuthZBench-SaaS v0.0
 
-Draft release notes. These notes are intended for the `v0.0` GitHub Release
-after the final tag target has passed post-push CI.
+These notes describe the public `v0.0` GitHub Release.
 
 AuthZBench-SaaS v0.0 is the first evidence-backed release snapshot of a SaaS
 authorization benchmark for evaluating whether AI agents can prove

@@ -1,12 +1,21 @@
 {
   "schema_version": "release-evidence-v1",
-  "release_candidate": {
-    "version_label": "v0.0-candidate",
-    "evidence_checkpoint_commit_sha": "2aa46b59b39de5c4ed96c1febc54e730388f13b6",
-    "latest_exact_head_checked_commit_sha": "61e34b47d4c1d4a7c6cba44c4ca53fb0dee5cf4a",
-    "tag_target_policy": "Tag the final commit only after that commit's post-push GitHub Actions run passes. A committed file cannot truthfully contain the SHA and CI URL of its own future commit.",
-    "notes": "The evidence-bearing checkpoint satisfies the documented strict v0 gates, and the latest pre-release head was also checked. Hosted leaderboard operation, rotating holdouts, and v1/community claims remain separate work."
-  },
+    "release_candidate": {
+        "version_label": "v0.0-candidate",
+        "evidence_checkpoint_commit_sha": "2aa46b59b39de5c4ed96c1febc54e730388f13b6",
+        "latest_exact_head_checked_commit_sha": "61e34b47d4c1d4a7c6cba44c4ca53fb0dee5cf4a",
+        "tag_target_policy": "Tag the final commit only after that commit's post-push GitHub Actions run passes. A committed file cannot truthfully contain the SHA and CI URL of its own future commit.",
+        "notes": "The evidence-bearing checkpoint satisfies the documented strict v0 gates, and the latest pre-release head was also checked. Hosted leaderboard operation, rotating holdouts, and v1/community claims remain separate work."
+    },
+    "published_release": {
+        "version_label": "v0.0",
+        "tag": "v0.0",
+        "tagged_commit_sha": "56566500e80225460bbc8c418086f2f75ae78161",
+        "release_url": "https://github.com/bmendonca3/authzbench-saas/releases/tag/v0.0",
+        "exact_head_ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27076070423",
+        "exact_head_ci_run_id": "27076070423",
+        "notes": "The public v0.0 tag points to the release-wiring commit that passed post-push GitHub Actions. Later documentation commits may update explanatory docs without changing the v0.0 release archive."
+    },
   "required_for_v0": {
     "local_public_validation_passed": true,
     "fresh_clone_validation_passed": true,
@@ -25,7 +34,7 @@
     "latest_remote_ci_commit_sha": "61e34b47d4c1d4a7c6cba44c4ca53fb0dee5cf4a",
     "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on evidence-bearing commit 2aa46b59b39de5c4ed96c1febc54e730388f13b6 and pre-release head 61e34b47d4c1d4a7c6cba44c4ca53fb0dee5cf4a",
     "docker_container_smoke_source": "local Docker Compose smoke passed before the protected tool-agent run; all six services and the Compose network were torn down afterward",
-    "protected_private_holdout_execution_source": "Two same-commit no-tools summaries prove macOS host private-path denial and support one eligible private leaderboard row. One host-isolated live tool-agent summary reports 24/24 target-request correlation. The combined three-summary protected-evidence validator passes with host isolation and the tool-agent requirement enabled.",
+        "protected_private_holdout_execution_source": "Two same-commit no-tools summaries and one host-isolated live tool-agent summary provide protected private-holdout release evidence without publishing private task bodies. The newer private no-tools row is source-backed and release-candidate eligible because its benchmark fingerprint provenance is runner-emitted; the older reconstructed historical row remains non-eligible. The host-isolated live tool-agent summary reports full count-level target-request correlation. The combined three-summary protected-evidence validator passes with host isolation and the tool-agent requirement enabled.",
     "protected_private_evidence_validation_command": "python3 scripts/validate_protected_private_evidence.py --summary leaderboard_sources/haiku-private-holdout-fb9e4c7-run1-redacted-source-summary.json --summary leaderboard_sources/haiku-private-holdout-fb9e4c7-run2-redacted-source-summary.json --summary leaderboard_sources/tool-agent-private-holdout-21e92c7-run1-redacted-source-summary.json --min-run-count 2 --require-host-isolation",
     "release_notes_source": [
       "README.md",
@@ -35,6 +44,6 @@
       "CHANGELOG.md",
       "docs/release-notes-v0.0.md"
     ],
-    "notes": "The strict maintainer gate is evidence-ready at the referenced checkpoint and was rechecked on the latest pre-release head. The final v0.0 tag target must be the pushed commit whose GitHub Actions run passes after this release-evidence wording commit."
-  }
+        "notes": "The strict maintainer gate was evidence-ready at the referenced checkpoint and rechecked on the pre-release head. The published v0.0 tag points to commit 56566500e80225460bbc8c418086f2f75ae78161, whose post-push GitHub Actions run passed."
+    }
 }

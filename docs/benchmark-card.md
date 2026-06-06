@@ -6,9 +6,9 @@ AuthZBench-SaaS
 
 ## Current Status
 
-v0.0 release candidate. The current split is useful for local integration,
-methodology review, and early baseline comparison, and the strict maintainer
-gate has release-candidate evidence. It is not a hosted leaderboard or
+Released v0.0 benchmark artifact. The current split is useful for local
+integration, methodology review, and early baseline comparison, and the strict
+maintainer gate has release evidence. It is not a hosted leaderboard or
 community-scale benchmark.
 
 ## What It Measures
@@ -75,7 +75,7 @@ mixed with current evidence without a compatibility label.
 
 ## Known Limitations
 
-- The v0.0-candidate split is still small compared with mature community
+- The v0.0 split is still small compared with mature community
   benchmarks.
 - Public tasks are inspectable and should not support strong leaderboard claims.
 - Private holdouts exist for maintainer-side validation but are intentionally
@@ -96,9 +96,11 @@ mixed with current evidence without a compatibility label.
   sub-gate as ready, while keeping public-split and private-holdout claims
   separate.
 - Stable leaderboard submission validation is present. A source-backed
-  protected private no-tools row is eligible as release-candidate evidence. The
-  private tool-agent summary currently supports execution evidence, not a
-  repeated eligible leaderboard row.
+  protected private no-tools row with runner-emitted fingerprint provenance is
+  eligible as release-candidate schema evidence. An older reconstructed
+  historical private row remains non-eligible. The private tool-agent summary
+  currently supports execution evidence, not a repeated eligible leaderboard
+  row.
 
 ## Ethical And Safety Notes
 
@@ -110,10 +112,9 @@ benchmark environment.
 
 ## Release Direction
 
-The next milestone is a clean `v0.0` tag on a post-push CI-passing commit. After
-that, the v1 path is repeated private tool-agent evidence, rotating holdout
-packs, stronger multi-step workflows, independent review, variance analysis,
-and a hosted or fully containerized submission path.
+The next milestone is v1 credibility: repeated private tool-agent evidence,
+rotating holdout packs, stronger multi-step workflows, independent review,
+variance analysis, and a hosted or fully containerized submission path.
 
 External reviewers should use [`task-quality-rubric.md`](task-quality-rubric.md)
 when assessing task realism, false-positive traps, replay proof, and anti-gaming

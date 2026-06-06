@@ -1,6 +1,6 @@
-# AuthZBench-SaaS v0.0 Candidate Launch Report
+# AuthZBench-SaaS v0.0 Launch Report
 
-Status: v0.0 release candidate; not yet a hosted leaderboard
+Status: v0.0 released; not a hosted leaderboard
 
 ## Summary
 
@@ -263,32 +263,30 @@ The tracked public scripted example is schema-valid evidence, but it is
 explicitly not leaderboard eligible because deterministic harness checks and
 public-split examples are not serious leaderboard results.
 
-One historical redacted private-holdout row is tracked under
-`leaderboard_submissions/`. It is a repeated Kiro `claude-haiku-4.5` no-tools
-baseline with zero false positives and zero exploit-proven vulnerable tasks.
-The stable schema now keeps it non-eligible because its benchmark fingerprint
-was reconstructed after execution. Fresh runner-emitted protected runs are
-required before it can become an eligible row again.
+Two redacted private-holdout rows are tracked under `leaderboard_submissions/`.
+The older 2026-06-05 Kiro `claude-haiku-4.5` no-tools row remains
+non-eligible because its benchmark fingerprint was reconstructed after
+execution. The newer 2026-06-06 host-isolated Kiro `claude-haiku-4.5` no-tools
+row has runner-emitted fingerprint provenance and validates as
+release-candidate eligible. Neither row implies hosted leaderboard operation.
 
 ## Publication Status
 
-The repository is an alpha public scaffold, not a finished public leaderboard.
-It is already useful as a local integration and regression suite for agent
+The repository is a released v0.0 benchmark artifact, not a hosted public
+leaderboard. It is useful as a local integration and regression suite for agent
 builders who want to test authorization-bug proof workflows. It has enough
 structure for external reviewers to inspect the methodology and integrate a
-custom agent command. It has historical workspace-separated private evidence
-summarized in redacted public-safe form and one historical leaderboard row,
-but it does not publish raw private manifests and does not yet provide a hosted
-public leaderboard.
+custom agent command. It has protected private evidence summarized in redacted
+public-safe form, but it does not publish raw private manifests and does not yet
+provide a hosted public leaderboard.
 
-## Release Criteria For The Real v0
+## Remaining Criteria For v1 And Hosted Evaluation
 
-- add a private holdout pack outside public Git history
-- add stronger anti-gaming, including route aliases or decoys
+- add rotating private holdout packs
+- add repeated private tool-agent leaderboard-candidate rows
 - harden target-side request-log correlation for Docker-backed leaderboard runs
-- preserve at least five agent/model baseline summaries or linked result bundles
-- update launch report and README to reflect verified release evidence
-- pass the publish checklist from a fresh public clone
+- add hosted or fully containerized third-party submission handling
+- add independent review, variance analysis, and broader task volume
 
 ## Known Limits
 

@@ -12,9 +12,9 @@ The benchmark focuses on a narrow, practical security question:
 > allowed through, and can it stay quiet when access is correctly denied or
 > correctly allowed?
 
-This repository is currently a **v0.0 release candidate**. The strict maintainer
-gate has evidence, but the project is not a hosted leaderboard and should not be
-called a community benchmark yet.
+This repository is a **released v0.0 benchmark artifact**. The strict maintainer
+gate has evidence, and the `v0.0` tag is public, but the project is not a hosted
+leaderboard and should not be called a community benchmark yet.
 
 ## Why This Matters
 
@@ -38,9 +38,9 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Public tasks | 46 total: 19 vulnerable, 27 secure controls |
 | Control mix | 16 denial controls, 11 authorized-allow controls |
 | Baselines | 5 repeated current model/agent families, including one live HTTP tool-agent family |
-| Scoring | Deterministic backend replay plus v0-candidate evidence metrics |
+| Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
-| Release status | v0.0 candidate; tag not yet published in this working state |
+| Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
 | Not included | Hosted leaderboard, rotating multi-pack holdouts, v1/community claims |
 
 Public checkouts intentionally do not include private holdout manifests. That is
@@ -70,7 +70,7 @@ public internet.
 
 Supported claims:
 
-- AuthZBench-SaaS is a serious v0.0 candidate for SaaS authorization-agent
+- AuthZBench-SaaS is a released v0.0 artifact for SaaS authorization-agent
   evaluation.
 - The current public split has repeated baseline evidence across 5 current
   model/agent families.
@@ -131,7 +131,7 @@ python3 scripts/validate_public.py \
   --include-container-smoke
 ```
 
-Audit strict v0.0 candidate gates in a maintainer checkout:
+Audit strict v0.0 gates in a maintainer checkout:
 
 ```bash
 python3 scripts/validate_v0_release.py
@@ -195,7 +195,7 @@ python3 -m authzbench.run \
 
 After a run, inspect:
 
-- `summary.json`: aggregate counts and v0-candidate metrics
+- `summary.json`: aggregate counts and v0 evidence metrics
 - `<task_id>/submission.json`: agent claims
 - `<task_id>/score.json`: exploit proof, boundary reasoning, false-positive
   control, and safety scoring
@@ -278,32 +278,36 @@ Protected private evidence is published only as redacted aggregate summaries.
 Raw private results, captures, panel logs, and holdout manifests must remain
 untracked.
 
+Public docs may include count-level private evidence summaries, but must not
+publish private task bodies, seeds, routes, oracles, raw captures, or per-task
+private result rows.
+
 See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md) and
 [`docs/holdout-rotation-protocol.md`](docs/holdout-rotation-protocol.md).
 
 ## Release Status
 
-AuthZBench-SaaS is at a v0.0 release-candidate stage:
+AuthZBench-SaaS is at a released v0.0 stage:
 
 - strict maintainer gate evidence exists
 - release notes exist at [`docs/release-notes-v0.0.md`](docs/release-notes-v0.0.md)
-- final tag target must be the pushed commit whose GitHub Actions run passes
+- the public `v0.0` tag points to the post-CI release commit
 - hosted leaderboard and rotating holdouts are v1/community work
 
 Do not describe the project as leaderboard-ready or as a validated model
-benchmark until the release and leaderboard process exist.
+benchmark until the hosted or containerized leaderboard process exists.
 
 ## Roadmap
 
-The immediate path is:
+The next path is:
 
-1. Tag `v0.0` after exact-head CI, privacy checks, fresh-clone validation, and
-   release evidence all align.
-2. Add repeated private tool-agent evidence.
-3. Expand multi-step workflow realism across more app families.
-4. Implement rotating private holdout packs.
-5. Add research-grade variance analysis and external review.
-6. Build a hosted or fully containerized submission path.
+1. Add repeated private tool-agent evidence.
+2. Expand multi-step workflow realism across more app families.
+3. Implement rotating private holdout packs.
+4. Add research-grade variance analysis and external review.
+5. Build a hosted or fully containerized submission path.
+6. Keep release docs and claim boundaries synchronized after every tagged
+   release.
 
 See [`ROADMAP.md`](ROADMAP.md).
 
@@ -311,6 +315,8 @@ See [`ROADMAP.md`](ROADMAP.md).
 
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use and limits
 - [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim ledger
+- [`docs/authzbench-saas-v0.0-technical-report.md`](docs/authzbench-saas-v0.0-technical-report.md): technical report draft
+- [`docs/authzbench-saas-v0.0-evidence-map.md`](docs/authzbench-saas-v0.0-evidence-map.md): claim-to-evidence map
 - [`docs/methodology.md`](docs/methodology.md): scoring methodology
 - [`docs/result-schema.md`](docs/result-schema.md): result artifact schema
 - [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): leaderboard row schema

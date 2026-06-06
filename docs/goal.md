@@ -6,11 +6,11 @@ important question:
 > Can an AI agent prove SaaS authorization failures with backend evidence, while
 > avoiding false positives when the application is behaving correctly?
 
-The current repository is an alpha/pre-v0 public preview. It is useful for
+The current repository is a released v0.0 benchmark artifact. It is useful for
 reviewing the idea, running the harness, and comparing early agents on a
-medium-size public split. It is not yet a finished leaderboard benchmark, and
-the project should not claim the real `v0` label until the release gates below
-are met.
+medium-size public split. It is not a hosted leaderboard or community-scale
+benchmark, and the project should not claim the `v1` label until the scale,
+review, and submission-infrastructure gaps below are closed.
 
 ## Current Goal Statement
 
@@ -24,9 +24,11 @@ should use commits that match those checkpoints instead of burying the work in
 one large change.
 
 The ambition is to become a top benchmark, but the label has to be earned. The
-current repo remains alpha/pre-v0 until it has protected private holdouts,
-strong live-target proof, repeated real model and agent baselines, anti-gaming
-controls, clean packaging, and review artifacts for each major section.
+current repo has crossed the v0.0 release threshold with protected private
+evidence, live-target proof, repeated real model and agent baselines,
+anti-gaming controls, clean packaging, and review artifacts. It still needs v1
+scale, rotating holdouts, external review, and hosted or fully containerized
+submission infrastructure before stronger community-benchmark claims are fair.
 
 ## Operating Contract
 
@@ -90,7 +92,7 @@ The benchmark should be judged on five qualities:
 
 ### Constraints
 
-- Keep the public repo honest as alpha/pre-v0 until the v0 gates pass.
+- Keep the public repo honest as a released v0.0 artifact until v1 gates pass.
 - Keep the benchmark focused on SaaS authorization, not generic CTF coverage.
 - Keep synthetic data synthetic; do not copy real customer, employer, bug bounty,
   school, or personal data.
@@ -132,17 +134,19 @@ continue with the strongest safe local work.
 
 ### Blocked Stop Condition
 
-Do not claim the benchmark is `v0`, leaderboard-ready, or top-tier if any core
-proof surface is missing: private holdouts, repeated real baselines, live-target
-proof, anti-gaming controls, privacy validation, release review, or public-clone
-validation. If a blocker requires unavailable infrastructure or user action,
-record the exact blocker, preserve the evidence gathered, and keep the goal
-active rather than downgrading the standard.
+Do not claim the benchmark is leaderboard-ready, v1, community-scale, or
+top-tier if any core proof surface is missing: rotating private holdouts,
+third-party runs, repeated private tool-agent evidence, hosted/containerized
+submission handling, variance analysis, external review, or public-clone
+validation for the relevant release. If a blocker requires unavailable
+infrastructure or user action, record the exact blocker, preserve the evidence
+gathered, and keep the goal active rather than downgrading the standard.
 
 ## v0 Release Goal
 
-The real `v0` goal is to ship the first version that other researchers can use
-without mentally discounting every headline score.
+The real `v0` goal was to ship the first version that other researchers can use
+without mentally discounting every headline score. The `v0.0` release now
+satisfies this Level 1 goal while leaving v1/community-benchmark work open.
 
 To call the project `v0`, the repo should have:
 
@@ -166,4 +170,5 @@ To call the project `v0`, the repo should have:
 - public docs that clearly separate alpha results, public-split development
   results, and private-holdout leaderboard results
 
-Until those gates are met, the honest label is alpha/pre-v0.
+Those gates are now met for the v0.0 release. The honest next label remains
+released v0.0 until v1-scale evidence is added.

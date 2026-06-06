@@ -10,7 +10,7 @@ intended public host is the public `github.com` account.
 - [ ] `python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'`
 - [ ] `python3 scripts/validate_baseline_registry.py`
 - [ ] `python3 scripts/validate_v0_release.py --allow-incomplete` for
-      alpha/pre-v0 status reporting
+      public-only status reporting when private holdouts are absent
 - [ ] `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary`
 - [ ] `python3 -m compileall -q authzbench apps tests scripts`
 - [ ] `docker compose config`
@@ -22,7 +22,7 @@ intended public host is the public `github.com` account.
       `leaderboard_submissions/**/*.json` or an equivalent protected submission
       bundle, not as repurposed public harness-check examples
 - [ ] baseline registry reports `v0_baseline_ready: true` before any real `v0`
-      tag; alpha tags may keep it false if the docs clearly say why
+      tag
 - [ ] for any real `v0` tag, rerun strict
       `python3 scripts/validate_v0_release.py` and require `v0_ready: true`
 - [ ] for any real `v0` tag, update `docs/release-evidence.json` only after the
@@ -45,7 +45,7 @@ intended public host is the public `github.com` account.
 - [ ] secrets, personal paths, personal emails, browser artifacts, and unrelated local data are absent from the Git index
 - [ ] `python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline --include-container-smoke`
 - [ ] GitHub Actions public-validation workflow exists and remote CI status is
-      explicit and passing before any real v0 tag
+      explicit and passing before any future release tag
 
 ## Suggested Repository Settings
 
@@ -70,5 +70,6 @@ Release notes:
 - leaderboard submission validator and ineligible public harness-check example
 - draft launch methodology and leaderboard schema
 
-Do not use the plain `v0` label until the release gates in
-[`v0-release-plan.md`](v0-release-plan.md) are satisfied.
+Do not use a new release label until the relevant release gates in
+[`v0-release-plan.md`](v0-release-plan.md) or [`ROADMAP.md`](../ROADMAP.md) are
+satisfied.

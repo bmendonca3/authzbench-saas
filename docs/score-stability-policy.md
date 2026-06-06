@@ -1,7 +1,8 @@
 # Score Stability Policy
 
-AuthZBench-SaaS is alpha/pre-v0, so task and scorer changes are still expected.
-This policy keeps old scores understandable when the benchmark changes.
+AuthZBench-SaaS is released at v0.0, but task and scorer changes are still
+expected on the path to v1. This policy keeps old scores understandable when
+the benchmark changes.
 
 ## Score States
 

@@ -1,12 +1,12 @@
 # AuthZBench-SaaS v0 Release Plan
 
-Status: planning target for the first release-worthy benchmark.
+Status: historical release plan for the first release-worthy benchmark. The
+`v0.0` release has now landed; keep this file as the original release-gate
+contract and use the roadmap for current v1/community work.
 
-The current public repository is an alpha/pre-v0 preview. It proves the harness
-shape, but it is too small and too easy to inspect to support strong public
-leaderboard claims. The real `v0` should be the first version that a security or
-AI-agent researcher can use without needing to mentally discount every headline
-number.
+The current public repository is a released v0.0 artifact. It proves the harness
+shape and first-release evidence standard, but it is still too small and too
+easy to inspect to support strong public leaderboard claims.
 
 ## v0 Goal
 
@@ -21,9 +21,9 @@ benchmark, cloud benchmark, or code-generation benchmark. Its value is the
 authorization boundary.
 
 The public working goal is captured in [`docs/goal.md`](goal.md). The short
-version: keep the current repo honest as alpha/pre-v0, then earn the `v0` label
-by adding scale, private holdouts, live-target proof, repeated baselines,
-sectional review, and clean release validation.
+version: keep the current repo honest as released v0.0, then earn stronger v1
+or community-benchmark claims through scale, rotating private holdouts,
+live-target proof, repeated baselines, sectional review, and clean validation.
 
 The release process should also be auditable from Git history. Major work should
 land as coherent SDLC checkpoints: design and roadmap changes, target/task
@@ -326,30 +326,31 @@ python3 scripts/validate_v0_release.py
 ```
 
 Strict mode should return success only when the real v0 gates are satisfied.
-During alpha/pre-v0 development, public validation runs the same gate in
-explicit audit mode:
+Public validation can run the same gate in explicit audit mode when private
+holdouts are intentionally absent from a public checkout:
 
 ```bash
 python3 scripts/validate_v0_release.py --allow-incomplete
 ```
 
 `--allow-incomplete` is not a release waiver. It exists so the repository can
-continuously publish a machine-readable readiness account during alpha and
-release-candidate checkpoints.
+continuously publish a machine-readable readiness account in public-only
+checkouts.
 
 Version labels:
 
 - alpha preview tags should use `alpha-<semver>-public-scaffold`, such as
   `alpha-0.0.1-public-scaffold`
 - local alpha run summaries should use `alpha-0.0.1-public-scaffold-local`
-- real v0 tags should not be used until every release gate above is satisfied
+- real v0 tags should not be used unless every release gate above is satisfied
 
 ## Naming
 
-- Current repository state: `alpha preview` or `pre-v0`
+- Current repository state: `v0.0 released`
 - First release-worthy benchmark: `v0`
 - Mature, externally validated benchmark: `v1`
 
-This keeps the project honest. The alpha preview is useful because it shows the
-idea and harness. The v0 release should be useful because it has enough scale,
-holdout protection, and baseline evidence for other people to rely on it.
+This keeps the project honest. The alpha preview was useful because it showed
+the idea and harness. The v0.0 release is useful because it adds enough scale,
+holdout protection, and baseline evidence for other people to inspect and build
+on, while still reserving leaderboard and v1/community claims for later work.

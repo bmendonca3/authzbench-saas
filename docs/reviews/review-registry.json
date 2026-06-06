@@ -9,9 +9,10 @@
         "2026-06-05-goal-roadmap-panel-summary.md",
         "2026-06-05-v0-roadmap-panel-summary.md",
         "2026-06-05-goal-roadmap-refresh-panel-summary.md",
-        "2026-06-06-v0-release-wiring-panel-summary.md"
+        "2026-06-06-v0-release-wiring-panel-summary.md",
+        "2026-06-06-v0-report-panel-summary.md"
       ],
-      "notes": "Goal, roadmap, and release criteria have been reviewed and refreshed through the v0.0 release-candidate wording pass."
+      "notes": "Goal, roadmap, release criteria, and v0.0 technical-report framing have been reviewed and refreshed through the released v0.0 wording pass."
     },
     {
       "id": "task_realism_vulnerability_control_mix",
@@ -69,7 +70,8 @@
         "2026-06-06-tool-agent-repeat-panel-summary.md",
         "2026-06-06-sonnet-current-public-46-panel-summary.md",
         "2026-06-06-glm-current-public-46-panel-summary.md",
-        "2026-06-06-leaderboard-schema-v1-panel-summary.md"
+        "2026-06-06-leaderboard-schema-v1-panel-summary.md",
+        "2026-06-06-v0-report-panel-summary.md"
       ],
       "notes": "Review coverage for registry, leaderboard validators, current 46-task public model summaries, the repeated current 46-task public tool-agent baseline, chart readability, and current-public benchmark fingerprint comparability is complete. The GLM 46-task no-tools repeat restores the baseline sub-gate to five repeated current model/agent families. This supports Level 1/v0 baseline credibility, not hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
     },
@@ -89,7 +91,7 @@
         "2026-06-06-host-isolated-private-tool-agent-panel-summary.md"
       ],
       "v0_ready": true,
-      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, route/decoy variant counts, and private execution have review coverage. Two same-commit no-tools runs prove macOS host private-path denial and support one eligible runner-fingerprinted private row. One fresh host-isolated private tool-agent run now adds 24/24 target-request correlation; it is execution-availability evidence, not a repeated or eligible tool-agent leaderboard row."
+      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, route/decoy variant counts, and private execution have review coverage. The newer private no-tools row is source-backed and release-candidate eligible because its benchmark fingerprint provenance is runner-emitted; the older reconstructed historical row remains non-eligible. One host-isolated private tool-agent run adds count-level target-request correlation; it is execution-availability evidence, not a repeated or eligible tool-agent leaderboard row."
     },
     {
       "id": "privacy_packaging_final_release_readiness",
@@ -102,9 +104,10 @@
         "2026-06-06-host-isolated-private-evidence-panel-summary.md",
         "2026-06-06-host-isolated-private-tool-agent-panel-summary.md",
         "2026-06-06-final-v0-gate-promotion-summary.md",
-        "2026-06-06-v0-release-wiring-panel-summary.md"
+        "2026-06-06-v0-release-wiring-panel-summary.md",
+        "2026-06-06-v0-report-panel-summary.md"
       ],
-      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, host-isolated no-tools evidence, one eligible runner-fingerprinted row, and one private tool-agent run with 24/24 target correlation are verified. The release-wiring pass refreshed README, roadmap, release notes, launch-report, and release-evidence wording for a v0.0 candidate. This section is ready for the strict maintainer gate; the final tag still requires post-push CI on the tag target."
+      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, protected no-tools evidence, and one private tool-agent run with count-level target correlation are verified. The release-wiring and report-review passes refreshed README, roadmap, release notes, launch-report, release-evidence wording, and technical-report framing for released v0.0. Hosted leaderboard and v1/community claims remain future work."
     }
   ]
 }

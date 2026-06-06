@@ -1,6 +1,6 @@
 # Roadmap
 
-AuthZBench-SaaS is a v0.0 release candidate for evaluating whether AI agents
+AuthZBench-SaaS is a released v0.0 artifact for evaluating whether AI agents
 can prove SaaS authorization failures with backend evidence while avoiding false
 positives on secure controls.
 
@@ -24,26 +24,26 @@ and hard to game through public task memorization.
 
 ## Current Release State
 
-Current state: **v0.0 release candidate**.
+Current state: **v0.0 released**.
 
 Evidence already in place:
 
 - 6 synthetic SaaS apps
 - 46 public tasks
-- 24 maintainer-only private holdout tasks in the local private pack
+- a maintainer-only private holdout pack with count-level redacted evidence
 - deterministic backend replay scoring
 - target-side request logging for live HTTP runs
 - five repeated current public model/agent baseline families
 - one repeated current public live HTTP tool-agent family
 - protected private-holdout aggregate evidence
-- one source-backed private no-tools leaderboard-candidate row
+- one source-backed private no-tools leaderboard-candidate row with
+  runner-emitted fingerprint provenance
 - public-safe charts and task-quality matrix
 - release evidence registry
 - privacy checks, fresh-clone validation path, Docker smoke, and CI
 
 Not yet in place:
 
-- pushed `v0.0` tag for the final post-CI commit
 - hosted public leaderboard
 - repeated private tool-agent leaderboard row
 - rotating private holdout packs
@@ -68,9 +68,9 @@ over time. It needs a public submission pipeline, hosted or fully containerized
 evaluation, rotating holdouts, multiple task packs, external contributors, and
 leaderboard governance.
 
-## Immediate Release Path: v0.0
+## Completed Release Path: v0.0
 
-Status: in progress.
+Status: complete.
 
 Goal: publish a clean `v0.0` tag only after release evidence, README wording,
 privacy checks, fresh-clone validation, and CI all align to the final pushed
@@ -82,14 +82,14 @@ commit.
 - [x] Add protected private-holdout aggregate evidence.
 - [x] Add source-backed leaderboard-submission validation.
 - [x] Add release notes for `v0.0`.
-- [x] Update README and roadmap to reflect v0.0 release-candidate status.
-- [ ] Commit final release-wiring changes.
-- [ ] Run local validation on the final commit candidate.
-- [ ] Run privacy checks against tracked files.
-- [ ] Run public fresh-clone validation from GitHub.
-- [ ] Push final release-wiring commit to `main`.
-- [ ] Confirm GitHub Actions passes on that exact commit.
-- [ ] Tag and push `v0.0`.
+- [x] Update README and roadmap to reflect v0.0 release status.
+- [x] Commit final release-wiring changes.
+- [x] Run local validation on the final commit candidate.
+- [x] Run privacy checks against tracked files.
+- [x] Run public fresh-clone validation from GitHub.
+- [x] Push final release-wiring commit to `main`.
+- [x] Confirm GitHub Actions passes on that exact commit.
+- [x] Tag and push `v0.0`.
 
 Exit criteria:
 
@@ -126,7 +126,7 @@ Next improvements:
 
 ## Milestone 2: Baseline Credibility
 
-Status: v0.0 candidate complete; v1 work remains.
+Status: v0.0 complete; v1 work remains.
 
 - [x] Run repeated current baselines for at least five model/agent families.
 - [x] Include at least one live HTTP tool-agent family.
@@ -148,14 +148,15 @@ Next improvements:
 
 ## Milestone 3: Private Holdouts and Anti-Gaming
 
-Status: v0.0 candidate evidence exists; v1 hardening remains.
+Status: v0.0 evidence exists; v1 hardening remains.
 
 - [x] Keep private holdouts out of public Git history.
 - [x] Validate private holdout app coverage, vulnerable/control mix, route
       variants, decoys, and public-overlap checks.
 - [x] Add protected private execution with host private-path denial on macOS.
 - [x] Publish only redacted aggregate private evidence.
-- [x] Add one eligible source-backed private no-tools leaderboard-candidate row.
+- [x] Add one source-backed private no-tools leaderboard-candidate row with
+      runner-emitted fingerprint provenance.
 - [x] Document rotating private holdout protocol.
 
 Next improvements:

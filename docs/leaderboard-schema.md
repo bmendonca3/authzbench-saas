@@ -127,7 +127,7 @@ the published threshold, for example 5 percent on the private holdout split. Thi
 prevents a do-nothing agent that returns no findings from ranking above agents
 that actually prove vulnerabilities.
 
-For the current alpha/pre-v0 schema, `leaderboard_eligible: true` requires
+For the current v0.0 schema, `leaderboard_eligible: true` requires
 `split: private-holdout`. Combined public/private rows can be schema-valid
 evidence, but they should not become eligible until the schema adds private-only
 rates and validates eligibility against those private-only metrics.

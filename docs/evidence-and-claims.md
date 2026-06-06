@@ -17,14 +17,15 @@ cards, LinkedIn posts, or external-review notes.
 | target-side request logs | live target interaction can be observed and correlated when configured | target logs alone prove the exploit; replay remains authoritative |
 | historical workspace-separated private summaries | maintainers exercised rendered-context-only evaluation without publishing holdout internals | host-level isolation or current leaderboard eligibility |
 | one historical private-holdout leaderboard row | the stable schema can validate its redacted source and repeated-run provenance | current eligibility, because its fingerprint was reconstructed after execution |
-| strict maintainer release gate with `--allow-incomplete` | the maintainer checkout can report exact pass/fail release-candidate gates while remaining alpha-safe | authorization to tag v0 or claim v1-scale external validation |
+| one host-isolated private no-tools leaderboard-candidate row | the stable schema validates runner-emitted fingerprint provenance and release-candidate eligibility | hosted leaderboard operation, broad private model rankings, or private tool-agent eligibility |
+| strict maintainer release gate | the maintainer checkout can report exact pass/fail v0 gates while keeping private holdouts out of public Git history | hosted leaderboard readiness or v1-scale external validation |
 
 ## Approved Public Framing
 
 Use:
 
-- `alpha/pre-v0 benchmark`
-- `release-candidate evidence`
+- `released v0.0 benchmark artifact`
+- `v0.0 release evidence`
 - `public-split baseline`
 - `protected private-holdout evidence`
 - `deterministic backend replay`
@@ -34,7 +35,7 @@ Avoid:
 
 - `hosted leaderboard-ready`
 - `validated model benchmark`
-- `finished v0`
+- `v1/community-scale benchmark`
 - `production vulnerability discovery benchmark`
 - `private holdouts are publicly reproducible`
 - `public-split scores are final rankings`

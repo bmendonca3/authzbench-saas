@@ -2,9 +2,9 @@
 
 Last updated: 2026-06-06
 
-## Public Alpha Snapshot
+## Public v0.0 Snapshot
 
-AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
+AuthZBench-SaaS currently contains a released v0.0 public split:
 
 - 6 Dockerized synthetic SaaS targets
 - 46 public task manifests
@@ -18,7 +18,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
   `--target-log-dir` is supplied
 - deterministic scorer with backend replay transcripts
-- v0-candidate run-summary metrics for exploit proof, boundary reasoning,
+- v0 evidence run-summary metrics for exploit proof, boundary reasoning,
   secure-control false reports, secure-control execution, and target-request
   coverage, plus invalid-submission tracking
 - result and leaderboard schema documentation
@@ -53,10 +53,9 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 
 ## Verified Locally
 
-The following checks have been run successfully on the current local scaffold.
-The release gate is listed with `--allow-incomplete` for public alpha
-validation; maintainers should run the strict gate again immediately before a
-real tag:
+The following checks have been run successfully for the released v0.0 scaffold.
+Public-only checkouts can use `--allow-incomplete` because private holdouts are
+intentionally absent from public Git history:
 
 ```bash
 python3 -Wd -m unittest discover -s tests
@@ -71,8 +70,9 @@ python3 scripts/validate_public.py --include-scripted-baseline --include-contain
 ```
 
 The baseline credibility gate now has five repeated current model/agent
-families. Strict `python3 scripts/validate_v0_release.py` should be rerun before
-any tag because release evidence and CI references are time-sensitive.
+families. Strict `python3 scripts/validate_v0_release.py` should be rerun in a
+maintainer checkout before future tags because release evidence and CI
+references are time-sensitive.
 
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
 are retained only as historical context. Docker runtime smoke requires a Docker
@@ -126,6 +126,7 @@ as repeatability evidence, not a polished model ranking.
 | Kiro `deepseek-3.2` no-tools stale run 2 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` stale 44-task snapshot | 44 | 26 | 0.7778 | 0.0 | 0.0 | 1.0 |
 
 The current Qwen repeat is useful because it shows variance, not because it is
 a strong model result. Run 2 found one replay-proven vulnerable task but still
@@ -148,9 +149,9 @@ zero fully passed vulnerable tasks, and zero secure-control false reports.
 
 ## Publication Readiness
 
-Ready public and release-candidate infrastructure:
+Ready public v0.0 infrastructure:
 
-This list is not a tagged-release or hosted-leaderboard claim. The baseline
+This list is not a hosted-leaderboard claim. The baseline
 credibility sub-gate now has five repeated current-public model/agent-family
 baselines after the 46-task split change.
 
@@ -167,7 +168,7 @@ baselines after the 46-task split change.
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence
 - repeated Kiro model-family summaries remain useful 44-task snapshots, but they
-  require rerun before any current comparison, real v0 tag, or leaderboard claim
+  require rerun before any current comparison or leaderboard claim
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass even when a future section
   is intentionally open
@@ -180,10 +181,10 @@ baselines after the 46-task split change.
   instead of trusting hand-entered aggregate rows
 - leaderboard-eligible rows require source summaries plus both vulnerable-task
   and secure-control coverage
-- one historical redacted private-holdout row exists under
-  `leaderboard_submissions/`; it is source-backed and schema-valid but
-  non-eligible until fresh protected runs emit their benchmark fingerprint at
-  execution time
+- two redacted private-holdout rows exist under `leaderboard_submissions/`: the
+  older reconstructed historical row remains non-eligible, while the newer
+  host-isolated no-tools row has runner-emitted fingerprint provenance and
+  validates as release-candidate eligible
 - `leaderboard-submission-v1` now binds every row to an eligibility-policy
   version, benchmark fingerprint, comparability key, and explicit source-run
   provenance
@@ -207,15 +208,14 @@ baselines after the 46-task split change.
   deny agent reads of holdout and raw-evidence roots; fresh runs are required
   before this can support eligibility
 - final holdout anti-gaming and final release-readiness review summaries exist
-  and mark all required review-registry sections v0-candidate ready
+  and mark all required review-registry sections v0-ready
 - local-status paths and personal filesystem references have been removed from this document
 
-Still required before a tagged release or hosted public leaderboard:
+Still required before a hosted public leaderboard or v1/community claim:
 
-- remote CI status must stay explicit and passing before any real v0 tag
 - keep `docs/release-evidence.json` tied to exact command, commit, CI, and
   artifact evidence as later release checks are rerun
-- post-push clone check from public `github.com` before tags or releases
+- post-push clone check from public `github.com` before future tags or releases
 - hosted or fully containerized leaderboard execution if third-party submissions
   will be accepted at scale
 - rotating multi-pack private holdouts for v1-scale anti-gaming hardening
