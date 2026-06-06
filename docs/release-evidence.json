@@ -22,7 +22,8 @@
     "latest_remote_ci_run_id": "27044678746",
     "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on commit b3cce0be549fcdd2da21e12bfca6bfde69021174",
     "docker_container_smoke_source": "local validate_public run with --include-container-smoke passed and docker compose project authzbench-public-smoke-83191 was torn down",
-    "protected_private_holdout_execution_source": "Two fresh same-commit no-tools summaries now prove macOS host private-path denial and support one eligible private leaderboard row. A fresh host-isolated live tool-agent run with full target-request correlation is still required before this field can return to true.",
+    "protected_private_holdout_execution_source": "Two same-commit no-tools summaries prove macOS host private-path denial and support one eligible private leaderboard row. One fresh host-isolated live tool-agent summary now reports 24/24 target-request correlation. The field remains false until the source-bearing evidence commit passes final local, privacy, fresh-clone, Docker, and exact-head CI checks.",
+    "protected_private_evidence_validation_command": "python3 scripts/validate_protected_private_evidence.py --summary leaderboard_sources/haiku-private-holdout-fb9e4c7-run1-redacted-source-summary.json --summary leaderboard_sources/haiku-private-holdout-fb9e4c7-run2-redacted-source-summary.json --summary leaderboard_sources/tool-agent-private-holdout-21e92c7-run1-redacted-source-summary.json --min-run-count 2 --require-host-isolation",
     "release_notes_source": [
       "README.md",
       "docs/status.md",
@@ -30,6 +31,6 @@
       "docs/launch-report.md",
       "CHANGELOG.md"
     ],
-    "notes": "Strict v0 readiness is intentionally false. The no-tools host-isolation and eligible-row requirements are satisfied, but fresh host-isolated private tool-agent evidence, exact-head validation and CI, and refreshed commit evidence remain required before any release tag."
+    "notes": "Strict v0 readiness is intentionally false. The no-tools host-isolation, eligible-row, and private tool-agent evidence requirements are substantively satisfied. Final local validation, privacy checks, fresh-clone validation, Docker smoke, exact-head CI, and refreshed commit evidence remain required before any release tag."
   }
 }

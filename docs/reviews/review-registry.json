@@ -84,10 +84,11 @@
         "2026-06-05-private-live-tool-agent-panel-summary.md",
         "2026-06-05-final-holdout-anti-gaming-release-summary.md",
         "2026-06-06-leaderboard-schema-v1-panel-summary.md",
-        "2026-06-06-host-isolated-private-evidence-panel-summary.md"
+        "2026-06-06-host-isolated-private-evidence-panel-summary.md",
+        "2026-06-06-host-isolated-private-tool-agent-panel-summary.md"
       ],
       "v0_ready": true,
-      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, route/decoy variant counts, and private execution have review coverage. Two fresh same-commit no-tools runs now prove macOS host private-path denial and support one eligible runner-fingerprinted private row. Fresh host-isolated tool-agent evidence remains a final-release requirement, not a blocker for this holdout review section."
+      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, route/decoy variant counts, and private execution have review coverage. Two same-commit no-tools runs prove macOS host private-path denial and support one eligible runner-fingerprinted private row. One fresh host-isolated private tool-agent run now adds 24/24 target-request correlation; it is execution-availability evidence, not a repeated or eligible tool-agent leaderboard row."
     },
     {
       "id": "privacy_packaging_final_release_readiness",
@@ -96,9 +97,11 @@
       "summary_paths": [
         "2026-06-05-ci-validation-panel-summary.md",
         "2026-06-05-v0-release-gate-audit-panel-summary.md",
-        "2026-06-05-final-release-readiness-panel-summary.md"
+        "2026-06-05-final-release-readiness-panel-summary.md",
+        "2026-06-06-host-isolated-private-evidence-panel-summary.md",
+        "2026-06-06-host-isolated-private-tool-agent-panel-summary.md"
       ],
-      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, and prior release-readiness review have evidence coverage. Host-isolated no-tools runs and one eligible runner-fingerprinted row now exist. Final readiness remains open until a fresh host-isolated private tool-agent run with full target-request correlation, exact-head validation and CI, and refreshed release evidence pass."
+      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, and prior release-readiness review have evidence coverage. Host-isolated no-tools runs, one eligible runner-fingerprinted row, and one private tool-agent run with 24/24 target correlation now exist. Final readiness remains open until the source-bearing evidence commit passes local validation, privacy checks, fresh-clone validation, Docker smoke, exact-head CI, and refreshed release evidence."
     }
   ]
 }
