@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "AuthZBench-SaaS is alpha/pre-v0. Cite the repository for now; formal v0 citation metadata will be updated when a tagged v0 release is published."
+title: "AuthZBench-SaaS"
+version: "0.0.1-alpha"
+authors:
+  - name: "bmendonca3"
+license: "MIT"
+repository-code: "https://github.com/bmendonca3/authzbench-saas"
+abstract: "An alpha/pre-v0 benchmark for evaluating whether AI agents can prove SaaS authorization failures with backend evidence while avoiding false-positive reports on secure controls."
