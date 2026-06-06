@@ -113,11 +113,12 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def grouped_metric_chart(rows: list[dict[str, Any]]) -> str:
-    width = 1180
-    row_h = 56
+    width = 1380
+    row_h = 62
     height = 138 + len(rows) * row_h
-    left = 260
-    bar_w = 720
+    left = 430
+    metric_gap = 205
+    bar_width = 128
     metrics = [
         ("pass_rate", "Pass", COLORS["teal"]),
         ("exploit_proven_success_rate", "Exploit proof", COLORS["blue"]),
@@ -137,7 +138,7 @@ def grouped_metric_chart(rows: list[dict[str, Any]]) -> str:
             body,
         )
     for i, (_, label, color) in enumerate(metrics):
-        x = left + i * 150
+        x = left + i * metric_gap
         body.append(rect(x, 94, 12, 12, color, rx=2))
         body.append(text(x + 18, 105, label, size=12, color="muted"))
     for idx, row in enumerate(rows):
@@ -149,10 +150,10 @@ def grouped_metric_chart(rows: list[dict[str, Any]]) -> str:
         body.append(text(36, y + 40, f'{row["kind"].replace("_", " ")}; {row["run_count"]} run(s); {status}', size=11, color="muted"))
         for i, (key, _, color) in enumerate(metrics):
             value = float(row[key])
-            x = left + i * 150
+            x = left + i * metric_gap
             fill = COLORS["gray"] if is_stale else color
-            body.append(rect(x, y + 12, 110, 12, "#e6ebf2", rx=3))
-            body.append(rect(x, y + 12, 110 * min(value, 1.0), 12, fill, rx=3))
+            body.append(rect(x, y + 12, bar_width, 12, "#e6ebf2", rx=3))
+            body.append(rect(x, y + 12, bar_width * min(value, 1.0), 12, fill, rx=3))
             body.append(text(x, y + 34, fmt_pct(value), size=11, color="muted"))
     return svg(
         "Public Baseline Metrics",
