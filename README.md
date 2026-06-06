@@ -13,6 +13,19 @@ positive discipline.
 This is not a tagged v0 release or hosted public leaderboard yet. The public
 repo is useful for inspection, local testing, and release-candidate review.
 
+## Why This Exists
+
+AI security agents are getting good at writing plausible vulnerability reports.
+That is not the same thing as proving a real bug.
+
+AuthZBench-SaaS tests a narrower and more practical question: can an agent prove
+that the wrong tenant, role, user, token, or object was allowed through, while
+also staying quiet when the secure control is working correctly?
+
+The benchmark rewards backend evidence, not just confident prose. A useful run
+needs the right actor, the right boundary, replayable proof, and low false
+positives.
+
 ## What Is Included
 
 - 6 synthetic SaaS apps
@@ -70,15 +83,20 @@ python3 scripts/validate_public.py \
   --include-container-smoke
 ```
 
-Audit the real v0 gates:
+Audit the v0 release-candidate gates in a maintainer checkout:
+
+```bash
+python3 scripts/validate_v0_release.py
+```
+
+Public checkouts do not include private holdout manifests. If you are inspecting
+the public repo only, use:
 
 ```bash
 python3 scripts/validate_v0_release.py --allow-incomplete
 ```
 
-On a release-candidate checkout, strict mode should report the current v0 gate
-state. Development checkpoints can use `--allow-incomplete` when a section is
-intentionally still open.
+That reports the gate state without pretending the private pack is public.
 
 ## Running Targets
 
@@ -128,27 +146,17 @@ Result bundles under `results/` are local artifacts and are ignored by Git.
 The baseline registry lives at
 [`baselines/baseline-registry.json`](baselines/baseline-registry.json).
 
-| Baseline | Public tasks | Passed | Exploit-proven rate | False-positive rate |
-| --- | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 44 | 44 | 1.0 | 0.0 |
-| Live HTTP scripted baseline | 44 | 44 | 1.0 | 0.0 |
-| Kiro `claude-opus-4.6` current run 1 | 44 | 27 | 0.6667 | 0.0 |
-| Kiro `claude-opus-4.6` current run 2 | 44 | 27 | 0.6667 | 0.0 |
-| Kiro `claude-sonnet-4.6` current run 1 | 44 | 29 | 0.7778 | 0.0 |
-| Kiro `claude-sonnet-4.6` current run 2 | 44 | 29 | 0.7778 | 0.0 |
-| Kiro `claude-haiku-4.5` current run 1 | 44 | 26 | 0.2222 | 0.0 |
-| Kiro `claude-haiku-4.5` current run 2 | 44 | 26 | 0.2222 | 0.0 |
-| Kiro `deepseek-3.2` current run 1 | 44 | 26 | 0.0 | 0.0 |
-| Kiro `deepseek-3.2` current run 2 | 44 | 26 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` current run 1 | 44 | 26 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` current run 2 | 44 | 25 | 0.0 | 0.0385 |
-| Kiro live HTTP tool-agent `claude-sonnet-4.6` | 44 | 26 | 0.7778 | 0.0 |
+Current public-split snapshot:
 
-The scripted baselines are harness checks, not model results. The model runs are
-public-split evidence only; they are not private-holdout or leaderboard results.
-The Kiro live HTTP tool-agent baseline is also public-split evidence only; it
-adds model-planned probe artifacts and 44/44 target-request correlation without
-making leaderboard claims.
+- scripted harness checks pass all 44 public tasks
+- repeated model baselines cover 5 required model/agent families
+- current model runs pass 25-29 of 44 public tasks
+- the public live HTTP tool-agent baseline has 44/44 target-request correlation
+- one public model run currently shows a non-zero false-positive rate; most do
+  not
+
+These are public-split results only. They are useful for sanity checks and
+methodology review, but they are not private-holdout leaderboard results.
 
 Current registry status:
 
@@ -184,9 +192,12 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 ## v0 Candidate Status
 
-AuthZBench-SaaS should not be called v0, leaderboard-ready, or a validated model
-benchmark until the strict release gate passes and a maintainer explicitly tags
-a release.
+AuthZBench-SaaS is a release candidate for v0, not a tagged v0 release.
+Maintainer strict validation currently passes with the private holdout pack
+present, but no v0 tag or hosted public leaderboard has been published.
+
+Do not describe the repo as leaderboard-ready or as a validated model benchmark
+until a maintainer publishes the v0 release and leaderboard process.
 
 Current release-candidate focus:
 
