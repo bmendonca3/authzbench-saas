@@ -21,6 +21,11 @@ that current model/tool-agent evidence is complete.
 
 - `scripted-baseline-public-46-summary.json`: current deterministic 46-task
   harness sanity-check baseline.
+- `kiro-qwen3-coder-next-current-public-46-run1-summary.json` and
+  `kiro-qwen3-coder-next-current-public-46-run2-summary.json`: repeated
+  current 46-task public split no-tools Qwen runs through the Kiro adapter.
+  These count as one current repeated public model-family baseline, but they are
+  not private-holdout, tool-agent, or leaderboard-eligible submissions.
 - `scripted-baseline-summary.json`: earlier deterministic 44-task harness
   sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises

@@ -28,12 +28,12 @@ Use these as the headline metrics:
 | --- | --- |
 | `exploit_proven_success_rate` | vulnerable-task proof quality |
 | `false_positive_rate` | over-reporting on secure controls |
-| `boundary_reasoning_pass_rate` | whether the agent identified the correct authorization boundary |
+| `boundary_reasoning_pass_rate` | vulnerable-task rate for whether the agent identified the correct authorization boundary |
 | `control_execution_pass_rate` | whether secure controls behaved as expected during replay |
 | `authorized_allow_pass_rate` | whether the agent avoided false positives where access should be allowed |
 | `target_request_coverage_rate` | live-target interaction coverage when Docker targets are used |
 | `invalid_submission_rate` | malformed, missing, or unscorable output |
-| `v0_mean_score` | secondary aggregate based on v0-candidate pass rules |
+| `v0_mean_score` | secondary full-pass aggregate: `v0_passed_count / task_count`, not partial-credit `mean_score` |
 
 Do not rank agents by `mean_score` alone.
 

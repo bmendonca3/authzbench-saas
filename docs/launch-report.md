@@ -141,6 +141,8 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
+| Kiro `qwen3-coder-next` current run 1 | 46 | 27 | 0.0 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 |
 | Heuristic live HTTP prober, stale 44-task snapshot | 44 | 33 | 0.6111 | 0.6667 | 0.0 |
 | Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 |
@@ -157,9 +159,15 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `qwen3-coder-next` stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6`, stale 44-task snapshot | 44 | 26 | 0.7778 | 0.0 | 0.0 |
 
+The current Qwen rows are public-split repeatability evidence, not rankings.
+Run 2 also had one invalid submission on a vulnerable task
+(`invalid_submission_rate: 0.0217`).
+
 Tracked summaries:
 
 - [scripted-baseline-public-46-summary.json](../baselines/scripted-baseline-public-46-summary.json)
+- [kiro-qwen3-coder-next-current-public-46-run1-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run1-summary.json)
+- [kiro-qwen3-coder-next-current-public-46-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run2-summary.json)
 - [live-scripted-baseline-summary.json](../baselines/live-scripted-baseline-summary.json)
 - [heuristic-live-http-prober-public-44-summary.json](../baselines/heuristic-live-http-prober-public-44-summary.json)
 - [kiro-claude-sonnet-4.6-full-summary.json](../baselines/kiro-claude-sonnet-4.6-full-summary.json)
@@ -185,14 +193,11 @@ split by producing per-task probe artifacts and target-side request correlation,
 including secure controls. Panel review classified it as deterministic harness
 evidence, not a v0 tool-agent baseline.
 
-The Kiro snapshots are public-split baselines from earlier splits, not private
-leaderboard results. They should be rerun on the 46-task split before any
-release tag or current ranking claim.
-
-The Opus, Sonnet, Haiku, DeepSeek, and Qwen runs are repeated 44-task public
-model baseline families. They are useful historical diagnostics, but they are
-public-only no-tools runs, stale against the current split, and not leaderboard
-eligible.
+The Kiro snapshots are public-split baselines, not private leaderboard results.
+Qwen now has two current 46-task no-tools runs, while Opus, Sonnet, Haiku, and
+DeepSeek remain repeated 44-task public model baseline families. The stale
+families are useful historical diagnostics, but they are public-only no-tools
+runs, stale against the current split, and not leaderboard eligible.
 
 The Kiro live HTTP tool-agent baseline is a stale 44-task public split snapshot.
 It uses `claude-sonnet-4.6` to plan per-task HTTP probes, executes those probes
@@ -215,8 +220,9 @@ Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
 consistency checks and reports `v0_baseline_ready: false` because current
-model/tool-agent baselines need reruns after the task-wave change. The full
-strict v0 release gate remains intentionally blocked.
+baseline coverage is still incomplete after the task-wave change: four more
+current repeated model/agent families and one current tool-agent baseline are
+still required. The full strict v0 release gate remains intentionally blocked.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`
@@ -238,8 +244,10 @@ The repository is an alpha public scaffold, not a finished public leaderboard.
 It is already useful as a local integration and regression suite for agent
 builders who want to test authorization-bug proof workflows. It has enough
 structure for external reviewers to inspect the methodology and integrate a
-custom agent command. It now has initial legacy 15-task public-alpha model
-snapshots, but does not yet have private holdout scoring.
+custom agent command. It has protected private-holdout evidence summarized in
+redacted public-safe form and one release-candidate leaderboard pipeline row,
+but it does not publish raw private manifests and does not yet provide a hosted
+public leaderboard.
 
 ## Release Criteria For The Real v0
 

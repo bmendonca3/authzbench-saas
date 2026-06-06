@@ -44,7 +44,7 @@ public internet.
 
 | Status | What exists | How to verify |
 | --- | --- | --- |
-| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, stale 44-task model/tool baseline summaries, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
+| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, one repeated current model-family baseline, stale 44-task model/tool snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
 | Maintainer-only | private holdout pack, protected private-run summaries, strict release-candidate gate | `python3 scripts/validate_v0_release.py` in a maintainer checkout |
 | Not yet | tagged v0 release, hosted public leaderboard, rotating multi-pack holdouts | [`ROADMAP.md`](ROADMAP.md) |
 
@@ -232,24 +232,28 @@ The baseline registry lives at
 Current public-split snapshot:
 
 - scripted harness checks pass all 46 public tasks
+- `qwen3-coder-next` has two current no-tools Kiro runs on the 46-task split
 - repeated model/tool-agent baselines from the previous 44-task split are kept
   as stale snapshots
+- the current Qwen runs pass 27 of 46 tasks, with one exploit-proven vulnerable
+  replay across two repeats, zero fully passed vulnerable tasks, and zero false
+  positives
 - stale model runs pass 25-29 of 44 public tasks
 - the stale public live HTTP tool-agent baseline has 44/44 target-request
   correlation
-- one public model run currently shows a non-zero false-positive rate; most do
-  not
+- a small number of historical public model runs show non-zero false-positive
+  rates; the current Qwen 46-task repeats do not
 
 These are public-split results only. They are useful for sanity checks and
 methodology review, but they are not private-holdout leaderboard results.
 
 Current registry status:
 
-- 0 of 5 required current repeated model/agent families after the task-wave
+- 1 of 5 required current repeated model/agent families after the task-wave
   change
 - no current public live HTTP tool-agent baseline after the task-wave change
-- `v0_baseline_ready: false` until model/tool-agent baselines are rerun on the
-  46-task split
+- `v0_baseline_ready: false` until four more model/agent families and one
+  current tool-agent baseline are rerun on the 46-task split
 
 That status covers only the baseline registry. Full v0-candidate readiness also
 depends on private holdouts, leaderboard-submission evidence, release evidence,
@@ -299,9 +303,10 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 ## v0 Candidate Status
 
-AuthZBench-SaaS is a release candidate for v0, not a tagged v0 release.
-Maintainer strict validation currently passes with the private holdout pack
-present, but no v0 tag or hosted public leaderboard has been published.
+AuthZBench-SaaS is still alpha/pre-v0, not a tagged v0 release. Maintainer-only
+private-holdout evidence exists, but strict v0 validation is currently blocked
+until four more current model/agent families and one current public tool-agent
+baseline are rerun on the 46-task split.
 
 Do not describe the repo as leaderboard-ready or as a validated model benchmark
 until a maintainer publishes the v0 release and leaderboard process.

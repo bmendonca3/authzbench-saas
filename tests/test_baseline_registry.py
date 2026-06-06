@@ -11,8 +11,10 @@ from scripts.validate_baseline_registry import ROOT, validate_registry
 
 
 REGISTRY = ROOT / "baselines" / "baseline-registry.json"
+LIVE_SCRIPTED_ID = "live-scripted-public-44"
 LEGACY_CLAUDE_ID = "kiro-claude-sonnet-4-6-legacy-15"
-CURRENT_QWEN_ID = "kiro-qwen3-coder-next-current-public-44"
+STALE_QWEN_ID = "kiro-qwen3-coder-next-current-public-44"
+CURRENT_QWEN_ID = "kiro-qwen3-coder-next-current-public-46"
 CURRENT_TOOL_AGENT_ID = "kiro-live-tool-agent-sonnet-current-public-44"
 
 
@@ -49,13 +51,13 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 11, result)
+        self.assertEqual(result["baseline_count"], 12, result)
         self.assertEqual(result["public_split"]["task_count"], 46, result)
-        self.assertEqual(result["current_public_model_family_count"], 0, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertEqual(result["current_public_model_family_count"], 1, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
         self.assertFalse(result["v0_baseline_ready"], result)
-        self.assertIn("current public model families: 0 of 5", result["unmet_v0_requirements"])
-        self.assertIn("repeated model baselines: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("current public model families: 1 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 1 of 5", result["unmet_v0_requirements"])
         self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
         self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
 
@@ -63,7 +65,7 @@ class BaselineRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            registry["baselines"][1]["release_suitability"] = "current_public_split"
+            _baseline_by_id(registry, LIVE_SCRIPTED_ID)["release_suitability"] = "current_public_split"
             registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             result = validate_registry(registry_path)
@@ -230,7 +232,7 @@ class BaselineRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            model_entry = _baseline_by_id(registry, CURRENT_QWEN_ID)
+            model_entry = _baseline_by_id(registry, STALE_QWEN_ID)
             model_entry["requires_rerun_before_v0"] = False
             registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 

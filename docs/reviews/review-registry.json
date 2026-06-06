@@ -57,9 +57,10 @@
         "2026-06-05-opus-current-baseline-panel-summary.md",
         "2026-06-05-kiro-live-tool-agent-panel-summary.md",
         "2026-06-05-private-leaderboard-submission-panel-summary.md",
-        "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md"
+        "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md",
+        "2026-06-06-qwen-current-public-46-panel-summary.md"
       ],
-      "notes": "Registry and leaderboard validators have review coverage. The previous 44-task public model/tool-agent baselines are now correctly labeled stale after the 46-task split change, so current model/tool-agent reruns are required before this evidence can support a v0 claim."
+      "notes": "Registry and leaderboard validators have review coverage. One repeated current 46-task public no-tools model family now exists; four more current repeated model/agent families and one current public tool-agent baseline are still required before this evidence can support a v0 claim."
     },
     {
       "id": "holdout_contamination_anti_gaming",

@@ -11,11 +11,12 @@ cards, LinkedIn posts, or external-review notes.
 | 46 public tasks across 6 synthetic SaaS apps | the public scaffold covers multiple SaaS authorization surfaces, including the first project-management multi-step workflow wave | public-split scores are private leaderboard scores |
 | deterministic scorer replay | submitted evidence can be checked against backend behavior | the agent necessarily interacted with a live target unless request-log correlation is present |
 | secure controls and authorized-allow controls | the benchmark can penalize false positives and over-reporting | all real SaaS false-positive patterns are covered |
+| one repeated current 46-task Qwen public baseline | one no-tools model family has current public-split replay evidence | broad model rankings, tool-agent behavior, private-holdout performance, or leaderboard eligibility |
 | stale 44-task public model/tool-agent baselines | the harness has historical comparison artifacts and visible failure modes | current 46-task model rankings or leaderboard eligibility |
 | target-side request logs | live target interaction can be observed and correlated when configured | target logs alone prove the exploit; replay remains authoritative |
 | protected private-holdout summaries | maintainers have private release-candidate evidence without publishing holdout internals | public users can reproduce private scores from the repo |
 | one eligible private-holdout leaderboard row | the submission validator can validate an artifact-backed private row | hosted public leaderboard readiness or broad model performance |
-| strict maintainer release gate | current maintainer checkout satisfies the configured release-candidate gates | authorization to tag v0 or claim v1-scale external validation |
+| strict maintainer release gate with `--allow-incomplete` | the maintainer checkout can report exact pass/fail release-candidate gates while remaining alpha-safe | authorization to tag v0 or claim v1-scale external validation |
 
 ## Approved Public Framing
 

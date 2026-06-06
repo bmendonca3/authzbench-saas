@@ -251,9 +251,10 @@ def evidence_status_chart(registry: dict[str, Any], private_summaries: list[dict
         if entry["kind"] == "model_baseline" and entry["release_suitability"] == "current_public_split"
     }
     private_tool = [item for item in private_summaries if item.get("harness_type") == "tool-agent"]
+    family_label = "family" if len(current_families) == 1 else "families"
     rows = [
         ("Public split validated", public["task_count"] >= 40, f'{public["task_count"]} public tasks across 6 apps'),
-        ("Repeated model families", len(current_families) >= 5, f"{len(current_families)} current public model families"),
+        ("Repeated model families", len(current_families) >= 5, f"{len(current_families)} current public model {family_label}"),
         ("Public tool-agent baseline", bool(tool_entries), "Tracked public tool-agent summary with target correlation"),
         ("Protected private runs", len(private_summaries) >= 2, f"{len(private_summaries)} redacted protected-private summaries"),
         ("Private tool-agent coverage", bool(private_tool) and private_tool[0].get("target_request_coverage_rate") == 1.0, "Redacted private tool-agent summary reports 100% target coverage"),
