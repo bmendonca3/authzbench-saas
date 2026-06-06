@@ -145,6 +145,7 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `qwen3-coder-next` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
 | Kiro `claude-haiku-4.5` current run 1 | 46 | 26 | 0.2632 | 0.0 | 0.037 |
 | Kiro `claude-haiku-4.5` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` current run | 46 | 27 | 0.7368 | 0.0 | 0.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 |
 | Heuristic live HTTP prober, stale 44-task snapshot | 44 | 33 | 0.6111 | 0.6667 | 0.0 |
 | Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 |
@@ -173,6 +174,7 @@ Tracked summaries:
 - [kiro-qwen3-coder-next-current-public-46-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run2-summary.json)
 - [kiro-claude-haiku-4.5-current-public-46-run1-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-46-run1-summary.json)
 - [kiro-claude-haiku-4.5-current-public-46-run2-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-46-run2-summary.json)
+- [kiro-live-tool-agent-sonnet-current-public-46-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-46-summary.json)
 - [live-scripted-baseline-summary.json](../baselines/live-scripted-baseline-summary.json)
 - [heuristic-live-http-prober-public-44-summary.json](../baselines/heuristic-live-http-prober-public-44-summary.json)
 - [kiro-claude-sonnet-4.6-full-summary.json](../baselines/kiro-claude-sonnet-4.6-full-summary.json)
@@ -204,11 +206,14 @@ DeepSeek remain repeated 44-task public model baseline families. The stale
 families are useful historical diagnostics, but they are public-only no-tools
 runs, stale against the current split, and not leaderboard eligible.
 
-The Kiro live HTTP tool-agent baseline is a stale 44-task public split snapshot.
-It uses `claude-sonnet-4.6` to plan per-task HTTP probes, executes those probes
-against live Docker targets, and produced 44/44 model-tool plan artifacts,
-44/44 tool-probe artifacts, and 44/44 target-request correlation. It is useful
-methodology evidence only until rerun on the 46-task split.
+The current Kiro live HTTP tool-agent baseline uses `claude-sonnet-4.6` to plan
+per-task HTTP probes against live Docker targets on the 46-task public split. It
+produced 46/46 model-tool plan artifacts, 46/46 tool-probe artifacts, and 46/46
+target-request correlation. It passed 27 of 46 tasks, replay-proved 14 of 19
+vulnerable tasks, had zero control false reports, and had boundary reasoning
+pass rate `0.0`. It is useful current public tool-agent evidence, but it is
+still one public-split run, not repeated private-holdout or hosted leaderboard
+evidence.
 
 The current Haiku runs proved 1-5 of 19 vulnerable replays, but no vulnerable
 task fully passed because boundary reasoning stayed at `0.0`; run 1 also had
@@ -229,8 +234,8 @@ Baseline credibility is now tracked by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
 consistency checks and reports `v0_baseline_ready: false` because current
 baseline coverage is still incomplete after the task-wave change: three more
-current repeated model/agent families and one current tool-agent baseline are
-still required. The full strict v0 release gate remains intentionally blocked.
+current repeated model/agent families are still required. The full strict v0
+release gate remains intentionally blocked.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

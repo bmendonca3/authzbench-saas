@@ -37,9 +37,9 @@ It also labels every summary as one of:
 The baseline sub-gate currently reports `v0_baseline_ready: false`. That is
 intentional after the public split moved from 44 to 46 tasks for the first
 project-management multi-step workflow wave. Two repeated current no-tools
-model-family baselines now exist, but three more current repeated families and
-a current tool-agent baseline are still required before the baseline gate is
-credible enough for v0.
+model-family baselines and one current live HTTP tool-agent baseline now exist,
+but three more current repeated families are still required before the baseline
+gate is credible enough for v0.
 
 The v0 baseline bar is:
 
@@ -90,12 +90,21 @@ For these summaries, `boundary_reasoning_pass_rate` is evaluated over
 vulnerable tasks. Controls can still have task-level boundary checks, but they
 do not turn Qwen's 0.0 vulnerable-boundary rate into a broader reasoning claim.
 
+The current `claude-sonnet-4.6` live HTTP tool-agent baseline has one 46-task
+public run. It is the first current tool-agent row after the task-wave change:
+all 46 tasks have target-request correlation, one `model-tool-plan.json`, and
+one `tool-probes.json`; the run passed 27 of 46 tasks, proved 14 of 19
+vulnerable replays, had zero control false reports, and had no planner failures
+or parse errors. It fully passed zero vulnerable tasks because vulnerable
+boundary reasoning remained `0.0`. It is still public-split evidence only, not
+a private-holdout leaderboard result.
+
 The older live scripted, heuristic live HTTP, no-tools Kiro model, and Kiro live
 tool-agent summaries were run on the previous 44-task public split. They are
 retained as stale public snapshots because they are still useful for
 methodology review, but they no longer count toward current public model-family
-coverage beyond the new Qwen and Haiku reruns, repeated-baseline coverage
-beyond those reruns, or the current public tool-agent gate.
+coverage beyond the new Qwen and Haiku reruns or repeated-baseline coverage
+beyond those reruns.
 
 The stale 44-task snapshots still show useful signals: zero or low false
 positive rates on controls, uneven exploit-proof success, and weak boundary
@@ -103,6 +112,5 @@ reasoning for several model families. They should be read as historical
 diagnostics, not current rankings.
 
 The next baseline milestone is to rerun three more model/agent families twice on
-the 46-task split and add one live tool-agent baseline with per-task artifacts
-and target-request coverage. Only after those reruns should the registry return
-to `v0_baseline_ready: true`.
+the 46-task split. Only after those reruns should the registry return to
+`v0_baseline_ready: true`.

@@ -33,6 +33,12 @@ that current model/tool-agent evidence is complete.
   are not private-holdout, tool-agent, or leaderboard-eligible submissions.
   The paired runs span adjacent chart-only commits; task, app, scorer, runner,
   and harness behavior did not change between the paired SHAs.
+- `kiro-live-tool-agent-sonnet-current-public-46-summary.json`: current
+  46-task public split live HTTP tool-agent baseline using `claude-sonnet-4.6`
+  through the Kiro adapter. It writes one model-tool plan artifact and one
+  tool-probe artifact per task, correlates target-side requests for all 46
+  tasks, and is public-split evidence only. It is not private-holdout,
+  repeated, or leaderboard-eligible evidence.
 - `scripted-baseline-summary.json`: earlier deterministic 44-task harness
   sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises

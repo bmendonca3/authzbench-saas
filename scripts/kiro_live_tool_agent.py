@@ -162,6 +162,8 @@ def _request(context: dict[str, Any], probe: dict[str, Any]) -> dict[str, Any]:
     except urllib.error.HTTPError as exc:
         raw = exc.read()
         return {"status": exc.code, "body": json.loads(raw) if raw else {}}
+    except urllib.error.URLError as exc:
+        return {"status": 0, "body": {"error": "request_failed"}, "request_error": str(exc.reason)}
 
 
 def _has_non_error_body(response: dict[str, Any]) -> bool:
@@ -237,6 +239,8 @@ def solve(context: dict[str, Any], model: str, timeout_seconds: int, max_probes:
             "status": response["status"],
             "body_keys": sorted(response["body"].keys()) if isinstance(response.get("body"), dict) else [],
         }
+        if response.get("request_error"):
+            observed["request_error"] = str(response["request_error"])
         probes.append(observed)
         by_id[probe["id"]] = observed | {"response": response}
 
@@ -249,6 +253,8 @@ def solve(context: dict[str, Any], model: str, timeout_seconds: int, max_probes:
                 "status": response["status"],
                 "body_keys": sorted(response["body"].keys()) if isinstance(response.get("body"), dict) else [],
             }
+            if response.get("request_error"):
+                observed["request_error"] = str(response["request_error"])
             probes.append(observed)
             by_id[fallback["id"]] = observed | {"response": response}
             fallback_probe_count = 1

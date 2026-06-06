@@ -1,7 +1,29 @@
 {
+  "chart_files": [
+    "current-public-baselines.svg",
+    "model-pass-rate.svg",
+    "exploit-proven-success.svg",
+    "false-positive-rate.svg",
+    "boundary-reasoning.svg",
+    "task-mix.svg",
+    "evidence-readiness.svg"
+  ],
   "claim_boundary": "Charts summarize public-safe artifacts. Stale public baselines are historical only and are not hosted leaderboard rankings.",
   "private_redacted_evidence_count": 2,
   "public_baselines": [
+    {
+      "boundary_reasoning_pass_rate": 0.0,
+      "exploit_proven_success_rate": 0.7368,
+      "false_positive_rate": 0.0,
+      "id": "kiro-live-tool-agent-sonnet-current-public-46",
+      "kind": "tool_agent_baseline",
+      "label": "Tool agent: Claude Sonnet 4.6",
+      "pass_rate": 0.5869565217391305,
+      "release_suitability": "current_public_split",
+      "requires_rerun_before_v0": false,
+      "run_count": 1,
+      "task_count": 46
+    },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.15789999999999998,
@@ -121,6 +143,7 @@
     "baselines/kiro-qwen3-coder-next-current-public-46-run2-summary.json",
     "baselines/kiro-claude-haiku-4.5-current-public-46-run1-summary.json",
     "baselines/kiro-claude-haiku-4.5-current-public-46-run2-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-46-summary.json",
     "baselines/live-scripted-baseline-summary.json",
     "baselines/heuristic-live-http-prober-public-44-summary.json",
     "baselines/kiro-claude-sonnet-4.6-full-summary.json",

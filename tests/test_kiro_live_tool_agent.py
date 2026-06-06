@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tempfile
+import urllib.error
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -75,6 +76,39 @@ class KiroLiveToolAgentTests(unittest.TestCase):
 
         self.assertEqual(submission, {"findings": []})
         self.assertEqual(records["artifact"]["submitted_finding_count"], 0)
+
+    def test_url_error_records_failed_probe_without_crashing(self) -> None:
+        task = load_json(ROOT / "tasks" / "api_tokens" / "tok_cross_tenant_secret_read.json")
+        context = build_context(task)
+        plan = {
+            "probes": [
+                {
+                    "id": "p1",
+                    "actor": "meridian_read_token",
+                    "method": "GET",
+                    "path": "/api/secrets/{HELIO_SECRET_ID}",
+                    "body": None,
+                }
+            ],
+            "finding": {"claim": "token_cross_tenant_secret_read", "evidence_probe_id": "p1"},
+        }
+
+        with patch.object(
+            kiro_live_tool_agent,
+            "run_kiro_plan",
+            return_value=(plan, {"returncode": 0}),
+        ), patch.object(
+            kiro_live_tool_agent.urllib.request,
+            "urlopen",
+            side_effect=urllib.error.URLError(ConnectionRefusedError(61, "Connection refused")),
+        ):
+            submission, records = kiro_live_tool_agent.solve(context, "claude-sonnet-4.6", 1, 4)
+
+        self.assertEqual(submission, {"findings": []})
+        self.assertEqual(records["artifact"]["executed_probe_count"], 1)
+        self.assertEqual(records["artifact"]["submitted_finding_count"], 0)
+        self.assertEqual(records["artifact"]["probes"][0]["status"], 0)
+        self.assertIn("Connection refused", records["artifact"]["probes"][0]["request_error"])
 
     def test_parse_failure_runs_safe_fallback_probe_without_finding(self) -> None:
         task = load_json(ROOT / "tasks" / "project_mgmt" / "pm_same_tenant_read_control.json")

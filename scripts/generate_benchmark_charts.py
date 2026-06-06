@@ -164,6 +164,47 @@ def grouped_metric_chart(rows: list[dict[str, Any]]) -> str:
     )
 
 
+def focused_metric_chart(
+    rows: list[dict[str, Any]],
+    *,
+    metric_key: str,
+    title: str,
+    subtitle: str,
+    explanation: str,
+    color_key: str,
+    lower_is_better: bool = False,
+) -> str:
+    width = 980
+    row_h = 54
+    height = 164 + max(len(rows), 1) * row_h
+    label_x = 42
+    bar_x = 430
+    bar_width = 260
+    body: list[str] = [
+        text(label_x, 104, explanation, size=12, color="muted"),
+        text(bar_x, 130, "0%", size=11, color="muted"),
+        text(bar_x + bar_width - 26, 130, "100%", size=11, color="muted"),
+    ]
+    if lower_is_better:
+        body.append(text(bar_x + bar_width + 86, 130, "lower is better", size=11, color="muted"))
+    if not rows:
+        body.append(text(label_x, 156, "No current public baseline rows are tracked yet.", size=14, color="text", weight="600"))
+        return svg(title, subtitle, width, height + 50, body)
+    for idx, row in enumerate(rows):
+        y = 152 + idx * row_h
+        value = float(row[metric_key])
+        is_stale = row["release_suitability"] == "current_public_stale"
+        label = row["label"] if not is_stale else f'{row["label"]} (stale)'
+        status = "current 46-task split" if not is_stale else f'stale {row["task_count"]}-task split'
+        fill = COLORS["gray"] if is_stale else COLORS[color_key]
+        body.append(text(label_x, y + 4, label, size=13, color="gray" if is_stale else "text", weight="600"))
+        body.append(text(label_x, y + 22, status, size=11, color="muted"))
+        body.append(rect(bar_x, y - 10, bar_width, 14, "#e6ebf2", rx=3))
+        body.append(rect(bar_x, y - 10, bar_width * min(value, 1.0), 14, fill, rx=3))
+        body.append(text(bar_x + bar_width + 18, y + 2, fmt_pct(value), size=13, color="text", weight="700"))
+    return svg(title, subtitle, width, height, body)
+
+
 def task_mix_chart(public_split: dict[str, Any], private_summaries: list[dict[str, Any]]) -> str:
     width = 920
     height = 360
@@ -247,13 +288,14 @@ def evidence_status_chart(registry: dict[str, Any], private_summaries: list[dict
     public = registry["public_split"]
     tool_entries = [entry for entry in registry["baselines"] if entry["kind"] == "tool_agent_baseline" and entry["release_suitability"] == "current_public_split"]
     stale_tool_entries = [entry for entry in registry["baselines"] if entry["kind"] == "tool_agent_baseline" and entry["release_suitability"] == "current_public_stale"]
-    current_families = {
+    repeated_families = {
         entry.get("model_family")
         for entry in registry["baselines"]
         if entry["kind"] == "model_baseline" and entry["release_suitability"] == "current_public_split"
+        and int(entry.get("run_count", 0)) >= int(registry.get("v0_requirements", {}).get("min_runs_per_serious_baseline", 2))
     }
     private_tool = [item for item in private_summaries if item.get("harness_type") == "tool-agent"]
-    family_label = "family" if len(current_families) == 1 else "families"
+    family_label = "family" if len(repeated_families) == 1 else "families"
     tool_detail = (
         "Current public tool-agent summary with target correlation"
         if tool_entries
@@ -262,7 +304,7 @@ def evidence_status_chart(registry: dict[str, Any], private_summaries: list[dict
     )
     rows = [
         ("Public split validated", public["task_count"] >= 40, f'{public["task_count"]} public tasks across 6 apps'),
-        ("Repeated model families", len(current_families) >= 5, f"{len(current_families)} current public model {family_label}"),
+        ("Repeated model families", len(repeated_families) >= 5, f"{len(repeated_families)} repeated current model {family_label}"),
         ("Public tool-agent baseline", bool(tool_entries), tool_detail),
         ("Protected private runs", len(private_summaries) >= 2, f"{len(private_summaries)} redacted protected-private summaries"),
         ("Private tool-agent coverage", bool(private_tool) and private_tool[0].get("target_request_coverage_rate") == 1.0, "Redacted private tool-agent summary reports 100% target coverage"),
@@ -310,12 +352,66 @@ def main() -> int:
             *baseline_sources,
             *[str(path.relative_to(ROOT)) for path in sorted(ROOT.glob("docs/protected-private*-2026-06-05.redacted.json"))],
         ],
+        "chart_files": [
+            "current-public-baselines.svg",
+            "model-pass-rate.svg",
+            "exploit-proven-success.svg",
+            "false-positive-rate.svg",
+            "boundary-reasoning.svg",
+            "task-mix.svg",
+            "evidence-readiness.svg",
+        ],
         "public_split": registry["public_split"],
         "public_baselines": rows,
         "private_redacted_evidence_count": len(private_summaries),
         "claim_boundary": "Charts summarize public-safe artifacts. Stale public baselines are historical only and are not hosted leaderboard rankings.",
     }
     write(ASSET_DIR / "current-public-baselines.svg", grouped_metric_chart(rows))
+    write(
+        ASSET_DIR / "model-pass-rate.svg",
+        focused_metric_chart(
+            rows,
+            metric_key="pass_rate",
+            title="Model Pass Rate",
+            subtitle="Public-split pass rate from tracked baseline summaries; stale rows require rerun.",
+            explanation="Overall pass rate mixes vulnerable tasks and secure controls, so it is not a leaderboard ranking by itself.",
+            color_key="teal",
+        ),
+    )
+    write(
+        ASSET_DIR / "exploit-proven-success.svg",
+        focused_metric_chart(
+            rows,
+            metric_key="exploit_proven_success_rate",
+            title="Exploit-Proven Success",
+            subtitle="How often vulnerable tasks had replayable exploit evidence in tracked public runs.",
+            explanation="This measures proven vulnerable-task success, separate from merely avoiding false positives.",
+            color_key="blue",
+        ),
+    )
+    write(
+        ASSET_DIR / "false-positive-rate.svg",
+        focused_metric_chart(
+            rows,
+            metric_key="false_positive_rate",
+            title="False-Positive Rate",
+            subtitle="How often secure-control tasks were incorrectly reported as vulnerable.",
+            explanation="Lower is better. A useful security agent must avoid inventing bugs when controls are working.",
+            color_key="red",
+            lower_is_better=True,
+        ),
+    )
+    write(
+        ASSET_DIR / "boundary-reasoning.svg",
+        focused_metric_chart(
+            rows,
+            metric_key="boundary_reasoning_pass_rate",
+            title="Boundary Reasoning",
+            subtitle="How often reports correctly identified the tenant, role, token, or object boundary.",
+            explanation="This separates real authorization reasoning from generic vulnerability language.",
+            color_key="orange",
+        ),
+    )
     write(ASSET_DIR / "task-mix.svg", task_mix_chart(registry["public_split"], private_summaries))
     write(ASSET_DIR / "evidence-readiness.svg", evidence_status_chart(registry, private_summaries))
     write(ASSET_DIR / "chart-data.json", json.dumps(chart_data, indent=2, sort_keys=True) + "\n")
@@ -336,6 +432,16 @@ def main() -> int:
                 "These charts summarize tracked public-split baselines and redacted",
                 "private-evidence summaries. Stale public baselines need rerun before",
                 "current comparison, and these charts are not hosted leaderboard rankings.",
+                "",
+                "Included charts:",
+                "",
+                "- `current-public-baselines.svg`: compact multi-metric overview",
+                "- `model-pass-rate.svg`: model pass rate",
+                "- `exploit-proven-success.svg`: vulnerable-task exploit proof",
+                "- `false-positive-rate.svg`: secure-control false-positive rate",
+                "- `boundary-reasoning.svg`: authorization-boundary reasoning",
+                "- `task-mix.svg`: public and redacted private task mix",
+                "- `evidence-readiness.svg`: current evidence gaps",
                 "",
             ]
         ),

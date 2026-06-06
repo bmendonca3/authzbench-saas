@@ -44,7 +44,7 @@ public internet.
 
 | Status | What exists | How to verify |
 | --- | --- | --- |
-| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, two repeated current model-family baselines, stale 44-task model/tool snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
+| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, two repeated current model-family baselines, one current live HTTP tool-agent baseline, stale 44-task snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
 | Maintainer-only | private holdout pack, protected private-run summaries, strict release-candidate gate | `python3 scripts/validate_v0_release.py` in a maintainer checkout |
 | Not yet | tagged v0 release, hosted public leaderboard, rotating multi-pack holdouts | [`ROADMAP.md`](ROADMAP.md) |
 
@@ -59,6 +59,10 @@ tracked public-split baselines, task mix, and evidence readiness from existing
 JSON artifacts. They are not hosted leaderboard rankings.
 
 - [Public baseline metrics](docs/assets/benchmark-charts/current-public-baselines.svg)
+- [Model pass rate](docs/assets/benchmark-charts/model-pass-rate.svg)
+- [Exploit-proven success](docs/assets/benchmark-charts/exploit-proven-success.svg)
+- [False-positive rate](docs/assets/benchmark-charts/false-positive-rate.svg)
+- [Boundary reasoning](docs/assets/benchmark-charts/boundary-reasoning.svg)
 - [Task mix](docs/assets/benchmark-charts/task-mix.svg)
 - [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
 
@@ -234,6 +238,9 @@ Current public-split snapshot:
 - scripted harness checks pass all 46 public tasks
 - `qwen3-coder-next` has two current no-tools Kiro runs on the 46-task split
 - `claude-haiku-4.5` has two current no-tools Kiro runs on the 46-task split
+- `claude-sonnet-4.6` has one current live HTTP tool-agent run on the 46-task
+  split, with plan/probe artifacts and correlated target requests for every
+  task
 - repeated model/tool-agent baselines from the previous 44-task split are kept
   as stale snapshots
 - the current Qwen runs pass 27 of 46 tasks, with one exploit-proven vulnerable
@@ -242,9 +249,12 @@ Current public-split snapshot:
 - the current Haiku runs pass 26-27 of 46 tasks, with 1-5 exploit-proven
   vulnerable replays per run, zero fully passed vulnerable tasks, and 0-1 false
   positives; one paired run used the immediately preceding chart-only commit
+- the current live HTTP tool-agent run passes 27 of 46 tasks, proves 14 of 19
+  vulnerable replays, produces zero control false reports, and correlates target
+  requests for all 46 tasks; it fully passes zero vulnerable tasks because
+  vulnerable boundary reasoning remains `0.0`, and it is a single public-split
+  run, not a leaderboard row
 - stale model runs pass 25-29 of 44 public tasks
-- the stale public live HTTP tool-agent baseline has 44/44 target-request
-  correlation
 - a small number of historical public model runs show non-zero false-positive
   rates; the current Qwen 46-task repeats do not
 
@@ -255,9 +265,9 @@ Current registry status:
 
 - 2 of 5 required current repeated model/agent families after the task-wave
   change
-- no current public live HTTP tool-agent baseline after the task-wave change
-- `v0_baseline_ready: false` until three more model/agent families and one
-  current tool-agent baseline are rerun on the 46-task split
+- current public live HTTP tool-agent baseline present, but not repeated
+- `v0_baseline_ready: false` until three more model/agent families are rerun on
+  the 46-task split with repeated evidence
 
 That status covers only the baseline registry. Full v0-candidate readiness also
 depends on private holdouts, leaderboard-submission evidence, release evidence,
@@ -309,8 +319,8 @@ See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
 
 AuthZBench-SaaS is still alpha/pre-v0, not a tagged v0 release. Maintainer-only
 private-holdout evidence exists, but strict v0 validation is currently blocked
-until three more current model/agent families and one current public tool-agent
-baseline are rerun on the 46-task split.
+until three more current model/agent families are rerun on the 46-task split
+with repeated evidence.
 
 Do not describe the repo as leaderboard-ready or as a validated model benchmark
 until a maintainer publishes the v0 release and leaderboard process.

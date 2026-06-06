@@ -9,12 +9,11 @@ Scope: generated public-safe benchmark charts under
 
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
+- ChatGPT subagent reviewer
 
 Claude Antigravity labels were verified by logs but did not return substantive
 review text for this checkpoint. Kiro was intentionally skipped because the
-previous narrow checkpoint had a Kiro timeout. A ChatGPT subagent reviewer was
-started but did not return within the useful review window, so it is not
-counted.
+previous narrow checkpoint had a Kiro timeout.
 
 Raw prompts and logs are kept under ignored `docs/reviews/panel-logs/` and are
 not part of the public release artifact.
@@ -47,6 +46,13 @@ lower-is-better.
 
 Disposition: accepted. Public validation now regenerates benchmark charts and
 fails if tracked chart assets differ from the generated output.
+
+4. Baseline registry tests and status docs were stale after the new current
+46-task tool-agent row.
+
+Disposition: accepted. The registry test expectations and public docs were
+updated to show the current tool-agent baseline while preserving
+`v0_baseline_ready: false`.
 
 ## Claim Boundary
 
