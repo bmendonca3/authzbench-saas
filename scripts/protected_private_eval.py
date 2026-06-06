@@ -59,14 +59,22 @@ def _git_ls_files(pathspec: str) -> list[str]:
     return [line for line in completed.stdout.splitlines() if line.strip()]
 
 
-def _optional_int(data: dict[str, Any] | None, *keys: str) -> int:
+def _load_optional_artifact(path: Path) -> dict[str, Any] | None:
+    try:
+        artifact = load_json(path)
+    except Exception:  # noqa: BLE001 - optional telemetry artifacts should not fail protected scoring.
+        return None
+    return artifact if isinstance(artifact, dict) else None
+
+
+def _optional_int(data: dict[str, Any] | None, *keys: str) -> int | None:
     if not isinstance(data, dict):
-        return 0
+        return None
     for key in keys:
         value = data.get(key)
         if isinstance(value, int):
             return value
-    return 0
+    return None
 
 
 def _planner_returncode(model_tool_plan: dict[str, Any] | None) -> int | None:
@@ -208,7 +216,9 @@ def _run_agent_protected(
         for artifact_name in ("submission.json", "model-output.json", "model-tool-plan.json", "tool-probes.json"):
             artifact_path = temp_root / artifact_name
             if artifact_path.exists():
-                copied_artifacts[artifact_name] = load_json(artifact_path)
+                artifact = _load_optional_artifact(artifact_path)
+                if artifact is not None:
+                    copied_artifacts[artifact_name] = artifact
         protection = {
             "agent_workspace_empty_at_start": True,
             "agent_cwd": "temporary-empty-workspace",
@@ -432,6 +442,9 @@ def run_protected_private_eval(
             model_tool_plan_data = {}
         planner_returncode = _planner_returncode(model_tool_plan_data)
         planner_parse_error = _planner_parse_error(model_tool_plan_data)
+        executed_probe_count = _optional_int(tool_probe_data, "executed_probe_count", "probe_count")
+        fallback_probe_count = _optional_int(tool_probe_data, "fallback_probe_count")
+        submitted_finding_count = _optional_int(tool_probe_data, "submitted_finding_count")
 
         try:
             score = score_submission(task, submission)
@@ -472,20 +485,20 @@ def run_protected_private_eval(
                 "control_replay_passed": score.get("control_replay_passed"),
                 "control_type": task.get("control_type") if not task.get("expected_vulnerable") else None,
                 "expected_vulnerable": bool(task.get("expected_vulnerable")),
-                "executed_probe_count": _optional_int(tool_probe_data, "executed_probe_count", "probe_count"),
                 "exploit_proof": score.get("subscores", {}).get("exploit_proof", 0),
-                "fallback_probe_count": _optional_int(tool_probe_data, "fallback_probe_count"),
                 "false_positive_control": score.get("subscores", {}).get("false_positive_control", 0),
                 "invalid_submission": bool(score.get("invalid_submission")),
                 "model_tool_plan_artifact": "model-tool-plan.json" in protected_artifacts["artifacts"],
                 "passed": bool(score.get("passed")),
                 "safety": score.get("subscores", {}).get("safety", 0),
                 "score": score.get("score", 0),
-                "submitted_finding_count": _optional_int(tool_probe_data, "submitted_finding_count"),
                 "submission_finding_count": score.get("submission_finding_count", 0),
                 "task_id": task["id"],
                 "tool_probe_artifact": "tool-probes.json" in protected_artifacts["artifacts"],
             }
+            | ({"executed_probe_count": executed_probe_count} if executed_probe_count is not None else {})
+            | ({"fallback_probe_count": fallback_probe_count} if fallback_probe_count is not None else {})
+            | ({"submitted_finding_count": submitted_finding_count} if submitted_finding_count is not None else {})
             | ({"planner_returncode": planner_returncode} if planner_returncode is not None else {})
             | ({"planner_parse_error": planner_parse_error} if planner_parse_error else {})
             | ({"target_request_count": target_request_count} if target_request_count is not None else {})

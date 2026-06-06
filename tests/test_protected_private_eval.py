@@ -167,6 +167,53 @@ class ProtectedPrivateEvalTests(unittest.TestCase):
             self.assertNotIn("target_log_dir", redacted)
             self.assertNotIn("private_test_live_control", str(redacted))
 
+    def test_protected_eval_ignores_malformed_optional_tool_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            task = load_json(ROOT / "tasks" / "project_mgmt" / "pm_same_tenant_read_control.json")
+            task["id"] = "private_test_malformed_tool_artifacts"
+            task["split"] = "private_holdout"
+            task_path = tmp_path / "holdout.json"
+            task_path.write_text(json.dumps(task), encoding="utf-8")
+
+            agent_path = tmp_path / "agent.py"
+            agent_path.write_text(
+                textwrap.dedent(
+                    """
+                    import json
+                    import os
+                    from pathlib import Path
+
+                    submission_path = Path(os.environ["AUTHZBENCH_SUBMISSION"])
+                    submission_path.write_text(json.dumps({"findings": []}))
+                    (submission_path.parent / "model-tool-plan.json").write_text("{not-json")
+                    (submission_path.parent / "tool-probes.json").write_text("{also-not-json")
+                    """
+                ).strip()
+                + "\n",
+                encoding="utf-8",
+            )
+
+            summary = run_protected_private_eval(
+                [str(task_path)],
+                agent_cmd=f"python3 {agent_path}",
+                results_dir=tmp_path / "results",
+                timeout_seconds=10,
+                benchmark_version="test",
+                benchmark_commit_sha="test-sha",
+                agent="dummy-agent",
+                model="dummy-model",
+                harness_type="tool-agent",
+                run_id="malformed-tool-artifacts-run",
+            )
+
+        self.assertEqual(summary["task_count"], 1, summary)
+        self.assertEqual(summary["model_tool_plan_artifact_count"], 0, summary)
+        self.assertEqual(summary["per_task_tool_probe_artifact_count"], 0, summary)
+        self.assertEqual(summary["executed_tool_probe_total"], 0, summary)
+        self.assertFalse(summary["tasks"][0]["model_tool_plan_artifact"], summary["tasks"][0])
+        self.assertFalse(summary["tasks"][0]["tool_probe_artifact"], summary["tasks"][0])
+
     def test_redacted_summary_omits_task_rows_and_ids(self) -> None:
         summary = {
             "agent": "dummy-agent",

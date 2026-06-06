@@ -228,8 +228,10 @@ when an adapter writes them beside `submission.json`:
   `submission_finding_count` and task pass/fail fields for benchmark scoring.
 - `planner_returncode`, `planner_failure_count`, `planner_parse_error`, and
   `planner_parse_error_count` come from `model-tool-plan.json.metadata` when
-  available. Missing or malformed optional tool artifacts are ignored rather
-  than making the task unscorable.
+  available. `planner_failure_count` counts nonzero planner return codes from
+  parseable plan artifacts; use `planner_parse_error_count` for timeout or
+  parse-error telemetry. Missing or malformed optional tool artifacts are
+  ignored rather than making the task unscorable.
 
 When present, each per-task summary record may include:
 
