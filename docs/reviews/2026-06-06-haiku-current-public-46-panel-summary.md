@@ -10,6 +10,8 @@ baseline-registry tests.
 
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
+- Kiro `claude-opus-4.8`, verified against the local Kiro model catalog and
+  command log
 - Parent ChatGPT synthesis
 
 Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels propagated in logs but
@@ -54,6 +56,15 @@ Disposition: accepted. The registry and docs state this is public-split,
 no-tools evidence only, and the full v0 gate remains blocked until three more
 current repeated model/agent families and one current public tool-agent baseline
 exist.
+
+3. Haiku run 2 reports one model-output parse error but zero invalid
+submissions.
+
+Disposition: accepted and clarified. The no-tools Kiro adapter records the parse
+error in `model-output.json` but writes a normalized empty `findings` list, so
+the scorer treats the task as a normal no-finding miss rather than a malformed
+submission. The result schema now documents that adapter parse errors are tracked
+separately from `invalid_submission`.
 
 ## Claim Boundary
 

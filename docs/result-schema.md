@@ -176,6 +176,14 @@ integrity gate but does not award vulnerable-task score credit for
 agent-independent control replay. `invalid_submission` tracks malformed or
 missing submissions separately from false reports.
 
+Adapter-level model parse errors are also separate from `invalid_submission`.
+For example, the no-tools Kiro adapter records parse failures in
+`model-output.json`; if it can still write a syntactically valid empty
+`findings` list, the scorer treats the task as a normal no-finding miss rather
+than a malformed submission. Use `invalid_submission` for missing or unscorable
+submission files, and use adapter parse-error counters to audit model-output
+quality.
+
 When `--target-log-dir` is supplied, each per-task summary record also includes:
 
 - `target_request_count`
