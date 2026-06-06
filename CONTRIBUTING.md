@@ -33,7 +33,8 @@ private holdout evidence.
    to `denial` or `authorized_allow`.
 5. Include enough oracle and control information for deterministic backend
    replay, but do not copy private holdout material into public tasks.
-6. Run:
+6. Review the task family with [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md).
+7. Run:
 
 ```bash
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
@@ -50,6 +51,14 @@ Baseline summaries should be artifact-backed and labeled by split:
   checks pass
 
 Do not present public-split baseline numbers as final model rankings.
+
+For release-facing metric interpretation, follow
+[`docs/score-policy.md`](docs/score-policy.md) and avoid ranking by legacy
+`mean_score` alone.
+
+When task or scorer changes affect comparability, follow
+[`docs/score-stability-policy.md`](docs/score-stability-policy.md) and mark old
+results as legacy or deprecated instead of mixing them with current runs.
 
 ## Local Validation
 
@@ -77,4 +86,3 @@ git ls-files tasks_private/holdout results captures docs/reviews/panel-logs
 ```
 
 The command should print nothing for public commits.
-

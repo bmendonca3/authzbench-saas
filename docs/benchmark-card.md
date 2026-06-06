@@ -66,6 +66,12 @@ AuthZBench-SaaS does not claim to measure:
 - `authorized_allow_pass_rate` for v0+ reporting
 - `mean_score` as a coarse compatibility field, not the primary ranking metric
 
+Release-facing summaries should follow [`score-policy.md`](score-policy.md) and
+use v0-candidate metrics as the headline interpretation.
+Task and scorer changes should follow
+[`score-stability-policy.md`](score-stability-policy.md) so old scores are not
+mixed with current evidence without a compatibility label.
+
 ## Known Limitations
 
 - The alpha split is small.
@@ -104,3 +110,7 @@ The next serious milestone is the real `v0` release described in
 coverage, private holdouts, stronger anti-gaming, protected holdout execution,
 target/proxy-side request logging, tool-equipped baselines, and independent
 review.
+
+External reviewers should use [`task-quality-rubric.md`](task-quality-rubric.md)
+when assessing task realism, false-positive traps, replay proof, and anti-gaming
+risk.

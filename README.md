@@ -270,6 +270,10 @@ See [`docs/methodology.md`](docs/methodology.md) and
 [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md) for leaderboard
 metric guidance.
 
+For release-facing summaries, use the v0-candidate metric axes instead of
+ranking agents by legacy `mean_score` alone. See
+[`docs/score-policy.md`](docs/score-policy.md).
+
 ## Private Holdouts
 
 Private holdout manifests are not included in the public repo. The ignored
@@ -313,6 +317,15 @@ evidence.
 - [`CITATION.cff`](CITATION.cff): alpha citation and versioning guidance
 - [`docs/v0-release-plan.md`](docs/v0-release-plan.md): release criteria
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use and limits
+- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): what current
+  evidence does and does not prove
+- [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task review
+  rubric for public tasks and external review
+- [`docs/agent-evaluator-kit.md`](docs/agent-evaluator-kit.md): minimal agent
+  integration path
+- [`docs/score-policy.md`](docs/score-policy.md): headline metric policy
+- [`docs/score-stability-policy.md`](docs/score-stability-policy.md): task and
+  score deprecation policy
 - [`docs/baseline-credibility.md`](docs/baseline-credibility.md): baseline bar
 - [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): leaderboard format
 - [`docs/publish-checklist.md`](docs/publish-checklist.md): publication checks

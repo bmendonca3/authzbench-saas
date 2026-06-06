@@ -215,9 +215,11 @@ used seriously.
 
 - [ ] At least 100 total tasks across public and private splits.
 - [ ] Independent external review of task design and scoring.
-- [ ] External-review-ready benchmark card with limitations and intended use.
+- [x] External-review-ready benchmark card with limitations and intended use.
 - [ ] Stable leaderboard submission schema.
-- [ ] Documented policy for task additions, removals, and deprecated scores.
+- [x] Documented policy for task additions, removals, and deprecated scores.
+- [x] Public task-quality rubric and external-review packet guidance.
+- [x] Public agent evaluator kit for minimal third-party integration.
 - [ ] At least one third-party agent or researcher run.
 
 Exit criteria:
