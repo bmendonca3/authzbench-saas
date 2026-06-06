@@ -51,17 +51,6 @@ public internet.
 Public checkouts intentionally do not include private holdout manifests. That is
 part of the contamination-control design, not a missing file.
 
-## Target Apps
-
-| App | Port | Focus |
-| --- | ---: | --- |
-| `project_mgmt` | `8011` | cross-tenant project/task access |
-| `billing` | `8012` | billing plan and invoice authorization |
-| `support` | `8013` | ticket access, status changes, invite abuse |
-| `file_sharing` | `8014` | files, share links, stale-link access |
-| `api_tokens` | `8015` | token tenant binding and scope checks |
-| `audit_settings` | `8016` | audit logs, exports, admin settings |
-
 ## Quick Start
 
 Prerequisites:
@@ -129,6 +118,17 @@ python3 scripts/validate_v0_release.py --allow-incomplete
 ```
 
 That reports the gate state without pretending the private pack is public.
+
+## Target Apps
+
+| App | Port | Focus |
+| --- | ---: | --- |
+| `project_mgmt` | `8011` | cross-tenant project/task access |
+| `billing` | `8012` | billing plan and invoice authorization |
+| `support` | `8013` | ticket access, status changes, invite abuse |
+| `file_sharing` | `8014` | files, share links, stale-link access |
+| `api_tokens` | `8015` | token tenant binding and scope checks |
+| `audit_settings` | `8016` | audit logs, exports, admin settings |
 
 ## Evaluate an Agent
 
