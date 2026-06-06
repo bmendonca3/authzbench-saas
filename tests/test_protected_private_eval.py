@@ -15,50 +15,54 @@ from scripts.protected_private_eval import ROOT, redacted_summary, run_protected
 class ProtectedPrivateEvalTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("sandbox-exec"), "requires macOS sandbox-exec")
     def test_agent_cannot_read_private_holdout_root_from_host(self) -> None:
-        private_path = next((ROOT / "tasks_private" / "holdout").rglob("*.json"))
-        with tempfile.TemporaryDirectory() as tmp:
-            tmp_path = Path(tmp)
-            task = load_json(ROOT / "tasks" / "project_mgmt" / "pm_same_tenant_read_control.json")
-            task["id"] = "private_test_host_denial"
-            task["split"] = "private_holdout"
-            task_path = tmp_path / "holdout.json"
-            task_path.write_text(json.dumps(task), encoding="utf-8")
-            agent_path = tmp_path / "agent.py"
-            agent_path.write_text(
-                textwrap.dedent(
-                    f"""
-                    import json
-                    import os
-                    from pathlib import Path
+        private_root = ROOT / "tasks_private" / "holdout"
+        private_root.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(dir=private_root, suffix=".json") as private_fixture:
+            private_path = Path(private_fixture.name)
+            private_path.write_text('{"private": true}', encoding="utf-8")
+            with tempfile.TemporaryDirectory() as tmp:
+                tmp_path = Path(tmp)
+                task = load_json(ROOT / "tasks" / "project_mgmt" / "pm_same_tenant_read_control.json")
+                task["id"] = "private_test_host_denial"
+                task["split"] = "private_holdout"
+                task_path = tmp_path / "holdout.json"
+                task_path.write_text(json.dumps(task), encoding="utf-8")
+                agent_path = tmp_path / "agent.py"
+                agent_path.write_text(
+                    textwrap.dedent(
+                        f"""
+                        import json
+                        import os
+                        from pathlib import Path
 
-                    denied = Path({str(private_path)!r})
-                    try:
-                        denied.read_text()
-                    except PermissionError:
-                        pass
-                    else:
-                        raise AssertionError("private holdout was readable")
-                    Path(os.environ["AUTHZBENCH_SUBMISSION"]).write_text(
-                        json.dumps({{"findings": []}})
-                    )
-                    """
-                ).strip()
-                + "\n",
-                encoding="utf-8",
-            )
+                        denied = Path({str(private_path)!r})
+                        try:
+                            denied.read_text()
+                        except PermissionError:
+                            pass
+                        else:
+                            raise AssertionError("private holdout was readable")
+                        Path(os.environ["AUTHZBENCH_SUBMISSION"]).write_text(
+                            json.dumps({{"findings": []}})
+                        )
+                        """
+                    ).strip()
+                    + "\n",
+                    encoding="utf-8",
+                )
 
-            summary = run_protected_private_eval(
-                [str(task_path)],
-                agent_cmd=f"python3 {agent_path}",
-                results_dir=tmp_path / "results",
-                timeout_seconds=10,
-                benchmark_version="test",
-                benchmark_commit_sha="test-sha",
-                agent="dummy-agent",
-                model="dummy-model",
-                harness_type="no-tools-model",
-                run_id="host-denial-run",
-            )
+                summary = run_protected_private_eval(
+                    [str(task_path)],
+                    agent_cmd=f"python3 {agent_path}",
+                    results_dir=tmp_path / "results",
+                    timeout_seconds=10,
+                    benchmark_version="test",
+                    benchmark_commit_sha="test-sha",
+                    agent="dummy-agent",
+                    model="dummy-model",
+                    harness_type="no-tools-model",
+                    run_id="host-denial-run",
+                )
 
         self.assertEqual(summary["tasks"][0]["agent_returncode"], 0, summary)
         self.assertTrue(summary["protected_execution"]["host_private_paths_denied"], summary)
