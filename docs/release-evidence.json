@@ -22,7 +22,7 @@
     "latest_remote_ci_run_id": "27044678746",
     "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on commit b3cce0be549fcdd2da21e12bfca6bfde69021174",
     "docker_container_smoke_source": "local validate_public run with --include-container-smoke passed and docker compose project authzbench-public-smoke-83191 was torn down",
-    "protected_private_holdout_execution_source": "Historical redacted summaries prove workspace separation only. The runner now supports macOS host private-path denial, but fresh no-tools and live tool-agent runs are required before this field can return to true.",
+    "protected_private_holdout_execution_source": "Two fresh same-commit no-tools summaries now prove macOS host private-path denial and support one eligible private leaderboard row. A fresh host-isolated live tool-agent run with full target-request correlation is still required before this field can return to true.",
     "release_notes_source": [
       "README.md",
       "docs/status.md",
@@ -30,6 +30,6 @@
       "docs/launch-report.md",
       "CHANGELOG.md"
     ],
-    "notes": "Strict v0 readiness is intentionally false while fresh host-isolated private evidence and a runner-fingerprinted eligible leaderboard row are pending. Refresh all commit and CI evidence before any release tag."
+    "notes": "Strict v0 readiness is intentionally false. The no-tools host-isolation and eligible-row requirements are satisfied, but fresh host-isolated private tool-agent evidence, exact-head validation and CI, and refreshed commit evidence remain required before any release tag."
   }
 }

@@ -75,7 +75,6 @@
     {
       "id": "holdout_contamination_anti_gaming",
       "required_for_v0": true,
-      "v0_ready": false,
       "summary_paths": [
         "2026-06-05-holdout-rehearsal-panel-summary.md",
         "2026-06-05-holdout-anti-gaming-panel-summary.md",
@@ -84,9 +83,11 @@
         "2026-06-05-protected-private-execution-panel-summary.md",
         "2026-06-05-private-live-tool-agent-panel-summary.md",
         "2026-06-05-final-holdout-anti-gaming-release-summary.md",
-        "2026-06-06-leaderboard-schema-v1-panel-summary.md"
+        "2026-06-06-leaderboard-schema-v1-panel-summary.md",
+        "2026-06-06-host-isolated-private-evidence-panel-summary.md"
       ],
-      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, route/decoy variant counts, and prior private runs have review coverage. The prior runs provided workspace separation but not host private-path denial, so fresh isolated private evidence is required before this section returns to v0-ready."
+      "v0_ready": true,
+      "notes": "Holdout workflow, anti-gaming checks, redacted private-pack evidence, route/decoy variant counts, and private execution have review coverage. Two fresh same-commit no-tools runs now prove macOS host private-path denial and support one eligible runner-fingerprinted private row. Fresh host-isolated tool-agent evidence remains a final-release requirement, not a blocker for this holdout review section."
     },
     {
       "id": "privacy_packaging_final_release_readiness",
@@ -97,7 +98,7 @@
         "2026-06-05-v0-release-gate-audit-panel-summary.md",
         "2026-06-05-final-release-readiness-panel-summary.md"
       ],
-      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, and prior release-readiness review have evidence coverage. Final readiness is reopened until host-isolated private runs, an eligible runner-fingerprinted row, exact-head CI, and refreshed release evidence pass."
+      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, and prior release-readiness review have evidence coverage. Host-isolated no-tools runs and one eligible runner-fingerprinted row now exist. Final readiness remains open until a fresh host-isolated private tool-agent run with full target-request correlation, exact-head validation and CI, and refreshed release evidence pass."
     }
   ]
 }

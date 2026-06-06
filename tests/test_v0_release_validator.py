@@ -29,7 +29,7 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             self.assertIn("total vulnerable tasks must be at least 25; got 19", gates["task_mix"]["unmet"])
             self.assertIn("total secure controls must be at least 30; got 27", gates["task_mix"]["unmet"])
         self.assertTrue(gates["baseline_credibility"]["passed"], result)
-        self.assertFalse(gates["leaderboard_submissions"]["passed"], result)
+        self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
         self.assertFalse(gates["sectional_reviews"]["passed"], result)
         self.assertFalse(gates["release_verification_evidence"]["passed"], result)
         self.assertIn(
@@ -41,18 +41,14 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         self.assertEqual(gates["baseline_credibility"]["unmet"], [], result)
         self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 5, result)
         self.assertEqual(gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"], 5, result)
-        self.assertEqual(gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"], 1, result)
+        self.assertEqual(gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"], 2, result)
         self.assertEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
-            0,
+            1,
             result,
         )
-        self.assertIn(
-            "no release-candidate leaderboard submission is currently eligible",
-            gates["leaderboard_submissions"]["unmet"],
-            result,
-        )
-        self.assertEqual(gates["sectional_reviews"]["evidence"]["v0_ready_section_count"], 4, result)
+        self.assertEqual(gates["leaderboard_submissions"]["unmet"], [], result)
+        self.assertEqual(gates["sectional_reviews"]["evidence"]["v0_ready_section_count"], 5, result)
 
     def test_allow_incomplete_cli_returns_success_for_current_evidence_state(self) -> None:
         expected = validate_v0_release()["v0_ready"]
@@ -79,12 +75,12 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         self.assertEqual(gates["leaderboard_submissions"]["evidence"]["example_submission_count"], 1, result)
         self.assertEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"],
-            1,
+            2,
             result,
         )
         self.assertEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
-            0,
+            1,
             result,
         )
 
