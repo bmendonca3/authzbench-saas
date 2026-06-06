@@ -2,8 +2,8 @@
   "schema_version": "release-evidence-v1",
   "release_candidate": {
     "version_label": "alpha/pre-v0",
-    "commit_sha": "b3cce0be549fcdd2da21e12bfca6bfde69021174",
-    "notes": "Current public repository is a v0 release candidate under review. Required release-evidence checks pass for this checkpoint, but no v0 release tag is authorized by this evidence file."
+    "commit_sha": "2aa46b59b39de5c4ed96c1febc54e730388f13b6",
+    "notes": "This evidence-bearing checkpoint satisfies the documented strict v0 gates. No v0 tag or hosted leaderboard is authorized by this file."
   },
   "required_for_v0": {
     "local_public_validation_passed": true,
@@ -12,17 +12,17 @@
     "docker_container_smoke_passed": true,
     "privacy_scan_passed": true,
     "release_notes_separate_public_and_private_results": true,
-    "protected_private_holdout_execution_available": false
+    "protected_private_holdout_execution_available": true
   },
   "evidence": {
     "local_public_validation_command": "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
     "fresh_clone_validation_command": "python3 scripts/validate_public.py --fresh-clone https://github.com/bmendonca3/authzbench-saas.git --include-scripted-baseline",
     "strict_v0_audit_command": "python3 scripts/validate_v0_release.py",
-    "latest_remote_ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27044678746",
-    "latest_remote_ci_run_id": "27044678746",
-    "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on commit b3cce0be549fcdd2da21e12bfca6bfde69021174",
-    "docker_container_smoke_source": "local validate_public run with --include-container-smoke passed and docker compose project authzbench-public-smoke-83191 was torn down",
-    "protected_private_holdout_execution_source": "Two same-commit no-tools summaries prove macOS host private-path denial and support one eligible private leaderboard row. One fresh host-isolated live tool-agent summary now reports 24/24 target-request correlation. The field remains false until the source-bearing evidence commit passes final local, privacy, fresh-clone, Docker, and exact-head CI checks.",
+    "latest_remote_ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27073687669",
+    "latest_remote_ci_run_id": "27073687669",
+    "privacy_scan_source": "validate_public.py tracked-file scan plus git ls-files checks for tasks_private/holdout, results, captures, and docs/reviews/panel-logs on evidence-bearing commit 2aa46b59b39de5c4ed96c1febc54e730388f13b6",
+    "docker_container_smoke_source": "local Docker Compose smoke passed before the protected tool-agent run; all six services and the Compose network were torn down afterward",
+    "protected_private_holdout_execution_source": "Two same-commit no-tools summaries prove macOS host private-path denial and support one eligible private leaderboard row. One host-isolated live tool-agent summary reports 24/24 target-request correlation. The combined three-summary protected-evidence validator passes with host isolation and the tool-agent requirement enabled.",
     "protected_private_evidence_validation_command": "python3 scripts/validate_protected_private_evidence.py --summary leaderboard_sources/haiku-private-holdout-fb9e4c7-run1-redacted-source-summary.json --summary leaderboard_sources/haiku-private-holdout-fb9e4c7-run2-redacted-source-summary.json --summary leaderboard_sources/tool-agent-private-holdout-21e92c7-run1-redacted-source-summary.json --min-run-count 2 --require-host-isolation",
     "release_notes_source": [
       "README.md",
@@ -31,6 +31,6 @@
       "docs/launch-report.md",
       "CHANGELOG.md"
     ],
-    "notes": "Strict v0 readiness is intentionally false. The no-tools host-isolation, eligible-row, and private tool-agent evidence requirements are substantively satisfied. Final local validation, privacy checks, fresh-clone validation, Docker smoke, exact-head CI, and refreshed commit evidence remain required before any release tag."
+    "notes": "The strict maintainer gate is evidence-ready at the referenced checkpoint. This is release-candidate evidence only; tagging, hosted leaderboard operation, tool-agent repeatability, and community-benchmark claims remain separate decisions."
   }
 }

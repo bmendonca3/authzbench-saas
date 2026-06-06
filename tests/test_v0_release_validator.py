@@ -14,8 +14,8 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         gates = {gate["id"]: gate for gate in result["gates"]}
         has_private_holdouts = gates["private_holdout_pack"]["passed"]
 
-        self.assertFalse(result["passed"], result)
-        self.assertFalse(result["v0_ready"], result)
+        self.assertEqual(result["passed"], has_private_holdouts, result)
+        self.assertEqual(result["v0_ready"], has_private_holdouts, result)
         self.assertEqual(result["gate_count"], 8, result)
         self.assertTrue(gates["public_split_scope"]["passed"], result)
         self.assertTrue(gates["documentation_packaging"]["passed"], result)
@@ -30,13 +30,8 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             self.assertIn("total secure controls must be at least 30; got 27", gates["task_mix"]["unmet"])
         self.assertTrue(gates["baseline_credibility"]["passed"], result)
         self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
-        self.assertFalse(gates["sectional_reviews"]["passed"], result)
-        self.assertFalse(gates["release_verification_evidence"]["passed"], result)
-        self.assertIn(
-            "release evidence not satisfied: protected_private_holdout_execution_available",
-            gates["release_verification_evidence"]["unmet"],
-            result,
-        )
+        self.assertTrue(gates["sectional_reviews"]["passed"], result)
+        self.assertTrue(gates["release_verification_evidence"]["passed"], result)
         self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
         self.assertEqual(gates["baseline_credibility"]["unmet"], [], result)
         self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 5, result)
@@ -48,7 +43,7 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             result,
         )
         self.assertEqual(gates["leaderboard_submissions"]["unmet"], [], result)
-        self.assertEqual(gates["sectional_reviews"]["evidence"]["v0_ready_section_count"], 5, result)
+        self.assertEqual(gates["sectional_reviews"]["evidence"]["v0_ready_section_count"], 6, result)
 
     def test_allow_incomplete_cli_returns_success_for_current_evidence_state(self) -> None:
         expected = validate_v0_release()["v0_ready"]

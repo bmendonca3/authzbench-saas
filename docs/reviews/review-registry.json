@@ -93,15 +93,16 @@
     {
       "id": "privacy_packaging_final_release_readiness",
       "required_for_v0": true,
-      "v0_ready": false,
+      "v0_ready": true,
       "summary_paths": [
         "2026-06-05-ci-validation-panel-summary.md",
         "2026-06-05-v0-release-gate-audit-panel-summary.md",
         "2026-06-05-final-release-readiness-panel-summary.md",
         "2026-06-06-host-isolated-private-evidence-panel-summary.md",
-        "2026-06-06-host-isolated-private-tool-agent-panel-summary.md"
+        "2026-06-06-host-isolated-private-tool-agent-panel-summary.md",
+        "2026-06-06-final-v0-gate-promotion-summary.md"
       ],
-      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, and prior release-readiness review have evidence coverage. Host-isolated no-tools runs, one eligible runner-fingerprinted row, and one private tool-agent run with 24/24 target correlation now exist. Final readiness remains open until the source-bearing evidence commit passes local validation, privacy checks, fresh-clone validation, Docker smoke, exact-head CI, and refreshed release evidence."
+      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, host-isolated no-tools evidence, one eligible runner-fingerprinted row, and one private tool-agent run with 24/24 target correlation are verified. The evidence-bearing checkpoint passed local validation, privacy checks, fresh-clone validation, Docker smoke, and exact-head CI. This section is ready for the strict maintainer gate; no release tag is implied."
     }
   ]
 }
