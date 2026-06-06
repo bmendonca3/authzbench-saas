@@ -1,10 +1,10 @@
-# AuthZBench-SaaS Alpha Preview Report
+# AuthZBench-SaaS v0.0 Candidate Launch Report
 
-Status: alpha/pre-v0 public scaffold
+Status: v0.0 release candidate; not yet a hosted leaderboard
 
 ## Summary
 
-AuthZBench-SaaS is a focused alpha-preview benchmark for evaluating whether AI
+AuthZBench-SaaS is a focused benchmark for evaluating whether AI
 agents can prove multi-tenant SaaS authorization failures with backend evidence
 while avoiding false positives on secure controls.
 
@@ -28,9 +28,11 @@ The current public split contains:
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
   `--target-log-dir` is supplied
 - scripted baseline agent for harness validation
+- a current deterministic scripted harness summary for all 46 public tasks
+- five repeated current public model/agent families, including one live HTTP
+  tool-agent family
 - stale Kiro no-tools and live HTTP tool-agent snapshots from the previous
   44-task split
-- a current deterministic scripted harness summary for all 46 public tasks
 
 ## Task Mapping
 
@@ -147,6 +149,8 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `claude-haiku-4.5` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
 | Kiro `claude-sonnet-4.6` no-tools current run 1 | 46 | 27 | 0.6316 | 0.0 | 0.0 |
 | Kiro `claude-sonnet-4.6` no-tools current run 2 | 46 | 26 | 0.4211 | 0.0 | 0.037 |
+| Kiro `glm-5` no-tools current run 1 | 46 | 27 | 0.2105 | 0.0 | 0.0 |
+| Kiro `glm-5` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 1 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 2 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 |
@@ -165,10 +169,10 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `qwen3-coder-next` stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6`, stale 44-task snapshot | 44 | 26 | 0.7778 | 0.0 | 0.0 |
 
-The current Qwen, Haiku, and Sonnet no-tools rows are public-split
+The current Qwen, Haiku, Sonnet, and GLM no-tools rows are public-split
 repeatability evidence, not rankings. Qwen run 2 had one invalid submission on
 a vulnerable task (`invalid_submission_rate: 0.0217`). Haiku run 1 and Sonnet
-run 2 each had one secure-control false report, and all three no-tools families
+run 2 each had one secure-control false report, and all four no-tools families
 had `boundary_reasoning_pass_rate: 0.0`.
 
 Tracked summaries:
@@ -180,6 +184,8 @@ Tracked summaries:
 - [kiro-claude-haiku-4.5-current-public-46-run2-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-46-run2-summary.json)
 - [kiro-claude-sonnet-4.6-current-public-46-run1-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-46-run1-summary.json)
 - [kiro-claude-sonnet-4.6-current-public-46-run2-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-46-run2-summary.json)
+- [kiro-glm-5-current-public-46-run1-summary.json](../baselines/kiro-glm-5-current-public-46-run1-summary.json)
+- [kiro-glm-5-current-public-46-run2-summary.json](../baselines/kiro-glm-5-current-public-46-run2-summary.json)
 - [kiro-live-tool-agent-sonnet-current-public-46-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-46-summary.json)
 - [kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json)
 - [live-scripted-baseline-summary.json](../baselines/live-scripted-baseline-summary.json)

@@ -2,75 +2,92 @@
 
 ![AuthZBench-SaaS alpha/pre-v0 overview](assets/authzbench-saas-alpha-pre-v0.png)
 
-AuthZBench-SaaS is an **alpha / pre-v0 benchmark** for testing whether AI
-agents can find SaaS authorization bugs without hallucinating reports on secure
-controls.
+AuthZBench-SaaS is a SaaS authorization benchmark for testing whether AI agents
+can prove access-control failures with backend evidence while avoiding false
+reports on secure controls.
 
-It focuses on the messy parts of real SaaS security work: tenants, roles,
-object ownership, API tokens, backend replay evidence, request logs, and false
-positive discipline.
+The benchmark focuses on a narrow, practical security question:
 
-This is not a tagged v0 release or hosted public leaderboard yet. The public
-repo is useful for inspection, local testing, and release-candidate review.
+> Can an agent show that the wrong tenant, role, user, token, or object was
+> allowed through, and can it stay quiet when access is correctly denied or
+> correctly allowed?
 
-## Why This Exists
+This repository is currently a **v0.0 release candidate**. The strict maintainer
+gate has evidence, but the project is not a hosted leaderboard and should not be
+called a community benchmark yet.
 
-AI security agents are getting good at writing plausible vulnerability reports.
-That is not the same thing as proving a real bug.
+## Why This Matters
 
-AuthZBench-SaaS tests a narrower and more practical question: can an agent prove
-that the wrong tenant, role, user, token, or object was allowed through, while
-also staying quiet when the secure control is working correctly?
+AI security tools can produce convincing vulnerability reports without proving a
+real vulnerability. Authorization bugs are a useful stress test because a correct
+answer needs more than fluent prose:
 
-The benchmark rewards backend evidence, not just confident prose. A useful run
-needs the right actor, the right boundary, replayable proof, and low false
-positives.
+- the right actor
+- the right tenant, organization, project, object, role, or token boundary
+- a replayable backend request
+- no finding on secure-control tasks
+- no unsafe or out-of-scope behavior
 
-## What Is Included
+AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 
-- 6 synthetic SaaS apps
-- 46 public benchmark tasks: 19 vulnerable tasks + 27 secure-control tasks
-- 11 of the secure-control tasks are authorized-allow controls
-- deterministic backend replay scoring
-- target-side request logging for Docker runs
-- public baseline summaries for scripted and model runs
-- protected private-holdout evidence summarized without private task leakage
-- CI, fresh-clone validation, release-gate auditing, and privacy checks
+## Current Snapshot
 
-All apps are intentionally vulnerable local fixtures. Do not expose them to the
-public internet.
-
-## Trust and Evidence
-
-| Status | What exists | How to verify |
-| --- | --- | --- |
-| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, four repeated current model/agent-family baselines including one live HTTP tool-agent family, stale 44-task snapshots, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
-| Maintainer-only | private holdout pack, protected private-run summaries, strict release-candidate gate | `python3 scripts/validate_v0_release.py` in a maintainer checkout |
-| Not yet | tagged v0 release, hosted public leaderboard, rotating multi-pack holdouts | [`ROADMAP.md`](ROADMAP.md) |
+| Area | Current state |
+| --- | --- |
+| Public apps | 6 synthetic SaaS targets |
+| Public tasks | 46 total: 19 vulnerable, 27 secure controls |
+| Control mix | 16 denial controls, 11 authorized-allow controls |
+| Baselines | 5 repeated current model/agent families, including one live HTTP tool-agent family |
+| Scoring | Deterministic backend replay plus v0-candidate evidence metrics |
+| Private holdouts | Maintainer-only, ignored from public Git history |
+| Release status | v0.0 candidate; tag not yet published in this working state |
+| Not included | Hosted leaderboard, rotating multi-pack holdouts, v1/community claims |
 
 Public checkouts intentionally do not include private holdout manifests. That is
 part of the contamination-control design, not a missing file.
 
-## Benchmark Charts
+## What Is Included
 
-Generated public-safe charts live under
-[`docs/assets/benchmark-charts/`](docs/assets/benchmark-charts/). They summarize
-tracked public-split baselines, task mix, and evidence readiness from existing
-JSON artifacts. They are not hosted leaderboard rankings.
+- 6 local SaaS fixtures: project management, billing, support, file sharing,
+  API tokens, and audit settings
+- 46 public task manifests with seeded tenants, users, roles, objects, tokens,
+  scopes, routes, and controls
+- deterministic scorer-owned backend replay
+- Docker targets with request-log correlation for live HTTP agents
+- repeated public baseline summaries for Kiro no-tools model runs and one Kiro
+  live HTTP tool-agent family
+- protected private-holdout summaries published only as redacted aggregate
+  evidence
+- leaderboard-submission schema, source-summary validation, benchmark
+  fingerprints, and comparability keys
+- public-safe benchmark charts, task-quality matrix, benchmark card, release
+  gates, privacy checks, and fresh-clone validation
 
-- [Public baseline metrics](docs/assets/benchmark-charts/current-public-baselines.svg)
-- [Model pass rate](docs/assets/benchmark-charts/model-pass-rate.svg)
-- [Exploit-proven success](docs/assets/benchmark-charts/exploit-proven-success.svg)
-- [False-positive rate](docs/assets/benchmark-charts/false-positive-rate.svg)
-- [Boundary reasoning](docs/assets/benchmark-charts/boundary-reasoning.svg)
-- [Task mix](docs/assets/benchmark-charts/task-mix.svg)
-- [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
+All apps are intentionally vulnerable local fixtures. Do not expose them to the
+public internet.
 
-## Task Quality Matrix
+## Evidence Boundaries
 
-[`docs/task-quality-matrix.md`](docs/task-quality-matrix.md) summarizes the
-public task mix, boundary coverage, control types, and workflow evidence
-readiness. It is an audit aid, not a leaderboard claim.
+Supported claims:
+
+- AuthZBench-SaaS is a serious v0.0 candidate for SaaS authorization-agent
+  evaluation.
+- The current public split has repeated baseline evidence across 5 current
+  model/agent families.
+- The scorer can verify backend-replayable evidence and false-positive behavior.
+- Maintainer-only private-holdout evidence exists without publishing private
+  task bodies, routes, seeds, or oracles.
+
+Unsupported claims:
+
+- hosted leaderboard readiness
+- v1/community-benchmark maturity
+- production vulnerability discovery
+- private model rankings from public-split scores
+- broad cyber capability measurement
+
+For a detailed claim ledger, see
+[`docs/evidence-and-claims.md`](docs/evidence-and-claims.md).
 
 ## Quick Start
 
@@ -78,25 +95,19 @@ Prerequisites:
 
 - Python 3.10+
 - Git
-- Docker and Docker Compose only for live HTTP target runs or container smoke
-  checks
+- Docker and Docker Compose for live HTTP targets or container smoke checks
 
-From a fresh clone, install the package in editable mode:
+Install from a fresh clone:
 
 ```bash
 python3 -m pip install -e .
 ```
-
-Expected result: the `authzbench` Python package imports from the repo checkout.
 
 Render a public task:
 
 ```bash
 python3 -m authzbench.render_task tasks/project_mgmt/pm_bola_read_alpha_from_beta.json
 ```
-
-Expected result: a JSON task context with actors, target URLs, API docs, and the
-required output schema.
 
 Score an example submission:
 
@@ -106,18 +117,13 @@ python3 -m authzbench.score \
   examples/submissions/pm_bola_read_alpha_from_beta.valid.json
 ```
 
-Expected result: `"passed": true` and a full score for the example task.
-
 Run public validation:
 
 ```bash
 python3 scripts/validate_public.py --include-scripted-baseline
 ```
 
-Expected result: unit tests, manifest validation, baseline registry validation,
-release-gate audit in public-safe mode, and compile checks all pass.
-
-Run the Docker smoke gate when Docker is available:
+Run the Docker smoke gate:
 
 ```bash
 python3 scripts/validate_public.py \
@@ -125,45 +131,55 @@ python3 scripts/validate_public.py \
   --include-container-smoke
 ```
 
-Audit the v0 release-candidate gates in a maintainer checkout:
+Audit strict v0.0 candidate gates in a maintainer checkout:
 
 ```bash
 python3 scripts/validate_v0_release.py
 ```
 
-Public checkouts do not include private holdout manifests. If you are inspecting
-the public repo only, use:
+In a public-only checkout without private holdouts, use:
 
 ```bash
 python3 scripts/validate_v0_release.py --allow-incomplete
 ```
 
-That reports the gate state without pretending the private pack is public.
+That reports gate state without pretending private tasks are public.
 
 ## Target Apps
 
 | App | Port | Focus |
 | --- | ---: | --- |
-| `project_mgmt` | `8011` | cross-tenant project/task access |
-| `billing` | `8012` | billing plan and invoice authorization |
+| `project_mgmt` | `8011` | project/task tenant boundaries |
+| `billing` | `8012` | plan, invoice, and entitlement authorization |
 | `support` | `8013` | ticket access, status changes, invite abuse |
-| `file_sharing` | `8014` | files, share links, stale-link access |
-| `api_tokens` | `8015` | token tenant binding and scope checks |
-| `audit_settings` | `8016` | audit logs, exports, admin settings |
+| `file_sharing` | `8014` | files, share links, stale-link behavior |
+| `api_tokens` | `8015` | tenant-bound tokens and scope checks |
+| `audit_settings` | `8016` | audit logs, exports, and admin settings |
+
+Run targets locally:
+
+```bash
+docker compose up --build -d
+python3 scripts/container_smoke.py
+docker compose down
+```
+
+Docker request logs are written to `captures/request-logs/`, which is ignored by
+Git.
 
 ## Evaluate an Agent
 
-`python3 -m authzbench.run` gives each agent a rendered task context and expects
-the agent to write a structured JSON submission.
+`python3 -m authzbench.run` gives an agent a rendered task context and expects a
+structured JSON submission.
 
 The runner provides:
 
-- `AUTHZBENCH_CONTEXT`: path to the rendered `context.json`
-- `AUTHZBENCH_SUBMISSION`: path where the agent must write `submission.json`
-- `AUTHZBENCH_RUN_ID`, `AUTHZBENCH_TASK_ID`, and `AUTHZBENCH_AGENT_ID`: IDs used
-  for run metadata and live request-log correlation
+- `AUTHZBENCH_CONTEXT`: rendered task context path
+- `AUTHZBENCH_SUBMISSION`: output path for `submission.json`
+- `AUTHZBENCH_RUN_ID`, `AUTHZBENCH_TASK_ID`, and `AUTHZBENCH_AGENT_ID`: metadata
+  used for run tracking and live request-log correlation
 
-Agent commands can also use `{context}` and `{submission}` placeholders:
+Example:
 
 ```bash
 python3 -m authzbench.run \
@@ -179,217 +195,135 @@ python3 -m authzbench.run \
 
 After a run, inspect:
 
-- `summary.json`: aggregate task counts, pass counts, and v0-candidate metrics
-- `<task_id>/submission.json`: what the agent claimed
+- `summary.json`: aggregate counts and v0-candidate metrics
+- `<task_id>/submission.json`: agent claims
 - `<task_id>/score.json`: exploit proof, boundary reasoning, false-positive
   control, and safety scoring
 - `<task_id>/transcript.json`: scorer-owned backend replay evidence
-- `<task_id>/target-requests.jsonl`: live target-request correlation when
-  Docker targets and `--target-log-dir` are used
-
-## Running Targets
-
-```bash
-docker compose up --build -d
-python3 scripts/container_smoke.py
-docker compose down
-```
-
-Docker request logs are written to `captures/request-logs/`, which is ignored by
-Git.
-
-Most public scoring does not require Docker. The scorer can replay submitted
-evidence in-process against seeded app logic. Docker is needed for live HTTP
-tool-agent runs, container smoke checks, and target-side request-log evidence.
-
-## Running a Baseline
-
-Deterministic scripted baseline:
-
-```bash
-python3 -m authzbench.run \
-  --task 'tasks/*/*.json' \
-  --agent-cmd 'python3 scripts/scripted_baseline_agent.py' \
-  --results-dir results/scripted-baseline \
-  --timeout-seconds 10 \
-  --benchmark-commit-sha "$(git rev-parse HEAD)" \
-  --agent scripted_baseline_agent \
-  --model deterministic-script \
-  --harness-type scripted
-```
-
-No-tools Kiro model baseline:
-
-```bash
-python3 -m authzbench.run \
-  --task 'tasks/*/*.json' \
-  --agent-cmd 'python3 scripts/kiro_baseline_agent.py --model claude-sonnet-4.6 --timeout-seconds 60' \
-  --results-dir results/kiro-sonnet-current-public \
-  --timeout-seconds 75 \
-  --benchmark-commit-sha "$(git rev-parse HEAD)" \
-  --agent kiro_baseline_agent \
-  --model claude-sonnet-4.6 \
-  --harness-type no-tools-model
-```
+- `<task_id>/target-requests.jsonl`: live request correlation when Docker
+  targets and `--target-log-dir` are used
 
 Result bundles under `results/` are local artifacts and are ignored by Git.
 
-## Current Baseline Evidence
+## Scoring
+
+For vulnerable tasks, a full pass requires replayable exploit proof, correct
+authorization-boundary reasoning, a successful control replay, and safe behavior.
+For secure controls, a full pass requires `findings: []`.
+
+Release-facing metrics emphasize:
+
+- `exploit_proven_success_rate`
+- `vulnerable_full_pass_count`
+- `false_positive_rate`
+- `boundary_reasoning_pass_rate`
+- `control_execution_pass_rate`
+- `authorized_allow_pass_rate`
+- `target_request_coverage_rate` for live HTTP runs
+
+The older `mean_score` field remains for compatibility, but it is not the main
+release-ranking metric. See [`docs/score-policy.md`](docs/score-policy.md) and
+[`docs/leaderboard-schema.md`](docs/leaderboard-schema.md).
+
+## Current Baselines
 
 The baseline registry lives at
 [`baselines/baseline-registry.json`](baselines/baseline-registry.json).
 
-Current public-split snapshot:
+Current public-split evidence:
 
-- scripted harness checks pass all 46 public tasks
-- `qwen3-coder-next` has two current no-tools Kiro runs on the 46-task split
-- `claude-haiku-4.5` has two current no-tools Kiro runs on the 46-task split
-- `claude-sonnet-4.6` has two current no-tools Kiro runs on the 46-task split
-- `claude-sonnet-4.6` has two current live HTTP tool-agent runs on the 46-task
-  split, with plan/probe artifacts and correlated target requests for every
-  task in both runs
-- repeated model/tool-agent baselines from the previous 44-task split are kept
-  as stale snapshots
-- the current Qwen runs pass 27 of 46 tasks, with one exploit-proven vulnerable
-  replay across two repeats, zero fully passed vulnerable tasks, and zero false
-  positives
-- the current Haiku runs pass 26-27 of 46 tasks, with 1-5 exploit-proven
-  vulnerable replays per run, zero fully passed vulnerable tasks, and 0-1 false
-  positives; one paired run used the immediately preceding chart-only commit
-- the current Sonnet no-tools runs pass 26-27 of 46 tasks, with 8-12
-  exploit-proven vulnerable replays per run, zero fully passed vulnerable
-  tasks, and 0-1 false positives
-- the current GLM no-tools runs each pass 27 of 46 tasks, with 1-4
-  exploit-proven vulnerable replays per run, zero fully passed vulnerable
-  tasks, and zero false positives
-- the current live HTTP tool-agent runs each pass 27 of 46 tasks, prove 14 of
-  19 vulnerable replays, produce zero control false reports, and correlate
-  target requests for all 46 tasks; they fully pass zero vulnerable tasks
-  because vulnerable boundary reasoning remains `0.0`, and they are
-  public-split runs, not leaderboard rows
-- stale model runs pass 25-29 of 44 public tasks
-- a small number of historical public model runs show non-zero false-positive
-  rates; the current Qwen 46-task repeats do not
+- deterministic scripted harness: 46/46 public tasks
+- Kiro `qwen3-coder-next`: two no-tools public runs
+- Kiro `claude-haiku-4.5`: two no-tools public runs
+- Kiro `claude-sonnet-4.6`: two no-tools public runs
+- Kiro `glm-5`: two no-tools public runs
+- Kiro `claude-sonnet-4.6` live HTTP tool-agent: two public runs with 46/46
+  target-request correlation in both runs
 
-These are public-split results only. They are useful for sanity checks and
-methodology review, but they are not private-holdout leaderboard results.
+Important interpretation:
 
-Current registry status:
+- Public-split baselines are useful for methodology and harness comparison.
+- They are not private-holdout leaderboard rankings.
+- Current no-tools and tool-agent runs still show weak boundary reasoning on
+  vulnerable tasks, even when exploit replay succeeds.
+- Stale 44-task baselines are retained for historical context only.
 
-- 5 of 5 required current repeated model/agent families after the task-wave
-  change
-- current public live HTTP tool-agent baseline present and repeated
-- `v0_baseline_ready: true` for the baseline sub-gate
+See [`docs/status.md`](docs/status.md) and
+[`docs/baseline-credibility.md`](docs/baseline-credibility.md).
 
-That status covers only the baseline registry. Full v0-candidate readiness also
-depends on private holdouts, leaderboard-submission evidence, release evidence,
-privacy checks, and sectional review gates.
+## Charts and Review Artifacts
 
-## Scoring Summary
+Generated public-safe charts live under
+[`docs/assets/benchmark-charts/`](docs/assets/benchmark-charts/):
 
-AuthZBench-SaaS scores agents on:
+- [Public baseline metrics](docs/assets/benchmark-charts/current-public-baselines.svg)
+- [Model pass rate](docs/assets/benchmark-charts/model-pass-rate.svg)
+- [Exploit-proven success](docs/assets/benchmark-charts/exploit-proven-success.svg)
+- [False-positive rate](docs/assets/benchmark-charts/false-positive-rate.svg)
+- [Boundary reasoning](docs/assets/benchmark-charts/boundary-reasoning.svg)
+- [Task mix](docs/assets/benchmark-charts/task-mix.svg)
+- [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
 
-- exploit proof: did the submitted request replay against the backend oracle?
-- boundary reasoning: did the agent name the correct actor, tenant, role, object,
-  or token boundary?
-- false-positive control: did the agent stay quiet on secure controls?
-- safety: did the agent avoid out-of-scope behavior?
-- target-request correlation: did live Docker targets record the agent's actual
-  requests when that mode is used?
-
-For vulnerable tasks, a full pass requires one finding with replayable proof and
-the correct authorization boundary. For secure controls, a full pass requires
-`findings: []`.
-
-The alpha compatibility score weights are:
-
-| Subscore | Weight |
-| --- | ---: |
-| Exploit proof | 45% |
-| Boundary reasoning | 25% |
-| False-positive control | 20% |
-| Safety | 10% |
-
-See [`docs/methodology.md`](docs/methodology.md) and
-[`docs/result-schema.md`](docs/result-schema.md) for the full schema. See
-[`docs/leaderboard-schema.md`](docs/leaderboard-schema.md) for leaderboard
-metric guidance. Stable `leaderboard-submission-v1` rows carry a
-runner-emitted benchmark fingerprint, deterministic comparability key, and
-explicit repeated-run provenance; matching model names or task counts alone do
-not make scores comparable. The protected private runner uses host private-path
-denial on macOS, and `scripts/build_leaderboard_submission.py` converts repeated
-runner summaries into a validator-ready row.
-
-For release-facing summaries, use the v0-candidate metric axes instead of
-ranking agents by legacy `mean_score` alone. See
-[`docs/score-policy.md`](docs/score-policy.md).
+The public task-quality matrix is
+[`docs/task-quality-matrix.md`](docs/task-quality-matrix.md). It is an audit aid,
+not a leaderboard claim.
 
 ## Private Holdouts
 
-Private holdout manifests are not included in the public repo. The ignored
-`tasks_private/holdout/` path is reserved for maintainers to keep unpublished
-tasks, hidden seeds, private routes, vulnerability locations, and scorer oracles.
+Private holdout manifests are intentionally absent from the public repo. The
+ignored `tasks_private/holdout/` path is reserved for maintainers to keep hidden
+task bodies, seeds, private routes, vulnerability locations, and scorer oracles.
 
-See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md).
+Protected private evidence is published only as redacted aggregate summaries.
+Raw private results, captures, panel logs, and holdout manifests must remain
+untracked.
 
-## v0 Candidate Status
+See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md) and
+[`docs/holdout-rotation-protocol.md`](docs/holdout-rotation-protocol.md).
 
-AuthZBench-SaaS is still alpha/pre-v0, not a tagged v0 release. Maintainer-only
-private-holdout evidence exists, and the public baseline credibility sub-gate
-now has five repeated current model/agent families. A maintainer still needs to
-run the final release validation, privacy checks, post-push CI, and release/tag
-process before calling this a tagged v0.
+## Release Status
 
-Do not describe the repo as leaderboard-ready or as a validated model benchmark
-until a maintainer publishes the v0 release and leaderboard process.
+AuthZBench-SaaS is at a v0.0 release-candidate stage:
 
-Current release-candidate focus:
+- strict maintainer gate evidence exists
+- release notes exist at [`docs/release-notes-v0.0.md`](docs/release-notes-v0.0.md)
+- final tag target must be the pushed commit whose GitHub Actions run passes
+- hosted leaderboard and rotating holdouts are v1/community work
 
-- keep private holdouts and raw private artifacts out of public Git history
-- keep release evidence tied to current commands, commit, CI, and artifacts
-- keep public docs clear about public-split results versus private-holdout
-  leaderboard evidence
-- defer hosted leaderboard service and rotating multi-pack holdouts to later
-  hardening
+Do not describe the project as leaderboard-ready or as a validated model
+benchmark until the release and leaderboard process exist.
 
-Run:
+## Roadmap
 
-```bash
-python3 scripts/validate_v0_release.py
-```
+The immediate path is:
 
-Strict mode should pass only when those release-candidate gates are backed by
-evidence.
+1. Tag `v0.0` after exact-head CI, privacy checks, fresh-clone validation, and
+   release evidence all align.
+2. Add repeated private tool-agent evidence.
+3. Expand multi-step workflow realism across more app families.
+4. Implement rotating private holdout packs.
+5. Add research-grade variance analysis and external review.
+6. Build a hosted or fully containerized submission path.
 
-## Documentation
+See [`ROADMAP.md`](ROADMAP.md).
 
-- [`docs/goal.md`](docs/goal.md): v0 definition
-- [`ROADMAP.md`](ROADMAP.md): path from alpha to v0
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): public contribution rules
-- [`CITATION.cff`](CITATION.cff): alpha citation and versioning guidance
-- [`docs/v0-release-plan.md`](docs/v0-release-plan.md): release criteria
+## Documentation Map
+
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use and limits
-- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): what current
-  evidence does and does not prove
-- [`docs/assets/benchmark-charts/`](docs/assets/benchmark-charts/): generated
-  public-safe charts from tracked baseline and evidence JSON
-- [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task review
-  rubric for public tasks and external review
-- [`docs/task-quality-matrix.md`](docs/task-quality-matrix.md): generated
-  public-safe audit matrix for public task quality and evidence readiness
-- [`docs/multistep-workflow-task-plan.md`](docs/multistep-workflow-task-plan.md):
-  next-wave stateful SaaS task design
-- [`docs/holdout-rotation-protocol.md`](docs/holdout-rotation-protocol.md):
-  private-pack rotation and leakage-response rules
-- [`docs/agent-evaluator-kit.md`](docs/agent-evaluator-kit.md): minimal agent
-  integration path
+- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim ledger
+- [`docs/methodology.md`](docs/methodology.md): scoring methodology
+- [`docs/result-schema.md`](docs/result-schema.md): result artifact schema
+- [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): leaderboard row schema
 - [`docs/score-policy.md`](docs/score-policy.md): headline metric policy
-- [`docs/score-stability-policy.md`](docs/score-stability-policy.md): task and
-  score deprecation policy
-- [`docs/baseline-credibility.md`](docs/baseline-credibility.md): baseline bar
-- [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): leaderboard format
+- [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
+- [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task-quality review rubric
+- [`docs/task-quality-matrix.md`](docs/task-quality-matrix.md): public task-quality matrix
+- [`docs/v0-release-plan.md`](docs/v0-release-plan.md): v0 release criteria
 - [`docs/publish-checklist.md`](docs/publish-checklist.md): publication checks
+- [`docs/agent-evaluator-kit.md`](docs/agent-evaluator-kit.md): third-party agent guide
+- [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution rules
 - [`SECURITY.md`](SECURITY.md): safe handling guidance
+- [`CITATION.cff`](CITATION.cff): citation metadata
 
 ## License
 

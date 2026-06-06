@@ -158,8 +158,8 @@ baselines after the 46-task split change.
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
 - current deterministic scripted harness summary exists for the 46-task public split
-- four repeated current no-tools model-family baselines exist on the 46-task
-  public split
+- four repeated current no-tools model-family baselines and one repeated current
+  live HTTP tool-agent family exist on the 46-task public split
 - one repeated current live HTTP tool-agent baseline exists on the 46-task
   public split, with plan/probe artifacts and full target-request correlation
 - baseline registry exists and passes consistency validation while reporting

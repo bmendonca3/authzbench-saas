@@ -8,9 +8,10 @@
       "summary_paths": [
         "2026-06-05-goal-roadmap-panel-summary.md",
         "2026-06-05-v0-roadmap-panel-summary.md",
-        "2026-06-05-goal-roadmap-refresh-panel-summary.md"
+        "2026-06-05-goal-roadmap-refresh-panel-summary.md",
+        "2026-06-06-v0-release-wiring-panel-summary.md"
       ],
-      "notes": "Goal, roadmap, and release criteria have been reviewed and refreshed for alpha/pre-v0 positioning."
+      "notes": "Goal, roadmap, and release criteria have been reviewed and refreshed through the v0.0 release-candidate wording pass."
     },
     {
       "id": "task_realism_vulnerability_control_mix",
@@ -100,9 +101,10 @@
         "2026-06-05-final-release-readiness-panel-summary.md",
         "2026-06-06-host-isolated-private-evidence-panel-summary.md",
         "2026-06-06-host-isolated-private-tool-agent-panel-summary.md",
-        "2026-06-06-final-v0-gate-promotion-summary.md"
+        "2026-06-06-final-v0-gate-promotion-summary.md",
+        "2026-06-06-v0-release-wiring-panel-summary.md"
       ],
-      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, host-isolated no-tools evidence, one eligible runner-fingerprinted row, and one private tool-agent run with 24/24 target correlation are verified. The evidence-bearing checkpoint passed local validation, privacy checks, fresh-clone validation, Docker smoke, and exact-head CI. This section is ready for the strict maintainer gate; no release tag is implied."
+      "notes": "CI, privacy scan, baseline gates, local private-holdout gates, host-isolated no-tools evidence, one eligible runner-fingerprinted row, and one private tool-agent run with 24/24 target correlation are verified. The release-wiring pass refreshed README, roadmap, release notes, launch-report, and release-evidence wording for a v0.0 candidate. This section is ready for the strict maintainer gate; the final tag still requires post-push CI on the tag target."
     }
   ]
 }

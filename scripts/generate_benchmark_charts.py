@@ -288,14 +288,15 @@ def evidence_status_chart(registry: dict[str, Any], private_summaries: list[dict
     public = registry["public_split"]
     tool_entries = [entry for entry in registry["baselines"] if entry["kind"] == "tool_agent_baseline" and entry["release_suitability"] == "current_public_split"]
     stale_tool_entries = [entry for entry in registry["baselines"] if entry["kind"] == "tool_agent_baseline" and entry["release_suitability"] == "current_public_stale"]
-    repeated_families = {
+    repeated_model_agent_families = {
         entry.get("model_family")
         for entry in registry["baselines"]
-        if entry["kind"] == "model_baseline" and entry["release_suitability"] == "current_public_split"
+        if entry["kind"] in {"model_baseline", "tool_agent_baseline"}
+        and entry["release_suitability"] == "current_public_split"
         and int(entry.get("run_count", 0)) >= int(registry.get("v0_requirements", {}).get("min_runs_per_serious_baseline", 2))
     }
     private_tool = [item for item in private_summaries if item.get("harness_type") == "tool-agent"]
-    family_label = "family" if len(repeated_families) == 1 else "families"
+    family_label = "family" if len(repeated_model_agent_families) == 1 else "families"
     tool_detail = (
         "Current public tool-agent summary with target correlation"
         if tool_entries
@@ -304,7 +305,11 @@ def evidence_status_chart(registry: dict[str, Any], private_summaries: list[dict
     )
     rows = [
         ("Public split validated", public["task_count"] >= 40, f'{public["task_count"]} public tasks across 6 apps'),
-        ("Repeated model families", len(repeated_families) >= 5, f"{len(repeated_families)} repeated current model {family_label}"),
+        (
+            "Repeated model/agent families",
+            len(repeated_model_agent_families) >= 5,
+            f"{len(repeated_model_agent_families)} repeated current model/agent {family_label}",
+        ),
         ("Public tool-agent baseline", bool(tool_entries), tool_detail),
         ("Protected private runs", len(private_summaries) >= 2, f"{len(private_summaries)} redacted protected-private summaries"),
         ("Private tool-agent coverage", bool(private_tool) and private_tool[0].get("target_request_coverage_rate") == 1.0, "Redacted private tool-agent summary reports 100% target coverage"),

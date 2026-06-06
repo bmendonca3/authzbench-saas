@@ -11,7 +11,7 @@ cards, LinkedIn posts, or external-review notes.
 | 46 public tasks across 6 synthetic SaaS apps | the public scaffold covers multiple SaaS authorization surfaces, including the first project-management multi-step workflow wave | public-split scores are private leaderboard scores |
 | deterministic scorer replay | submitted evidence can be checked against backend behavior | the agent necessarily interacted with a live target unless request-log correlation is present |
 | secure controls and authorized-allow controls | the benchmark can penalize false positives and over-reporting | all real SaaS false-positive patterns are covered |
-| four repeated current 46-task public no-tools baselines | four no-tools model families have current public-split replay evidence | broad model rankings, private-holdout performance, or leaderboard eligibility |
+| five repeated current 46-task public model/agent families | four no-tools model families plus one live HTTP tool-agent family have current public-split replay evidence | broad model rankings, private-holdout performance, or leaderboard eligibility |
 | two current 46-task public live HTTP tool-agent runs | the tool-agent harness can repeatedly emit per-task plan/probe artifacts and target-request correlation on the current public split | private-holdout tool-agent performance or hosted leaderboard readiness |
 | stale 44-task public model/tool-agent baselines | the harness has historical comparison artifacts and visible failure modes | current 46-task model rankings or leaderboard eligibility |
 | target-side request logs | live target interaction can be observed and correlated when configured | target logs alone prove the exploit; replay remains authoritative |

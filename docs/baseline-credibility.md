@@ -36,9 +36,9 @@ It also labels every summary as one of:
 
 The baseline sub-gate currently reports `v0_baseline_ready: true`. After the
 public split moved from 44 to 46 tasks for the first project-management
-multi-step workflow wave, the current evidence now includes four repeated
-current no-tools model-family baselines and one repeated current live HTTP
-tool-agent family.
+multi-step workflow wave, the current evidence now includes five repeated
+current model/agent families: four no-tools model-family baselines and one
+live HTTP tool-agent family.
 
 The v0 baseline bar is:
 

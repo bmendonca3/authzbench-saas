@@ -1,268 +1,233 @@
 # Roadmap
 
-AuthZBench-SaaS is currently an alpha/pre-v0 preview. The long-term goal is to
-make it a top benchmark for measuring whether AI agents can prove SaaS
-authorization bugs without inventing findings.
+AuthZBench-SaaS is a v0.0 release candidate for evaluating whether AI agents
+can prove SaaS authorization failures with backend evidence while avoiding false
+positives on secure controls.
 
-The benchmark should become known for one thing: realistic authorization
-boundary testing. It should stay focused on users, roles, tenants,
-organizations, objects, API tokens, sharing flows, and backend proof.
+The project should stay focused. It is not a general cyber benchmark. It is a
+benchmark for authorization boundaries: tenants, organizations, users, roles,
+objects, API tokens, scopes, sharing flows, admin actions, and replayable proof.
 
 ## North Star
 
-AuthZBench-SaaS should be useful to three groups:
+A strong AuthZBench-SaaS result should mean that an agent:
 
-- security researchers evaluating AI agents
-- builders comparing agent harnesses
-- application-security teams checking whether an AI can prove access-control
-  bugs instead of writing plausible reports
-
-The project should become a benchmark people can trust, not merely a demo that
-is easy to run. That means the roadmap has to protect five things at the same
-time: realistic SaaS boundaries, replayable proof, strong secure controls,
-repeatable model comparisons, and resistance to public-manifest memorization.
-
-A top result should mean the agent:
-
-- found real authorization failures
-- identified the correct actor, role, tenant, organization, and object boundary
+- found a real authorization failure
+- identified the correct actor, role, tenant, organization, object, or token
+  boundary
 - submitted evidence that replays against the backend
 - avoided false positives on secure controls
 - stayed inside the benchmark policy
 
-The working goal is tracked in [`docs/goal.md`](docs/goal.md). In short: keep
-the current repo honest as alpha/pre-v0, then earn the `v0` label through scale,
-protected holdouts, live-target proof, repeated baselines, and sectional review.
+The project becomes valuable only if those results are comparable, repeatable,
+and hard to game through public task memorization.
+
+## Current Release State
+
+Current state: **v0.0 release candidate**.
+
+Evidence already in place:
+
+- 6 synthetic SaaS apps
+- 46 public tasks
+- 24 maintainer-only private holdout tasks in the local private pack
+- deterministic backend replay scoring
+- target-side request logging for live HTTP runs
+- five repeated current public model/agent baseline families
+- one repeated current public live HTTP tool-agent family
+- protected private-holdout aggregate evidence
+- one source-backed private no-tools leaderboard-candidate row
+- public-safe charts and task-quality matrix
+- release evidence registry
+- privacy checks, fresh-clone validation path, Docker smoke, and CI
+
+Not yet in place:
+
+- pushed `v0.0` tag for the final post-CI commit
+- hosted public leaderboard
+- repeated private tool-agent leaderboard row
+- rotating private holdout packs
+- third-party runs or independent external review
+- v1-scale task volume and methodology paper
 
 ## Maturity Levels
 
-AuthZBench-SaaS uses three maturity levels so contributors do not confuse a
-legitimate first release with a finished research or community benchmark.
+**Level 1: v0 benchmark.** The first legitimate public release. It requires a
+frozen public split, frozen scoring/evidence contracts, repeated current
+baselines, verified private-holdout separation, release evidence, privacy
+checks, CI, fresh-clone validation, and a `v0.0` tag. It does not require a
+hosted leaderboard.
 
-**Level 1: v0 benchmark.** This is the first legitimate public benchmark
-release. It requires current repeated baselines on the frozen public split,
-frozen scoring and evidence contracts, methodology and benchmark-card docs,
-verified private-holdout separation, privacy checks, release validation, CI, and
-a `v0.0` tag. It does not require a hosted leaderboard or broad external
-adoption.
+**Level 2: research artifact.** A benchmark that can support academic or
+industry research. It needs independent review, reproducibility evidence,
+variance analysis, comparison against existing security benchmarks, and a paper
+or technical report.
 
-**Level 2: research artifact.** This is the version that should interest
-academic and industry researchers. It needs independent reviewer feedback,
-reproducibility evidence, a public benchmark paper or technical report,
-comparison against existing security benchmarks, and statistical analysis of
-baseline variance.
+**Level 3: community benchmark.** A benchmark people can submit to and track
+over time. It needs a public submission pipeline, hosted or fully containerized
+evaluation, rotating holdouts, multiple task packs, external contributors, and
+leaderboard governance.
 
-**Level 3: community benchmark.** This is the harder adoption layer. It needs a
-public submission pipeline, hosted or fully containerized evaluation, rotating
-private holdouts, multiple task packs, outside contributors, and governance for
-leaderboard changes.
-
-## SDLC And Review Rhythm
-
-Changes should land in auditable checkpoints instead of one large release dump.
-The intended contribution rhythm is:
-
-1. Scope or design commit for goals, roadmap, release gates, or architecture.
-2. Target-app/task commits for each new benchmark surface.
-3. Scorer, runner, logging, and anti-gaming commits when proof semantics change.
-4. Baseline/status commits after result artifacts or task counts change.
-5. Release-readiness commits after validation, privacy scans, panel review
-   dispositions, and fresh-clone checks.
-
-For material sections, preserve a short review artifact under `docs/reviews/`
-with the review question, evidence packet, accepted findings, rejected findings
-when relevant, and follow-up work. Raw model or CLI logs should not be committed.
-
-Sectional panel review is required before the project claims a section is
-release-ready. The minimum sections are:
-
-- goal, roadmap, and release criteria
-- task realism and vulnerability/control mix
-- scorer, runner, live-target proof, and request-log correlation
-- baseline methodology and leaderboard schema
-- holdout, contamination, and anti-gaming design
-- privacy scan, packaging, and final release readiness
-
-## Milestone 1: Alpha Preview Stabilization
+## Immediate Release Path: v0.0
 
 Status: in progress.
 
-This milestone keeps the current public split honest and easy to inspect.
+Goal: publish a clean `v0.0` tag only after release evidence, README wording,
+privacy checks, fresh-clone validation, and CI all align to the final pushed
+commit.
+
+- [x] Build public 46-task split across 6 apps.
+- [x] Add current repeated public baselines for 5 model/agent families.
+- [x] Add strict v0 release-gate validator.
+- [x] Add protected private-holdout aggregate evidence.
+- [x] Add source-backed leaderboard-submission validation.
+- [x] Add release notes for `v0.0`.
+- [x] Update README and roadmap to reflect v0.0 release-candidate status.
+- [ ] Commit final release-wiring changes.
+- [ ] Run local validation on the final commit candidate.
+- [ ] Run privacy checks against tracked files.
+- [ ] Run public fresh-clone validation from GitHub.
+- [ ] Push final release-wiring commit to `main`.
+- [ ] Confirm GitHub Actions passes on that exact commit.
+- [ ] Tag and push `v0.0`.
+
+Exit criteria:
+
+- `python3 scripts/validate_public.py --include-scripted-baseline` passes
+- container smoke path passes locally or in CI
+- `python3 scripts/validate_v0_release.py` passes in a maintainer checkout
+- `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
+  returns nothing
+- fresh public clone validates
+- exact-head GitHub Actions passes
+- tag target is the same pushed commit that passed CI
+
+## Milestone 1: Public Scaffold and v0 Scope
+
+Status: complete for v0.0.
 
 - [x] Publish six synthetic SaaS target apps.
-- [x] Publish 46 seeded public tasks, including the first public multi-step
-      workflow wave.
-- [x] Include vulnerable tasks and secure controls.
+- [x] Publish 46 seeded public tasks.
+- [x] Include vulnerable tasks, denial controls, and authorized-allow controls.
 - [x] Add deterministic scorer replay transcripts.
-- [x] Add scripted and live HTTP scripted harness baselines.
-- [x] Add early model baselines.
-- [x] Reframe the repository as alpha/pre-v0 instead of a finished v0.
-- [x] Add public v0 release criteria.
-- [x] Add a draft benchmark card.
-- [x] Add a changelog for task and scorer changes.
-- [x] Add route aliases and decoy endpoints exercised by public controls.
-- [x] Add target-side JSONL request logs for Docker HTTP targets.
-- [x] Add alpha runner correlation from target logs into per-task artifacts.
-- [x] Add CI for unit tests, manifest validation, compile checks, and Docker
-      config.
-- [x] Add Docker runtime smoke to the public CI gate.
-- [x] Add a machine-readable v0 release-gate audit that keeps alpha validation
-      honest while strict v0 readiness reflects the current evidence state.
-- [x] Keep sectional review notes current as each benchmark section changes.
-- [x] Preserve a public roadmap and goal contract for the path to v0.
+- [x] Add Docker request logging for live HTTP runs.
+- [x] Add route aliases and decoy endpoints.
+- [x] Add first public multi-step workflow wave.
+- [x] Add public benchmark card and methodology docs.
+- [x] Add task-quality rubric and generated task-quality matrix.
+- [x] Add public-safe benchmark charts.
 
-Exit criteria:
+Next improvements:
 
-- local validation passes
-- docs avoid overclaiming
-- public clone validates
-- no private or personal data is committed
-- commits are grouped into meaningful SDLC checkpoints
+- [ ] Expand multi-step workflows beyond the first project-management wave.
+- [ ] Add more state-changing authorization tasks across billing, support,
+      file sharing, API tokens, and audit settings.
+- [ ] Increase task count toward v1 scale without diluting control quality.
 
-## Milestone 2: Real v0 Scope
+## Milestone 2: Baseline Credibility
 
-Status: v0-candidate.
+Status: v0.0 candidate complete; v1 work remains.
 
-This milestone turns the prototype into a credible public benchmark.
+- [x] Run repeated current baselines for at least five model/agent families.
+- [x] Include at least one live HTTP tool-agent family.
+- [x] Preserve exact model labels, harness settings, commands, commit SHAs, and
+      source artifact paths.
+- [x] Separate exploit-proven success, vulnerable full pass, false-positive
+      rate, boundary reasoning, control execution, and target-request coverage.
+- [x] Mark stale 44-task snapshots as historical only.
+- [x] Add baseline registry validation.
+- [x] Add generated public-safe charts from baseline artifacts.
 
-Milestones 2, 3, and 4 are all prerequisites for the real `v0` release tag.
-Detailed task counts live in [`docs/v0-release-plan.md`](docs/v0-release-plan.md).
+Next improvements:
 
-- [x] Expand from 5 to 6 synthetic SaaS apps.
-- [x] Grow to 40-50 public tasks.
-- [x] Add 20-30 private holdout tasks outside public Git history.
-- [x] Add an ignored local private-holdout rehearsal generator and validator
-      path so maintainers can test the private-pack workflow without committing
-      private JSON.
-- [x] Keep secure controls at 40 percent or more of total tasks.
-- [x] Add deeper invite/membership and audit/settings boundaries.
-- [x] Add at least 10 authorized-allow controls so agents cannot classify every
-      sensitive route as a bug.
-- [x] Add first-class scored bearer-token replay for the API-token target while
-      preserving actor-compatible deterministic replay.
-- [x] Expand route aliases and decoy endpoints across apps.
-- [x] Add route-alias randomization and additional decoy variation across
-      private-holdout seeds.
-- [x] Harden per-task request-log correlation for leaderboard-grade live-agent
-      runs.
-- [x] Add benchmark version fields to all run summaries.
-- [x] Add v0-candidate run-summary metrics that separate exploit proof,
-      boundary reasoning, secure-control false reports, secure-control
-      execution, and target-request coverage from the legacy blended alpha
-      score.
-- [x] Add a v0 task build matrix with public/private allocations per app.
-- [x] Require sectional panel review before declaring any new app/task family
-      release-ready.
+- [ ] Add repeated private tool-agent evidence.
+- [ ] Add at least one third-party or independently operated agent run.
+- [ ] Add statistical variance analysis for repeated baselines.
+- [ ] Re-run key baselines after any task/scoring change before comparing
+      scores.
 
-Exit criteria:
+## Milestone 3: Private Holdouts and Anti-Gaming
 
-- public and private task counts meet the v0 target
-- task manifests validate
-- scorer replay and leaderboard-grade per-task request-log correlation both work
-- public docs clearly separate public-split results from private holdout results
-
-## Milestone 3: Baseline Credibility
-
-Status: v0-candidate evidence complete; final release validation still required.
-
-This milestone makes the benchmark useful for comparison rather than only
-inspection.
-
-- [x] Run at least five agent/model families.
-- [x] Run repeated trials for each serious baseline.
-- [x] Report exploit-proven success separately from false-positive rate.
-- [x] Preserve exact model labels, harness settings, commands, commit SHA, and
-      result bundles.
-- [x] Add variance or confidence notes when runs are repeated.
-- [x] Add a machine-validated leaderboard submission example that is explicitly
-      schema-valid evidence but not leaderboard eligible.
-- [x] Cross-check tracked leaderboard submission examples against source run
-      summaries so aggregate rows cannot drift from their artifacts.
-- [x] Preserve one public baseline report per serious model/agent family.
-- [ ] Re-run legacy model baselines after task-set changes before release tags.
-- [x] Add a baseline registry validator that labels harness checks, legacy
-      snapshots, current public-split runs, repeated runs, and leaderboard
-      eligibility.
-- [x] Add v0-candidate metrics that avoid agent-independent control credit on
-      vulnerable tasks.
-- [x] Decide whether to make v0-candidate metrics the default release scoring
-      profile for the first tagged `v0`.
-- [x] Restore the current-public repeated baseline count after the 46-task
-      split change.
-
-Exit criteria:
-
-- baseline table has enough coverage to show model differences
-- result artifacts can be traced back to commands and commit IDs
-- no one-off model score is presented as a stable leaderboard result
-
-## Milestone 4: Benchmark Hardening
-
-Status: v0-candidate.
-
-This milestone protects against gaming and accidental leakage.
+Status: v0.0 candidate evidence exists; v1 hardening remains.
 
 - [x] Keep private holdouts out of public Git history.
-- [x] Add multiple private seeds for scored holdout runs.
-- [x] Randomize harmless response details where semantics are unchanged.
-- [x] Add hidden oracle details for private holdouts.
-- [x] Add isolated protected execution for leaderboard-candidate runs.
-- [x] Add hosted, maintainer-run, or otherwise protected private-holdout
-      execution so participants do not receive readable holdout manifests.
-- [x] Add privacy and secret scanning to the release validation script and
-      checklist.
-- [x] Add a reproducible fresh-clone validation script.
-- [x] Harden private holdout pack validation for app coverage, control subtype
-      mix, and public ID/seed overlap.
-- [x] Add private-holdout variant metadata checks and public-structure copy
-      detection so renamed public tasks cannot be treated as leaderboard-ready.
-- [x] Add an ignored local rehearsal-pack generator that validates the private
-      holdout machinery while clearly disallowing leaderboard use.
-- [x] Add a release-readiness panel review with explicit dispositions for
-      privacy, holdouts, anti-gaming, and baseline claims.
+- [x] Validate private holdout app coverage, vulnerable/control mix, route
+      variants, decoys, and public-overlap checks.
+- [x] Add protected private execution with host private-path denial on macOS.
+- [x] Publish only redacted aggregate private evidence.
+- [x] Add one eligible source-backed private no-tools leaderboard-candidate row.
+- [x] Document rotating private holdout protocol.
 
-Post-v0 hardening:
+Next improvements:
 
-- [x] Document rotating multi-pack private holdout protocol.
 - [ ] Implement rotating multi-pack private holdouts.
-- [ ] Add a hosted or fully containerized leaderboard execution service.
+- [ ] Add repeated private tool-agent leaderboard-candidate rows.
+- [ ] Add leakage-response and holdout-retirement workflow tests.
+- [ ] Add stronger non-macOS isolation story for protected private execution.
 
-Exit criteria:
+## Milestone 4: Leaderboard and Submission Infrastructure
 
-- a public model cannot get a strong score by memorizing public task manifests
-- private holdout scores are separated from public development scores
-- release validation can be repeated by another maintainer
+Status: schema ready; hosted/community path not ready.
 
-## Milestone 5: v1 Candidate
+- [x] Add `leaderboard-submission-v1` schema.
+- [x] Add source-summary validation.
+- [x] Add benchmark fingerprints and comparability keys.
+- [x] Require repeated-run provenance for eligible rows.
+- [x] Separate schema-valid evidence from leaderboard eligibility.
+
+Next improvements:
+
+- [ ] Add a maintainer-operated submission review workflow.
+- [ ] Add hosted or fully containerized evaluation.
+- [ ] Add signed or attestable run bundles.
+- [ ] Publish leaderboard governance rules.
+- [ ] Add clear rules for reruns, ties, stale scores, and task-pack rotations.
+
+## Milestone 5: Research-Grade v1
 
 Status: future.
 
-Save the `v1` label for a version with external feedback and enough scale to be
-used seriously.
+Save the `v1` label for a version that has scale, independent review, and
+research-grade methodology.
 
 - [ ] At least 100 total tasks across public and private splits.
-- [x] Public multi-step workflow task expansion plan.
-- [ ] Independent external review of task design and scoring.
-- [x] External-review-ready benchmark card with limitations and intended use.
-- [x] Stable `leaderboard-submission-v1` schema with runner-emitted benchmark
-      fingerprints, deterministic comparability keys, and explicit repeated-run
-      provenance.
-- [x] Documented policy for task additions, removals, and deprecated scores.
-- [x] Public task-quality rubric and external-review packet guidance.
-- [x] Public agent evaluator kit for minimal third-party integration.
-- [ ] At least one third-party agent or researcher run.
+- [ ] Multiple multi-step workflow families.
+- [ ] Independent external task and scoring review.
+- [ ] Third-party agent runs.
+- [ ] Statistical variance analysis across repeated baselines.
+- [ ] Comparison against existing security benchmarks.
+- [ ] Public technical report or benchmark paper.
+- [ ] Reproducibility packet for researchers.
 
 Exit criteria:
 
-- outside users can run the benchmark without local handholding
+- outside users can run the public harness without local handholding
+- private evaluation can be operated without leaking holdouts
+- score comparability is clear across versions
 - task quality has survived independent review
-- leaderboard claims are backed by private holdouts and repeatable artifacts
+- claims are backed by repeatable artifacts, not just documentation
+
+## SDLC and Review Rhythm
+
+Changes should land in auditable checkpoints:
+
+1. Scope or design commit for goals, roadmap, release gates, or architecture.
+2. Target-app/task commits for new benchmark surfaces.
+3. Scorer, runner, logging, and anti-gaming commits when proof semantics change.
+4. Baseline/status commits after result artifacts or task counts change.
+5. Release-readiness commits after validation, privacy scans, review
+   dispositions, and fresh-clone checks.
+
+For release-facing sections, preserve a short public-safe review artifact under
+`docs/reviews/`. Raw model or CLI logs should not be committed.
 
 ## Version Labels
 
-- Current repository state: `alpha preview` or `pre-v0`
-- Alpha tags: `alpha-<semver>-public-scaffold`
-- Local alpha runs: `alpha-<semver>-public-scaffold-local`
-- First release-worthy benchmark: `v0`, only after Milestones 2, 3, and 4 meet
-  their exit criteria
-- Mature, externally validated benchmark: `v1`
+- `alpha/pre-v0`: development state before a clean first release
+- `v0.0-candidate`: strict v0 evidence exists, but final tag has not landed
+- `v0.0`: first evidence-backed release snapshot
+- `v1`: externally reviewed, scaled, research-grade benchmark
+
+Do not call the project leaderboard-ready until the hosted or containerized
+submission process exists and private-holdout scoring is operational at that
+level.
