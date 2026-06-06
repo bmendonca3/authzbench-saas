@@ -72,13 +72,17 @@
       "model_family": "kiro-live-tool-agent-sonnet",
       "release_suitability": "current_public_split",
       "leaderboard_eligible": false,
-      "run_count": 1,
+      "run_count": 2,
       "expected_harness_type": "tool-agent",
       "expected_agent": "kiro_live_tool_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 46,
       "requires_rerun_before_v0": false,
-      "notes": "Current 46-task public split live HTTP tool-agent baseline through the Kiro adapter. It includes one model-plan artifact and one tool-probe artifact per task plus full target-request correlation. Public-split evidence only; not private-holdout or leaderboard eligible."
+      "notes": "Repeated current 46-task public split live HTTP tool-agent baseline through the Kiro adapter. Both runs include one model-plan artifact and one tool-probe artifact per task plus full target-request correlation. The paired runs span adjacent public-doc/test/tooling commits; public tasks, apps, scorer, runner summary contract, and task fingerprint match. Public-split evidence only; not private-holdout or leaderboard eligible.",
+      "run_artifacts": [
+        "kiro-live-tool-agent-sonnet-current-public-46-summary.json",
+        "kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json"
+      ]
     },
     {
       "id": "live-scripted-public-44",

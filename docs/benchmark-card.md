@@ -86,11 +86,11 @@ mixed with current evidence without a compatibility label.
 - Docker HTTP targets write target-side request logs, and the alpha runner can
   correlate them into per-task artifacts when `--target-log-dir` is supplied.
   Leaderboard-grade Docker/agent isolation is still planned.
-- Two current public no-tools model-family baselines and one current public live
-  HTTP tool-agent baseline exist on the 46-task split. The older 44-task
+- Two current public no-tools model-family baselines and one repeated current
+  public live HTTP tool-agent baseline exist on the 46-task split. The older 44-task
   baselines are retained as stale public-split snapshots only.
 - Baseline registry validation is present and currently reports the baseline
-  sub-gate as not ready until three more current repeated model/agent-family
+  sub-gate as not ready until two more current repeated model/agent-family
   baselines exist.
 - Leaderboard submission validation is present, and one redacted
   private-holdout no-tools model row is currently eligible. It proves the

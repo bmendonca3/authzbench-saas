@@ -12,7 +12,7 @@ cards, LinkedIn posts, or external-review notes.
 | deterministic scorer replay | submitted evidence can be checked against backend behavior | the agent necessarily interacted with a live target unless request-log correlation is present |
 | secure controls and authorized-allow controls | the benchmark can penalize false positives and over-reporting | all real SaaS false-positive patterns are covered |
 | two repeated current 46-task public no-tools baselines | two no-tools model families have current public-split replay evidence | broad model rankings, private-holdout performance, or leaderboard eligibility |
-| one current 46-task public live HTTP tool-agent baseline | the tool-agent harness can emit per-task plan/probe artifacts and target-request correlation on the current public split | repeated tool-agent performance, private-holdout tool-agent performance, hosted leaderboard readiness, or a v0-ready baseline gate |
+| two current 46-task public live HTTP tool-agent runs | the tool-agent harness can repeatedly emit per-task plan/probe artifacts and target-request correlation on the current public split | private-holdout tool-agent performance, hosted leaderboard readiness, or a v0-ready baseline gate |
 | stale 44-task public model/tool-agent baselines | the harness has historical comparison artifacts and visible failure modes | current 46-task model rankings or leaderboard eligibility |
 | target-side request logs | live target interaction can be observed and correlated when configured | target logs alone prove the exploit; replay remains authoritative |
 | protected private-holdout summaries | maintainers have private release-candidate evidence without publishing holdout internals | public users can reproduce private scores from the repo |

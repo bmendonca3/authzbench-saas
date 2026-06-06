@@ -54,10 +54,10 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(result["baseline_count"], 14, result)
         self.assertEqual(result["public_split"]["task_count"], 46, result)
         self.assertEqual(result["current_public_model_family_count"], 3, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 2, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 3, result)
         self.assertFalse(result["v0_baseline_ready"], result)
         self.assertIn("current public model families: 3 of 5", result["unmet_v0_requirements"])
-        self.assertIn("repeated model baselines: 2 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 3 of 5", result["unmet_v0_requirements"])
         self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
 
     def test_rejects_harness_check_mislabeled_as_current_public_split(self) -> None:

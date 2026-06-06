@@ -29,7 +29,7 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - current 46-task deterministic scripted harness check
 - repeated current 46-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated current 46-task no-tools Kiro `claude-haiku-4.5` model baseline
-- current 46-task live HTTP Kiro `claude-sonnet-4.6` tool-agent baseline with
+- repeated current 46-task live HTTP Kiro `claude-sonnet-4.6` tool-agent baseline with
   per-task plan/probe artifacts and 46/46 target-request correlation
 - stale 44-task live HTTP scripted, heuristic, model, and tool-agent summaries
   retained as context until rerun on the current split
@@ -70,7 +70,7 @@ python3 scripts/validate_public.py --include-scripted-baseline --include-contain
 
 The strict `python3 scripts/validate_v0_release.py` gate is expected to report
 `v0_ready: false` in this checkpoint because the baseline credibility gate still
-needs three more current repeated model/agent-family baselines.
+needs two more current repeated model/agent-family baselines.
 
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
 are retained only as historical context. Docker runtime smoke requires a Docker
@@ -83,10 +83,11 @@ rerun twice on the current 46-task split. The `claude-haiku-4.5` no-tools Kiro
 baseline has also been rerun twice on the 46-task split; the two runs span
 adjacent commits where only chart rendering/status text changed. The older live
 HTTP scripted, heuristic, and older Kiro model/tool-agent summaries are now
-stale 44-task snapshots because the public split changed. A new current
-`claude-sonnet-4.6` live HTTP tool-agent run exists on the 46-task split with
-per-task plan/probe artifacts and full target-request correlation, but it is one
-public-split run, not a repeated leaderboard row.
+stale 44-task snapshots because the public split changed. The current
+`claude-sonnet-4.6` live HTTP tool-agent baseline now has two 46-task
+public-split runs with per-task plan/probe artifacts and full target-request
+correlation in both runs, but it is still not private-holdout or hosted
+leaderboard evidence.
 The second Qwen run also had one invalid submission on a vulnerable task
 (`invalid_submission_rate: 0.0217`), so the current Qwen evidence should be read
 as repeatability evidence, not a polished model ranking.
@@ -100,7 +101,8 @@ as repeatability evidence, not a polished model ranking.
 | Kiro `qwen3-coder-next` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools current run 1 | 46 | 26 | 0.2632 | 0.0 | 0.037 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
-| Kiro live HTTP tool-agent `claude-sonnet-4.6` current run | 46 | 27 | 0.7368 | 0.0 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 1 | 46 | 27 | 0.7368 | 0.0 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 2 | 46 | 27 | 0.7368 | 0.0 | 0.0 | 1.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Heuristic live HTTP prober, stale 44-task snapshot | 44 | 33 | 0.6111 | 0.6667 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 | not tracked |
@@ -140,10 +142,10 @@ are still needed after the 46-task split change.
 - current deterministic scripted harness summary exists for the 46-task public split
 - two repeated current no-tools model-family baselines exist on the 46-task
   public split
-- one current live HTTP tool-agent baseline exists on the 46-task public split,
-  with plan/probe artifacts and full target-request correlation
+- one repeated current live HTTP tool-agent baseline exists on the 46-task
+  public split, with plan/probe artifacts and full target-request correlation
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: false` because three more current repeated model/agent
+  `v0_baseline_ready: false` because two more current repeated model/agent
   families are still needed
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence
