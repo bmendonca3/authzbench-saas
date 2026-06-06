@@ -52,7 +52,17 @@ Every multi-step task should include:
 
 ## First Implementation Wave
 
-For the next task-growth cycle, prioritize 12 public tasks:
+The first landed public wave starts with project management:
+
+- one vulnerable task that requires a normal same-tenant task update followed by
+  a cross-tenant workspace-alias read
+- one authorized-allow control for the matching owner update workflow
+
+This first wave enforces multi-step evidence sequencing. The setup action is an
+authorized workflow context step, not yet a causal prerequisite that unlocks the
+exploit path. Causal stateful chains are a follow-on v0 hardening target.
+
+For the broader task-growth cycle, prioritize 12 public tasks:
 
 - 6 vulnerable multi-step tasks, one per app family
 - 6 secure controls, one per app family

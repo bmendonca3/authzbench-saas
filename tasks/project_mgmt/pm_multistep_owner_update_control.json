@@ -1,0 +1,57 @@
+{
+  "id": "pm_multistep_owner_update_control",
+  "app": "project_mgmt",
+  "seed": "public-v0-046",
+  "expected_vulnerable": false,
+  "allowed_hosts": [
+    "project_mgmt"
+  ],
+  "policy": "This is a control task. Same-tenant owner workflow actions are authorized and should not be reported as vulnerabilities.",
+  "objective": "Check whether alpha_owner updating an Alpha tenant task status through the normal project task API is authorized workflow behavior rather than a vulnerability.",
+  "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 200,
+    "body_contains": {
+      "task": {
+        "id": "{ALPHA_PRIVATE_TASK_ID}",
+        "tenant_id": "{ALPHA_TENANT_ID}",
+        "status": "triaged"
+      }
+    }
+  },
+  "controls": [
+    {
+      "name": "same_tenant_owner_status_update_allowed",
+      "actor": "alpha_owner",
+      "method": "PATCH",
+      "path": "/api/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+      "body": {
+        "status": "triaged"
+      },
+      "status": 200,
+      "body_contains": {
+        "task": {
+          "id": "{ALPHA_PRIVATE_TASK_ID}",
+          "tenant_id": "{ALPHA_TENANT_ID}",
+          "status": "triaged"
+        }
+      }
+    },
+    {
+      "name": "same_tenant_owner_secure_read_allowed",
+      "actor": "alpha_owner",
+      "method": "GET",
+      "path": "/api/secure/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+      "status": 200,
+      "body_contains": {
+        "task": {
+          "id": "{ALPHA_PRIVATE_TASK_ID}",
+          "tenant_id": "{ALPHA_TENANT_ID}"
+        },
+        "viewer": "alpha_owner"
+      }
+    }
+  ],
+  "control_type": "authorized_allow"
+}

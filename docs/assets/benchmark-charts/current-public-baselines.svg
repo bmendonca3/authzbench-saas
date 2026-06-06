@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1180" height="474" viewBox="0 0 1180 474" role="img" aria-labelledby="title desc">
-<title id="title">Current Public Baseline Metrics</title>
-<desc id="desc">Averages over tracked current public-split model/tool-agent summaries; not private leaderboard results.</desc>
+<title id="title">Public Baseline Metrics</title>
+<desc id="desc">Current rows plus stale public-split snapshots where rerun is required; not private leaderboard results.</desc>
 <rect x="0.0" y="0.0" width="1180.0" height="474.0" rx="0" fill="#ffffff"/>
 <rect x="18.0" y="18.0" width="1144.0" height="438.0" rx="8" fill="#f6f8fb"/>
-<text x="36.0" y="54.0" fill="#0b1f4d" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Current Public Baseline Metrics</text>
-<text x="36.0" y="78.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Averages over tracked current public-split model/tool-agent summaries; not private leaderboard results.</text>
+<text x="36.0" y="54.0" fill="#0b1f4d" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700">Public Baseline Metrics</text>
+<text x="36.0" y="78.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Current rows plus stale public-split snapshots where rerun is required; not private leaderboard results.</text>
 <rect x="260.0" y="94.0" width="12.0" height="12.0" rx="2" fill="#2ea8a1"/>
 <text x="278.0" y="105.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Pass</text>
 <rect x="410.0" y="94.0" width="12.0" height="12.0" rx="2" fill="#2f7de1"/>
@@ -13,89 +13,89 @@
 <text x="578.0" y="105.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Boundary</text>
 <rect x="710.0" y="94.0" width="12.0" height="12.0" rx="2" fill="#d9480f"/>
 <text x="728.0" y="105.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">False positive (lower is better)</text>
-<text x="36.0" y="140.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Tool agent: Claude Sonnet 4.6</text>
-<text x="36.0" y="158.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">tool agent baseline; 1 run(s)</text>
+<text x="36.0" y="140.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Tool agent: Claude Sonnet 4.6 (stale)</text>
+<text x="36.0" y="158.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">tool agent baseline; 1 run(s); stale 44-task split; rerun required</text>
 <rect x="260.0" y="130.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="260.0" y="130.0" width="65.0" height="12.0" rx="3" fill="#2ea8a1"/>
+<rect x="260.0" y="130.0" width="65.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="260.0" y="152.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">59.1%</text>
 <rect x="410.0" y="130.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="410.0" y="130.0" width="85.6" height="12.0" rx="3" fill="#2f7de1"/>
+<rect x="410.0" y="130.0" width="85.6" height="12.0" rx="3" fill="#64748b"/>
 <text x="410.0" y="152.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">77.8%</text>
 <rect x="560.0" y="130.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="560.0" y="130.0" width="0.0" height="12.0" rx="3" fill="#f59e0b"/>
+<rect x="560.0" y="130.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="560.0" y="152.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
 <rect x="710.0" y="130.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="710.0" y="130.0" width="0.0" height="12.0" rx="3" fill="#d9480f"/>
+<rect x="710.0" y="130.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="710.0" y="152.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
-<text x="36.0" y="196.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Claude Sonnet 4.6</text>
-<text x="36.0" y="214.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s)</text>
+<text x="36.0" y="196.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Claude Sonnet 4.6 (stale)</text>
+<text x="36.0" y="214.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s); stale 44-task split; rerun required</text>
 <rect x="260.0" y="186.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="260.0" y="186.0" width="72.5" height="12.0" rx="3" fill="#2ea8a1"/>
+<rect x="260.0" y="186.0" width="72.5" height="12.0" rx="3" fill="#64748b"/>
 <text x="260.0" y="208.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">65.9%</text>
 <rect x="410.0" y="186.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="410.0" y="186.0" width="85.6" height="12.0" rx="3" fill="#2f7de1"/>
+<rect x="410.0" y="186.0" width="85.6" height="12.0" rx="3" fill="#64748b"/>
 <text x="410.0" y="208.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">77.8%</text>
 <rect x="560.0" y="186.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="560.0" y="186.0" width="18.3" height="12.0" rx="3" fill="#f59e0b"/>
+<rect x="560.0" y="186.0" width="18.3" height="12.0" rx="3" fill="#64748b"/>
 <text x="560.0" y="208.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">16.7%</text>
 <rect x="710.0" y="186.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="710.0" y="186.0" width="0.0" height="12.0" rx="3" fill="#d9480f"/>
+<rect x="710.0" y="186.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="710.0" y="208.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
-<text x="36.0" y="252.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Claude Opus 4.6</text>
-<text x="36.0" y="270.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s)</text>
+<text x="36.0" y="252.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Claude Opus 4.6 (stale)</text>
+<text x="36.0" y="270.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s); stale 44-task split; rerun required</text>
 <rect x="260.0" y="242.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="260.0" y="242.0" width="67.5" height="12.0" rx="3" fill="#2ea8a1"/>
+<rect x="260.0" y="242.0" width="67.5" height="12.0" rx="3" fill="#64748b"/>
 <text x="260.0" y="264.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">61.4%</text>
 <rect x="410.0" y="242.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="410.0" y="242.0" width="73.3" height="12.0" rx="3" fill="#2f7de1"/>
+<rect x="410.0" y="242.0" width="73.3" height="12.0" rx="3" fill="#64748b"/>
 <text x="410.0" y="264.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">66.7%</text>
 <rect x="560.0" y="242.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="560.0" y="242.0" width="6.1" height="12.0" rx="3" fill="#f59e0b"/>
+<rect x="560.0" y="242.0" width="6.1" height="12.0" rx="3" fill="#64748b"/>
 <text x="560.0" y="264.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">5.6%</text>
 <rect x="710.0" y="242.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="710.0" y="242.0" width="0.0" height="12.0" rx="3" fill="#d9480f"/>
+<rect x="710.0" y="242.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="710.0" y="264.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
-<text x="36.0" y="308.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Claude Haiku 4.5</text>
-<text x="36.0" y="326.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s)</text>
+<text x="36.0" y="308.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Claude Haiku 4.5 (stale)</text>
+<text x="36.0" y="326.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s); stale 44-task split; rerun required</text>
 <rect x="260.0" y="298.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="260.0" y="298.0" width="65.0" height="12.0" rx="3" fill="#2ea8a1"/>
+<rect x="260.0" y="298.0" width="65.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="260.0" y="320.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">59.1%</text>
 <rect x="410.0" y="298.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="410.0" y="298.0" width="24.4" height="12.0" rx="3" fill="#2f7de1"/>
+<rect x="410.0" y="298.0" width="24.4" height="12.0" rx="3" fill="#64748b"/>
 <text x="410.0" y="320.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">22.2%</text>
 <rect x="560.0" y="298.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="560.0" y="298.0" width="0.0" height="12.0" rx="3" fill="#f59e0b"/>
+<rect x="560.0" y="298.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="560.0" y="320.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
 <rect x="710.0" y="298.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="710.0" y="298.0" width="0.0" height="12.0" rx="3" fill="#d9480f"/>
+<rect x="710.0" y="298.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="710.0" y="320.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
-<text x="36.0" y="364.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">DeepSeek 3.2</text>
-<text x="36.0" y="382.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s)</text>
+<text x="36.0" y="364.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">DeepSeek 3.2 (stale)</text>
+<text x="36.0" y="382.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s); stale 44-task split; rerun required</text>
 <rect x="260.0" y="354.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="260.0" y="354.0" width="65.0" height="12.0" rx="3" fill="#2ea8a1"/>
+<rect x="260.0" y="354.0" width="65.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="260.0" y="376.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">59.1%</text>
 <rect x="410.0" y="354.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="410.0" y="354.0" width="0.0" height="12.0" rx="3" fill="#2f7de1"/>
+<rect x="410.0" y="354.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="410.0" y="376.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
 <rect x="560.0" y="354.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="560.0" y="354.0" width="0.0" height="12.0" rx="3" fill="#f59e0b"/>
+<rect x="560.0" y="354.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="560.0" y="376.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
 <rect x="710.0" y="354.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="710.0" y="354.0" width="0.0" height="12.0" rx="3" fill="#d9480f"/>
+<rect x="710.0" y="354.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="710.0" y="376.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
-<text x="36.0" y="420.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Qwen3 Coder Next</text>
-<text x="36.0" y="438.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s)</text>
+<text x="36.0" y="420.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="600">Qwen3 Coder Next (stale)</text>
+<text x="36.0" y="438.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">model baseline; 2 run(s); stale 44-task split; rerun required</text>
 <rect x="260.0" y="410.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="260.0" y="410.0" width="63.8" height="12.0" rx="3" fill="#2ea8a1"/>
+<rect x="260.0" y="410.0" width="63.8" height="12.0" rx="3" fill="#64748b"/>
 <text x="260.0" y="432.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">58.0%</text>
 <rect x="410.0" y="410.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="410.0" y="410.0" width="0.0" height="12.0" rx="3" fill="#2f7de1"/>
+<rect x="410.0" y="410.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="410.0" y="432.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
 <rect x="560.0" y="410.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="560.0" y="410.0" width="0.0" height="12.0" rx="3" fill="#f59e0b"/>
+<rect x="560.0" y="410.0" width="0.0" height="12.0" rx="3" fill="#64748b"/>
 <text x="560.0" y="432.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">0.0%</text>
 <rect x="710.0" y="410.0" width="110.0" height="12.0" rx="3" fill="#e6ebf2"/>
-<rect x="710.0" y="410.0" width="2.1" height="12.0" rx="3" fill="#d9480f"/>
+<rect x="710.0" y="410.0" width="2.1" height="12.0" rx="3" fill="#64748b"/>
 <text x="710.0" y="432.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">1.9%</text>
 <text x="36.0" y="450.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="400">Source: tracked AuthZBench-SaaS baseline and redacted evidence JSON. Public-split evidence is not leaderboard ranking.</text>
 </svg>

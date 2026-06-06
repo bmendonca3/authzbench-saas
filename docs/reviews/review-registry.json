@@ -21,9 +21,10 @@
         "2026-06-05-file-sharing-panel-summary.md",
         "2026-06-05-api-tokens-panel-summary.md",
         "2026-06-05-audit-settings-panel-summary.md",
-        "2026-06-05-final-task-mix-panel-summary.md"
+        "2026-06-05-final-task-mix-panel-summary.md",
+        "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md"
       ],
-      "notes": "Public app/task expansion, private holdout aggregate counts, and the combined vulnerable/control mix have final task-mix review coverage. This section is v0-ready; overall v0 remains blocked by anti-gaming and final release-readiness sections."
+      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, and the first project-management multi-step workflow wave have review coverage. This section is reviewed; current model/tool-agent reruns remain tracked by the baseline credibility gate."
     },
     {
       "id": "scorer_runner_request_logs_live_proof",
@@ -55,9 +56,10 @@
         "2026-06-05-haiku-current-baseline-panel-summary.md",
         "2026-06-05-opus-current-baseline-panel-summary.md",
         "2026-06-05-kiro-live-tool-agent-panel-summary.md",
-        "2026-06-05-private-leaderboard-submission-panel-summary.md"
+        "2026-06-05-private-leaderboard-submission-panel-summary.md",
+        "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md"
       ],
-      "notes": "Registry and leaderboard validators have review coverage. Five repeated current public no-tools families, a true public-split tool-agent baseline, and one validated private-holdout release-candidate leaderboard row now exist. This section is v0-ready; overall v0 remains blocked by other review sections and release evidence."
+      "notes": "Registry and leaderboard validators have review coverage. The previous 44-task public model/tool-agent baselines are now correctly labeled stale after the 46-task split change, so current model/tool-agent reruns are required before this evidence can support a v0 claim."
     },
     {
       "id": "holdout_contamination_anti_gaming",

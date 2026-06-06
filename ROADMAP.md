@@ -67,7 +67,8 @@ Status: in progress.
 This milestone keeps the current public split honest and easy to inspect.
 
 - [x] Publish six synthetic SaaS target apps.
-- [x] Publish 44 seeded public tasks.
+- [x] Publish 46 seeded public tasks, including the first public multi-step
+      workflow wave.
 - [x] Include vulnerable tasks and secure controls.
 - [x] Add deterministic scorer replay transcripts.
 - [x] Add scripted and live HTTP scripted harness baselines.

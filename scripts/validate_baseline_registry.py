@@ -50,7 +50,12 @@ REQUIRED_TOOL_AGENT_SUMMARY_FIELDS = {
 }
 
 VALID_KINDS = {"harness_check", "model_baseline", "tool_agent_baseline"}
-VALID_SUITABILITY = {"current_public_split", "current_public_harness_check", "legacy_snapshot"}
+VALID_SUITABILITY = {
+    "current_public_split",
+    "current_public_harness_check",
+    "current_public_stale",
+    "legacy_snapshot",
+}
 
 
 def _task_counts() -> dict[str, int]:
@@ -239,12 +244,16 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
     current_model_families: set[str] = set()
     has_tool_agent_baseline = False
     repeated_model_baselines = 0
+    seen_entry_ids: set[str] = set()
 
     for raw_entry in entries:
         if not isinstance(raw_entry, dict):
             errors.append("every baseline entry must be an object")
             continue
         entry_id = str(raw_entry.get("id", "<missing-id>"))
+        if entry_id in seen_entry_ids:
+            errors.append(f"{entry_id}: duplicate baseline id")
+        seen_entry_ids.add(entry_id)
         missing = sorted(REQUIRED_ENTRY_FIELDS - set(raw_entry))
         if missing:
             errors.append(f"{entry_id}: missing registry fields: {', '.join(missing)}")
@@ -283,6 +292,11 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         if suitability == "legacy_snapshot":
             if not requires_rerun:
                 errors.append(f"{entry_id}: legacy_snapshot must set requires_rerun_before_v0=true")
+        if suitability == "current_public_stale":
+            if not requires_rerun:
+                errors.append(f"{entry_id}: current_public_stale must set requires_rerun_before_v0=true")
+            if leaderboard_eligible:
+                errors.append(f"{entry_id}: current_public_stale entries cannot be leaderboard_eligible")
 
         if kind in {"model_baseline", "tool_agent_baseline"}:
             model_family = str(raw_entry.get("model_family", "")).strip()
@@ -326,7 +340,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
                     public_counts,
                     errors,
                 )
-            if run_count >= min_runs and has_repeated_evidence:
+            if suitability == "current_public_split" and run_count >= min_runs and has_repeated_evidence:
                 repeated_model_baselines += 1
             if leaderboard_eligible and (suitability != "current_public_split" or run_count < min_runs):
                 errors.append(

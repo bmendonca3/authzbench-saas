@@ -71,7 +71,7 @@ def svg(title: str, subtitle: str, width: int, height: int, body: list[str]) -> 
 def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for entry in registry["baselines"]:
-        if entry["release_suitability"] != "current_public_split":
+        if entry["release_suitability"] not in {"current_public_split", "current_public_stale"}:
             continue
         if entry["kind"] not in {"model_baseline", "tool_agent_baseline"}:
             continue
@@ -91,6 +91,8 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "id": entry["id"],
             "label": label,
             "kind": entry["kind"],
+            "release_suitability": entry["release_suitability"],
+            "requires_rerun_before_v0": bool(entry.get("requires_rerun_before_v0")),
             "run_count": len(artifacts),
             "task_count": artifacts[0]["task_count"],
             "pass_rate": mean(item["passed_count"] / item["task_count"] for item in artifacts),
@@ -99,7 +101,14 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "boundary_reasoning_pass_rate": mean(item["boundary_reasoning_pass_rate"] for item in artifacts),
         }
         rows.append(row)
-    rows.sort(key=lambda item: (item["kind"] != "tool_agent_baseline", -item["exploit_proven_success_rate"], item["label"]))
+    rows.sort(
+        key=lambda item: (
+            item["release_suitability"] == "current_public_stale",
+            item["kind"] != "tool_agent_baseline",
+            -item["exploit_proven_success_rate"],
+            item["label"],
+        )
+    )
     return rows
 
 
@@ -117,23 +126,37 @@ def grouped_metric_chart(rows: list[dict[str, Any]]) -> str:
     ]
     body: list[str] = []
     y0 = 118
+    if not rows:
+        body.append(text(36, 140, "No current public model/tool-agent baseline rows are tracked yet.", size=14, color="text", weight="600"))
+        body.append(text(36, 164, "Rerun model and tool-agent baselines before using this chart for comparison.", size=12, color="muted"))
+        return svg(
+            "Public Baseline Metrics",
+            "No current model/tool-agent comparison rows are available; not private leaderboard results.",
+            width,
+            height + 70,
+            body,
+        )
     for i, (_, label, color) in enumerate(metrics):
         x = left + i * 150
         body.append(rect(x, 94, 12, 12, color, rx=2))
         body.append(text(x + 18, 105, label, size=12, color="muted"))
     for idx, row in enumerate(rows):
         y = y0 + idx * row_h
-        body.append(text(36, y + 22, row["label"], size=13, color="text", weight="600"))
-        body.append(text(36, y + 40, f'{row["kind"].replace("_", " ")}; {row["run_count"]} run(s)', size=11, color="muted"))
+        is_stale = row["release_suitability"] == "current_public_stale"
+        status = "current split" if not is_stale else f'stale {row["task_count"]}-task split; rerun required'
+        label = row["label"] if not is_stale else f'{row["label"]} (stale)'
+        body.append(text(36, y + 22, label, size=13, color="gray" if is_stale else "text", weight="600"))
+        body.append(text(36, y + 40, f'{row["kind"].replace("_", " ")}; {row["run_count"]} run(s); {status}', size=11, color="muted"))
         for i, (key, _, color) in enumerate(metrics):
             value = float(row[key])
             x = left + i * 150
+            fill = COLORS["gray"] if is_stale else color
             body.append(rect(x, y + 12, 110, 12, "#e6ebf2", rx=3))
-            body.append(rect(x, y + 12, 110 * min(value, 1.0), 12, color, rx=3))
+            body.append(rect(x, y + 12, 110 * min(value, 1.0), 12, fill, rx=3))
             body.append(text(x, y + 34, fmt_pct(value), size=11, color="muted"))
     return svg(
-        "Current Public Baseline Metrics",
-        "Averages over tracked current public-split model/tool-agent summaries; not private leaderboard results.",
+        "Public Baseline Metrics",
+        "Current rows plus stale public-split snapshots where rerun is required; not private leaderboard results.",
         width,
         height,
         body,
@@ -279,9 +302,9 @@ def main() -> int:
             *[str(path.relative_to(ROOT)) for path in sorted(ROOT.glob("docs/protected-private*-2026-06-05.redacted.json"))],
         ],
         "public_split": registry["public_split"],
-        "current_public_baselines": rows,
+        "public_baselines": rows,
         "private_redacted_evidence_count": len(private_summaries),
-        "claim_boundary": "Charts summarize public-safe artifacts. They are not hosted leaderboard rankings.",
+        "claim_boundary": "Charts summarize public-safe artifacts. Stale public baselines are historical only and are not hosted leaderboard rankings.",
     }
     write(ASSET_DIR / "current-public-baselines.svg", grouped_metric_chart(rows))
     write(ASSET_DIR / "task-mix.svg", task_mix_chart(registry["public_split"], private_summaries))
@@ -302,7 +325,8 @@ def main() -> int:
                 "```",
                 "",
                 "These charts summarize tracked public-split baselines and redacted",
-                "private-evidence summaries. They are not hosted leaderboard rankings.",
+                "private-evidence summaries. Stale public baselines need rerun before",
+                "current comparison, and these charts are not hosted leaderboard rankings.",
                 "",
             ]
         ),

@@ -1,11 +1,11 @@
 {
   "schema_version": "baseline-registry-v1",
   "public_split": {
-    "task_count": 44,
-    "vulnerable_task_count": 18,
-    "control_task_count": 26,
+    "task_count": 46,
+    "vulnerable_task_count": 19,
+    "control_task_count": 27,
     "denial_control_task_count": 16,
-    "authorized_allow_control_task_count": 10
+    "authorized_allow_control_task_count": 11
   },
   "v0_requirements": {
     "min_real_model_families": 5,
@@ -14,8 +14,8 @@
   },
   "baselines": [
     {
-      "id": "scripted-sanity-public-44",
-      "summary_path": "scripted-baseline-summary.json",
+      "id": "scripted-sanity-public-46",
+      "summary_path": "scripted-baseline-public-46-summary.json",
       "kind": "harness_check",
       "release_suitability": "current_public_harness_check",
       "leaderboard_eligible": false,
@@ -23,15 +23,15 @@
       "expected_harness_type": "scripted",
       "expected_agent": "scripted_baseline_agent",
       "expected_model": "deterministic-script",
-      "expected_task_count": 44,
-      "requires_rerun_before_v0": true,
-      "notes": "Deterministic harness sanity check. Useful for validating scorer and manifests, but not a model result."
+      "expected_task_count": 46,
+      "requires_rerun_before_v0": false,
+      "notes": "Current deterministic harness sanity check for the 46-task public split. Useful for validating scorer and manifests, but not a model result."
     },
     {
       "id": "live-scripted-public-44",
       "summary_path": "live-scripted-baseline-summary.json",
       "kind": "harness_check",
-      "release_suitability": "current_public_harness_check",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 1,
       "expected_harness_type": "scripted-live-http",
@@ -39,13 +39,13 @@
       "expected_model": "deterministic-live-http-script",
       "expected_task_count": 44,
       "requires_rerun_before_v0": true,
-      "notes": "Current 44-task live HTTP harness check against Docker targets. Vulnerable proof requests correlate to target logs, but secure controls are not live-exercised by this deterministic finding-only agent, so this is not leaderboard-grade live-agent evidence."
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     },
     {
       "id": "heuristic-live-http-prober-public-44",
       "summary_path": "heuristic-live-http-prober-public-44-summary.json",
       "kind": "harness_check",
-      "release_suitability": "current_public_harness_check",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 1,
       "expected_harness_type": "heuristic-live-http",
@@ -53,7 +53,7 @@
       "expected_model": "heuristic-http-prober-v1",
       "expected_task_count": 44,
       "requires_rerun_before_v0": true,
-      "notes": "Current 44-task live HTTP heuristic harness check. It produces per-task probe artifacts and target-log correlation across vulnerable and secure-control tasks, but panel review classified it as deterministic harness evidence, not the real v0 tool-agent baseline."
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     },
     {
       "id": "kiro-claude-sonnet-4-6-legacy-15",
@@ -90,7 +90,7 @@
       "summary_path": "kiro-claude-sonnet-4.6-current-public-44-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-sonnet",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -101,15 +101,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 44,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 44-task public split no-tools Kiro baseline. Non-leaderboard public evidence only; private holdout results are still missing."
+      "requires_rerun_before_v0": true,
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     },
     {
       "id": "kiro-claude-opus-4-6-current-public-44",
       "summary_path": "kiro-claude-opus-4.6-current-public-44-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-opus",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -120,15 +120,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-opus-4.6",
       "expected_task_count": 44,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 44-task public split no-tools Kiro baseline. Non-leaderboard public evidence only; private holdout results are still missing."
+      "requires_rerun_before_v0": true,
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     },
     {
       "id": "kiro-claude-haiku-4-5-current-public-44",
       "summary_path": "kiro-claude-haiku-4.5-current-public-44-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-haiku",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -139,15 +139,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-haiku-4.5",
       "expected_task_count": 44,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 44-task public split no-tools Kiro baseline. Non-leaderboard public evidence only; private holdout results are still missing."
+      "requires_rerun_before_v0": true,
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     },
     {
       "id": "kiro-deepseek-3-2-current-public-44",
       "summary_path": "kiro-deepseek-3.2-current-public-44-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-deepseek",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -158,15 +158,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "deepseek-3.2",
       "expected_task_count": 44,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 44-task public split no-tools Kiro baseline. Non-leaderboard public evidence only; private holdout results are still missing."
+      "requires_rerun_before_v0": true,
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     },
     {
       "id": "kiro-qwen3-coder-next-current-public-44",
       "summary_path": "kiro-qwen3-coder-next-current-public-44-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-qwen",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -177,23 +177,23 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "qwen3-coder-next",
       "expected_task_count": 44,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 44-task public split no-tools Kiro baseline. Non-leaderboard public evidence only; private holdout results are still missing."
+      "requires_rerun_before_v0": true,
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     },
     {
       "id": "kiro-live-tool-agent-sonnet-current-public-44",
       "summary_path": "kiro-live-tool-agent-sonnet-current-public-44-summary.json",
       "kind": "tool_agent_baseline",
       "model_family": "kiro-live-tool-agent-sonnet",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 1,
       "expected_harness_type": "tool-agent",
       "expected_agent": "kiro_live_tool_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 44,
-      "requires_rerun_before_v0": false,
-      "notes": "Current public 44-task Kiro-planned live HTTP tool-agent baseline. Produces per-task model-tool plans, live tool-probe artifacts, and target-log correlation. Public-split evidence only; private holdout leaderboard results are still missing."
+      "requires_rerun_before_v0": true,
+      "notes": "Stale after the 46-task public split added the first project-management multi-step workflow wave. Keep for historical comparison only; rerun before using as current public or v0 evidence."
     }
   ]
 }

@@ -1,16 +1,16 @@
 # Release Status
 
-Last updated: 2026-06-05
+Last updated: 2026-06-06
 
 ## Public Alpha Snapshot
 
 AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 
 - 6 Dockerized synthetic SaaS targets
-- 44 public task manifests
-- 18 vulnerable tasks
-- 26 secure-control tasks
-- 16 denial controls and 10 authorized-allow controls
+- 46 public task manifests
+- 19 vulnerable tasks
+- 27 secure-control tasks
+- 16 denial controls and 11 authorized-allow controls
 - seeded runtime fixtures for tenant, object, organization, invoice, file, link,
   workspace, API-token, scope, and actor IDs
 - route aliases and decoy controls across all six target apps
@@ -26,8 +26,9 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 - v0 task build matrix documentation
 - baseline registry validation that separates harness checks, legacy snapshots,
   current public split summaries, and leaderboard eligibility
-- current 44-task live HTTP scripted harness check against Docker targets, with
-  target request-log correlation for the 18 vulnerable tasks
+- current 46-task deterministic scripted harness check
+- stale 44-task live HTTP scripted, heuristic, model, and tool-agent summaries
+  retained as context until rerun on the current split
 - v0 release-gate audit script that reports strict readiness from the current
   evidence state, including explicit unmet gates when a section is incomplete
 - release evidence registry for local validation, fresh-clone validation, remote
@@ -46,15 +47,16 @@ AuthZBench-SaaS currently contains an alpha/pre-v0 public split:
 
 ## Verified Locally
 
-The following checks have been run successfully on the current local scaffold or
-release-candidate checkpoint:
+The following checks have been run successfully on the current local scaffold.
+The release gate is listed with `--allow-incomplete` because strict v0 readiness
+is intentionally blocked until the current 46-task model/tool-agent baselines are
+rerun:
 
 ```bash
 python3 -Wd -m unittest discover -s tests
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
 python3 scripts/validate_baseline_registry.py
 python3 scripts/validate_v0_release.py --allow-incomplete
-python3 scripts/validate_v0_release.py
 python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
 python3 -m compileall -q authzbench apps tests scripts
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
@@ -62,54 +64,58 @@ python3 scripts/validate_public.py --include-scripted-baseline
 python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
 ```
 
+The strict `python3 scripts/validate_v0_release.py` gate is expected to report
+`v0_ready: false` in this checkpoint because the previous 44-task Kiro model and
+tool-agent runs are now stale.
+
 The legacy Kiro baseline snapshots were run on the earlier 15-task split and
 are retained only as historical context. Docker runtime smoke requires a Docker
 daemon; the `--include-container-smoke` path validates Docker Compose config,
 starts the target stack, checks request logs, and is covered by the GitHub
 Actions public-validation workflow.
-The live HTTP scripted baseline has been rerun on the current 44-task public
-split, but its target request-log coverage is 18/44 because the deterministic
-agent only exercises vulnerable proof requests before submitting.
+The deterministic scripted baseline has been rerun on the current 46-task
+public split. The older live HTTP scripted, heuristic, Kiro model, and Kiro
+tool-agent summaries are now stale 44-task snapshots because the public split
+changed.
 
 ## Baseline Results
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline | 44 | 44 | 1.0 | 1.0 | 0.0 | 1.0 |
-| Live HTTP scripted baseline | 44 | 44 | 1.0 | 1.0 | 0.0 | 1.0 |
-| Heuristic live HTTP prober | 44 | 33 | 0.6111 | 0.6667 | 0.0 | 1.0 |
+| Scripted sanity baseline, current | 46 | 46 | 1.0 | 1.0 | 0.0 | 1.0 |
+| Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 | 1.0 |
+| Heuristic live HTTP prober, stale 44-task snapshot | 44 | 33 | 0.6111 | 0.6667 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 | not tracked |
 | Kiro `qwen3-coder-next` no-tools legacy snapshot | 15 | 8 | 0.0 | not tracked | 0.1111 | not tracked |
-| Kiro `claude-opus-4.6` no-tools current run 1 | 44 | 27 | 0.6667 | 0.0556 | 0.0 | 1.0 |
-| Kiro `claude-opus-4.6` no-tools current run 2 | 44 | 27 | 0.6667 | 0.0556 | 0.0 | 1.0 |
-| Kiro `claude-sonnet-4.6` no-tools current run 1 | 44 | 29 | 0.7778 | 0.1667 | 0.0 | 1.0 |
-| Kiro `claude-sonnet-4.6` no-tools current run 2 | 44 | 29 | 0.7778 | 0.1667 | 0.0 | 1.0 |
-| Kiro `claude-haiku-4.5` no-tools current run 1 | 44 | 26 | 0.2222 | 0.0 | 0.0 | 1.0 |
-| Kiro `claude-haiku-4.5` no-tools current run 2 | 44 | 26 | 0.2222 | 0.0 | 0.0 | 1.0 |
-| Kiro `deepseek-3.2` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
-| Kiro `deepseek-3.2` no-tools current run 2 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
-| Kiro `qwen3-coder-next` no-tools current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
-| Kiro `qwen3-coder-next` no-tools current run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 | 1.0 |
+| Kiro `claude-opus-4.6` no-tools stale run 1 | 44 | 27 | 0.6667 | 0.0556 | 0.0 | 1.0 |
+| Kiro `claude-opus-4.6` no-tools stale run 2 | 44 | 27 | 0.6667 | 0.0556 | 0.0 | 1.0 |
+| Kiro `claude-sonnet-4.6` no-tools stale run 1 | 44 | 29 | 0.7778 | 0.1667 | 0.0 | 1.0 |
+| Kiro `claude-sonnet-4.6` no-tools stale run 2 | 44 | 29 | 0.7778 | 0.1667 | 0.0 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools stale run 1 | 44 | 26 | 0.2222 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools stale run 2 | 44 | 26 | 0.2222 | 0.0 | 0.0 | 1.0 |
+| Kiro `deepseek-3.2` no-tools stale run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
+| Kiro `deepseek-3.2` no-tools stale run 2 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools stale run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 | 1.0 |
 
 ## Publication Readiness
 
-Ready:
+Ready public and release-candidate infrastructure:
+
+This list is not a v0-ready claim. The current strict blocker is the baseline
+credibility gate: fresh current-public model and tool-agent baselines are still
+needed after the 46-task split change.
 
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
-- current live HTTP scripted harness summary exists for the 44-task public split
+- current deterministic scripted harness summary exists for the 46-task public split
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: true` for baseline evidence only
-- a heuristic live HTTP prober now provides 44/44 target-request correlation
-  across vulnerable and control public tasks, but it is classified as a harness
-  check rather than a v0 tool-agent baseline
-- five repeated current public model families exist: Kiro `claude-opus-4.6`,
-  `claude-sonnet-4.6`, `claude-haiku-4.5`, `deepseek-3.2`, and
-  `qwen3-coder-next` no-tools, each with two distinct 44-task run summaries
-- a current public Kiro live HTTP tool-agent baseline exists with 44/44
-  target-request correlation plus per-task model-tool plans and tool-probe
-  artifacts
+  `v0_baseline_ready: false` because current model/tool-agent baselines need reruns
+- stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
+  but they no longer count as current public comparison evidence
+- repeated Kiro model-family summaries remain useful 44-task snapshots, but they
+  require rerun before any current comparison, real v0 tag, or leaderboard claim
 - v0 release-gate audit exists and is run in public validation with
   `--allow-incomplete`, so alpha validation can pass even when a future section
   is intentionally open

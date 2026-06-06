@@ -35,10 +35,10 @@ updates.
 | Area | Alpha preview | v0 target |
 | --- | ---: | ---: |
 | Synthetic SaaS apps | 6 | 6 |
-| Public tasks | 44 | 40-50 |
+| Public tasks | 46 | 40-50 |
 | Private holdout tasks | 0 tracked | 20-30 unpublished |
 | Vulnerability classes | BOLA, BFLA, invite abuse, sharing, API-token scope | BOLA, BFLA, tenant isolation, support invites, sharing, API-token scope, audit/settings |
-| Secure controls | 26 | At least 40 percent of all tasks |
+| Secure controls | 27 | At least 40 percent of all tasks |
 | Model baselines | 2 no-tools runs | 5+ distinct model/agent families plus harness checks, repeated runs |
 | Live-target proof | replayable requests plus prototype target logs | replayable requests plus target request logs |
 | Anti-gaming | seeded IDs, prototype route aliases and decoys | seeded IDs, route aliases, decoys, private holdouts |

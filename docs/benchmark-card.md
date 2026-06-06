@@ -46,10 +46,10 @@ AuthZBench-SaaS does not claim to measure:
 ## Current Public Split
 
 - 6 Dockerized synthetic SaaS apps
-- 44 public tasks
-- 18 vulnerable tasks
-- 26 secure-control tasks
-- 16 denial controls and 10 authorized-allow controls
+- 46 public tasks
+- 19 vulnerable tasks
+- 27 secure-control tasks
+- 16 denial controls and 11 authorized-allow controls
 - seeded IDs for tenants, objects, orgs, invoices, files, links, workspaces, API tokens, scopes, and actors
 - deterministic scorer-owned replay transcripts
 - route alias and decoy endpoint controls across all six target apps
@@ -86,11 +86,11 @@ mixed with current evidence without a compatibility label.
 - Docker HTTP targets write target-side request logs, and the alpha runner can
   correlate them into per-task artifacts when `--target-log-dir` is supplied.
   Leaderboard-grade Docker/agent isolation is still planned.
-- Current public baselines include five repeated no-tools model families and one
-  live HTTP tool-agent baseline, but they are public-split evidence only.
-- Baseline registry validation is present and reports the baseline sub-gate as
-  ready, but strict v0 readiness still depends on protected private holdouts,
-  release evidence, and final review.
+- Current public model/tool-agent baselines need reruns after the 46-task
+  multi-step task-wave change. The older 44-task baselines are retained as
+  stale public-split snapshots only.
+- Baseline registry validation is present and currently reports the baseline
+  sub-gate as not ready until those reruns exist.
 - Leaderboard submission validation is present, and one redacted
   private-holdout no-tools model row is currently eligible. It proves the
   submission pipeline, not strong model performance.

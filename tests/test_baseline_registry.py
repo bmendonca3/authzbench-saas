@@ -50,12 +50,14 @@ class BaselineRegistryTests(unittest.TestCase):
 
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["baseline_count"], 11, result)
-        self.assertEqual(result["public_split"]["task_count"], 44, result)
-        self.assertEqual(result["current_public_model_family_count"], 6, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 5, result)
-        self.assertTrue(result["v0_baseline_ready"], result)
-        self.assertEqual(result["unmet_v0_requirements"], [], result)
-        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
+        self.assertEqual(result["public_split"]["task_count"], 46, result)
+        self.assertEqual(result["current_public_model_family_count"], 0, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertFalse(result["v0_baseline_ready"], result)
+        self.assertIn("current public model families: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
+        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
 
     def test_rejects_harness_check_mislabeled_as_current_public_split(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -202,17 +204,40 @@ class BaselineRegistryTests(unittest.TestCase):
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
             tool_entry = _baseline_by_id(registry, CURRENT_TOOL_AGENT_ID)
+            tool_entry["release_suitability"] = "current_public_split"
+            tool_entry["expected_task_count"] = 46
             summary_path = registry_path.parent / tool_entry["summary_path"]
             summary = load_json(summary_path)
-            summary["target_request_correlated_task_count"] = 43
-            summary["target_request_coverage_rate"] = 0.9773
+            summary["task_count"] = 46
+            summary["vulnerable_task_count"] = 19
+            summary["control_task_count"] = 27
+            summary["denial_control_task_count"] = 16
+            summary["authorized_allow_control_task_count"] = 11
+            summary["model_tool_plan_artifact_count"] = 46
+            summary["per_task_tool_probe_artifact_count"] = 46
+            summary["target_request_correlated_task_count"] = 45
+            summary["target_request_coverage_rate"] = 0.9783
             summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             result = validate_registry(registry_path)
 
         self.assertFalse(result["passed"], result)
-        self.assertTrue(any("correlate target requests for all 44 tasks" in error for error in result["errors"]), result)
+        self.assertTrue(any("correlate target requests for all 46 tasks" in error for error in result["errors"]), result)
         self.assertTrue(any("target_request_coverage_rate must be 1.0" in error for error in result["errors"]), result)
+
+    def test_rejects_stale_public_baseline_without_rerun_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            model_entry = _baseline_by_id(registry, CURRENT_QWEN_ID)
+            model_entry["requires_rerun_before_v0"] = False
+            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("current_public_stale must set requires_rerun_before_v0=true" in error for error in result["errors"]), result)
 
 
 if __name__ == "__main__":

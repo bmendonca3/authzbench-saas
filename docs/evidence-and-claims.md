@@ -8,10 +8,10 @@ cards, LinkedIn posts, or external-review notes.
 
 | Evidence | What It Proves | What It Does Not Prove |
 | --- | --- | --- |
-| 44 public tasks across 6 synthetic SaaS apps | the public scaffold covers multiple SaaS authorization surfaces | public-split scores are private leaderboard scores |
+| 46 public tasks across 6 synthetic SaaS apps | the public scaffold covers multiple SaaS authorization surfaces, including the first project-management multi-step workflow wave | public-split scores are private leaderboard scores |
 | deterministic scorer replay | submitted evidence can be checked against backend behavior | the agent necessarily interacted with a live target unless request-log correlation is present |
 | secure controls and authorized-allow controls | the benchmark can penalize false positives and over-reporting | all real SaaS false-positive patterns are covered |
-| public model baselines | the harness can compare agents on the public split | stable model rankings or leaderboard eligibility |
+| stale 44-task public model/tool-agent baselines | the harness has historical comparison artifacts and visible failure modes | current 46-task model rankings or leaderboard eligibility |
 | target-side request logs | live target interaction can be observed and correlated when configured | target logs alone prove the exploit; replay remains authoritative |
 | protected private-holdout summaries | maintainers have private release-candidate evidence without publishing holdout internals | public users can reproduce private scores from the repo |
 | one eligible private-holdout leaderboard row | the submission validator can validate an artifact-backed private row | hosted public leaderboard readiness or broad model performance |
@@ -58,7 +58,7 @@ The generated charts under
 [`docs/assets/benchmark-charts/`](assets/benchmark-charts/) make the current
 evidence easier to inspect:
 
-![Current public baseline metrics](assets/benchmark-charts/current-public-baselines.svg)
+![Public baseline metrics](assets/benchmark-charts/current-public-baselines.svg)
 
 ![Task mix](assets/benchmark-charts/task-mix.svg)
 
@@ -71,4 +71,5 @@ python3 scripts/generate_benchmark_charts.py
 ```
 
 These visuals summarize tracked public-safe artifacts only. They do not turn
-public-split scores into private-holdout leaderboard rankings.
+public-split scores into private-holdout leaderboard rankings. Rows marked
+stale need rerun before current comparison.

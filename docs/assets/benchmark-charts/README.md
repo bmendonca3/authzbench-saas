@@ -9,4 +9,5 @@ python3 scripts/generate_benchmark_charts.py
 ```
 
 These charts summarize tracked public-split baselines and redacted
-private-evidence summaries. They are not hosted leaderboard rankings.
+private-evidence summaries. Stale public baselines need rerun before
+current comparison, and these charts are not hosted leaderboard rankings.

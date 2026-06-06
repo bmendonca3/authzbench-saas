@@ -11,66 +11,70 @@ python3 scripts/validate_baseline_registry.py
 ```
 
 The registry is an honesty gate. It separates current public-split runs from
-legacy snapshots, harness checks from model baselines, and one-off runs from
-leaderboard-eligible evidence. It can report `v0_baseline_ready: true` while
-the overall strict v0 gate still fails; that means the tracked baseline files
-meet the baseline sub-gate, not that private holdouts, leaderboard submissions,
-release evidence, or final review are complete.
+stale public snapshots and legacy snapshots, harness checks from model
+baselines, and one-off runs from leaderboard-eligible evidence. After task or
+scorer changes, it can pass consistency validation while reporting
+`v0_baseline_ready: false`; that means the baseline files are well-labeled, not
+that current model/tool-agent evidence is complete.
 
-## Current Baselines
+## Current And Stale Baselines
 
-- `scripted-baseline-summary.json`: deterministic harness sanity-check baseline.
+- `scripted-baseline-public-46-summary.json`: current deterministic 46-task
+  harness sanity-check baseline.
+- `scripted-baseline-summary.json`: earlier deterministic 44-task harness
+  sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises
   vulnerable proof requests against the live Docker targets before submitting.
-  The current 44-task run passes, with target-side request correlation on the 18
+  The stale 44-task run passes, with target-side request correlation on the 18
   vulnerable tasks. Secure controls still have no agent-side live requests in
   this harness because the deterministic agent only exercises submitted
   findings.
 - `heuristic-live-http-prober-public-44-summary.json`: deterministic live HTTP
   probe harness that exercises documented routes on every public task and writes
-  per-task probe artifacts. The current run has 44/44 target-side request
+  per-task probe artifacts. The stale run has 44/44 target-side request
   correlation and zero control false reports, but panel review classified it as
   a harness check, not the real v0 tool-agent baseline.
 - `kiro-live-tool-agent-sonnet-current-public-44-summary.json`: Kiro-planned
   live HTTP tool-agent baseline using `claude-sonnet-4.6`. It writes one
   model-tool plan artifact and one tool-probe artifact per public task, executes
   100 live HTTP probes, and has 44/44 target-side request correlation. It is
-  public-split evidence only, not private-holdout or leaderboard-eligible
-  evidence.
+  stale public-split evidence only, not current, private-holdout, or
+  leaderboard-eligible evidence.
 - `kiro-claude-sonnet-4.6-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
 - `kiro-qwen3-coder-next-full-summary.json`: legacy 15-task alpha snapshot
   through the Kiro no-tools adapter.
 - `kiro-claude-sonnet-4.6-current-public-44-run1-summary.json` and
   `kiro-claude-sonnet-4.6-current-public-44-run2-summary.json`: repeated
-  current 44-task public split no-tools Sonnet runs through the Kiro adapter.
-  They are public-split model baselines, not private-holdout or
+  stale 44-task public split no-tools Sonnet runs through the Kiro adapter.
+  They are public-split model snapshots, not current, private-holdout, or
   leaderboard-eligible submissions.
 - `kiro-claude-opus-4.6-current-public-44-run1-summary.json` and
-  `kiro-claude-opus-4.6-current-public-44-run2-summary.json`: repeated current
+  `kiro-claude-opus-4.6-current-public-44-run2-summary.json`: repeated stale
   44-task public split no-tools Opus runs through the Kiro adapter. They are
-  public-split model baselines, not private-holdout or leaderboard-eligible
-  submissions.
+  stale public-split model snapshots, not current, private-holdout, or
+  leaderboard-eligible submissions.
 - `kiro-claude-haiku-4.5-current-public-44-run1-summary.json` and
   `kiro-claude-haiku-4.5-current-public-44-run2-summary.json`: repeated
-  current 44-task public split no-tools Haiku runs through the Kiro adapter.
-  They are public-split model baselines, not private-holdout or
+  stale 44-task public split no-tools Haiku runs through the Kiro adapter.
+  They are public-split model snapshots, not current, private-holdout, or
   leaderboard-eligible submissions.
 - `kiro-deepseek-3.2-current-public-44-run1-summary.json` and
-  `kiro-deepseek-3.2-current-public-44-run2-summary.json`: repeated current
+  `kiro-deepseek-3.2-current-public-44-run2-summary.json`: repeated stale
   44-task public split no-tools DeepSeek runs through the Kiro adapter. They are
-  public-split model baselines, not private-holdout or leaderboard-eligible
-  submissions.
+  stale public-split model snapshots, not current, private-holdout, or
+  leaderboard-eligible submissions.
 - `kiro-qwen3-coder-next-current-public-44-run1-summary.json` and
-  `kiro-qwen3-coder-next-current-public-44-run2-summary.json`: repeated current
+  `kiro-qwen3-coder-next-current-public-44-run2-summary.json`: repeated stale
   44-task public split no-tools Qwen runs through the Kiro adapter. They are
-  public-split model baselines, not private-holdout or leaderboard-eligible
-  submissions.
+  stale public-split model snapshots, not current, private-holdout, or
+  leaderboard-eligible submissions.
 
-The scripted and live scripted summaries should match the current public split.
-Legacy Kiro summaries may temporarily be older alpha snapshots when the task set
-expands; rerun them before any tagged release. Current public Kiro summaries
-must include distinct `run_artifacts` before they count as repeated evidence.
+The scripted summary should match the current public split. Older Kiro and live
+HTTP summaries may remain tracked as stale snapshots when the task set expands,
+but they must be rerun before any tagged release or current comparison. Current
+public Kiro summaries must include distinct `run_artifacts` before they count
+as repeated evidence.
 
 For every model baseline, preserve:
 

@@ -29,8 +29,8 @@ positives.
 ## What Is Included
 
 - 6 synthetic SaaS apps
-- 44 public benchmark tasks: 18 vulnerable tasks + 26 secure-control tasks
-- 10 of the secure-control tasks are authorized-allow controls
+- 46 public benchmark tasks: 19 vulnerable tasks + 27 secure-control tasks
+- 11 of the secure-control tasks are authorized-allow controls
 - deterministic backend replay scoring
 - target-side request logging for Docker runs
 - public baseline summaries for scripted and model runs
@@ -44,7 +44,7 @@ public internet.
 
 | Status | What exists | How to verify |
 | --- | --- | --- |
-| Public now | 6 apps, 44 public tasks, scorer, examples, scripted/model baseline summaries, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
+| Public now | 6 apps, 46 public tasks, scorer, examples, scripted baseline summary, stale 44-task model/tool baseline summaries, CI | `python3 scripts/validate_public.py --include-scripted-baseline` |
 | Maintainer-only | private holdout pack, protected private-run summaries, strict release-candidate gate | `python3 scripts/validate_v0_release.py` in a maintainer checkout |
 | Not yet | tagged v0 release, hosted public leaderboard, rotating multi-pack holdouts | [`ROADMAP.md`](ROADMAP.md) |
 
@@ -58,7 +58,7 @@ Generated public-safe charts live under
 tracked public-split baselines, task mix, and evidence readiness from existing
 JSON artifacts. They are not hosted leaderboard rankings.
 
-- [Current public baseline metrics](docs/assets/benchmark-charts/current-public-baselines.svg)
+- [Public baseline metrics](docs/assets/benchmark-charts/current-public-baselines.svg)
 - [Task mix](docs/assets/benchmark-charts/task-mix.svg)
 - [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
 
@@ -231,10 +231,12 @@ The baseline registry lives at
 
 Current public-split snapshot:
 
-- scripted harness checks pass all 44 public tasks
-- repeated model baselines cover 5 required model/agent families
-- current model runs pass 25-29 of 44 public tasks
-- the public live HTTP tool-agent baseline has 44/44 target-request correlation
+- scripted harness checks pass all 46 public tasks
+- repeated model/tool-agent baselines from the previous 44-task split are kept
+  as stale snapshots
+- stale model runs pass 25-29 of 44 public tasks
+- the stale public live HTTP tool-agent baseline has 44/44 target-request
+  correlation
 - one public model run currently shows a non-zero false-positive rate; most do
   not
 
@@ -243,9 +245,11 @@ methodology review, but they are not private-holdout leaderboard results.
 
 Current registry status:
 
-- 5 of 5 required repeated model/agent families
-- accepted current public live HTTP tool-agent baseline
-- `v0_baseline_ready: true`
+- 0 of 5 required current repeated model/agent families after the task-wave
+  change
+- no current public live HTTP tool-agent baseline after the task-wave change
+- `v0_baseline_ready: false` until model/tool-agent baselines are rerun on the
+  46-task split
 
 That status covers only the baseline registry. Full v0-candidate readiness also
 depends on private holdouts, leaderboard-submission evidence, release evidence,

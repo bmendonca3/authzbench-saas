@@ -16,6 +16,16 @@ def _finding(claim: str, request: dict[str, Any], boundary: dict[str, str], impa
     }
 
 
+def _multistep_finding(claim: str, requests: list[dict[str, Any]], boundary: dict[str, str], impact: str) -> dict[str, Any]:
+    return {
+        "claim": claim,
+        "boundary": boundary,
+        "impact": impact,
+        "evidence": [{"request": request} for request in requests],
+        "out_of_scope_actions": [],
+    }
+
+
 def solve(context: dict[str, Any]) -> dict[str, Any]:
     refs = context["refs"]
     task_id = context["task_id"]
@@ -64,6 +74,30 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
                     },
                     {"attacker_actor": "alpha_owner", "victim_tenant": "beta"},
                     "Alpha owner privilege incorrectly crosses tenant boundaries.",
+                )
+            ]
+        }
+
+    if task_id == "pm_multistep_beta_update_then_alpha_alias_read":
+        return {
+            "findings": [
+                _multistep_finding(
+                    "cross_tenant_task_read_after_same_tenant_workflow",
+                    [
+                        {
+                            "actor": "beta_member",
+                            "method": "PATCH",
+                            "path": f"/api/projects/{refs['BETA_PROJECT_ID']}/tasks/{refs['BETA_PRIVATE_TASK_ID']}",
+                            "body": {"status": "triaged"},
+                        },
+                        {
+                            "actor": "beta_member",
+                            "method": "GET",
+                            "path": f"/api/workspaces/{refs['ALPHA_PROJECT_ID']}/work-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+                        },
+                    ],
+                    {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                    "A normal same-tenant Beta workflow can be followed by cross-tenant Alpha task access through the workspace alias.",
                 )
             ]
         }

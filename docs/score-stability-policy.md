@@ -8,6 +8,7 @@ This policy keeps old scores understandable when the benchmark changes.
 | State | Meaning |
 | --- | --- |
 | `current_public_split` | Run on the current public task set and current scorer profile. |
+| `current_public_stale` | Run on a recently superseded public task set; useful context, but rerun required before current comparison or v0 claims. |
 | `current_private_holdout` | Maintainer-side private holdout run for release-candidate evidence. |
 | `legacy_snapshot` | Historical run kept for context, not comparable to current results. |
 | `deprecated` | Result should not be used for current comparisons. |

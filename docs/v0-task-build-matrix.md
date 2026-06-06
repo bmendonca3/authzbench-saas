@@ -7,18 +7,18 @@ updated whenever the public or private split changes.
 
 | App | Public vulnerable | Public controls | Public total |
 | --- | ---: | ---: | ---: |
-| Project management | 3 | 4 | 7 |
+| Project management | 4 | 5 | 9 |
 | Billing | 3 | 5 | 8 |
 | Support | 3 | 3 | 6 |
 | File sharing | 3 | 5 | 8 |
 | API tokens | 3 | 5 | 8 |
 | Audit/settings | 3 | 4 | 7 |
-| **Total** | **18** | **26** | **44** |
+| **Total** | **19** | **27** | **46** |
 
 Current public controls are now labeled by subtype:
 
 - 16 denial controls
-- 10 authorized-allow controls
+- 11 authorized-allow controls
 
 ## v0 Target Split
 
@@ -43,7 +43,7 @@ For v0, maintain at least:
 - at least 40 percent secure controls across public and private splits. For the
   74-task target above, that means at least 30 total secure controls, counting
   denial and authorized-allow controls together
-- 10 authorized-allow controls where access should succeed
+- 11 authorized-allow controls where access should succeed
 - 8 private BOLA or tenant/object-boundary holdouts
 - 8 private BFLA, invite/membership, token-scope, or role-boundary holdouts
 - 8 private secure controls

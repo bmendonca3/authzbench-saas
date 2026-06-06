@@ -27,15 +27,18 @@ It also labels every summary as one of:
 - `current_public_split`: run on the current public task split.
 - `current_public_harness_check`: current public split, but only a deterministic
   harness sanity check.
+- `current_public_stale`: previously current public-split evidence that no
+  longer matches the active public task count and must be rerun before v0.
 - `legacy_snapshot`: useful historical evidence that must be rerun before a
   release tag.
 
 ## v0 Baseline Bar
 
-The baseline sub-gate now has enough current public evidence to report
-`v0_baseline_ready: true`. That does not make the benchmark v0-ready. The full
-strict release gate still requires protected private holdouts, leaderboard
-submissions, release evidence, and final review. The v0 baseline bar is:
+The baseline sub-gate currently reports `v0_baseline_ready: false`. That is
+intentional after the public split moved from 44 to 46 tasks for the first
+project-management multi-step workflow wave.
+
+The v0 baseline bar is:
 
 - at least five real model or agent families on the current public split
 - at least two runs per serious model or agent family
@@ -47,76 +50,27 @@ submissions, release evidence, and final review. The v0 baseline bar is:
 - public-split and private-holdout results reported separately
 - one-off or legacy snapshots excluded from leaderboard eligibility
 
-The validator can pass while reporting `v0_baseline_ready: true`. That means the
-baseline sub-gate is satisfied, not that the full v0 release is complete.
+The validator can pass while reporting `v0_baseline_ready: false`. That means
+the registry is internally honest, not that the baseline sub-gate is complete.
 
 ## Current Interpretation
 
-The current scripted baseline is a harness sanity check on the 44-task public
-split. It is valuable because it proves the scorer and task manifests are still
-coherent.
+The current scripted baseline is a 46-task deterministic harness sanity check.
+It proves the scorer, task manifests, and scripted oracle path still fit the
+active public split. It is not model capability evidence.
 
-The live scripted baseline is now a current 44-task harness sanity check against
-the Docker targets. It is useful because it proves vulnerable proof requests can
-hit the live synthetic services and correlate into target-side request logs. It
-is still not leaderboard-grade live-agent evidence: the deterministic agent only
-submits findings for vulnerable tasks, so secure controls are scored by replay
-but are not live-exercised as agent requests.
+The older live scripted, heuristic live HTTP, no-tools Kiro model, and Kiro live
+tool-agent summaries were run on the previous 44-task public split. They are
+retained as stale public snapshots because they are still useful for
+methodology review, but they no longer count toward current public model-family
+coverage, repeated-baseline coverage, or the current public tool-agent gate.
 
-The heuristic live HTTP prober is a stronger current harness check for live
-target proof. It probes documented routes for every public task and writes a
-per-task `tool-probes.json` artifact, giving full target-request correlation
-across vulnerable and control tasks. Panel review classified it as deterministic
-harness evidence because it uses phrase and route heuristics, so it does not
-satisfy the v0 requirement for a real tool-agent baseline.
+The stale 44-task snapshots still show useful signals: zero or low false
+positive rates on controls, uneven exploit-proof success, and weak boundary
+reasoning for several model families. They should be read as historical
+diagnostics, not current rankings.
 
-The Kiro model summaries are legacy 15-task alpha snapshots. They are useful
-historical evidence, but they must be rerun on the current 44-task split and
-repeated before any v0 tag or serious public leaderboard claim.
-
-The first repeated current model family is Qwen through Kiro. The two
-`qwen3-coder-next` no-tools runs are public-split baselines only: both showed
-strong control restraint and zero control false-report findings. Run 2 still had
-one failed denial-control score, and neither run proved vulnerable exploits.
-
-The second repeated current model family is Sonnet through Kiro. The two
-`claude-sonnet-4.6` no-tools runs are also public-split baselines only: both
-passed all 26 controls and proved 14 of 18 vulnerable exploit replays, but only
-3 of 18 vulnerable tasks fully passed because boundary reasoning was weak at
-`0.1667`. They kept a zero false-positive rate on controls and improve
-model-baseline credibility while still leaving three repeated model/agent
-families, a true tool-agent baseline, and private-holdout leaderboard
-submissions missing at that checkpoint.
-
-The third repeated current model family is DeepSeek through Kiro. The two
-`deepseek-3.2` no-tools runs are also public-split baselines only: both passed
-26 of 44 tasks by staying quiet on controls, kept a zero false-positive rate,
-and proved no vulnerable exploits. They improve baseline breadth while still
-leaving two repeated model/agent families, a true tool-agent baseline, and
-private-holdout leaderboard submissions missing at that checkpoint.
-
-The fourth repeated current model family is Haiku through Kiro. The two
-`claude-haiku-4.5` no-tools runs are also public-split baselines only: both
-passed 26 of 44 tasks, proved 4 of 18 vulnerable replays, kept a zero
-false-positive rate, and had no full vulnerable-task passes because boundary
-reasoning was `0.0`. They improve baseline breadth while still leaving one
-repeated model/agent family, a true tool-agent baseline, and private-holdout
-leaderboard submissions missing at that checkpoint.
-
-The fifth repeated current model family is Opus through Kiro. The two
-`claude-opus-4.6` no-tools runs are also public-split baselines only: both
-passed 27 of 44 tasks, proved 12 of 18 vulnerable replays, kept a zero
-false-positive rate, and fully passed 1 vulnerable task because boundary
-reasoning remained weak at `0.0556`. They satisfy the repeated public model
-family count while still leaving private-holdout leaderboard submissions
-missing.
-
-The current public tool-agent baseline is Kiro-planned live HTTP probing through
-`claude-sonnet-4.6`. The adapter asks the model to plan authorization probes
-from task context, executes those probes against the Docker targets, and only
-submits a finding when a referenced live probe supports it. The run produced
-44/44 model-tool plan artifacts, 44/44 tool-probe artifacts, 100 executed live
-HTTP probes, and 44/44 target-request correlation. It passed all controls with
-zero false positives and proved 14 of 18 vulnerable replays, but boundary
-reasoning remained `0.0`, so it is useful public-split tool-agent evidence
-rather than a leaderboard claim.
+The next baseline milestone is to rerun at least five model/agent families twice
+on the 46-task split and add one live tool-agent baseline with per-task artifacts
+and target-request coverage. Only after those reruns should the registry return
+to `v0_baseline_ready: true`.

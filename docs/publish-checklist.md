@@ -62,11 +62,11 @@ Tag: `alpha-0.0.1-public-scaffold`
 Release notes:
 
 - 6 Docker-ready intentionally vulnerable SaaS targets
-- 44 public seeded tasks
+- 46 public seeded tasks, including the first public multi-step workflow wave
 - deterministic scorer with backend replay transcripts
 - secure-control tasks for false-positive measurement
-- scripted baseline and two initial model baselines
-- baseline registry that labels legacy snapshots and current release readiness
+- scripted baseline and stale public model/tool-agent snapshots
+- baseline registry that labels current, stale, and legacy snapshots honestly
 - leaderboard submission validator and ineligible public harness-check example
 - draft launch methodology and leaderboard schema
 

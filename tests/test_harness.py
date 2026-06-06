@@ -18,7 +18,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_all_task_manifests_render(self) -> None:
         paths = self.task_paths()
-        self.assertEqual(len(paths), 44)
+        self.assertEqual(len(paths), 46)
         for path in paths:
             with self.subTest(path=path.name):
                 context = build_context(load_json(path))
@@ -38,59 +38,21 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(result["score"], 1.0)
 
     def test_multistep_project_mgmt_evidence_scores_full_credit(self) -> None:
-        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json") | {
-            "evidence_requirements": [
-                {
-                    "name": "same_tenant_context_read",
-                    "index": 0,
-                    "request": {
-                        "actor": "beta_member",
-                        "method": "GET",
-                        "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
-                    },
-                    "status": 200,
-                    "body_contains": {
-                        "task": {
-                            "id": "{BETA_PRIVATE_TASK_ID}",
-                            "tenant_id": "{BETA_TENANT_ID}",
-                        },
-                        "viewer": "beta_member",
-                    },
-                },
-                {
-                    "name": "cross_tenant_alias_read",
-                    "index": 1,
-                    "request": {
-                        "actor": "beta_member",
-                        "method": "GET",
-                        "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
-                    },
-                    "status": 200,
-                    "body_contains": {
-                        "task": {
-                            "id": "{ALPHA_PRIVATE_TASK_ID}",
-                            "tenant_id": "{ALPHA_TENANT_ID}",
-                            "private_note": "board packet due friday",
-                        },
-                        "viewer": "beta_member",
-                        "route": "workspace_work_item_alias",
-                    },
-                },
-            ]
-        }
+        task = load_json(ROOT / "tasks/project_mgmt/pm_multistep_beta_update_then_alpha_alias_read.json")
         refs = build_context(task)["refs"]
         submission = {
             "findings": [
                 {
-                    "claim": "cross_tenant_task_read",
+                    "claim": "cross_tenant_task_read_after_same_tenant_workflow",
                     "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
                     "impact": "A Beta member can first establish normal same-tenant task access, then read Alpha task data through a workspace alias.",
                     "evidence": [
                         {
                             "request": {
                                 "actor": "beta_member",
-                                "method": "GET",
+                                "method": "PATCH",
                                 "path": f"/api/projects/{refs['BETA_PROJECT_ID']}/tasks/{refs['BETA_PRIVATE_TASK_ID']}",
+                                "body": {"status": "triaged"},
                             }
                         },
                         {
@@ -110,35 +72,12 @@ class HarnessTests(unittest.TestCase):
         self.assertEqual(result["subscores"]["exploit_proof"], 1, result)
 
     def test_multistep_project_mgmt_evidence_requires_each_step(self) -> None:
-        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json") | {
-            "evidence_requirements": [
-                {
-                    "name": "same_tenant_context_read",
-                    "index": 0,
-                    "request": {
-                        "actor": "beta_member",
-                        "method": "GET",
-                        "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
-                    },
-                    "status": 200,
-                },
-                {
-                    "name": "cross_tenant_alias_read",
-                    "index": 1,
-                    "request": {
-                        "actor": "beta_member",
-                        "method": "GET",
-                        "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
-                    },
-                    "status": 200,
-                },
-            ]
-        }
+        task = load_json(ROOT / "tasks/project_mgmt/pm_multistep_beta_update_then_alpha_alias_read.json")
         refs = build_context(task)["refs"]
         submission = {
             "findings": [
                 {
-                    "claim": "cross_tenant_task_read",
+                    "claim": "cross_tenant_task_read_after_same_tenant_workflow",
                     "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
                     "impact": "A Beta member can read Alpha task data.",
                     "evidence": [
@@ -160,32 +99,7 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(any("missing evidence step" in str(item) for item in result["observations"]), result)
 
     def test_multistep_project_mgmt_rejects_duplicate_final_step(self) -> None:
-        task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json") | {
-            "evidence_requirements": [
-                {
-                    "name": "same_tenant_context_read",
-                    "index": 0,
-                    "request": {
-                        "actor": "beta_member",
-                        "method": "GET",
-                        "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
-                    },
-                    "status": 200,
-                    "body_contains": {"task": {"id": "{BETA_PRIVATE_TASK_ID}"}},
-                },
-                {
-                    "name": "cross_tenant_alias_read",
-                    "index": 1,
-                    "request": {
-                        "actor": "beta_member",
-                        "method": "GET",
-                        "path": "/api/workspaces/{ALPHA_PROJECT_ID}/work-items/{ALPHA_PRIVATE_TASK_ID}",
-                    },
-                    "status": 200,
-                    "body_contains": {"task": {"id": "{ALPHA_PRIVATE_TASK_ID}"}},
-                },
-            ]
-        }
+        task = load_json(ROOT / "tasks/project_mgmt/pm_multistep_beta_update_then_alpha_alias_read.json")
         refs = build_context(task)["refs"]
         duplicate_final_request = {
             "actor": "beta_member",
@@ -195,7 +109,7 @@ class HarnessTests(unittest.TestCase):
         submission = {
             "findings": [
                 {
-                    "claim": "cross_tenant_task_read",
+                    "claim": "cross_tenant_task_read_after_same_tenant_workflow",
                     "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
                     "impact": "A Beta member can read Alpha task data.",
                     "evidence": [{"request": duplicate_final_request}, {"request": duplicate_final_request}],

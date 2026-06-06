@@ -17,10 +17,10 @@ The benchmark is designed around a narrow question:
 The current public split contains:
 
 - 6 Dockerized target apps
-- 44 seeded tasks
-- 18 vulnerable tasks
-- 26 secure-control tasks
-- 16 denial controls and 10 authorized-allow controls
+- 46 seeded tasks
+- 19 vulnerable tasks
+- 27 secure-control tasks
+- 16 denial controls and 11 authorized-allow controls
 - deterministic scorer and structured evidence schema
 - scorer-owned proof/control transcripts
 - prototype route alias and decoy endpoint coverage
@@ -28,10 +28,9 @@ The current public split contains:
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
   `--target-log-dir` is supplied
 - scripted baseline agent for harness validation
-- legacy Kiro no-tools snapshots plus five repeated current public no-tools
-  baseline families
-- Kiro-planned live HTTP tool-agent baseline with 44/44 public-task
-  target-request correlation
+- stale Kiro no-tools and live HTTP tool-agent snapshots from the previous
+  44-task split
+- a current deterministic scripted harness summary for all 46 public tasks
 
 ## Task Mapping
 
@@ -40,10 +39,12 @@ The current public split contains:
 | `pm_bola_read_alpha_from_beta` | Project management | Vulnerable | Cross-tenant object read | API1:2023 BOLA | CWE-639, CWE-863 |
 | `pm_bola_read_beta_from_alpha` | Project management | Vulnerable | Cross-tenant object read | API1:2023 BOLA | CWE-639, CWE-863 |
 | `pm_bola_owner_reads_beta_task` | Project management | Vulnerable | Cross-tenant object read despite owner role | API1:2023 BOLA | CWE-639, CWE-863 |
+| `pm_multistep_beta_update_then_alpha_alias_read` | Project management | Vulnerable | Same-tenant workflow followed by cross-tenant alias read | API1:2023 BOLA | CWE-639, CWE-863 |
 | `pm_secure_cross_tenant_read_control` | Project management | Secure control | Correct cross-tenant denial | API1:2023 BOLA control | CWE-639 control |
 | `pm_viewer_write_control` | Project management | Secure control | Correct role-based write denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
 | `pm_same_tenant_read_control` | Project management | Secure control | Authorized same-tenant read | API1:2023 BOLA control | CWE-639 control |
 | `pm_cross_tenant_write_control` | Project management | Secure control | Correct cross-tenant write denial | API5:2023 BFLA control | CWE-862, CWE-863 control |
+| `pm_multistep_owner_update_control` | Project management | Secure control | Authorized same-tenant owner workflow | API5:2023 BFLA control | CWE-862, CWE-863 control |
 | `bill_bfla_member_plan_change` | Billing | Vulnerable | Member changes admin billing plan | API5:2023 BFLA | CWE-862, CWE-863 |
 | `bill_bfla_peer_member_plan_change` | Billing | Vulnerable | Member changes admin billing plan | API5:2023 BFLA | CWE-862, CWE-863 |
 | `bill_bfla_member_reads_plan_settings` | Billing | Vulnerable | Member reads admin billing settings | API5:2023 BFLA | CWE-862, CWE-863 |
@@ -125,8 +126,8 @@ python3 -m authzbench.run \
 
 Expected current result:
 
-- `task_count`: 44
-- `passed_count`: 44
+- `task_count`: 46
+- `passed_count`: 46
 - `mean_score`: 1.0
 - `exploit_proven_success_rate`: 1.0
 - `false_positive_rate`: 0.0
@@ -134,30 +135,31 @@ Expected current result:
 
 Tracked summary:
 
-- [scripted-baseline-summary.json](../baselines/scripted-baseline-summary.json)
+- [scripted-baseline-public-46-summary.json](../baselines/scripted-baseline-public-46-summary.json)
 
 Initial model baselines were also run through the Kiro no-tools adapter.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Live HTTP scripted baseline | 44 | 44 | 1.0 | 1.0 | 0.0 |
-| Heuristic live HTTP prober | 44 | 33 | 0.6111 | 0.6667 | 0.0 |
+| Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 |
+| Heuristic live HTTP prober, stale 44-task snapshot | 44 | 33 | 0.6111 | 0.6667 | 0.0 |
 | Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 |
 | Kiro `qwen3-coder-next` legacy snapshot | 15 | 8 | 0.0 | not tracked | 0.1111 |
-| Kiro `claude-sonnet-4.6` current run 1 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
-| Kiro `claude-sonnet-4.6` current run 2 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
-| Kiro `claude-opus-4.6` current run 1 | 44 | 27 | 0.6667 | 0.0556 | 0.0 |
-| Kiro `claude-opus-4.6` current run 2 | 44 | 27 | 0.6667 | 0.0556 | 0.0 |
-| Kiro `claude-haiku-4.5` current run 1 | 44 | 26 | 0.2222 | 0.0 | 0.0 |
-| Kiro `claude-haiku-4.5` current run 2 | 44 | 26 | 0.2222 | 0.0 | 0.0 |
-| Kiro `deepseek-3.2` current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 |
-| Kiro `deepseek-3.2` current run 2 | 44 | 26 | 0.0 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` current run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` current run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
-| Kiro live HTTP tool-agent `claude-sonnet-4.6` | 44 | 26 | 0.7778 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` stale run 1 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
+| Kiro `claude-sonnet-4.6` stale run 2 | 44 | 29 | 0.7778 | 0.1667 | 0.0 |
+| Kiro `claude-opus-4.6` stale run 1 | 44 | 27 | 0.6667 | 0.0556 | 0.0 |
+| Kiro `claude-opus-4.6` stale run 2 | 44 | 27 | 0.6667 | 0.0556 | 0.0 |
+| Kiro `claude-haiku-4.5` stale run 1 | 44 | 26 | 0.2222 | 0.0 | 0.0 |
+| Kiro `claude-haiku-4.5` stale run 2 | 44 | 26 | 0.2222 | 0.0 | 0.0 |
+| Kiro `deepseek-3.2` stale run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 |
+| Kiro `deepseek-3.2` stale run 2 | 44 | 26 | 0.0 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` stale run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6`, stale 44-task snapshot | 44 | 26 | 0.7778 | 0.0 | 0.0 |
 
 Tracked summaries:
 
+- [scripted-baseline-public-46-summary.json](../baselines/scripted-baseline-public-46-summary.json)
 - [live-scripted-baseline-summary.json](../baselines/live-scripted-baseline-summary.json)
 - [heuristic-live-http-prober-public-44-summary.json](../baselines/heuristic-live-http-prober-public-44-summary.json)
 - [kiro-claude-sonnet-4.6-full-summary.json](../baselines/kiro-claude-sonnet-4.6-full-summary.json)
@@ -174,31 +176,29 @@ Tracked summaries:
 - [kiro-qwen3-coder-next-current-public-44-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-44-run2-summary.json)
 - [kiro-live-tool-agent-sonnet-current-public-44-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-44-summary.json)
 
-The live HTTP scripted baseline is a current 44-task harness check against the
-Docker targets. It correlates target-side requests for the 18 vulnerable proof
-tasks, but it is still not leaderboard-grade live-agent evidence because secure
-controls are not live-exercised by the deterministic finding-only agent.
+The live HTTP scripted baseline is now a stale 44-task harness check. It
+correlates target-side requests for the 18 vulnerable proof tasks, but it must
+be rerun on the 46-task split before current comparison.
 
-The heuristic live HTTP prober improves live-target proof by producing per-task
-probe artifacts and target-side request correlation on all 44 public tasks,
+The heuristic live HTTP prober improved live-target proof on the old 44-task
+split by producing per-task probe artifacts and target-side request correlation,
 including secure controls. Panel review classified it as deterministic harness
 evidence, not a v0 tool-agent baseline.
 
-The Kiro snapshots are public-split baselines from the earlier 15-task alpha
-split, not private leaderboard results. They should be rerun on the 44-task split
-before any release tag.
+The Kiro snapshots are public-split baselines from earlier splits, not private
+leaderboard results. They should be rerun on the 46-task split before any
+release tag or current ranking claim.
 
-The current Opus, Sonnet, Haiku, DeepSeek, and Qwen runs are the first five
-repeated 44-task public model baseline families. They are useful
-model-comparison evidence, but they are public-only no-tools runs and are not
-leaderboard eligible.
+The Opus, Sonnet, Haiku, DeepSeek, and Qwen runs are repeated 44-task public
+model baseline families. They are useful historical diagnostics, but they are
+public-only no-tools runs, stale against the current split, and not leaderboard
+eligible.
 
-The Kiro live HTTP tool-agent baseline is the first accepted current public
-tool-agent baseline. It uses `claude-sonnet-4.6` to plan per-task HTTP probes,
-executes those probes against live Docker targets, and produces 44/44
-model-tool plan artifacts, 44/44 tool-probe artifacts, and 44/44 target-request
-correlation. It is still public-split evidence only, not a private-holdout
-leaderboard result.
+The Kiro live HTTP tool-agent baseline is a stale 44-task public split snapshot.
+It uses `claude-sonnet-4.6` to plan per-task HTTP probes, executes those probes
+against live Docker targets, and produced 44/44 model-tool plan artifacts,
+44/44 tool-probe artifacts, and 44/44 target-request correlation. It is useful
+methodology evidence only until rerun on the 46-task split.
 
 The Opus runs proved 12 of 18 vulnerable replays in both runs and kept zero
 false positives, but only 1 vulnerable task fully passed because boundary
@@ -214,9 +214,9 @@ proved no vulnerable exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks and reports `v0_baseline_ready: true` for the baseline
-sub-gate. The full strict v0 release gate now depends on release evidence and
-sectional review status rather than baseline evidence alone.
+consistency checks and reports `v0_baseline_ready: false` because current
+model/tool-agent baselines need reruns after the task-wave change. The full
+strict v0 release gate remains intentionally blocked.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`
