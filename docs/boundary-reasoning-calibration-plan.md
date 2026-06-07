@@ -1,14 +1,13 @@
 # Boundary-Reasoning Calibration Plan
 
-Status: public-safe study plan for deciding whether boundary-reasoning failures
-reflect model weakness, output-schema brittleness, prompt ambiguity, or scorer
-strictness.
+Status: completed by `docs/boundary-reasoning-calibration-study.md`.
 
 The current public evidence shows a sharp gap between exploit proof and
-boundary reasoning. For example, the live HTTP tool-agent repeated runs prove
-14 of 19 vulnerable public tasks but still record `0.0000`
-`boundary_reasoning_pass_rate` and zero vulnerable full passes. This plan
-defines a small audit before changing instructions, schema, or scoring.
+boundary reasoning. The current 49-task live HTTP tool-agent repeated runs prove
+15 of 20 vulnerable public tasks but still record `0.0000`
+`boundary_reasoning_pass_rate` and zero vulnerable full passes. The completed
+study uses a full census of those exploit-proven vulnerable task-run cases and
+should be treated as the current calibration artifact.
 
 ## Study Question
 
@@ -32,8 +31,8 @@ Possible categories:
 Use public tasks only. Start with tasks where the live HTTP tool-agent has
 `exploit_proof: 1`, `boundary_reasoning: 0`, and `invalid_submission: false`.
 Candidate examples can be selected from
-`baselines/kiro-live-tool-agent-sonnet-current-public-46-summary.json` and
-`baselines/kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json`.
+`baselines/kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json` and
+`baselines/kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json`.
 
 For each sampled task, record:
 
@@ -80,6 +79,6 @@ reviewer logs in this public calibration file.
 
 ```bash
 rg -n "expected_boundary" tasks
-rg -n "boundary_reasoning" baselines/kiro-live-tool-agent-sonnet-current-public-46*.json
+rg -n "boundary_reasoning" baselines/kiro-live-tool-agent-sonnet-current-public-49*.json
 python3 scripts/validate_baseline_registry.py
 ```

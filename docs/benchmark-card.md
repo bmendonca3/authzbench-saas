@@ -44,7 +44,7 @@ AuthZBench-SaaS does not claim to measure:
 - application-security teams interested in access-control proof quality
 - benchmark designers studying false-positive controls and replay scoring
 
-## Current Public Split
+## Frozen v0.0 Public Split
 
 - 6 Dockerized synthetic SaaS apps
 - 46 public tasks
@@ -57,6 +57,20 @@ AuthZBench-SaaS does not claim to measure:
 - target-side JSONL request logs for Docker HTTP targets
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts
 - scripted, no-tools model, and live HTTP tool-agent baseline summaries
+
+## Current v1-Prep Public Split
+
+- 6 synthetic SaaS apps
+- 49 public tasks
+- 20 vulnerable tasks
+- 29 secure-control tasks
+- 17 denial controls and 12 authorized-allow controls
+- first billing entitlement expansion slice
+- current 49-task scripted sanity baseline
+- five repeated current public no-tools Kiro model-family baselines
+- one repeated current public live HTTP Kiro tool-agent baseline with 49/49
+  target-request correlation in both runs
+- public-safe boundary-reasoning calibration for the current tool-agent runs
 
 ## Main Metrics
 
@@ -95,6 +109,10 @@ mixed with current evidence without a compatibility label.
 - One current 49-task public live HTTP Kiro tool-agent baseline exists as
   repeated diagnostic evidence with 49/49 target-request correlation in both
   runs. It is not private-holdout, hosted-leaderboard, or v1 release evidence.
+- Boundary-reasoning calibration shows that exploit-proven public tool-agent
+  submissions often used alternate keys or runtime identifiers instead of the
+  oracle-compatible boundary vocabulary. The current zero boundary-reasoning
+  credit should not be retroactively relaxed under `score-policy-v1`.
 - The repeated 46-task public live HTTP tool-agent baseline remains auditable as
   frozen v0.0 evidence, but it is stale for the current 49-task split. The older
   44-task baselines are retained as stale public-split snapshots only.
@@ -119,8 +137,11 @@ benchmark environment.
 ## Release Direction
 
 The next milestone is v1 credibility: repeated private tool-agent evidence,
-rotating holdout packs, stronger multi-step workflows, independent review,
-variance analysis, and a hosted or fully containerized submission path.
+implemented rotating holdout packs, stronger multi-step workflows, independent
+review, and a hosted or fully containerized submission path. Governance for that
+path is specified in
+[`v1-community-submission-governance.md`](v1-community-submission-governance.md),
+but hosted/containerized execution is not yet implemented.
 
 External reviewers should use [`task-quality-rubric.md`](task-quality-rubric.md)
 when assessing task realism, false-positive traps, replay proof, and anti-gaming

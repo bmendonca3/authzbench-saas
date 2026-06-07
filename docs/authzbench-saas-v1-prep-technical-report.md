@@ -46,6 +46,13 @@ artifact per task, correlates target-side requests for all 49 tasks in both runs
 and reports zero planner or parser failures. These are public-split comparison
 artifacts, not private-holdout rankings or hosted leaderboard rows.
 
+A completed boundary-reasoning calibration study audits the current public
+tool-agent pair. The study finds that exploit-proven vulnerable submissions
+often describe the right authorization concept in prose or alternate keys, but
+do not preserve the oracle-compatible boundary vocabulary required by
+`score-policy-v1`. The current zero boundary-reasoning result is therefore a
+valid score-contract result, not a reason to retroactively relax scoring.
+
 The current registry separates:
 
 - `current_public_harness_check` for deterministic current-split sanity checks
@@ -74,9 +81,11 @@ when describing current `main`.
 
 ## Next Work
 
-Before a v1 release, expand task volume, add rotating private holdouts, complete
-boundary-reasoning calibration and external reviewer calibration, define hosted
-or fully containerized submission governance, and keep chart/table captions
-explicit about current versus stale evidence. After any v1 task or scoring
-change, rerun current public no-tools and tool-agent baselines before making new
-comparisons.
+Before a v1 release, expand task volume, implement rotating private holdouts,
+complete independent external review, build hosted or fully containerized
+submission infrastructure, and keep chart/table captions explicit about current
+versus stale evidence. The v1/community submission governance is now defined in
+`docs/v1-community-submission-governance.md`, but the hosted/containerized
+runner and real external reviews are not yet complete. After any v1 task or
+scoring change, rerun current public no-tools and tool-agent baselines before
+making new comparisons.

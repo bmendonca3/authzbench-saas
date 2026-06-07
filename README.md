@@ -257,6 +257,9 @@ Important interpretation:
   five model families and a repeated live HTTP tool-agent family, but they remain
   public-split diagnostic evidence rather than hosted leaderboard or private
   holdout rankings.
+- The current boundary-calibration study shows that public tool-agent runs often
+  prove vulnerable backend behavior while failing to submit the exact
+  oracle-compatible boundary vocabulary required for full vulnerable-task credit.
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and
@@ -296,6 +299,10 @@ private result rows.
 See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md) and
 [`docs/holdout-rotation-protocol.md`](docs/holdout-rotation-protocol.md).
 
+Future v1/community submission governance is defined in
+[`docs/v1-community-submission-governance.md`](docs/v1-community-submission-governance.md).
+That document is a specification, not a claim that hosted evaluation is live.
+
 ## Release Status
 
 AuthZBench-SaaS is at a released v0.0 stage:
@@ -314,8 +321,8 @@ The next path is:
 
 1. Expand multi-step workflow realism across more app families.
 2. Implement rotating private holdout packs.
-3. Add research-grade boundary-reasoning calibration and external review.
-4. Build a hosted or fully containerized submission path.
+3. Complete independent external review.
+4. Build and smoke-test a hosted or fully containerized submission path.
 5. Keep release docs and claim boundaries synchronized after every tagged
    release.
 
@@ -333,6 +340,8 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): leaderboard row schema
 - [`docs/score-policy.md`](docs/score-policy.md): headline metric policy
 - [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
+- [`docs/boundary-reasoning-calibration-study.md`](docs/boundary-reasoning-calibration-study.md): current boundary calibration
+- [`docs/v1-community-submission-governance.md`](docs/v1-community-submission-governance.md): future submission governance
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task-quality review rubric
 - [`docs/task-quality-matrix.md`](docs/task-quality-matrix.md): public task-quality matrix
 - [`docs/v0-release-plan.md`](docs/v0-release-plan.md): v0 release criteria

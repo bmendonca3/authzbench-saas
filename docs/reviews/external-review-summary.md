@@ -1,18 +1,25 @@
 # External Review Summary
 
-Status: intake tracker for post-`v0.0` external review.
+Status: intake tracker for post-`v0.0` external review. Reviewer packet is
+ready, but independent external review is still externally blocked until real
+reviewers complete the lanes.
 
 No independent external review is claimed yet. This file tracks planned review
 lanes, reviewer questions, requested evidence, and acceptance criteria without
 publishing private reviewer identity or private holdout details.
 
+Current blocker: the repository can prepare and validate the review packet, but
+it cannot honestly mark review complete without independent AppSec,
+benchmark/evals, and AI-agent/tooling reviewers returning findings or explicit
+no-finding dispositions.
+
 ## Review Lanes
 
 | Lane | Reviewer status | Requested evidence | Acceptance criteria | Next action |
 | --- | --- | --- | --- | --- |
-| Application security | Not started | `docs/task-quality-matrix.md`, representative public tasks, scorer controls, `docs/evidence-and-claims.md` | Reviewer can identify whether BOLA/BFLA, role, token-scope, sharing, and admin-action tasks are realistic enough for a benchmark paper; false-positive controls are meaningful; unsafe or ambiguous tasks are flagged. | Recruit reviewer for task realism, authorization-boundary quality, and control quality. |
-| Benchmark/evals methodology | Not started | Technical report, paper scaffold, `baselines/baseline-registry.json`, `docs/baseline-variance-analysis.md`, validation commands | Reviewer can judge whether task split, scoring semantics, repeated-run evidence, and claim boundary support the paper's stated claims without implying private leaderboard readiness. | Recruit reviewer for split design, scoring validity, variance framing, and release claim limits. |
-| AI-agent/tooling | Not started | Public baseline summaries, live HTTP tool-agent summaries, runner/scorer docs, `docs/leaderboard-schema.md` | Reviewer can assess whether harness types, tool access, target-request correlation, and comparability keys are described well enough for agent-to-agent comparison. | Recruit reviewer for harness assumptions, tool access, and agent comparability. |
+| Application security | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, `docs/task-quality-matrix.md`, representative public tasks, scorer controls, `docs/evidence-and-claims.md` | Reviewer can identify whether BOLA/BFLA, role, token-scope, sharing, and admin-action tasks are realistic enough for a benchmark paper; false-positive controls are meaningful; unsafe or ambiguous tasks are flagged. | Recruit reviewer for task realism, authorization-boundary quality, and control quality. |
+| Benchmark/evals methodology | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, technical reports, paper scaffold, `baselines/baseline-registry.json`, `docs/baseline-variance-analysis.md`, validation commands | Reviewer can judge whether task split, scoring semantics, repeated-run evidence, and claim boundary support the paper's stated claims without implying private leaderboard readiness. | Recruit reviewer for split design, scoring validity, variance framing, and release claim limits. |
+| AI-agent/tooling | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, public baseline summaries, live HTTP tool-agent summaries, runner/scorer docs, `docs/leaderboard-schema.md`, `docs/boundary-reasoning-calibration-study.md` | Reviewer can assess whether harness types, tool access, target-request correlation, and comparability keys are described well enough for agent-to-agent comparison. | Recruit reviewer for harness assumptions, tool access, and agent comparability. |
 
 ## Reviewer Questions
 
@@ -29,14 +36,14 @@ publishing private reviewer identity or private holdout details.
 
 ### Benchmark And Evals Methodology
 
-- Does the v0.0 claim boundary match the evidence in
+- Does the current claim boundary match the evidence in
   `docs/evidence-and-claims.md`?
 - Are `v0_mean_score`, exploit proof, boundary reasoning, false-positive rate,
   and target-request coverage separated clearly enough?
 - Are two-run ranges framed as descriptive evidence rather than statistical
   certainty?
-- Are stale 44-task and legacy 15-task baselines clearly separated from current
-  46-task evidence?
+- Are stale 44-task, frozen 46-task, and current 49-task baselines clearly
+  separated?
 - Does the validation packet give enough public reproducibility without leaking
   private holdout internals?
 
@@ -62,6 +69,13 @@ publishing private reviewer identity or private holdout details.
   packaging, or paper wording.
 - Update `docs/evidence-and-claims.md` if a review changes the supported claim
   boundary.
+
+## Completion Gate
+
+Do not mark the external-review goal complete until each lane records a real
+review date, reviewer role/scope, artifacts reviewed, findings or explicit
+no-finding disposition, and accepted/rejected/unresolved decisions. Packet-ready
+is useful evidence, but it is not external review.
 
 ## Finding Log Template
 

@@ -114,11 +114,34 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
 
 These remain intentionally open until real evidence exists:
 
-- [ ] Boundary-reasoning calibration study completed and reflected in the paper.
+- [x] Boundary-reasoning calibration study completed and reflected in the paper.
+  Evidence: `docs/boundary-reasoning-calibration-study.md` audits both current
+  49-task live HTTP `claude-sonnet-4.6` tool-agent runs, covering all 30
+  exploit-proven vulnerable task-run cases where boundary reasoning failed.
+  `docs/authzbench-saas-v1-prep-technical-report.md` and
+  `paper/ieee-sp/main.tex` now state the calibrated interpretation: exploit
+  replay often succeeded, but submitted boundaries did not preserve the
+  oracle-compatible vocabulary required by `score-policy-v1`.
 - [ ] External AppSec, benchmark/evals, and AI-agent/tooling review lanes
   completed.
-- [ ] Rotating private holdout and hosted or fully containerized submission
+- [x] Rotating private holdout and hosted or fully containerized submission
   governance defined for v1/community use.
+  Evidence: `docs/v1-community-submission-governance.md` defines submission
+  states, eligibility gates, hosted-runner flow, fully containerized flow,
+  private-pack rotation, stale-score handling, tie policy, attestation,
+  appeals, deprecation, and the minimum v1 launch bar. It links to
+  `docs/holdout-rotation-protocol.md` and `artifact/run-bundle.md` while
+  preserving the claim boundary that hosted/containerized execution is specified
+  but not yet implemented.
+
+### Externally Blocked Gap
+
+- External review remains open. Evidence packet:
+  `docs/reviews/external-review-packet.md`. Tracker:
+  `docs/reviews/external-review-summary.md`. Blocker: completion requires real
+  independent AppSec, benchmark/evals, and AI-agent/tooling reviewers to return
+  findings or explicit no-finding dispositions; local repository work cannot
+  honestly manufacture that evidence.
 
 ## Current Goal Statement
 

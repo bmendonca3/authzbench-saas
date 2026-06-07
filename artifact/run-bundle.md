@@ -4,6 +4,11 @@ This guide describes what a public or maintainer run bundle should contain
 before it is treated as comparable benchmark evidence. It does not create a
 hosted leaderboard and does not replace the validator.
 
+For v1/community operation, pair this bundle guidance with
+`docs/v1-community-submission-governance.md`. This file defines the bundle;
+the governance document defines states, eligibility, rotation, hosted or
+containerized execution, appeals, and publication rules.
+
 ## Bundle Contents
 
 A reviewable run bundle should include:

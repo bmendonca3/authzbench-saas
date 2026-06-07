@@ -11,6 +11,8 @@ cards, LinkedIn posts, or external-review notes.
 | v0.0 release snapshot: 46 public tasks across 6 synthetic SaaS apps | the v0.0 public scaffold covers multiple SaaS authorization surfaces, including the first project-management multi-step workflow wave | that future expanded public splits have comparable current baselines before rerun |
 | v1-prep public split: 49 public tasks across 6 synthetic SaaS apps | the first billing entitlement expansion slice is present in public manifests and controls | v1 release readiness, current v1 model comparisons, or hosted leaderboard operation |
 | current 49-task scripted sanity baseline | the expanded public split, scorer, scripted oracle path, and baseline registry agree | model capability, leaderboard eligibility, private-holdout performance, or v1 release readiness |
+| current 49-task public no-tools and live HTTP tool-agent baselines | five repeated no-tools model families and one repeated live HTTP tool-agent family exist for the current public split, with the tool-agent runs preserving 49/49 target-request correlation | private-holdout performance, hosted leaderboard readiness, or v1/community readiness |
+| boundary-reasoning calibration study | current public tool-agent runs often prove vulnerable backend behavior but fail to preserve the oracle-compatible boundary vocabulary required by `score-policy-v1` | that old runs should receive retroactive boundary credit, or that scorer/prompt changes can be made without a new policy version and reruns |
 | deterministic scorer replay | submitted evidence can be checked against backend behavior | the agent necessarily interacted with a live target unless request-log correlation is present |
 | secure controls and authorized-allow controls | the benchmark can penalize false positives and over-reporting | all real SaaS false-positive patterns are covered |
 | five repeated v0.0 46-task public model/agent families | four no-tools model families plus one live HTTP tool-agent family have v0.0 public-split replay evidence | broad model rankings, private-holdout performance, v1 comparability after task expansion, or leaderboard eligibility |
@@ -22,6 +24,8 @@ cards, LinkedIn posts, or external-review notes.
 | one host-isolated private no-tools leaderboard-candidate row | the stable schema validates runner-emitted fingerprint provenance and release-candidate eligibility | hosted leaderboard operation, broad private model rankings, or private tool-agent eligibility |
 | strict maintainer release gate | the maintainer checkout can report exact pass/fail v0 gates while keeping private holdouts out of public Git history | hosted leaderboard readiness or v1-scale external validation |
 | v1 readiness checklist | v1 task expansion has a documented startup gate, stale-baseline policy, validation commands, and rerun matrix | v1 release readiness, new current model comparisons, or hosted leaderboard operation |
+| v1/community submission governance | submission states, eligibility gates, run-bundle expectations, private-pack rotation, tie/stale-score rules, appeals, and hosted/containerized flow requirements are defined | that hosted or containerized evaluation is implemented, smoked, or open for third-party submissions |
+| external review packet | the repository has a public-safe packet ready for AppSec, benchmark/evals, and AI-agent/tooling reviewers | that independent external review has happened |
 
 ## Approved Public Framing
 
@@ -37,6 +41,8 @@ Use:
 - `protected private-holdout evidence`
 - `deterministic backend replay`
 - `target-request correlation when live Docker targets are used`
+- `boundary-vocabulary calibration`
+- `v1/community submission governance specification`
 
 Avoid:
 
@@ -47,6 +53,7 @@ Avoid:
 - `production vulnerability discovery benchmark`
 - `private holdouts are publicly reproducible`
 - `public-split scores are final rankings`
+- `external review complete` unless reviewer dispositions are recorded
 
 ## Headline Metrics
 

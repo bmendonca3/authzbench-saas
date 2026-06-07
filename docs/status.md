@@ -179,6 +179,8 @@ evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence.
 | Kiro `glm-5` no-tools current v1-prep run 2 | 49 | 28 | 0.1 | 0.0 | 0.0345 | 1.0 |
 | Kiro `claude-opus-4.6` no-tools current v1-prep run 1 | 49 | 29 | 0.55 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-opus-4.6` no-tools current v1-prep run 2 | 49 | 29 | 0.55 | 0.0 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` current v1-prep run 1 | 49 | 29 | 0.75 | 0.0 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` current v1-prep run 2 | 49 | 29 | 0.75 | 0.0 | 0.0 | 1.0 |
 | Scripted sanity baseline, stale v0.0 snapshot | 46 | 46 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale v0.0 run 1 | 46 | 27 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale v0.0 run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
@@ -301,6 +303,10 @@ Still required before a hosted public leaderboard or v1/community claim:
 - keep `docs/release-evidence.json` tied to exact command, commit, CI, and
   artifact evidence as later release checks are rerun
 - post-push clone check from public `github.com` before future tags or releases
+- independent AppSec, benchmark/evals, and AI-agent/tooling review dispositions
 - hosted or fully containerized leaderboard execution if third-party submissions
-  will be accepted at scale
-- rotating multi-pack private holdouts for v1-scale anti-gaming hardening
+  will be accepted at scale; governance is defined in
+  `docs/v1-community-submission-governance.md`, but the runner path is not live
+- rotating multi-pack private holdouts for v1-scale anti-gaming hardening; the
+  rotation protocol is documented, but multiple active/shadow packs are not
+  implemented

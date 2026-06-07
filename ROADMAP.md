@@ -29,13 +29,16 @@ Current state: **v0.0 released**.
 Evidence already in place:
 
 - 6 synthetic SaaS apps
-- 46 public tasks
+- frozen v0.0 release snapshot with 46 public tasks
+- current v1-prep public split with 49 public tasks
 - a maintainer-only private holdout pack with count-level redacted evidence
 - deterministic backend replay scoring
 - target-side request logging for live HTTP runs
 - five repeated frozen v0.0 public model/agent baseline families
 - one repeated frozen v0.0 public live HTTP tool-agent family
 - one current 49-task scripted harness sanity baseline
+- five repeated current 49-task public no-tools model-family baselines
+- one repeated current 49-task public live HTTP tool-agent baseline
 - protected private-holdout aggregate evidence
 - one source-backed private no-tools leaderboard-candidate row with
   runner-emitted fingerprint provenance
@@ -143,7 +146,9 @@ Next improvements:
 
 - [ ] Add repeated private tool-agent evidence.
 - [ ] Add at least one third-party or independently operated agent run.
-- [ ] Add statistical variance analysis for repeated baselines.
+- [x] Add statistical variance analysis for repeated baselines.
+- [x] Add boundary-reasoning calibration for the current public tool-agent
+      evidence.
 - [ ] Re-run key baselines after any task/scoring change before comparing
       scores.
 
@@ -181,9 +186,9 @@ Next improvements:
 
 - [ ] Add a maintainer-operated submission review workflow.
 - [ ] Add hosted or fully containerized evaluation.
-- [ ] Add signed or attestable run bundles.
-- [ ] Publish leaderboard governance rules.
-- [ ] Add clear rules for reruns, ties, stale scores, and task-pack rotations.
+- [x] Add signed or attestable run-bundle guidance.
+- [x] Publish leaderboard governance rules.
+- [x] Add clear rules for reruns, ties, stale scores, and task-pack rotations.
 
 ## Milestone 5: Research-Grade v1
 

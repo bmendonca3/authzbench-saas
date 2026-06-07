@@ -68,6 +68,16 @@ that agents can sometimes produce replayable exploit evidence while still
 failing full vulnerable-task passes because boundary reasoning remains weak.
 They must be rerun before current 49-task v1 comparison.
 
+For the current 49-task v1-prep public split, repeated live HTTP tool-agent
+runs sharpen this observation. The tool-agent proves vulnerable backend
+behavior for 15 of 20 vulnerable public tasks in each run and preserves
+target-request correlation for all 49 tasks, but receives no boundary-reasoning
+credit. A public-safe calibration audit shows that many submitted boundaries
+name the right concept in prose or alternate keys while failing to preserve the
+oracle-compatible actor, role, tenant, object, or scope labels. We therefore
+interpret the result as a structured boundary-vocabulary failure under the
+current scoring contract, not as evidence that exploit replay was absent.
+
 \begin{table*}[t]
 \centering
 \caption{Frozen v0.0 public baseline evidence generated from repository artifacts.}
@@ -151,9 +161,11 @@ validation path.
 
 The \releaseversion{} public split is small, synthetic, and inspectable. The
 baseline table is frozen v0.0 diagnostic public-split evidence, not a final
-ordering of model quality or current 49-task model comparison. Hosted
-leaderboard operation, rotating private holdouts,
-broader isolation, external review, and 100+ task scale are future v1 work.
+ordering of model quality or current 49-task model comparison. Governance for
+future v1/community submission states, run bundles, private-pack rotation, and
+hosted or containerized evaluation is specified in the repository, but hosted
+leaderboard operation, implemented rotating multi-pack holdouts, broader
+isolation, external review, and 100+ task scale are future v1 work.
 
 \section{LLM Usage Considerations}
 
