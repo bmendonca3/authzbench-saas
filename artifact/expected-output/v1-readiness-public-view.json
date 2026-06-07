@@ -109,7 +109,8 @@
       "id": "paper_and_artifact_readiness",
       "passed": false,
       "unmet": [
-        "missing structured evidence: docs/v1-paper-readiness.json"
+        "evidence_scope must be release_candidate",
+        "upstream_review_and_infrastructure_complete must be true"
       ]
     },
     {
