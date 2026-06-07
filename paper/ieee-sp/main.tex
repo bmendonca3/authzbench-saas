@@ -1,0 +1,136 @@
+\documentclass[conference,compsoc]{IEEEtran}
+
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\input{../shared/authzbench-macros.tex}
+
+\begin{document}
+
+\title{\benchmarkname: Evaluating Replayable Authorization-Failure Proofs in AI Security Agents}
+
+\author{\IEEEauthorblockN{Anonymous Authors}}
+
+\maketitle
+
+\begin{abstract}
+AI security agents can produce plausible vulnerability reports without proving
+that an authorization failure occurred. \benchmarkname{} \releaseversion{}
+introduces a focused benchmark for this proof gap. The benchmark contains
+\publicappcount{} synthetic SaaS targets and \publictaskcount{} public tasks
+covering tenant, organization, object, role, API-token, scope, sharing, and
+admin-action boundaries. It evaluates whether an agent can submit
+backend-replayable evidence for vulnerable tasks while avoiding false reports
+on secure controls. The current public split includes \vulnerabletaskcount{}
+vulnerable tasks, \securecontrolcount{} secure-control tasks,
+\denialcontrolcount{} denial controls, and \authorizedallowcount{}
+authorized-allow controls. This paper frames the released \releaseversion{}
+repository as a research artifact and methodology foundation, not as a hosted
+leaderboard or v1 community benchmark.
+\end{abstract}
+
+\section{Introduction}
+
+SaaS authorization bugs are difficult to evaluate with prose alone. A useful
+agent must identify the actor, tenant or organization, object, role, token, or
+scope boundary and provide backend evidence that can be replayed by the scorer.
+\benchmarkname{} focuses on this narrow capability: proving authorization
+failures while staying quiet on secure controls.
+
+\section{Benchmark Design}
+
+\benchmarkname{} uses synthetic local SaaS fixtures so scorer-owned replay can
+be deterministic and public users can reproduce the public split. The benchmark
+does not claim production vulnerability-discovery capability, broad cyber
+capability, or hosted leaderboard readiness.
+
+\begin{table}[t]
+\centering
+\caption{Public task mix by target family.}
+\input{../shared/task-mix-table.tex}
+\end{table}
+
+\section{Scoring}
+
+Vulnerable tasks require replayable exploit proof, correct boundary reasoning,
+control replay, and safe behavior for a full pass. Secure controls require no
+findings. Release-facing interpretation separates exploit proof, boundary
+reasoning, false positives, control execution, authorized-allow behavior, and
+live-target request coverage.
+
+\section{Experimental Results}
+
+Current public baselines are diagnostic public-split evidence. They show that
+agents can sometimes produce replayable exploit evidence while still failing
+full vulnerable-task passes because boundary reasoning remains weak.
+
+\begin{table*}[t]
+\centering
+\caption{Current public baseline evidence generated from repository artifacts.}
+\input{../shared/baseline-table.tex}
+\end{table*}
+
+\section{Related Work}
+
+\benchmarkname{} sits at the intersection of API authorization testing,
+cybersecurity evaluation for language models, agent benchmarks, and benchmark
+documentation. OWASP API Security Top 10 distinguishes object-level and
+function-level authorization risks~\cite{owasp-api-top10-2023}. Cybersecurity
+evaluation suites such as CyberSecEval motivate narrower, evidence-backed cyber
+capabilities~\cite{bhatt2024cyberseceval2,bhatt2024cyberseceval3}. Agent
+benchmarks such as SWE-bench motivate task-level environments and reproducible
+grading~\cite{jimenez2024swebench}. Model cards and datasheets inform the
+repository's claim ledger and documentation
+discipline~\cite{mitchell2019modelcards,gebru2021datasheets}. The IEEE S\&P
+scaffold follows the venue-facing formatting path noted in the current call for
+papers~\cite{ieeesp2026cfp}.
+
+\section{Ethical Considerations}
+
+The targets are synthetic local fixtures and should not be exposed to the
+public internet. Public tasks are inspectable and support reproducibility; they
+must not be treated as private leaderboard tasks. Private holdout bodies,
+routes, seeds, and raw evidence remain out of public Git history.
+
+\section{Open Science and Artifact Availability}
+
+The public repository contains task manifests, scorer code, validation scripts,
+public-safe charts, baseline summaries, and release evidence. Maintainer-only
+private holdout evidence is exposed only through aggregate redacted summaries.
+The artifact packet under \texttt{artifact/} documents the intended public
+validation path.
+
+\section{Limitations}
+
+The \releaseversion{} public split is small, synthetic, and inspectable. The
+current baseline table is not a definitive model ranking. Hosted leaderboard
+operation, rotating private holdouts, broader isolation, external review, and
+100+ task scale are future v1 work.
+
+\section{LLM Usage Considerations}
+
+Because the benchmark evaluates model and agent behavior, any paper or report
+using \benchmarkname{} should disclose model labels, harness type, tool access,
+task split, benchmark fingerprint, repeated-run provenance, and known
+automation assistance used to prepare benchmark artifacts.
+
+\section{Evidence Map}
+
+\begin{table}[t]
+\centering
+\caption{Claim evidence map generated from repository documentation.}
+\input{../shared/evidence-map-table.tex}
+\end{table}
+
+\section{Conclusion}
+
+\benchmarkname{} \releaseversion{} is best understood as an evidence-backed
+research artifact for studying SaaS authorization proof quality. The next step
+is not stronger release wording, but independent review, variance analysis,
+artifact packaging, and v1 task expansion.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
