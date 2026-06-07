@@ -11,6 +11,12 @@
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
     "ci_refresh_note": "GitHub Actions run 27100165515 on commit 47790857146f21ff52ef800dc92f75da205f29f9 failed because the public v1-readiness fixture still reflected the previous paper preflight source SHA; this evidence refresh updates the source SHA and fixture without marking final paper readiness complete.",
+    "exact_head_ci": {
+      "commit_sha": "b163e90cc8c96a9b3c8e61f784f8999603c809ea",
+      "conclusion": "success",
+      "run_id": 27100247433,
+      "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27100247433"
+    },
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",

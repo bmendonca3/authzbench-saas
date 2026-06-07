@@ -387,7 +387,11 @@ The goal is complete only when all of these are true:
     `docs/reviews/2026-06-07-private-holdout-overlap-review-summary.md`
     documents the bounded Kiro Opus passes, the accepted unique-fingerprint
     count correction, the post-fix `CLEAN` verdict, and the boundary that
-    actual active plus shadow/candidate pack implementation remains open.
+    actual active plus shadow/candidate pack implementation remains open;
+  - commit `47790857146f21ff52ef800dc92f75da205f29f9` implements the
+    cross-pack overlap guard, and evidence-refresh commit
+    `b163e90cc8c96a9b3c8e61f784f8999603c809ea` passed exact-head GitHub
+    Actions run `27100247433`.
 
 ### Repeated Private Tool-Agent Evidence Gate
 
