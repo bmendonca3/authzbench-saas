@@ -8,15 +8,15 @@
 <rect x="42.0" y="95.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
 <text x="78.0" y="112.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Public split validated</text>
 <text x="360.0" y="112.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
-<text x="520.0" y="112.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">49 public tasks across 6 apps</text>
-<rect x="42.0" y="143.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
+<text x="520.0" y="112.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">54 public tasks across 6 apps</text>
+<rect x="42.0" y="143.0" width="22.0" height="22.0" rx="11" fill="#64748b"/>
 <text x="78.0" y="160.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Repeated model/agent families</text>
-<text x="360.0" y="160.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
-<text x="520.0" y="160.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">6 repeated current model/agent families</text>
-<rect x="42.0" y="191.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
+<text x="360.0" y="160.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Not yet</text>
+<text x="520.0" y="160.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">0 repeated current model/agent families</text>
+<rect x="42.0" y="191.0" width="22.0" height="22.0" rx="11" fill="#64748b"/>
 <text x="78.0" y="208.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Public tool-agent baseline</text>
-<text x="360.0" y="208.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>
-<text x="520.0" y="208.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Current public tool-agent summary with target correlation</text>
+<text x="360.0" y="208.0" fill="#64748b" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Not yet</text>
+<text x="520.0" y="208.0" fill="#5b667a" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="400">Only stale public tool-agent evidence is tracked</text>
 <rect x="42.0" y="239.0" width="22.0" height="22.0" rx="11" fill="#2f9e44"/>
 <text x="78.0" y="256.0" fill="#172033" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600">Protected private runs</text>
 <text x="360.0" y="256.0" fill="#2f9e44" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Ready evidence</text>

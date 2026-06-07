@@ -14,7 +14,7 @@ Stable signals:
 - leaderboard examples validate
 - Python modules compile
 - privacy scan passes
-- optional scripted public baseline passes all 49 public tasks
+- optional scripted public baseline passes all 54 public tasks
 
 Volatile details intentionally excluded:
 

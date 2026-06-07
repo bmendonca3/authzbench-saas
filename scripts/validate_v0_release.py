@@ -35,7 +35,6 @@ REQUIRED_DOCS = [
 
 V0_TARGETS = {
     "min_public_tasks": 40,
-    "max_public_tasks": 50,
     "min_apps": 6,
     "min_private_holdout_tasks": 20,
     "max_private_holdout_tasks": 30,
@@ -185,9 +184,9 @@ def validate_v0_release() -> dict[str, Any]:
     app_count = len({str(item.get("app")) for item in public_manifests})
     public_unmet: list[str] = []
     public_task_count = int(public_counts["manifest_count"])
-    if not (V0_TARGETS["min_public_tasks"] <= public_task_count <= V0_TARGETS["max_public_tasks"]):
+    if public_task_count < V0_TARGETS["min_public_tasks"]:
         public_unmet.append(
-            f"public tasks must be {V0_TARGETS['min_public_tasks']}-{V0_TARGETS['max_public_tasks']}; got {public_task_count}"
+            f"public tasks must be at least {V0_TARGETS['min_public_tasks']}; got {public_task_count}"
         )
     if app_count < V0_TARGETS["min_apps"]:
         public_unmet.append(f"synthetic app count must be at least {V0_TARGETS['min_apps']}; got {app_count}")

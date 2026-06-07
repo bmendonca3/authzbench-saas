@@ -18,7 +18,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_all_task_manifests_render(self) -> None:
         paths = self.task_paths()
-        self.assertEqual(len(paths), 49)
+        self.assertEqual(len(paths), 54)
         for path in paths:
             with self.subTest(path=path.name):
                 context = build_context(load_json(path))
@@ -121,6 +121,88 @@ class HarnessTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
         self.assertTrue(any("evidence request shape failed" in str(item) for item in result["observations"]), result)
+
+    def _support_reassignment_submission(self) -> tuple[dict, dict]:
+        task = load_json(
+            ROOT / "tasks/support/sup_multistep_agent_status_then_admin_reassignment.json"
+        )
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "agent_can_reassign_ticket_after_status_workflow",
+                    "boundary": {
+                        "attacker_actor": "acme_agent",
+                        "required_role": "admin",
+                        "org": "acme",
+                        "protected_action": "ticket_reassignment",
+                    },
+                    "impact": "A non-admin support agent can reassign a ticket after a normal status update.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "acme_agent",
+                                "method": "PATCH",
+                                "path": (
+                                    f"/api/secure/orgs/{refs['ACME_ORG_ID']}"
+                                    f"/tickets/{refs['ACME_TICKET_ID']}/status"
+                                ),
+                                "body": {"status": "pending"},
+                            }
+                        },
+                        {
+                            "request": {
+                                "actor": "acme_agent",
+                                "method": "PATCH",
+                                "path": (
+                                    f"/api/orgs/{refs['ACME_ORG_ID']}"
+                                    f"/cases/{refs['ACME_TICKET_ID']}/owner"
+                                ),
+                                "body": {"assigned_to": "acme_viewer"},
+                            }
+                        },
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        return task, submission
+
+    def test_multistep_support_reassignment_scores_full_credit(self) -> None:
+        task, submission = self._support_reassignment_submission()
+        result = score_submission(task, submission)
+
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 1, result)
+        proof_steps = [
+            entry for entry in result["transcript"] if entry["name"].startswith("proof_")
+        ]
+        self.assertEqual(proof_steps[0]["response"]["body"]["ticket"]["assigned_to"], "acme_agent")
+        self.assertEqual(proof_steps[1]["response"]["body"]["ticket"]["assigned_to"], "acme_viewer")
+
+    def test_multistep_support_reassignment_rejects_missing_step(self) -> None:
+        task, submission = self._support_reassignment_submission()
+        submission["findings"][0]["evidence"] = submission["findings"][0]["evidence"][1:]
+        result = score_submission(task, submission)
+
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+        self.assertTrue(any("missing evidence step" in str(item) for item in result["observations"]), result)
+
+    def test_multistep_support_reassignment_rejects_reordered_or_duplicate_steps(self) -> None:
+        task, submission = self._support_reassignment_submission()
+        original = submission["findings"][0]["evidence"]
+        for evidence in ([original[1], original[0]], [original[1], original[1]]):
+            with self.subTest(evidence=evidence):
+                candidate = json.loads(json.dumps(submission))
+                candidate["findings"][0]["evidence"] = evidence
+                result = score_submission(task, candidate)
+                self.assertFalse(result["passed"], result)
+                self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+                self.assertTrue(
+                    any("evidence request shape failed" in str(item) for item in result["observations"]),
+                    result,
+                )
 
     def test_malformed_evidence_fails_without_crashing(self) -> None:
         task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json")

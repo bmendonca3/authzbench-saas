@@ -61,16 +61,17 @@ AuthZBench-SaaS does not claim to measure:
 ## Current v1-Prep Public Split
 
 - 6 synthetic SaaS apps
-- 49 public tasks
-- 20 vulnerable tasks
-- 29 secure-control tasks
-- 17 denial controls and 12 authorized-allow controls
-- first billing entitlement expansion slice
-- current 49-task scripted sanity baseline
-- five repeated current public no-tools Kiro model-family baselines
-- one repeated current public live HTTP Kiro tool-agent baseline with 49/49
-  target-request correlation in both runs
-- public-safe boundary-reasoning calibration for the current tool-agent runs
+- 54 public tasks
+- 21 vulnerable tasks
+- 33 secure-control tasks
+- 19 denial controls and 14 authorized-allow controls
+- billing entitlement and support ticket reassignment expansion slices
+- current 54-task scripted sanity baseline
+- five repeated 49-task public no-tools Kiro model-family baselines, now stale
+  pending 54-task reruns
+- one repeated 49-task public live HTTP Kiro tool-agent baseline with 49/49
+  target-request correlation in both historical runs, now stale
+- public-safe boundary-reasoning calibration for the 49-task tool-agent runs
 
 ## Main Metrics
 
@@ -103,22 +104,21 @@ mixed with current evidence without a compatibility label.
   correlate them into per-task artifacts when `--target-log-dir` is supplied.
   Public runs should still be treated separately from protected private
   evaluation.
-- Five current 49-task public no-tools Kiro model-family baselines exist as
-  repeated diagnostic evidence. They are not private-holdout, tool-agent,
-  hosted-leaderboard, or v1 release evidence.
-- One current 49-task public live HTTP Kiro tool-agent baseline exists as
-  repeated diagnostic evidence with 49/49 target-request correlation in both
-  runs. It is not private-holdout, hosted-leaderboard, or v1 release evidence.
+- Five 49-task public no-tools Kiro model-family baselines exist as repeated
+  diagnostic evidence, but they are stale for the current 54-task split.
+- One 49-task public live HTTP Kiro tool-agent baseline exists with 49/49
+  target-request correlation in both runs, but it is stale for the current
+  54-task split.
 - Boundary-reasoning calibration shows that exploit-proven public tool-agent
   submissions often used alternate keys or runtime identifiers instead of the
   oracle-compatible boundary vocabulary. The current zero boundary-reasoning
   credit should not be retroactively relaxed under `score-policy-v1`.
 - The repeated 46-task public live HTTP tool-agent baseline remains auditable as
-  frozen v0.0 evidence, but it is stale for the current 49-task split. The older
+  frozen v0.0 evidence, but it is stale for the current 54-task split. The older
   44-task baselines are retained as stale public-split snapshots only.
-- Baseline registry validation is present and currently reports the baseline
-  sub-gate as complete for the live 49-task public baseline bar, while keeping
-  public-split and private-holdout claims separate.
+- Baseline registry validation is present and keeps the frozen v0.0 snapshot
+  auditable while reporting that current 54-task model/tool-agent reruns remain
+  outstanding.
 - Stable leaderboard submission validation is present. A source-backed
   protected private no-tools row with runner-emitted fingerprint provenance is
   eligible as release-candidate schema evidence. An older reconstructed

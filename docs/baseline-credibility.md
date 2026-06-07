@@ -40,11 +40,12 @@ as current-comparable evidence.
 
 ## v0 Baseline Bar
 
-The baseline sub-gate currently reports `v0_baseline_ready: true` for the live
-49-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
-46-task release snapshot. The live 49-task public split has five repeated
-no-tools model-family baselines plus one repeated live HTTP tool-agent family.
-The old 46-task evidence remains auditable as frozen v0.0 release evidence.
+The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
+54-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
+46-task release snapshot. The preceding 49-task split has five repeated
+no-tools model-family baselines plus one repeated live HTTP tool-agent family,
+but every one of those rows is stale for current 54-task comparison. The old
+46-task evidence remains auditable as frozen v0.0 release evidence.
 
 The v0 baseline bar is:
 
@@ -76,23 +77,23 @@ diagnostics, but they do not satisfy this current-public comparability check.
 The v0.0 scripted baseline is a 46-task deterministic harness sanity check. It
 proves the scorer, task manifests, and scripted oracle path fit the frozen v0.0
 public split. It is not model capability evidence and is stale for current
-49-task comparison.
+54-task comparison.
 
-The current scripted baseline is a 49-task deterministic harness sanity check.
+The current scripted baseline is a 54-task deterministic harness sanity check.
 It proves the expanded v1-prep public split, scorer, and scripted oracle path
 agree. It is not model capability evidence, a leaderboard row, private-holdout
 evidence, or a substitute for current model or tool-agent reruns.
 
-The current 49-task no-tools Kiro baselines now have two runs each for
+The stale 49-task no-tools Kiro baselines have two runs each for
 `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
 `claude-opus-4.6`, all using benchmark commit
-`1eaac973ffe5229dad5796b9a5b144fa3af37a3a`. They close the current public
-no-tools model-family repeat gate, but they are still public-split diagnostic
-evidence only. They are not private-holdout, live HTTP tool-agent,
-hosted-leaderboard, or v1 release evidence, and all five families still have
+`1eaac973ffe5229dad5796b9a5b144fa3af37a3a`. They remain public-split
+diagnostic evidence for the preceding task fingerprint only. They do not close
+the live 54-task model-family gate, and they are not private-holdout, live HTTP
+tool-agent, hosted-leaderboard, or v1 release evidence. All five families have
 `boundary_reasoning_pass_rate: 0.0`.
 
-The current 49-task `claude-sonnet-4.6` live HTTP Kiro tool-agent baseline has
+The stale 49-task `claude-sonnet-4.6` live HTTP Kiro tool-agent baseline has
 two runs using benchmark commit
 `3d4293cd24305ad410ddad8cb68654bf10adc9ff`. Both runs write one
 `model-tool-plan.json` and one `tool-probes.json` artifact per task, correlate
@@ -100,12 +101,14 @@ target-side requests for all 49 tasks, and report zero planner failures and zero
 parser failures. Run 1 executed 124 probes and run 2 executed 126 probes; both
 proved 15 of 20 vulnerable replays, produced zero secure-control false reports,
 and still fully passed zero vulnerable tasks because vulnerable boundary
-reasoning remained `0.0`. This closes the current public tool-agent rerun gate,
-but it is not private-holdout, hosted-leaderboard, or v1 release evidence.
+reasoning remained `0.0`. This evidence closed the public tool-agent rerun gate
+for the preceding 49-task fingerprint only. It does not close the live 54-task
+tool-agent gate and is not private-holdout, hosted-leaderboard, or v1 release
+evidence.
 
 The v0.0 `qwen3-coder-next` no-tools Kiro baseline has two 46-task public runs.
 It is useful historical public model evidence, but it is still not
-private-holdout evidence, not a tool-agent result, not current 49-task evidence,
+private-holdout evidence, not a tool-agent result, not current 54-task evidence,
 and not leaderboard eligible.
 It also shows why repetition matters: the first run found no exploit-proven
 vulnerable tasks, while the repeat found one but still had weak boundary
@@ -113,7 +116,7 @@ reasoning and one invalid submission.
 
 The v0.0 `claude-haiku-4.5` no-tools Kiro baseline also has two 46-task public
 runs. It adds a second repeated v0.0 model family, but it should not be read as
-a leaderboard row or current 49-task result. Run 1 proved five vulnerable
+a leaderboard row or current 54-task result. Run 1 proved five vulnerable
 replays but produced one secure-control false report; run 2 proved one
 vulnerable replay with zero false positives. Both runs had
 `boundary_reasoning_pass_rate: 0.0`, so neither fully passed a vulnerable task.
@@ -125,7 +128,7 @@ It adds a third repeated v0.0 no-tools model family. Run 1 proved 12 vulnerable
 replays with zero control false reports; run 2 proved eight vulnerable replays
 and produced one secure-control false report. Both runs had
 `boundary_reasoning_pass_rate: 0.0`, so neither fully passed a vulnerable task.
-They are v0.0 public-split model evidence only, not current 49-task,
+They are v0.0 public-split model evidence only, not current 54-task,
 private-holdout, or leaderboard rows.
 
 The v0.0 `glm-5` no-tools Kiro baseline has two 46-task public runs. It adds a
@@ -134,7 +137,7 @@ v0.0 model/agent-family requirement when counted with the repeated tool-agent
 family. Run 1 proved four vulnerable replays; run 2 proved one. Both runs had
 zero control false reports and `boundary_reasoning_pass_rate: 0.0`, so neither
 fully passed a vulnerable task. They are v0.0 public-split model evidence only,
-not current 49-task, private-holdout, or leaderboard rows.
+not current 54-task, private-holdout, or leaderboard rows.
 
 For these summaries, `boundary_reasoning_pass_rate` is evaluated over
 vulnerable tasks. Controls can still have task-level boundary checks, but they
@@ -147,7 +150,7 @@ target-request correlation, one `model-tool-plan.json`, and one
 of 19 vulnerable replays, had zero control false reports, and had no planner
 failures or parse errors. Both fully passed zero vulnerable tasks because
 vulnerable boundary reasoning remained `0.0`. It is still v0.0 public-split
-evidence only, not a current 49-task or private-holdout leaderboard result.
+evidence only, not a current 54-task or private-holdout leaderboard result.
 
 The two tool-agent runs span adjacent public-doc/test/tool-agent-tooling commits
 rather than identical SHAs. Their comparability rests on the matching public
@@ -158,7 +161,7 @@ variance evidence.
 The older live scripted, heuristic live HTTP, no-tools Kiro model, and Kiro live
 tool-agent summaries were run on previous 44-task and 46-task public splits.
 They are retained as stale public snapshots because they are still useful for
-methodology review, but they no longer count toward current 49-task
+methodology review, but they no longer count toward current 54-task
 model-family coverage or repeated-baseline coverage.
 
 The stale 44-task snapshots still show useful signals: zero or low false
@@ -167,7 +170,7 @@ reasoning for several model families. They should be read as historical
 diagnostics, not current rankings.
 
 The registry uses `requires_rerun_before_current_comparison` to mark stale rows.
-That field means the row cannot support live 49-task comparison. It does not
+That field means the row cannot support live 54-task comparison. It does not
 mean the frozen v0.0 release snapshot itself needs to be rerun.
 
 The next baseline milestone is not another count-filling public rerun. It is to

@@ -224,6 +224,42 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "sup_multistep_agent_status_then_admin_reassignment":
+        return {
+            "findings": [
+                _multistep_finding(
+                    "agent_can_reassign_ticket_after_status_workflow",
+                    [
+                        {
+                            "actor": "acme_agent",
+                            "method": "PATCH",
+                            "path": (
+                                f"/api/secure/orgs/{refs['ACME_ORG_ID']}"
+                                f"/tickets/{refs['ACME_TICKET_ID']}/status"
+                            ),
+                            "body": {"status": "pending"},
+                        },
+                        {
+                            "actor": "acme_agent",
+                            "method": "PATCH",
+                            "path": (
+                                f"/api/orgs/{refs['ACME_ORG_ID']}"
+                                f"/cases/{refs['ACME_TICKET_ID']}/owner"
+                            ),
+                            "body": {"assigned_to": "acme_viewer"},
+                        },
+                    ],
+                    {
+                        "attacker_actor": "acme_agent",
+                        "required_role": "admin",
+                        "org": "acme",
+                        "protected_action": "ticket_reassignment",
+                    },
+                    "A non-admin support agent can reassign a ticket after a normal status workflow.",
+                )
+            ]
+        }
+
     if task_id == "fs_bola_northstar_reads_apex_file":
         return {
             "findings": [

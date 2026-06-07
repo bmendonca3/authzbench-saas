@@ -17,14 +17,14 @@ python3 scripts/generate_task_quality_matrix.py
 
 | Metric | Value |
 | --- | ---: |
-| Public tasks | 49 |
+| Public tasks | 54 |
 | App families | 6 |
-| Vulnerable tasks | 20 |
-| Secure controls | 29 |
-| Denial controls | 17 |
-| Authorized-allow controls | 12 |
-| Tasks with explicit workflow evidence requirements | 1 |
-| Vulnerable workflow tasks with evidence requirements | 1 |
+| Vulnerable tasks | 21 |
+| Secure controls | 33 |
+| Denial controls | 19 |
+| Authorized-allow controls | 14 |
+| Tasks with explicit workflow evidence requirements | 2 |
+| Vulnerable workflow tasks with evidence requirements | 2 |
 
 ## App Mix
 
@@ -35,7 +35,7 @@ python3 scripts/generate_task_quality_matrix.py
 | billing | 11 | 4 | 7 | 4 | 3 | 0 |
 | file_sharing | 8 | 3 | 5 | 3 | 2 | 0 |
 | project_mgmt | 9 | 4 | 5 | 3 | 2 | 1 |
-| support | 6 | 3 | 3 | 3 | 0 | 0 |
+| support | 11 | 4 | 7 | 5 | 2 | 1 |
 
 ## Task Review Matrix
 
@@ -84,9 +84,14 @@ python3 scripts/generate_task_quality_matrix.py
 | pm_same_tenant_read_control | project_mgmt | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | pm_secure_cross_tenant_read_control | project_mgmt | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | pm_viewer_write_control | project_mgmt | control:denial | secure_control_oracle | 1 | n/a | 0 |
+| sup_admin_reassignment_control | support | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
+| sup_agent_status_only_update_control | support | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | sup_bfla_viewer_closes_ticket | support | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |
 | sup_bola_acme_reads_orbit_ticket | support | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, victim_org | 0 |
+| sup_cross_org_assignment_control | support | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | sup_invite_agent_creates_admin_invite | support | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |
+| sup_multistep_agent_status_then_admin_reassignment | support | vulnerable | multi_step_evidence_requirements | 3 | attacker_actor, org, protected_action, required_role | 2 |
+| sup_secure_agent_assignment_control | support | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | sup_secure_agent_invite_control | support | control:denial | secure_control_oracle | 2 | n/a | 0 |
 | sup_secure_cross_org_ticket_control | support | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | sup_secure_viewer_status_control | support | control:denial | secure_control_oracle | 1 | n/a | 0 |

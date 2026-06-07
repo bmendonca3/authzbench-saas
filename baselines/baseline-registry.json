@@ -1,11 +1,11 @@
 {
   "schema_version": "baseline-registry-v1",
   "public_split": {
-    "task_count": 49,
-    "vulnerable_task_count": 20,
-    "control_task_count": 29,
-    "denial_control_task_count": 17,
-    "authorized_allow_control_task_count": 12
+    "task_count": 54,
+    "vulnerable_task_count": 21,
+    "control_task_count": 33,
+    "denial_control_task_count": 19,
+    "authorized_allow_control_task_count": 14
   },
   "v0_requirements": {
     "min_real_model_families": 5,
@@ -41,22 +41,22 @@
       "id": "scripted-sanity-public-49",
       "summary_path": "scripted-baseline-public-49-summary.json",
       "kind": "harness_check",
-      "release_suitability": "current_public_harness_check",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 1,
       "expected_harness_type": "scripted",
       "expected_agent": "scripted_baseline_agent",
       "expected_model": "deterministic-script",
       "expected_task_count": 49,
-      "requires_rerun_before_current_comparison": false,
-      "notes": "Current 49-task deterministic harness sanity check for the live v1-prep public split. Useful for validating scorer and manifests, but not a model result."
+      "requires_rerun_before_current_comparison": true,
+      "notes": "Historical 49-task deterministic harness sanity check. Stale after the support-reassignment wave expanded the public split to 54 tasks; retained for audit only."
     },
     {
       "id": "kiro-claude-haiku-4-5-current-public-49",
       "summary_path": "kiro-claude-haiku-4.5-current-public-49-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-haiku",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -67,15 +67,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-haiku-4.5",
       "expected_task_count": 49,
-      "requires_rerun_before_current_comparison": false,
-      "notes": "Current v1-prep repeated 49-task public split no-tools Claude Haiku baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+      "requires_rerun_before_current_comparison": true,
+      "notes": "Historical repeated 49-task no-tools Claude Haiku baseline through the Kiro adapter. Stale after the support-reassignment wave expanded the public split to 54 tasks; not current-comparison, private-holdout, or leaderboard evidence."
     },
     {
       "id": "kiro-claude-sonnet-4-6-current-public-49",
       "summary_path": "kiro-claude-sonnet-4.6-current-public-49-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-sonnet",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -86,15 +86,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 49,
-      "requires_rerun_before_current_comparison": false,
-      "notes": "Current v1-prep repeated 49-task public split no-tools Claude Sonnet baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+      "requires_rerun_before_current_comparison": true,
+      "notes": "Historical repeated 49-task no-tools Claude Sonnet baseline through the Kiro adapter. Stale after the support-reassignment wave expanded the public split to 54 tasks; not current-comparison, private-holdout, or leaderboard evidence."
     },
     {
       "id": "kiro-qwen3-coder-next-current-public-49",
       "summary_path": "kiro-qwen3-coder-next-current-public-49-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-qwen",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -105,15 +105,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "qwen3-coder-next",
       "expected_task_count": 49,
-      "requires_rerun_before_current_comparison": false,
-      "notes": "Current v1-prep repeated 49-task public split no-tools Qwen baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+      "requires_rerun_before_current_comparison": true,
+      "notes": "Historical repeated 49-task no-tools Qwen baseline through the Kiro adapter. Stale after the support-reassignment wave expanded the public split to 54 tasks; not current-comparison, private-holdout, or leaderboard evidence."
     },
     {
       "id": "kiro-glm-5-current-public-49",
       "summary_path": "kiro-glm-5-current-public-49-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-glm",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -124,15 +124,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "glm-5",
       "expected_task_count": 49,
-      "requires_rerun_before_current_comparison": false,
-      "notes": "Current v1-prep repeated 49-task public split no-tools GLM baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+      "requires_rerun_before_current_comparison": true,
+      "notes": "Historical repeated 49-task no-tools GLM baseline through the Kiro adapter. Stale after the support-reassignment wave expanded the public split to 54 tasks; not current-comparison, private-holdout, or leaderboard evidence."
     },
     {
       "id": "kiro-claude-opus-4-6-current-public-49",
       "summary_path": "kiro-claude-opus-4.6-current-public-49-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-opus",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -143,15 +143,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-opus-4.6",
       "expected_task_count": 49,
-      "requires_rerun_before_current_comparison": false,
-      "notes": "Current v1-prep repeated 49-task public split no-tools Claude Opus baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+      "requires_rerun_before_current_comparison": true,
+      "notes": "Historical repeated 49-task no-tools Claude Opus baseline through the Kiro adapter. Stale after the support-reassignment wave expanded the public split to 54 tasks; not current-comparison, private-holdout, or leaderboard evidence."
     },
     {
       "id": "kiro-live-tool-agent-sonnet-current-public-49",
       "summary_path": "kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json",
       "kind": "tool_agent_baseline",
       "model_family": "kiro-live-tool-agent-sonnet",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -162,8 +162,8 @@
       "expected_agent": "kiro_live_tool_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 49,
-      "requires_rerun_before_current_comparison": false,
-      "notes": "Current v1-prep repeated 49-task public split live HTTP tool-agent baseline through the Kiro adapter. Both runs include one model-plan artifact and one tool-probe artifact per task, full target-request correlation for all 49 tasks, zero planner failures, and zero parser failures. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+      "requires_rerun_before_current_comparison": true,
+      "notes": "Historical repeated 49-task live HTTP tool-agent baseline through the Kiro adapter. Both runs retain full 49-task plan/probe and target-request correlation evidence, but the row is stale after the support-reassignment wave expanded the public split to 54 tasks."
     },
     {
       "id": "scripted-sanity-public-46",

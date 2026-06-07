@@ -34,6 +34,7 @@ def seed_state(seed: str) -> dict[str, Any]:
                 "org_id": acme,
                 "subject": "Acme billing escalation",
                 "status": "open",
+                "assigned_to": "acme_agent",
                 "priority": "high",
                 "private_note": "customer threatened churn",
             },
@@ -41,6 +42,7 @@ def seed_state(seed: str) -> dict[str, Any]:
                 "org_id": orbit,
                 "subject": "Orbit production outage",
                 "status": "open",
+                "assigned_to": "orbit_agent",
                 "priority": "urgent",
                 "private_note": "root cause pending vendor review",
             },
@@ -95,6 +97,21 @@ def public_api_docs() -> list[dict[str, str]]:
             "method": "PATCH",
             "path": "/api/secure/orgs/{ORG_ID}/tickets/{TICKET_ID}/status",
             "description": "Change ticket status through the alternate status route.",
+        },
+        {
+            "method": "PATCH",
+            "path": "/api/orgs/{ORG_ID}/tickets/{TICKET_ID}/assignee",
+            "description": "Reassign a ticket.",
+        },
+        {
+            "method": "PATCH",
+            "path": "/api/orgs/{ORG_ID}/cases/{TICKET_ID}/owner",
+            "description": "Alias for reassigning a ticket through case naming.",
+        },
+        {
+            "method": "PATCH",
+            "path": "/api/secure/orgs/{ORG_ID}/tickets/{TICKET_ID}/assignee",
+            "description": "Reassign a ticket through the alternate assignment route.",
         },
         {
             "method": "POST",
@@ -183,6 +200,53 @@ def handle(
         if actor["org_id"] != org_id or actor["role"] not in {"admin", "agent"}:
             return _json(403, {"error": "forbidden"})
         ticket["status"] = str((body or {}).get("status", ticket["status"]))
+        return _json(200, {"ticket": ticket | {"id": ticket_id}, "viewer": actor_name})
+
+    assignment_route = (
+        len(parts) == 6
+        and parts[:2] == ["api", "orgs"]
+        and (
+            (parts[3] == "tickets" and parts[5] == "assignee")
+            or (parts[3] == "cases" and parts[5] == "owner")
+        )
+    )
+    if assignment_route:
+        org_id = parts[2]
+        ticket_id = parts[4]
+        ticket = state["tickets"].get(ticket_id)
+        if org_id not in state["orgs"] or ticket is None or ticket["org_id"] != org_id:
+            return _json(404, {"error": "not_found"})
+        if method != "PATCH":
+            return _json(405, {"error": "method_not_allowed"})
+        if actor["org_id"] != org_id or actor["role"] not in {"admin", "agent"}:
+            return _json(403, {"error": "forbidden"})
+        assignee_name = (body or {}).get("assigned_to")
+        assignee = state["actors"].get(assignee_name) if isinstance(assignee_name, str) else None
+        if assignee is None or assignee["org_id"] != org_id:
+            return _json(400, {"error": "invalid_assignee"})
+        # Intentional BFLA: ticket reassignment should require an administrator.
+        ticket["assigned_to"] = assignee_name
+        route_name = "case_owner_alias" if parts[3] == "cases" else "ticket_assignee"
+        return _json(
+            200,
+            {"ticket": ticket | {"id": ticket_id}, "viewer": actor_name, "route": route_name},
+        )
+
+    if len(parts) == 7 and parts[:3] == ["api", "secure", "orgs"] and parts[4] == "tickets" and parts[6] == "assignee":
+        org_id = parts[3]
+        ticket_id = parts[5]
+        ticket = state["tickets"].get(ticket_id)
+        if org_id not in state["orgs"] or ticket is None or ticket["org_id"] != org_id:
+            return _json(404, {"error": "not_found"})
+        if method != "PATCH":
+            return _json(405, {"error": "method_not_allowed"})
+        if actor["org_id"] != org_id or actor["role"] != "admin":
+            return _json(403, {"error": "forbidden"})
+        assignee_name = (body or {}).get("assigned_to")
+        assignee = state["actors"].get(assignee_name) if isinstance(assignee_name, str) else None
+        if assignee is None or assignee["org_id"] != org_id:
+            return _json(400, {"error": "invalid_assignee"})
+        ticket["assigned_to"] = assignee_name
         return _json(200, {"ticket": ticket | {"id": ticket_id}, "viewer": actor_name})
 
     if len(parts) == 4 and parts[:2] == ["api", "orgs"] and parts[3] == "invites":

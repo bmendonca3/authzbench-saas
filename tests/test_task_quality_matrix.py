@@ -44,13 +44,13 @@ class TaskQualityMatrixTests(unittest.TestCase):
     def test_public_matrix_counts_and_public_safe_shape(self) -> None:
         matrix = generate_task_quality_matrix.build_matrix()
         summary = matrix["summary"]
-        self.assertEqual(summary["task_count"], 49, summary)
+        self.assertEqual(summary["task_count"], 54, summary)
         self.assertEqual(summary["app_count"], 6, summary)
-        self.assertEqual(summary["vulnerable_task_count"], 20, summary)
-        self.assertEqual(summary["control_task_count"], 29, summary)
-        self.assertEqual(summary["denial_control_task_count"], 17, summary)
-        self.assertEqual(summary["authorized_allow_control_task_count"], 12, summary)
-        self.assertEqual(summary["vulnerable_workflow_evidence_task_count"], 1, summary)
+        self.assertEqual(summary["vulnerable_task_count"], 21, summary)
+        self.assertEqual(summary["control_task_count"], 33, summary)
+        self.assertEqual(summary["denial_control_task_count"], 19, summary)
+        self.assertEqual(summary["authorized_allow_control_task_count"], 14, summary)
+        self.assertEqual(summary["vulnerable_workflow_evidence_task_count"], 2, summary)
         self.assertEqual(summary["tasks_with_quality_flags"], [], summary)
         self.assertTrue(matrix["source"]["public_safe"])
 
@@ -59,6 +59,17 @@ class TaskQualityMatrixTests(unittest.TestCase):
         )
         self.assertEqual(task["evidence_requirements_count"], 2, task)
         self.assertEqual(task["replay_proof_status"], "multi_step_evidence_requirements", task)
+        support_task = next(
+            item
+            for item in matrix["tasks"]
+            if item["id"] == "sup_multistep_agent_status_then_admin_reassignment"
+        )
+        self.assertEqual(support_task["evidence_requirements_count"], 2, support_task)
+        self.assertEqual(
+            support_task["replay_proof_status"],
+            "multi_step_evidence_requirements",
+            support_task,
+        )
         matrix_json = json.dumps(matrix)
         self.assertNotIn('"seed":', matrix_json)
         self.assertNotIn("body_contains", matrix_json)

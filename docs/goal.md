@@ -24,8 +24,9 @@ exact blocker.
 ### Current Objective
 
 Keep `main` honest as post-v0 active development: frozen v0.0 evidence remains
-auditable, the current 49-task v1-prep split has verified public baseline evidence, and
-every remaining v1/community-benchmark gap is visible rather than implied away.
+auditable, the 49-task v1-prep checkpoint remains inspectable, the active
+54-task split does not treat those model runs as current, and every remaining
+v1/community-benchmark gap is visible rather than implied away.
 
 ### Verification Checklist
 
@@ -192,17 +193,20 @@ The goal is complete only when all of these are true:
     `v1_ready: false`;
   - `--allow-incomplete` mode exits successfully for current v1-prep validation:
     `python3 scripts/validate_v1_readiness.py --allow-incomplete` exits with
-    status 0 and reports three passed gates plus eight unmet gates;
+    status 0 and reports two passed gates plus nine unmet gates after the
+    54-task expansion invalidates current-comparison status for 49-task model
+    and tool-agent rows;
   - the gate is called from `scripts/validate_public.py` in
     `--allow-incomplete` mode;
-  - focused unit tests assert current stable v1-prep is not misrepresented as
-    v1-ready: `python3 -m unittest discover -s tests -p
+  - focused unit tests assert the current expansion state is not misrepresented
+    as v1-ready: `python3 -m unittest discover -s tests -p
     'test_v1_readiness_validator.py'` and `python3 -m unittest discover -s
     tests -p 'test_validate_public.py'` pass.
 
-### Stable v1-Prep Baseline Gate
+### Stable v1-Prep Checkpoint Gate
 
-- [x] Current repo state is a verified stable v1-prep artifact.
+- [x] The 49-task checkpoint was a verified stable v1-prep artifact before the
+  next task expansion changed the live fingerprint.
   Evidence:
   - exact-head CI passed on commit `8da35643b1685fbb31892793d7ab50de0a5ad6f3`;
   - local public validation, v0 release validation, baseline registry
@@ -440,7 +444,8 @@ The goal is complete only when all of these are true:
   - expected output does not imply v1 readiness while incomplete gates remain.
   Verification:
   - `artifact/expected-output/v1-readiness-public-view.json` records the
-    deterministic clean-clone state with three passed and eight unmet gates;
+    deterministic clean-clone state with two passed and nine unmet gates after
+    the 54-task expansion made 49-task model/tool-agent evidence stale;
   - `scripts/validate_public.py` requires the current public view to match that
     fixture exactly;
   - fixture mismatch exits nonzero even when `--allow-incomplete` is used.

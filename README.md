@@ -35,9 +35,9 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Area | Current state |
 | --- | --- |
 | Public apps | 6 synthetic SaaS targets |
-| Public tasks | 49 total: 20 vulnerable, 29 secure controls |
-| Control mix | 17 denial controls, 12 authorized-allow controls |
-| Baselines | v0.0 46-task snapshot preserved; 49-task scripted sanity, five no-tools model-family reruns, and one repeated live HTTP tool-agent rerun tracked |
+| Public tasks | 54 total: 21 vulnerable, 33 secure controls |
+| Control mix | 19 denial controls, 14 authorized-allow controls |
+| Baselines | Current 54-task scripted sanity; 49-task model/tool-agent evidence retained as stale pending rerun; v0.0 46-task snapshot preserved |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
@@ -50,17 +50,17 @@ part of the contamination-control design, not a missing file.
 
 - 6 local SaaS fixtures: project management, billing, support, file sharing,
   API tokens, and audit settings
-- 49 public task manifests with seeded tenants, users, roles, objects, tokens,
+- 54 public task manifests with seeded tenants, users, roles, objects, tokens,
   scopes, routes, and controls
 - deterministic scorer-owned backend replay
 - Docker targets with request-log correlation for live HTTP agents
 - frozen v0.0 public baseline summaries for Kiro no-tools model runs and one
   Kiro live HTTP tool-agent family, stale for current v1 comparison
-- current 49-task scripted sanity baseline proving the expanded public split,
+- current 54-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- current 49-task repeated Kiro no-tools model-family baselines and one repeated
+- stale 49-task repeated Kiro no-tools model-family baselines and one repeated
   Kiro live HTTP tool-agent baseline with 49/49 target-request correlation in
-  both tool-agent runs
+  both historical tool-agent runs; rerun is required before current comparison
 - protected private-holdout summaries published only as redacted aggregate
   evidence
 - leaderboard-submission schema, source-summary validation, benchmark
@@ -253,10 +253,10 @@ Important interpretation:
   evidence but must be rerun before current/v1 comparison.
 - The frozen v0.0 no-tools and tool-agent runs showed weak boundary reasoning on
   vulnerable tasks, even when exploit replay succeeded.
-- Current 49-task public-split runs now include repeated no-tools evidence for
-  five model families and a repeated live HTTP tool-agent family, but they remain
-  public-split diagnostic evidence rather than hosted leaderboard or private
-  holdout rankings.
+- The 49-task public-split runs include repeated no-tools evidence for five
+  model families and a repeated live HTTP tool-agent family. They are now stale
+  after the 54-task support-reassignment expansion and cannot support current
+  comparison until rerun.
 - The current boundary-calibration study shows that public tool-agent runs often
   prove vulnerable backend behavior while failing to submit the exact
   oracle-compatible boundary vocabulary required for full vulnerable-task credit.

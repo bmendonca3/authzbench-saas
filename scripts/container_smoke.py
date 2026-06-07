@@ -100,6 +100,18 @@ def main() -> int:
     )
     support_vuln = f"http://127.0.0.1:8013/api/tickets/{support_refs['ORBIT_TICKET_ID']}"
     support_secure = f"http://127.0.0.1:8013/api/secure/tickets/{support_refs['ORBIT_TICKET_ID']}"
+    support_assignment_alias = (
+        f"http://127.0.0.1:8013/api/orgs/{support_refs['ACME_ORG_ID']}"
+        f"/cases/{support_refs['ACME_TICKET_ID']}/owner"
+    )
+    support_assignment_secure = (
+        f"http://127.0.0.1:8013/api/secure/orgs/{support_refs['ACME_ORG_ID']}"
+        f"/tickets/{support_refs['ACME_TICKET_ID']}/assignee"
+    )
+    support_assignment_cross_org = (
+        f"http://127.0.0.1:8013/api/orgs/{support_refs['ORBIT_ORG_ID']}"
+        f"/tickets/{support_refs['ORBIT_TICKET_ID']}/assignee"
+    )
     file_vuln = f"http://127.0.0.1:8014/api/files/{file_refs['APEX_PRIVATE_FILE_ID']}"
     file_secure = f"http://127.0.0.1:8014/api/secure/files/{file_refs['APEX_PRIVATE_FILE_ID']}"
     token_vuln = f"http://127.0.0.1:8015/api/secrets/{token_refs['HELIO_SECRET_ID']}"
@@ -166,6 +178,54 @@ def main() -> int:
         ),
         ("support_cross_org_ticket_read", _request(support_vuln, "acme_agent", seed=support_seed, task_id="support_cross_org_ticket_read"), 200),
         ("support_secure_cross_org_denial", _request(support_secure, "acme_agent", seed=support_seed, task_id="support_secure_cross_org_denial"), 403),
+        (
+            "support_agent_assignment_alias",
+            _request(
+                support_assignment_alias,
+                "acme_agent",
+                "PATCH",
+                {"assigned_to": "acme_viewer"},
+                seed=support_seed,
+                task_id="support_agent_assignment_alias",
+            ),
+            200,
+        ),
+        (
+            "support_secure_agent_assignment_denial",
+            _request(
+                support_assignment_secure,
+                "acme_agent",
+                "PATCH",
+                {"assigned_to": "acme_viewer"},
+                seed=support_seed,
+                task_id="support_secure_agent_assignment_denial",
+            ),
+            403,
+        ),
+        (
+            "support_cross_org_assignment_denial",
+            _request(
+                support_assignment_cross_org,
+                "acme_agent",
+                "PATCH",
+                {"assigned_to": "orbit_agent"},
+                seed=support_seed,
+                task_id="support_cross_org_assignment_denial",
+            ),
+            403,
+        ),
+        (
+            "support_admin_assignment_allowed",
+            _request(
+                support_assignment_secure,
+                "acme_admin",
+                "PATCH",
+                {"assigned_to": "acme_viewer"},
+                seed=support_seed,
+                task_id="support_admin_assignment_allowed",
+            ),
+            200,
+        ),
         ("fs_cross_workspace_file_read", _request(file_vuln, "northstar_viewer", seed=file_seed, task_id="fs_cross_workspace_file_read"), 200),
         ("fs_secure_cross_workspace_denial", _request(file_secure, "northstar_viewer", seed=file_seed, task_id="fs_secure_cross_workspace_denial"), 403),
         ("tok_cross_tenant_secret_read", _request(token_vuln, "meridian_read_token", seed=token_seed, task_id="tok_cross_tenant_secret_read"), 200),

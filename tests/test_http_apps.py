@@ -388,6 +388,94 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(invalid_status, 400)
         self.assertEqual(invalid_body["error"], "invalid_json")
 
+    def test_support_assignment_workflow_and_controls(self) -> None:
+        server, base_url = _serve(support.Handler)
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        seed = "support-assignment-http-test"
+        refs = support.public_refs(support.seed_state(seed))
+        headers = {"x-authzbench-seed": seed}
+
+        status_update, status_body = _request(
+            (
+                f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}"
+                f"/tickets/{refs['ACME_TICKET_ID']}/status"
+            ),
+            "acme_agent",
+            method="PATCH",
+            body={"status": "pending"},
+            headers=headers,
+        )
+        self.assertEqual(status_update, 200)
+        self.assertEqual(status_body["ticket"]["status"], "pending")
+        self.assertEqual(status_body["ticket"]["assigned_to"], "acme_agent")
+
+        alias_status, alias_body = _request(
+            (
+                f"{base_url}/api/orgs/{refs['ACME_ORG_ID']}"
+                f"/cases/{refs['ACME_TICKET_ID']}/owner"
+            ),
+            "acme_agent",
+            method="PATCH",
+            body={"assigned_to": "acme_viewer"},
+            headers=headers,
+        )
+        self.assertEqual(alias_status, 200)
+        self.assertEqual(alias_body["route"], "case_owner_alias")
+        self.assertEqual(alias_body["ticket"]["assigned_to"], "acme_viewer")
+
+        secure_agent_status, secure_agent_body = _request(
+            (
+                f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}"
+                f"/tickets/{refs['ACME_TICKET_ID']}/assignee"
+            ),
+            "acme_agent",
+            method="PATCH",
+            body={"assigned_to": "acme_agent"},
+            headers=headers,
+        )
+        self.assertEqual(secure_agent_status, 403)
+        self.assertEqual(secure_agent_body["error"], "forbidden")
+
+        cross_org_status, cross_org_body = _request(
+            (
+                f"{base_url}/api/orgs/{refs['ORBIT_ORG_ID']}"
+                f"/tickets/{refs['ORBIT_TICKET_ID']}/assignee"
+            ),
+            "acme_agent",
+            method="PATCH",
+            body={"assigned_to": "orbit_agent"},
+            headers=headers,
+        )
+        self.assertEqual(cross_org_status, 403)
+        self.assertEqual(cross_org_body["error"], "forbidden")
+
+        invalid_status, invalid_body = _request(
+            (
+                f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}"
+                f"/tickets/{refs['ACME_TICKET_ID']}/assignee"
+            ),
+            "acme_admin",
+            method="PATCH",
+            body={"assigned_to": "orbit_agent"},
+            headers=headers,
+        )
+        self.assertEqual(invalid_status, 400)
+        self.assertEqual(invalid_body["error"], "invalid_assignee")
+
+        admin_status, admin_body = _request(
+            (
+                f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}"
+                f"/tickets/{refs['ACME_TICKET_ID']}/assignee"
+            ),
+            "acme_admin",
+            method="PATCH",
+            body={"assigned_to": "acme_agent"},
+            headers=headers,
+        )
+        self.assertEqual(admin_status, 200)
+        self.assertEqual(admin_body["ticket"]["assigned_to"], "acme_agent")
+
     def test_file_sharing_http_vulnerable_and_secure_paths(self) -> None:
         server, base_url = _serve(file_sharing.Handler)
         self.addCleanup(server.server_close)

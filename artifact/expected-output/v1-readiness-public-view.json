@@ -3,14 +3,17 @@
   "gates": [
     {
       "evidence": [
-        "public_task_count=49",
-        "vulnerable_task_count=20",
-        "current_public_model_family_count=6",
-        "has_current_public_tool_agent_baseline=True"
+        "public_task_count=54",
+        "vulnerable_task_count=21",
+        "current_public_model_family_count=0",
+        "has_current_public_tool_agent_baseline=False"
       ],
       "id": "stable_v1_prep_public_evidence",
-      "passed": true,
-      "unmet": []
+      "passed": false,
+      "unmet": [
+        "fewer than six current public model families are registered",
+        "missing current public tool-agent baseline"
+      ]
     },
     {
       "evidence": [
@@ -89,14 +92,14 @@
     },
     {
       "evidence": [
-        "public_task_count=49",
+        "public_task_count=54",
         "validated_private_holdout_task_count=0",
-        "total_task_count=49"
+        "total_task_count=54"
       ],
       "id": "v1_task_scale",
       "passed": false,
       "unmet": [
-        "total public plus private holdout tasks is 49, expected at least 100"
+        "total public plus private holdout tasks is 54, expected at least 100"
       ]
     },
     {
@@ -121,7 +124,7 @@
     }
   ],
   "passed": false,
-  "passed_gate_count": 3,
-  "unmet_gate_count": 8,
+  "passed_gate_count": 2,
+  "unmet_gate_count": 9,
   "v1_ready": false
 }

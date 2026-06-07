@@ -49,38 +49,40 @@ def _baseline_by_id(registry: dict, baseline_id: str) -> dict:
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_marks_v0_baselines_stale_for_v1_expansion(self) -> None:
+    def test_current_registry_marks_49_task_baselines_stale_for_54_task_expansion(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["baseline_count"], 23, result)
-        self.assertEqual(result["public_split"]["task_count"], 49, result)
-        self.assertEqual(result["current_public_model_family_count"], 6, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 6, result)
-        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
-        self.assertTrue(result["v0_baseline_ready"], result)
+        self.assertEqual(result["public_split"]["task_count"], 54, result)
+        self.assertEqual(result["current_public_model_family_count"], 0, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
+        self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
         self.assertEqual(len(result["release_snapshots"]), 1, result)
         self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertNotIn("current public model families: 1 of 5", result["unmet_v0_requirements"])
-        self.assertNotIn("repeated model baselines: 1 of 5", result["unmet_v0_requirements"])
-        self.assertEqual(result["unmet_v0_requirements"], [], result)
+        self.assertIn("current public model families: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
 
-    def test_current_public_model_repeats_share_one_benchmark_commit(self) -> None:
+    def test_stale_49_task_model_repeats_share_one_benchmark_commit(self) -> None:
         registry = load_json(REGISTRY)
-        current_entries = [
+        stale_49_entries = [
             entry
             for entry in registry["baselines"]
-            if entry["kind"] == "model_baseline" and entry["release_suitability"] == "current_public_split"
+            if entry["kind"] == "model_baseline"
+            and entry["release_suitability"] == "current_public_stale"
+            and entry["expected_task_count"] == 49
         ]
 
-        self.assertEqual(len(current_entries), 5)
+        self.assertEqual(len(stale_49_entries), 5)
         commit_shas = {
             load_json(REGISTRY.parent / artifact_path)["benchmark_commit_sha"]
-            for entry in current_entries
+            for entry in stale_49_entries
             for artifact_path in entry["run_artifacts"]
         }
 
