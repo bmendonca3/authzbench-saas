@@ -99,6 +99,43 @@ class ValidatePublicScriptTests(unittest.TestCase):
             validate_public.validate(validate_public.ROOT, include_scripted_baseline=False, include_container_smoke=True)
             smoke.assert_called_once_with(validate_public.ROOT)
 
+    def test_container_smoke_runs_ephemeral_submission_isolation_rehearsal(self) -> None:
+        calls: list[list[str]] = []
+
+        def fake_run(
+            cmd: list[str],
+            cwd: Path = validate_public.ROOT,
+            *,
+            check: bool = True,
+            env: dict[str, str] | None = None,
+        ) -> None:
+            calls.append(cmd)
+
+        with (
+            patch.object(validate_public.shutil, "which", return_value="/usr/bin/docker"),
+            patch.object(validate_public.os, "getpid", return_value=4242),
+            patch.object(validate_public.subprocess, "run") as subprocess_run,
+            patch.object(validate_public, "run", side_effect=fake_run),
+        ):
+            subprocess_run.return_value.stdout = "a" * 40 + "\n"
+            subprocess_run.return_value.returncode = 0
+            validate_public.run_container_smoke(validate_public.ROOT)
+
+        generator = next(
+            command
+            for command in calls
+            if any(str(argument).endswith("generate_holdout_rehearsal_pack.py") for argument in command)
+        )
+        smoke = next(
+            command
+            for command in calls
+            if any(str(argument).endswith("containerized_submission_smoke.py") for argument in command)
+        )
+        self.assertIn("--force", generator)
+        self.assertIn("--execution-scope", smoke)
+        self.assertIn("rehearsal", smoke)
+        self.assertIn("ci-rehearsal", smoke)
+
     def test_validate_runs_baseline_registry_gate(self) -> None:
         with (
             patch.object(validate_public, "run") as run,

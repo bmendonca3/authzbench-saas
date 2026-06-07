@@ -12,16 +12,17 @@ medium-size public split. It is not a hosted leaderboard or community-scale
 benchmark, and the project should not claim the `v1` label until the scale,
 review, and submission-infrastructure gaps below are closed.
 
-## Active Perfection Pass
+## Historical 49-Task Perfection Pass
 
-Status: active as of 2026-06-07.
+Status: preserved checkpoint record as of 2026-06-07. The active source of
+truth is `Active v1 Readiness Goal` below.
 
-This pass exists to make current `main` as trustworthy as possible after the
-first v1-prep task expansion. Do not mark this pass complete until every closed
-item below has direct evidence, and leave externally blocked work open with the
-exact blocker.
+This section records the verification state reached by the preceding 49-task
+v1-prep checkpoint. It is intentionally retained for auditability, but its
+baseline counts and commit evidence must not be read as the current 54-task
+comparison state.
 
-### Current Objective
+### Checkpoint Objective
 
 Keep `main` honest as post-v0 active development: frozen v0.0 evidence remains
 auditable, the 49-task v1-prep checkpoint remains inspectable, the active
@@ -49,7 +50,7 @@ v1/community-benchmark gap is visible rather than implied away.
   'test_validate_public.py'` and the full test suite pass.
 - [x] Full public validation without local Docker smoke passes.
   Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`
-  passed on commit `ede97d01ecb708feb24985dec0fc3b51d37ac7d1` for the current
+  passed on commit `ede97d01ecb708feb24985dec0fc3b51d37ac7d1` for the then-current
   49-task public split.
 - [x] Docker-backed public validation is confirmed by GitHub Actions on `main`.
   Evidence: GitHub Actions run `27083952334` passed on `main` for commit
@@ -141,6 +142,11 @@ These remain intentionally open until real evidence exists:
   independent AppSec, benchmark/evals, and AI-agent/tooling reviewers to return
   findings or explicit no-finding dispositions; local repository work cannot
   honestly manufacture that evidence.
+- Release-grade hosted/containerized execution also remains infrastructure
+  dependent. Repository and CI work can prove the submitter-isolation mechanism
+  with a rehearsal pack, but the release gate requires the same path to run on
+  the intended maintainer platform against the real active private-pack
+  fingerprint. Rehearsal evidence must not be promoted into release evidence.
 
 ## Active v1 Readiness Goal
 
@@ -168,6 +174,9 @@ The goal is complete only when all of these are true:
 - every item in this section is checked;
 - strict `python3 scripts/validate_v1_readiness.py --release-evidence
   <external-json>` passes without `--allow-incomplete`;
+- `python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view
+  --expected-output artifact/expected-output/v1-readiness-public-view.json`
+  matches the tracked clean-clone readiness fixture;
 - `python3 scripts/validate_public.py --include-scripted-baseline` passes on the
   exact commit;
 - container smoke passes either locally or in exact-head CI, with any local
@@ -213,6 +222,19 @@ The goal is complete only when all of these are true:
   - local Docker container smoke was not rerun only because the Docker daemon
     was unavailable locally, while exact-head CI covered the Docker-backed public
     validation path.
+
+- [ ] Restore stable public model/tool-agent evidence for the active 54-task
+  fingerprint.
+  Current evidence:
+  - the 54-task scripted sanity baseline is current and passes 54/54;
+  - `python3 scripts/validate_baseline_registry.py` currently reports
+    `current_public_model_family_count: 0` and
+    `has_current_public_tool_agent_baseline: false`;
+  - the readiness gate is therefore correctly red even though the historical
+    49-task checkpoint above was green.
+  Completion is tracked by `Refresh model evidence after the 54-task
+  promotion` below; do not mark this item complete until its repeated model and
+  live HTTP acceptance evidence is satisfied.
 
 ### External Review Gate
 
@@ -263,6 +285,22 @@ The goal is complete only when all of these are true:
     `external_review_completed` as passed.
 
 ### Hosted Or Fully Containerized Submission Gate
+
+- [ ] Prove the containerized submitter-isolation mechanism in exact-head CI.
+  Acceptance evidence:
+  - `scripts/containerized_submission_smoke.py` runs submitter code in a
+    non-root container with no network, a read-only root filesystem, dropped
+    capabilities, `no-new-privileges`, resource limits, and only rendered
+    context plus an output mount;
+  - private manifests remain host-side and the container's attempted private
+    path reads are denied;
+  - scorer-controlled evaluation completes outside the submitter container;
+  - emitted evidence passes its public-safety scan and contains no private task
+    IDs, seeds, routes, oracle data, raw results, or absolute host paths;
+  - public CI uses an ephemeral `execution_scope: rehearsal` pack and exact-head
+    Docker-backed validation passes;
+  - the validator explicitly rejects rehearsal evidence as release-candidate
+    hosted-execution evidence.
 
 - [ ] Implement or document an executable hosted/containerized private
   submission smoke path.
@@ -384,7 +422,9 @@ The goal is complete only when all of these are true:
     alias reassignment routes, secure same-org denial, cross-org denial,
     authorized status update, and secure admin allow with per-request task IDs;
     exact-head GitHub Actions run `27089965403` passed the Docker-backed public
-    validation on commit `c1c2b7d35ae8944d91d598361e80b4c9c857ee31`.
+    validation on commit `c1c2b7d35ae8944d91d598361e80b4c9c857ee31`;
+    final promotion commit `45670b0a62db97d2da8d16113eac9f182fa78175`
+    also passed exact-head GitHub Actions run `27089985522`.
   - [x] Recompute the public split from manifests and verify the expected mix:
     54 total, 21 vulnerable, 33 controls, 19 denial controls, 14
     authorized-allow controls, and 2 explicit multi-step workflows.
@@ -416,17 +456,19 @@ The goal is complete only when all of these are true:
     client could not reach the absent Docker Desktop daemon.
   - [x] Commit as `bmendonca3`, push the intended public branches, and confirm
     exact-head CI including Docker-backed container smoke.
-    Evidence: commits through `c1c2b7d35ae8944d91d598361e80b4c9c857ee31`
-    are authored as `bmendonca3 <bmendonca3@users.noreply.github.com>`, that
-    commit is present on `origin/main` and `origin/v1-task-expansion`, and
-    GitHub Actions run `27089965403` passed.
+    Evidence: final promotion commit
+    `45670b0a62db97d2da8d16113eac9f182fa78175` is authored as
+    `bmendonca3 <bmendonca3@users.noreply.github.com>`, is present on
+    `origin/main` and `origin/v1-task-expansion`, and exact-head GitHub Actions
+    run `27089985522` passed.
 
 - [ ] Refresh model evidence after the 54-task promotion.
   Acceptance evidence:
-  - at least five selected no-tools model families have two runner-emitted
-    54-task summaries each;
-  - at least one live HTTP tool-agent family has two 54-task runs with one
-    plan/probe artifact per task and full target-request correlation;
+  - `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
+    `claude-opus-4.6` no-tools families each have two runner-emitted 54-task
+    summaries;
+  - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs
+    with one plan/probe artifact per task and full target-request correlation;
   - registry rows use the live fingerprint and are no longer marked stale;
   - variance, calibration, charts, status, report, and paper wording are
     refreshed from the 54-task artifacts;

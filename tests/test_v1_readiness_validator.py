@@ -151,6 +151,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("submission-runner smoke result must be passed", result["unmet"])
         self.assertIn("benchmark_source_sha must match release benchmark_source_sha", result["unmet"])
         self.assertIn("active private pack fingerprint is required for hosted smoke evidence", result["unmet"])
+        self.assertIn("schema_version must be submission-runner-smoke-v1", result["unmet"])
+        self.assertIn("container_constraints are incomplete", result["unmet"])
 
     def test_hosted_smoke_requires_active_private_pack_fingerprint(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -186,6 +188,94 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn(
             "private_pack_fingerprint_sha256 must match the active private pack fingerprint",
+            result["unmet"],
+        )
+
+    def test_hosted_smoke_rejects_rehearsal_execution_scope(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "result": "passed",
+                        "execution_scope": "rehearsal",
+                        "benchmark_source_sha": "a" * 40,
+                        "runner_image_or_hosted_version": "runner:v1",
+                        "private_pack_version": "ci-rehearsal",
+                        "private_pack_fingerprint_sha256": "b" * 64,
+                        "isolation_model": "container",
+                        "command": "run private smoke",
+                        "submitter_private_manifest_read_denied": True,
+                        "scorer_controlled_private_eval": True,
+                        "cleanup_completed": True,
+                        "privacy_scan_passed": True,
+                        "public_output_private_artifacts_included": False,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(
+                root,
+                benchmark_source_sha="a" * 40,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "submission-runner smoke execution_scope must be release_candidate",
+            result["unmet"],
+        )
+        self.assertIn(
+            "rehearsal smoke evidence is not release-candidate evidence",
+            result["unmet"],
+        )
+
+    def test_hosted_smoke_rejects_sensitive_public_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-v1",
+                        "execution_scope": "release_candidate",
+                        "result": "passed",
+                        "benchmark_source_sha": "a" * 40,
+                        "runner_image_or_hosted_version": "runner:v1",
+                        "private_pack_version": "private-pack-v1",
+                        "private_pack_fingerprint_sha256": "b" * 64,
+                        "isolation_model": "container",
+                        "command": "read /Users/example/tasks_private/holdout",
+                        "submitter_private_manifest_read_denied": True,
+                        "scorer_controlled_private_eval": True,
+                        "cleanup_completed": True,
+                        "privacy_scan_passed": True,
+                        "public_output_private_artifacts_included": False,
+                        "container_constraints": [
+                            "network=none",
+                            "read_only_rootfs",
+                            "cap_drop=ALL",
+                            "no_new_privileges",
+                            "non_root_user",
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(
+                root,
+                benchmark_source_sha="a" * 40,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(
+            any("sensitive path marker" in error for error in result["unmet"]),
             result["unmet"],
         )
 

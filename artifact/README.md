@@ -55,6 +55,30 @@ the private checkout and external release evidence instead.
 The expected-output fixtures in `artifact/expected-output/` summarize stable
 public-safe signals only. They are not raw run bundles.
 
+## Containerized Submission Isolation Smoke
+
+Docker-backed public validation also runs an ephemeral rehearsal of the future
+submission path. The submitter container receives only rendered context and a
+writable output directory. It runs without network access, with a read-only
+root filesystem, dropped capabilities, `no-new-privileges`, a non-root user,
+and resource limits. Private manifests remain in the scorer-controlled host
+process.
+
+The CI rehearsal proves the mechanism only. It deliberately emits
+`execution_scope: rehearsal` and cannot satisfy the v1 hosted-execution gate.
+Release evidence must rerun the command against the active private pack with
+`execution_scope: release_candidate`, the active pack version, and the matching
+private-pack fingerprint:
+
+```bash
+python3 scripts/containerized_submission_smoke.py \
+  --private-pack tasks_private/holdout/<active-pack> \
+  --output artifact/submission-runner-smoke.json \
+  --benchmark-source-sha "$(git rev-parse HEAD)" \
+  --private-pack-version <active-pack-version> \
+  --execution-scope release_candidate
+```
+
 ## Claim Boundary
 
 This artifact packet supports public reproduction of the inspectable public

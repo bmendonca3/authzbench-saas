@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT))
 
 from authzbench.core import dump_json, load_json
 from authzbench.validate_manifests import validate_patterns
+from scripts.containerized_submission_smoke import validate_smoke_evidence
 from scripts.validate_baseline_registry import validate_registry
 from scripts.validate_holdout_pack import validate_holdout_pack
 from scripts.validate_leaderboard_submission import _submission_paths, validate_submission
@@ -553,6 +554,14 @@ def _validate_hosted_execution_evidence(
     if data is None:
         return {"passed": False, "path": HOSTED_EXECUTION_EVIDENCE_PATH, "unmet": unmet}
 
+    expected_sha = benchmark_source_sha or _current_commit_sha()
+    unmet.extend(
+        validate_smoke_evidence(
+            data,
+            expected_benchmark_source_sha=expected_sha,
+            expected_private_pack_fingerprint_sha256=private_pack_fingerprint_sha256,
+        )
+    )
     required_strings = (
         "runner_image_or_hosted_version",
         "private_pack_version",
@@ -561,7 +570,8 @@ def _validate_hosted_execution_evidence(
     )
     if data.get("result") != "passed":
         unmet.append("submission-runner smoke result must be passed")
-    expected_sha = benchmark_source_sha or _current_commit_sha()
+    if data.get("execution_scope") != "release_candidate":
+        unmet.append("submission-runner smoke execution_scope must be release_candidate")
     if data.get("benchmark_source_sha") != expected_sha:
         unmet.append("benchmark_source_sha must match release benchmark_source_sha")
     if private_pack_fingerprint_sha256 is None:
@@ -581,7 +591,11 @@ def _validate_hosted_execution_evidence(
             unmet.append(f"{field} must be true")
     if data.get("public_output_private_artifacts_included") is not False:
         unmet.append("public_output_private_artifacts_included must be false")
-    return {"passed": not unmet, "path": HOSTED_EXECUTION_EVIDENCE_PATH, "unmet": unmet}
+    return {
+        "passed": not unmet,
+        "path": HOSTED_EXECUTION_EVIDENCE_PATH,
+        "unmet": list(dict.fromkeys(unmet)),
+    }
 
 
 def _validate_paper_readiness_evidence(root: Path = ROOT, benchmark_source_sha: str | None = None) -> dict[str, Any]:

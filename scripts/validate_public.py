@@ -96,6 +96,46 @@ def run_container_smoke(cwd: Path) -> None:
             raise
     finally:
         run(["docker", "compose", "-p", project_name, "down"], cwd, check=False, env=compose_env)
+    with tempfile.TemporaryDirectory(prefix="authzbench-submission-smoke.") as tmp:
+        temp_root = Path(tmp)
+        private_pack = temp_root / "tasks_private" / "holdout" / "rehearsal"
+        evidence = temp_root / "submission-runner-smoke.json"
+        commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=cwd,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        ).stdout.strip()
+        run(
+            [
+                sys.executable,
+                "scripts/generate_holdout_rehearsal_pack.py",
+                "--output-dir",
+                str(private_pack),
+                "--force",
+            ],
+            cwd,
+            env=compose_env,
+        )
+        run(
+            [
+                sys.executable,
+                "scripts/containerized_submission_smoke.py",
+                "--private-pack",
+                str(private_pack),
+                "--output",
+                str(evidence),
+                "--benchmark-source-sha",
+                commit,
+                "--private-pack-version",
+                "ci-rehearsal",
+                "--execution-scope",
+                "rehearsal",
+            ],
+            cwd,
+            env=compose_env,
+        )
 
 
 def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke: bool) -> None:

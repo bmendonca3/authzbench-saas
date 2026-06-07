@@ -96,6 +96,23 @@ The containerized path should operate like this:
 This path is acceptable for v1 only after the isolation model is tested on the
 maintainer platform and documented with a reproducible smoke check.
 
+The executable smoke entrypoint is:
+
+```bash
+python3 scripts/containerized_submission_smoke.py \
+  --private-pack tasks_private/holdout/<active-pack> \
+  --output artifact/submission-runner-smoke.json \
+  --benchmark-source-sha <benchmark-source-sha> \
+  --private-pack-version <active-pack-version> \
+  --execution-scope release_candidate
+```
+
+Public CI runs the same isolation mechanism with an ephemeral rehearsal pack.
+That rehearsal verifies container constraints, rendered-context-only mounting,
+private-manifest read denial, scorer-controlled evaluation, cleanup, and
+public-output redaction. It cannot satisfy the release gate because the emitted
+scope is `rehearsal`, not `release_candidate`.
+
 ## Rotating Private Packs
 
 Private packs follow `docs/holdout-rotation-protocol.md`.
