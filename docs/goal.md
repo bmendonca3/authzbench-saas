@@ -103,6 +103,12 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   true`, `v0_baseline_ready: true`, `v0_release_snapshot_ready: true`, and no
   unmet baseline requirements. Strict `python3 scripts/validate_v0_release.py`
   passes with all 8 gates green and `v0_ready: true` in this maintainer checkout.
+- [x] Current public tool-agent baseline checkpoint is committed, pushed, and CI
+  verified.
+  Evidence: commit `fd0bfcb41e0f8db0b52a0a7f56106c9c2e2e416b` (`Add current
+  public tool-agent baseline evidence`) is authored as `bmendonca3`, pushed to
+  both `origin/v1-task-expansion` and `origin/main`, and GitHub Actions run
+  `27086361745` passed the `Validate AuthZBench-SaaS` workflow on `main`.
 
 ### Open Perfection Gaps
 
