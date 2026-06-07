@@ -810,6 +810,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                     "artifact/expected-output/v1-readiness-public-view.json",
                     "docs/goal.md",
                 },
+                upstream_gates_complete=True,
             )
 
         self.assertTrue(result["passed"])
@@ -1004,6 +1005,31 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("benchmark_source_sha must match release benchmark_source_sha", result["unmet"])
+
+    def test_paper_readiness_rejects_self_attested_upstream_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "benchmark_source_sha": "a" * 40,
+                        "claim_boundary_reviewed": True,
+                        "generated_paper_tables_clean": True,
+                        "charts_current_stale_legacy_labeled": True,
+                        "latexmk_main_tex_passed": True,
+                        "evidence_scope": "release_candidate",
+                        "upstream_review_and_infrastructure_complete": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_paper_readiness_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("live upstream review and infrastructure gates must pass", result["unmet"])
 
     def test_private_pack_fingerprint_changes_when_manifest_content_changes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

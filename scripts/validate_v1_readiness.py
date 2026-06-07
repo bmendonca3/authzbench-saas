@@ -616,6 +616,7 @@ def _validate_paper_readiness_evidence(
     benchmark_source_sha: str | None = None,
     release_sha: str | None = None,
     allowed_post_source_paths: set[str] | None = None,
+    upstream_gates_complete: bool = False,
 ) -> dict[str, Any]:
     unmet: list[str] = []
     data = _json_object(root / PAPER_READINESS_EVIDENCE_PATH, unmet)
@@ -633,6 +634,8 @@ def _validate_paper_readiness_evidence(
         unmet.append("evidence_scope must be release_candidate")
     if data.get("upstream_review_and_infrastructure_complete") is not True:
         unmet.append("upstream_review_and_infrastructure_complete must be true")
+    if not upstream_gates_complete:
+        unmet.append("live upstream review and infrastructure gates must pass")
     evidence_sha = data.get("benchmark_source_sha")
     if not _sha(evidence_sha):
         unmet.append("benchmark_source_sha must be a 40-character lowercase Git SHA")
@@ -935,6 +938,11 @@ def validate_v1_readiness(
         benchmark_source_sha=_benchmark_source_sha_from_release_evidence(release_evidence_path),
         release_sha=target_sha,
         allowed_post_source_paths=paper_allowed_paths,
+        upstream_gates_complete=(
+            not review_unmet
+            and bool(hosted_result["passed"])
+            and bool(rotation_result["passed"])
+        ),
     )
     _add_gate(
         gates,
