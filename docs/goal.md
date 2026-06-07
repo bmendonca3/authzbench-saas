@@ -532,7 +532,7 @@ The goal is complete only when all of these are true:
     returned actionable disclosure findings; after fixes, an independent narrow
     replacement audit returned `CLEAN`. The broad intermediate audit that
     stalled without a verdict is explicitly excluded from review evidence.
-  - [ ] `claude-haiku-4.5` has two runner-emitted 54-task base summaries with
+  - [x] `claude-haiku-4.5` has two runner-emitted 54-task base summaries with
     distinct run IDs, the active fingerprint, complete 54-task artifacts, zero
     adapter/runner failures, and zero invalid submissions.
     Evidence: run `20260607T185502191241Z-ac053a0a` passes 32 tasks, proves 4 of
@@ -551,8 +551,10 @@ The goal is complete only when all of these are true:
     across 108 model outputs, deterministic chart and paper-table regeneration,
     successful public, strict-v0, registry, and leaderboard validation, an
     empty tracked-private/raw-path scan, and successful IEEE paper compilation.
-    Commit/push and exact-head CI remain required before this subitem may be
-    treated as fully closed.
+    Promotion commit `a1b8b000d1b4789d03f780c969224e69f08f7b2f` and
+    paper-preflight commit `9cd06e2b017a3071ccb398026654c78e949fbe3f`
+    are authored as `bmendonca3`, pushed to `main` and `v1-task-expansion`, and
+    exact-head GitHub Actions run `27102791303` passed.
   - [ ] `claude-sonnet-4.6`, `glm-5`, and `claude-opus-4.6` no-tools families
     each have two runner-emitted 54-task summaries;
   - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs

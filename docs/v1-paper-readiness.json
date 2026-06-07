@@ -10,12 +10,12 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "The paper preflight source is pinned to the current Haiku 54-task evidence promotion, which includes the earlier telemetry hardening that separates scorer-derived finding totals from optional adapter telemetry and aligns protected false-positive semantics with the public runner. Exact-head CI run 27102314090 passed on the prior telemetry preflight checkpoint. The Haiku promotion has passed local validation and independent internal audit; exact-head CI for that source commit remains required. Final paper readiness remains incomplete.",
+    "ci_refresh_note": "The paper preflight source is pinned to the current Haiku 54-task evidence promotion, which includes the earlier telemetry hardening that separates scorer-derived finding totals from optional adapter telemetry and aligns protected false-positive semantics with the public runner. The Haiku promotion passed local validation, independent internal audit, and exact-head CI run 27102791303 on its preflight descendant. Final paper readiness remains incomplete.",
     "prior_exact_head_ci": {
-      "commit_sha": "220ebd980a4cde4fd9661185b6dae1bbed42c3f6",
+      "commit_sha": "9cd06e2b017a3071ccb398026654c78e949fbe3f",
       "conclusion": "success",
-      "run_id": 27102314090,
-      "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27102314090"
+      "run_id": 27102791303,
+      "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27102791303"
     },
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",

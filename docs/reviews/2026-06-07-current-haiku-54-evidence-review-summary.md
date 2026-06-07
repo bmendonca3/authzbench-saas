@@ -1,7 +1,6 @@
 # Current 54-Task Haiku Evidence Review Summary
 
-Status: local promotion review complete; commit, push, and exact-head CI remain
-before the goal subitem can close. This is internal review evidence, not one of
+Status: promotion review complete. This is internal review evidence, not one of
 the three required external v1 review lanes.
 
 ## Scope
@@ -84,10 +83,9 @@ derivation explicitly. No other run metric is reconstructed.
   underfull-box warnings remain nonblocking.
 - `git diff --check` passed and the tracked private/raw-path scan was empty.
 
-## Remaining Remote Gate
+## Remote Verification
 
-The Haiku goal subitem remains open until the promotion is committed by
-`bmendonca3`, pushed to both maintained branches, and exact-head GitHub Actions
-passes. Public validation must be rerun against that committed checkpoint so
-its generated-artifact cleanliness assertion is evaluated against the promoted
-chart files.
+Promotion commit `a1b8b000d1b4789d03f780c969224e69f08f7b2f` and
+paper-preflight commit `9cd06e2b017a3071ccb398026654c78e949fbe3f` are
+authored as `bmendonca3` and pushed to `main` and `v1-task-expansion`.
+Exact-head GitHub Actions run `27102791303` passed on the preflight commit.
