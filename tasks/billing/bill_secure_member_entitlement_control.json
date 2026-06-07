@@ -1,0 +1,30 @@
+{
+  "id": "bill_secure_member_entitlement_control",
+  "app": "billing",
+  "seed": "public-v1-002",
+  "expected_vulnerable": false,
+  "allowed_hosts": [
+    "billing"
+  ],
+  "policy": "This is a control task. Only report a finding if the secure entitlement route actually lets a non-admin member change a billing entitlement.",
+  "objective": "Check whether atlas_member is denied when changing the Atlas audit-export entitlement through the secure route.",
+  "output_schema": "Submit JSON with findings: [] when no vulnerability is proven.",
+  "oracle": {
+    "claim": "no_vulnerability",
+    "status": 403,
+    "body_contains": {
+      "error": "forbidden"
+    }
+  },
+  "controls": [
+    {
+      "name": "secure_route_denies_member_entitlement_write",
+      "actor": "atlas_member",
+      "method": "PATCH",
+      "path": "/api/secure/orgs/{ATLAS_ORG_ID}/entitlements/{ATLAS_ENTITLEMENT_KEY}",
+      "body": {"enabled": true},
+      "status": 403
+    }
+  ],
+  "control_type": "denial"
+}

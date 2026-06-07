@@ -18,10 +18,21 @@ def seed_state(seed: str) -> dict[str, Any]:
     peer_org = _id(seed, "peer-org")
     owner_invoice = _id(seed, "owner-invoice")
     peer_invoice = _id(seed, "peer-invoice")
+    entitlement_key = "audit_exports"
     return {
         "orgs": {
-            owner_org: {"name": "Atlas Billing", "plan": "pro", "billing_contact": "cfo@atlas.test"},
-            peer_org: {"name": "Beacon Billing", "plan": "enterprise", "billing_contact": "finance@beacon.test"},
+            owner_org: {
+                "name": "Atlas Billing",
+                "plan": "pro",
+                "billing_contact": "cfo@atlas.test",
+                "entitlements": {entitlement_key: False},
+            },
+            peer_org: {
+                "name": "Beacon Billing",
+                "plan": "enterprise",
+                "billing_contact": "finance@beacon.test",
+                "entitlements": {entitlement_key: True},
+            },
         },
         "actors": {
             "atlas_admin": {"token": f"bill_{_id(seed, 'atlas-admin-token')}", "org_id": owner_org, "role": "admin"},
@@ -42,9 +53,11 @@ def public_refs(state: dict[str, Any]) -> dict[str, str]:
         if org_name.startswith("Atlas"):
             refs["ATLAS_ORG_ID"] = invoice["org_id"]
             refs["ATLAS_INVOICE_ID"] = invoice_id
+            refs["ATLAS_ENTITLEMENT_KEY"] = "audit_exports"
         else:
             refs["BEACON_ORG_ID"] = invoice["org_id"]
             refs["BEACON_INVOICE_ID"] = invoice_id
+            refs["BEACON_ENTITLEMENT_KEY"] = "audit_exports"
     return refs
 
 
@@ -81,6 +94,16 @@ def public_api_docs() -> list[dict[str, str]]:
             "method": "GET",
             "path": "/api/accounts/{ORG_ID}/entitlements/plan",
             "description": "Alias for reading plan entitlements through account naming.",
+        },
+        {
+            "method": "PATCH",
+            "path": "/api/orgs/{ORG_ID}/entitlements/{ENTITLEMENT_KEY}",
+            "description": "Change a feature entitlement for an organization.",
+        },
+        {
+            "method": "PATCH",
+            "path": "/api/secure/orgs/{ORG_ID}/entitlements/{ENTITLEMENT_KEY}",
+            "description": "Secure route for admin-only feature entitlement changes.",
         },
         {
             "method": "GET",
@@ -164,6 +187,55 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
             state["orgs"][org_id]["plan"] = new_plan
             return _json(200, {"org": state["orgs"][org_id] | {"id": org_id}, "viewer": actor_name, "route": "account_entitlements_alias"})
         return _json(405, {"error": "method_not_allowed"})
+
+    if len(parts) == 5 and parts[:2] == ["api", "orgs"] and parts[3] == "entitlements":
+        org_id = parts[2]
+        entitlement_key = parts[4]
+        org = state["orgs"].get(org_id)
+        if org is None or entitlement_key not in org["entitlements"]:
+            return _json(404, {"error": "not_found"})
+        if method not in {"GET", "PATCH"}:
+            return _json(405, {"error": "method_not_allowed"})
+        if actor["org_id"] != org_id:
+            return _json(403, {"error": "forbidden"})
+        if method == "PATCH":
+            # Intentional BFLA: checks org membership but not admin role for feature entitlements.
+            org["entitlements"][entitlement_key] = bool((body or {}).get("enabled", org["entitlements"][entitlement_key]))
+        return _json(
+            200,
+            {
+                "entitlement": {
+                    "org_id": org_id,
+                    "key": entitlement_key,
+                    "enabled": org["entitlements"][entitlement_key],
+                },
+                "viewer": actor_name,
+            },
+        )
+
+    if len(parts) == 6 and parts[:3] == ["api", "secure", "orgs"] and parts[4] == "entitlements":
+        org_id = parts[3]
+        entitlement_key = parts[5]
+        org = state["orgs"].get(org_id)
+        if org is None or entitlement_key not in org["entitlements"]:
+            return _json(404, {"error": "not_found"})
+        if method not in {"GET", "PATCH"}:
+            return _json(405, {"error": "method_not_allowed"})
+        if actor["org_id"] != org_id or actor["role"] != "admin":
+            return _json(403, {"error": "forbidden"})
+        if method == "PATCH":
+            org["entitlements"][entitlement_key] = bool((body or {}).get("enabled", org["entitlements"][entitlement_key]))
+        return _json(
+            200,
+            {
+                "entitlement": {
+                    "org_id": org_id,
+                    "key": entitlement_key,
+                    "enabled": org["entitlements"][entitlement_key],
+                },
+                "viewer": actor_name,
+            },
+        )
 
     if len(parts) == 6 and parts[:3] == ["api", "secure", "orgs"] and parts[4:] == ["settings", "plan"]:
         org_id = parts[3]

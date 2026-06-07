@@ -105,6 +105,8 @@ def _body_for(method: str, path: str, objective: str) -> dict[str, Any] | None:
         return None
     if "settings/plan" in lowered or "entitlements/plan" in lowered:
         return {"plan": "enterprise"}
+    if "/entitlements/" in lowered:
+        return {"enabled": True}
     if "tickets" in lowered and "status" in lowered:
         return {"status": "closed"}
     if "invites" in lowered:
@@ -158,6 +160,8 @@ def _claim_for(context: dict[str, Any], probe: dict[str, Any]) -> str:
         return "token_cross_tenant_secret_read"
     if "export" in text and "token" in text:
         return "token_without_export_scope_reads_export"
+    if "/entitlements/" in text and "entitlements/plan" not in text:
+        return "member_can_enable_billing_entitlement"
     if "plan" in text and "read" in text:
         return "member_can_read_billing_plan_settings"
     if "plan" in text:
@@ -212,6 +216,10 @@ def _probe_rank(context: dict[str, Any], probe: dict[str, Any]) -> int:
             score += 10
         if "read" in objective and method == "GET":
             score += 10
+    if "entitlement" in objective and "/entitlements/" in text and "entitlements/plan" not in text:
+        score += 35
+        if method == "PATCH":
+            score += 10
     if "invoice" in objective and "invoice" in text:
         score += 25
     if "close" in objective and "status" in text and method == "PATCH":
@@ -259,6 +267,8 @@ def _boundary_for(context: dict[str, Any], actor: str) -> dict[str, str]:
         boundary["required_scope"] = "exports:read"
     elif "read-only token" in objective:
         boundary["required_scope"] = "secrets:write"
+    if "entitlement" in objective:
+        boundary["entitlement"] = "audit_exports"
     return boundary
 
 

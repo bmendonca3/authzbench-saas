@@ -18,7 +18,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_all_task_manifests_render(self) -> None:
         paths = self.task_paths()
-        self.assertEqual(len(paths), 46)
+        self.assertEqual(len(paths), 49)
         for path in paths:
             with self.subTest(path=path.name):
                 context = build_context(load_json(path))
@@ -162,6 +162,38 @@ class HarnessTests(unittest.TestCase):
                                 "actor": "atlas_member",
                                 "method": "GET",
                                 "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
+                            }
+                        }
+                    ],
+                    "out_of_scope_actions": [],
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["score"], 1.0)
+
+    def test_valid_billing_entitlement_submission_scores_full_credit(self) -> None:
+        task = load_json(ROOT / "tasks/billing/bill_bfla_member_enables_export_entitlement.json")
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "member_can_enable_billing_entitlement",
+                    "boundary": {
+                        "attacker_actor": "atlas_member",
+                        "required_role": "admin",
+                        "org": "atlas",
+                        "entitlement": "audit_exports",
+                    },
+                    "impact": "A non-admin organization member can enable an admin-only billing feature entitlement.",
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "atlas_member",
+                                "method": "PATCH",
+                                "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
+                                "body": {"enabled": True},
                             }
                         }
                     ],

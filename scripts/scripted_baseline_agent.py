@@ -152,6 +152,28 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "bill_bfla_member_enables_export_entitlement":
+        return {
+            "findings": [
+                _finding(
+                    "member_can_enable_billing_entitlement",
+                    {
+                        "actor": "atlas_member",
+                        "method": "PATCH",
+                        "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
+                        "body": {"enabled": True},
+                    },
+                    {
+                        "attacker_actor": "atlas_member",
+                        "required_role": "admin",
+                        "org": "atlas",
+                        "entitlement": "audit_exports",
+                    },
+                    "A non-admin organization member can enable an admin-only billing feature entitlement.",
+                )
+            ]
+        }
+
     if task_id == "sup_bola_acme_reads_orbit_ticket":
         return {
             "findings": [

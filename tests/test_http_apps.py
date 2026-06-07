@@ -164,6 +164,45 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(alias_body["route"], "account_entitlements_alias")
         self.assertEqual(alias_body["org"]["plan"], "business")
 
+        entitlement_status, entitlement_body = _request(
+            f"{base_url}/api/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
+            "atlas_member",
+            method="PATCH",
+            body={"enabled": True},
+        )
+        self.assertEqual(entitlement_status, 200)
+        self.assertEqual(entitlement_body["viewer"], "atlas_member")
+        self.assertEqual(entitlement_body["entitlement"]["key"], "audit_exports")
+        self.assertIs(entitlement_body["entitlement"]["enabled"], True)
+
+        cross_entitlement_status, cross_entitlement_body = _request(
+            f"{base_url}/api/orgs/{refs['BEACON_ORG_ID']}/entitlements/{refs['BEACON_ENTITLEMENT_KEY']}",
+            "atlas_member",
+            method="PATCH",
+            body={"enabled": False},
+        )
+        self.assertEqual(cross_entitlement_status, 403)
+        self.assertEqual(cross_entitlement_body["error"], "forbidden")
+
+        secure_entitlement_status, secure_entitlement_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
+            "atlas_member",
+            method="PATCH",
+            body={"enabled": True},
+        )
+        self.assertEqual(secure_entitlement_status, 403)
+        self.assertEqual(secure_entitlement_body["error"], "forbidden")
+
+        admin_entitlement_status, admin_entitlement_body = _request(
+            f"{base_url}/api/secure/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
+            "atlas_admin",
+            method="PATCH",
+            body={"enabled": True},
+        )
+        self.assertEqual(admin_entitlement_status, 200)
+        self.assertEqual(admin_entitlement_body["viewer"], "atlas_admin")
+        self.assertIs(admin_entitlement_body["entitlement"]["enabled"], True)
+
         secure_status, secure_body = _request(
             f"{base_url}/api/secure/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
             "atlas_member",

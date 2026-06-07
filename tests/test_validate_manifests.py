@@ -48,12 +48,12 @@ class ManifestValidationTests(unittest.TestCase):
     def test_public_manifests_validate(self) -> None:
         result = validate_patterns(["tasks/*/*.json"])
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["manifest_count"], 46, result)
+        self.assertEqual(result["manifest_count"], 49, result)
         self.assertEqual(result["private_holdout_count"], 0, result)
-        self.assertEqual(result["vulnerable_count"], 19, result)
-        self.assertEqual(result["control_count"], 27, result)
-        self.assertEqual(result["denial_control_count"], 16, result)
-        self.assertEqual(result["authorized_allow_control_count"], 11, result)
+        self.assertEqual(result["vulnerable_count"], 20, result)
+        self.assertEqual(result["control_count"], 29, result)
+        self.assertEqual(result["denial_control_count"], 17, result)
+        self.assertEqual(result["authorized_allow_control_count"], 12, result)
 
     def test_rejects_unresolved_control_template(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

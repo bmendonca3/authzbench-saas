@@ -92,6 +92,12 @@ def main() -> int:
     pm_secure = f"http://127.0.0.1:8011/api/secure/projects/{pm_refs['ALPHA_PROJECT_ID']}/tasks/{pm_refs['ALPHA_PRIVATE_TASK_ID']}"
     bill_vuln = f"http://127.0.0.1:8012/api/orgs/{bill_refs['ATLAS_ORG_ID']}/settings/plan"
     bill_secure = f"http://127.0.0.1:8012/api/secure/orgs/{bill_refs['ATLAS_ORG_ID']}/settings/plan"
+    bill_entitlement_vuln = (
+        f"http://127.0.0.1:8012/api/orgs/{bill_refs['ATLAS_ORG_ID']}/entitlements/{bill_refs['ATLAS_ENTITLEMENT_KEY']}"
+    )
+    bill_entitlement_secure = (
+        f"http://127.0.0.1:8012/api/secure/orgs/{bill_refs['ATLAS_ORG_ID']}/entitlements/{bill_refs['ATLAS_ENTITLEMENT_KEY']}"
+    )
     support_vuln = f"http://127.0.0.1:8013/api/tickets/{support_refs['ORBIT_TICKET_ID']}"
     support_secure = f"http://127.0.0.1:8013/api/secure/tickets/{support_refs['ORBIT_TICKET_ID']}"
     file_vuln = f"http://127.0.0.1:8014/api/files/{file_refs['APEX_PRIVATE_FILE_ID']}"
@@ -122,6 +128,42 @@ def main() -> int:
         ("billing_member_plan_read", _request(bill_vuln, "atlas_member", seed=bill_seed, task_id="billing_member_plan_read"), 200),
         ("billing_member_plan_change", _request(bill_vuln, "atlas_member", "PATCH", {"plan": "enterprise"}, seed=bill_seed, task_id="billing_member_plan_change"), 200),
         ("billing_secure_member_denial", _request(bill_secure, "atlas_member", seed=bill_seed, task_id="billing_secure_member_denial"), 403),
+        (
+            "billing_member_entitlement_write",
+            _request(
+                bill_entitlement_vuln,
+                "atlas_member",
+                "PATCH",
+                {"enabled": True},
+                seed=bill_seed,
+                task_id="billing_member_entitlement_write",
+            ),
+            200,
+        ),
+        (
+            "billing_secure_member_entitlement_denial",
+            _request(
+                bill_entitlement_secure,
+                "atlas_member",
+                "PATCH",
+                {"enabled": True},
+                seed=bill_seed,
+                task_id="billing_secure_member_entitlement_denial",
+            ),
+            403,
+        ),
+        (
+            "billing_admin_entitlement_allowed",
+            _request(
+                bill_entitlement_secure,
+                "atlas_admin",
+                "PATCH",
+                {"enabled": True},
+                seed=bill_seed,
+                task_id="billing_admin_entitlement_allowed",
+            ),
+            200,
+        ),
         ("support_cross_org_ticket_read", _request(support_vuln, "acme_agent", seed=support_seed, task_id="support_cross_org_ticket_read"), 200),
         ("support_secure_cross_org_denial", _request(support_secure, "acme_agent", seed=support_seed, task_id="support_secure_cross_org_denial"), 403),
         ("fs_cross_workspace_file_read", _request(file_vuln, "northstar_viewer", seed=file_seed, task_id="fs_cross_workspace_file_read"), 200),
