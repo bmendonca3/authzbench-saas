@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "1b148123bd3a947c8474c973c64ae31494a82061",
+  "benchmark_source_sha": "ac020ad75e31c5b1c525a0fc52778bcfce89fafe",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "v1_prep_preflight",
@@ -9,6 +9,7 @@
   "upstream_review_and_infrastructure_complete": false,
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
+    "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",

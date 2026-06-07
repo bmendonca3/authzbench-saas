@@ -521,7 +521,7 @@ The goal is complete only when all of these are true:
     infrastructure are complete.
   Verification:
   - benchmark source commit:
-    `1b148123bd3a947c8474c973c64ae31494a82061`;
+    `ac020ad75e31c5b1c525a0fc52778bcfce89fafe`;
   - `python3 scripts/generate_paper_tables.py && git diff --exit-code --
     paper/shared` passed;
   - `python3 scripts/generate_benchmark_charts.py && git diff --exit-code --
@@ -539,6 +539,9 @@ The goal is complete only when all of these are true:
     gate can pass, and independently cross-checks the live external-review,
     hosted-execution, and private-rotation gates instead of trusting that
     evidence field alone.
+  - exact-head CI uses `actions/checkout` with `fetch-depth: 0`, and
+    `tests/test_ci_workflow.py` enforces that history requirement so the
+    ancestor source SHA remains resolvable in a clean runner.
 
 - [ ] Update the v1-prep technical report and IEEE scaffold after review and
   infrastructure gates change.
