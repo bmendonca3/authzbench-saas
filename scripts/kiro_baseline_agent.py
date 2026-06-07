@@ -12,14 +12,28 @@ from typing import Any
 def _extract_json(text: str) -> dict[str, Any]:
     stripped = text.strip()
     if stripped.startswith("{"):
-        return json.loads(stripped)
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError:
+            parsed = None
+        if isinstance(parsed, dict) and "findings" in parsed:
+            return parsed
     fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL)
     if fenced:
-        return json.loads(fenced.group(1))
-    first = text.find("{")
-    last = text.rfind("}")
-    if first != -1 and last != -1 and last > first:
-        return json.loads(text[first : last + 1])
+        try:
+            parsed = json.loads(fenced.group(1))
+        except json.JSONDecodeError:
+            parsed = None
+        if isinstance(parsed, dict) and "findings" in parsed:
+            return parsed
+    decoder = json.JSONDecoder()
+    for match in reversed(list(re.finditer(r"\{", text))):
+        try:
+            parsed, _ = decoder.raw_decode(text[match.start() :])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(parsed, dict) and "findings" in parsed:
+            return parsed
     raise ValueError("model output did not contain a JSON object")
 
 
@@ -90,4 +104,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
