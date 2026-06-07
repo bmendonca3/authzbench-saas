@@ -507,6 +507,18 @@ The goal is complete only when all of these are true:
   - [x] `qwen3-coder-next` has two runner-emitted 54-task base summaries,
     promoted with distinct run IDs, the active fingerprint, and public-safe
     task-level command/output failure diagnostics;
+    Evidence: promotion commit
+    `ee5bf213048bb0848b0c184e69646b668784a616` and paper-preflight refresh
+    commit `98645dd7a9682050a94206865608e8185a11cdce` are authored as
+    `bmendonca3`, pushed to `main` and `v1-task-expansion`, and exact-head
+    GitHub Actions run `27101631586` passed. Local verification included 190
+    tests, public validation with the 54-task scripted baseline, strict v0
+    validation, baseline-registry and leaderboard validation, deterministic
+    chart/table regeneration, IEEE paper compilation, whitespace checks, and an
+    empty tracked-private/raw-path scan. A Kiro Opus evidence audit first
+    returned actionable disclosure findings; after fixes, an independent narrow
+    replacement audit returned `CLEAN`. The broad intermediate audit that
+    stalled without a verdict is explicitly excluded from review evidence.
   - `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
     `claude-opus-4.6` no-tools families each have two runner-emitted 54-task
     summaries;
@@ -543,8 +555,8 @@ The goal is complete only when all of these are true:
   - the final paper gate remains red until independent review and release
     infrastructure are complete.
   Verification:
-  - benchmark source commit:
-    `ac020ad75e31c5b1c525a0fc52778bcfce89fafe`;
+  - latest benchmark source commit:
+    `ee5bf213048bb0848b0c184e69646b668784a616`;
   - `python3 scripts/generate_paper_tables.py && git diff --exit-code --
     paper/shared` passed;
   - `python3 scripts/generate_benchmark_charts.py && git diff --exit-code --
@@ -565,8 +577,8 @@ The goal is complete only when all of these are true:
   - exact-head CI uses `actions/checkout` with `fetch-depth: 0`, and
     `tests/test_ci_workflow.py` enforces that history requirement so the
     ancestor source SHA remains resolvable in a clean runner.
-  - exact-head GitHub Actions run `27099623059` passed for commit
-    `04c09ccd6e74c81deefdfca5e7952024e4a4173a`.
+  - exact-head GitHub Actions run `27101631586` passed for paper-preflight
+    refresh commit `98645dd7a9682050a94206865608e8185a11cdce`.
 
 - [ ] Update the v1-prep technical report and IEEE scaffold after review and
   infrastructure gates change.
