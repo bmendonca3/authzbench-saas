@@ -286,7 +286,7 @@ The goal is complete only when all of these are true:
 
 ### Hosted Or Fully Containerized Submission Gate
 
-- [ ] Prove the containerized submitter-isolation mechanism in exact-head CI.
+- [x] Prove the containerized submitter-isolation mechanism in exact-head CI.
   Acceptance evidence:
   - `scripts/containerized_submission_smoke.py` runs submitter code in a
     non-root container with no network, a read-only root filesystem, dropped
@@ -301,6 +301,26 @@ The goal is complete only when all of these are true:
     Docker-backed validation passes;
   - the validator explicitly rejects rehearsal evidence as release-candidate
     hosted-execution evidence.
+  Evidence:
+  - commits `38339f4b053ffbce5d8fd4d48970a5162c72cc39` and
+    `b1a01d9e271b331d0aa745fca9139c7cbcca211d` implement and harden the
+    rehearsal path, including exact Docker-argv constraint validation, an
+    exact mount allowlist, bounded outputs, explicit non-root bind-mount
+    permissions, timeout cleanup, required container-emitted submission
+    output, public-evidence redaction, and a Docker build-context denylist;
+  - `python3 scripts/validate_public.py --include-scripted-baseline` passed
+    locally on the hardened tree, including 179 tests and the 54-task scripted
+    baseline;
+  - exact-head GitHub Actions run `27099082635` passed the Docker-backed public
+    validation on commit `b1a01d9e271b331d0aa745fca9139c7cbcca211d`;
+  - independent Kiro Opus 4.8 security and completeness audits identified the
+    build-context, command-attestation, mount, missing-output, umask, output
+    bound, redaction, and cleanup-timeout gaps; each accepted finding was fixed
+    and rerun through focused and full validation;
+  - this check proves the public rehearsal mechanism only. It does not prove
+    kernel-level isolation on the intended release platform, protection of the
+    real active private pack, or release-candidate hosted execution; the two
+    following gates remain open.
 
 - [ ] Implement or document an executable hosted/containerized private
   submission smoke path.
