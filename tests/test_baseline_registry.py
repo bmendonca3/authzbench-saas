@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from authzbench.core import load_json
 from scripts.validate_baseline_registry import ROOT, validate_registry
@@ -48,17 +49,85 @@ def _baseline_by_id(registry: dict, baseline_id: str) -> dict:
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_has_public_baseline_evidence_but_not_full_v0_proof(self) -> None:
+    def test_current_registry_marks_v0_baselines_stale_for_v1_expansion(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["baseline_count"], 16, result)
-        self.assertEqual(result["public_split"]["task_count"], 46, result)
-        self.assertEqual(result["current_public_model_family_count"], 5, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 5, result)
-        self.assertTrue(result["v0_baseline_ready"], result)
-        self.assertEqual(result["unmet_v0_requirements"], [], result)
-        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
+        self.assertEqual(result["public_split"]["task_count"], 49, result)
+        self.assertEqual(result["current_public_model_family_count"], 0, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
+        self.assertFalse(result["v0_baseline_ready"], result)
+        self.assertTrue(result["v0_release_snapshot_ready"], result)
+        self.assertEqual(len(result["release_snapshots"]), 1, result)
+        self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
+        self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
+        self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
+        self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
+        self.assertIn("current public model families: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
+
+    def test_future_public_expansion_can_keep_v0_release_snapshot_honest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            future_counts = {
+                "task_count": 49,
+                "vulnerable_task_count": 20,
+                "control_task_count": 29,
+                "denial_control_task_count": 17,
+                "authorized_allow_control_task_count": 12,
+            }
+            registry["public_split"] = future_counts
+            for entry in registry["baselines"]:
+                if entry["expected_task_count"] == 46 and entry["release_suitability"] in {
+                    "current_public_split",
+                    "current_public_harness_check",
+                }:
+                    entry["release_suitability"] = "current_public_stale"
+                    entry["requires_rerun_before_v0"] = True
+            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            with mock.patch(
+                "scripts.validate_baseline_registry._task_counts",
+                return_value=future_counts,
+            ), mock.patch(
+                "scripts.validate_baseline_registry.benchmark_fingerprint",
+                return_value={"task_set_sha256": "future", **future_counts},
+            ):
+                result = validate_registry(registry_path)
+
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["public_split"]["task_count"], 49, result)
+        self.assertEqual(result["current_public_model_family_count"], 0, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
+        self.assertFalse(result["v0_baseline_ready"], result)
+        self.assertTrue(result["v0_release_snapshot_ready"], result)
+        self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
+        self.assertIn("current public model families: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 0 of 5", result["unmet_v0_requirements"])
+
+    def test_rejects_release_snapshot_run_artifact_with_wrong_fingerprint_counts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            model_entry = _baseline_by_id(registry, CURRENT_QWEN_ID)
+            run2_path = registry_path.parent / model_entry["run_artifacts"][1]
+            run2_summary = load_json(run2_path)
+            run2_summary["benchmark_fingerprint"]["task_count"] = 45
+            run2_path.write_text(json.dumps(run2_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("run artifact" in error and "benchmark_fingerprint.task_count" in error for error in result["errors"]),
+            result,
+        )
 
     def test_rejects_harness_check_mislabeled_as_current_public_split(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -75,21 +144,21 @@ class BaselineRegistryTests(unittest.TestCase):
             result,
         )
 
-    def test_rejects_current_public_summary_with_mismatched_fingerprint(self) -> None:
+    def test_rejects_release_snapshot_summary_with_mismatched_fingerprint_counts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
             model_entry = _baseline_by_id(registry, CURRENT_QWEN_ID)
             run1_path = registry_path.parent / model_entry["run_artifacts"][0]
             summary = load_json(run1_path)
-            summary["benchmark_fingerprint"]["task_set_sha256"] = "0" * 64
+            summary["benchmark_fingerprint"]["task_count"] = 45
             run1_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             result = validate_registry(registry_path)
 
         self.assertFalse(result["passed"], result)
-        self.assertTrue(any("benchmark_fingerprint.task_set_sha256" in error for error in result["errors"]), result)
+        self.assertTrue(any("benchmark_fingerprint.task_count" in error for error in result["errors"]), result)
 
     def test_rejects_one_off_model_baseline_marked_leaderboard_eligible(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

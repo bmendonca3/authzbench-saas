@@ -3,6 +3,8 @@
 Status: public v0.0 technical-report draft for the released benchmark artifact.
 This document is claim-disciplined by design: it describes what the repository
 currently proves, what it partially supports, and what remains future work.
+On the `v1-task-expansion` branch, the live public split has expanded to 49
+tasks; this report preserves the frozen v0.0 46-task release snapshot.
 
 ## Title Options
 
@@ -25,11 +27,11 @@ benchmark for this proof gap. The benchmark contains 6 synthetic SaaS targets
 and 46 public tasks covering tenant, organization, object, role, API-token,
 scope, sharing, and admin-action boundaries. It evaluates whether an agent can
 submit backend-replayable evidence for vulnerable tasks while avoiding false
-reports on secure controls. The current public split includes 19 vulnerable
+reports on secure controls. The v0.0 public split includes 19 vulnerable
 tasks, 27 secure-control tasks, 16 denial controls, and 11 authorized-allow
 controls. Scoring separates exploit proof, boundary reasoning, false-positive
 behavior, control execution, safety, and live-target request correlation when
-Docker HTTP targets are used. Repeated public baselines across five current
+Docker HTTP targets are used. Repeated public baselines across five frozen v0.0
 model/agent families show that agents can sometimes produce replayable exploit
 evidence, but current runs often fail full vulnerable-task passes because
 authorization-boundary reasoning remains weak. AuthZBench-SaaS v0.0 is a
@@ -151,15 +153,16 @@ without explaining why the authorization boundary is wrong.
 
 ## Experimental Results
 
-The current public split contains 46 tasks: 19 vulnerable and 27 secure
+The v0.0 public split contains 46 tasks: 19 vulnerable and 27 secure
 controls. The control set includes 16 denial controls and 11 authorized-allow
 controls. The deterministic scripted baseline is a harness sanity check, not a
 model-capability result; it passes all 46 public tasks and verifies that the
-scorer, task manifests, and expected oracle path fit the active split.
+scorer, task manifests, and expected oracle path fit the frozen v0.0 split.
 
-Current public baselines include four repeated no-tools model-family baselines
-and one repeated live HTTP tool-agent family. These runs are public-split
-evidence only; they are not private-holdout leaderboard rankings.
+The frozen v0.0 public baselines include four repeated no-tools model-family
+baselines and one repeated live HTTP tool-agent family. These runs are
+public-split evidence only; they are not current v1 or private-holdout
+leaderboard rankings.
 
 | Baseline | Harness | Tasks | V0 passed | Exploit proof | Boundary reasoning | False positives | Authorized allow | Target requests |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

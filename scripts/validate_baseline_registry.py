@@ -49,6 +49,23 @@ REQUIRED_TOOL_AGENT_SUMMARY_FIELDS = {
     "target_request_coverage_rate",
 }
 
+REQUIRED_RELEASE_SNAPSHOT_FIELDS = {
+    "id",
+    "public_split",
+    "baseline_ids",
+    "min_real_model_families",
+    "min_runs_per_serious_baseline",
+    "requires_tool_agent_baseline",
+}
+
+PUBLIC_COUNT_FIELDS = (
+    "task_count",
+    "vulnerable_task_count",
+    "control_task_count",
+    "denial_control_task_count",
+    "authorized_allow_control_task_count",
+)
+
 VALID_KINDS = {"harness_check", "model_baseline", "tool_agent_baseline"}
 VALID_SUITABILITY = {
     "current_public_split",
@@ -126,6 +143,42 @@ def _validate_current_fingerprint(
             )
 
 
+def _validate_fingerprint_counts(
+    summary: dict[str, Any],
+    expected_counts: dict[str, int],
+    entry_id: str,
+    location: str,
+    errors: list[str],
+) -> None:
+    fingerprint = summary.get("benchmark_fingerprint")
+    if not isinstance(fingerprint, dict):
+        errors.append(f"{entry_id}: {location} missing benchmark_fingerprint")
+        return
+    for field in PUBLIC_COUNT_FIELDS:
+        if fingerprint.get(field) != expected_counts.get(field):
+            errors.append(
+                f"{entry_id}: {location} benchmark_fingerprint.{field} "
+                f"{fingerprint.get(field)!r} does not match snapshot {expected_counts.get(field)!r}"
+            )
+
+
+def _validate_summary_counts(
+    summary: dict[str, Any],
+    expected_counts: dict[str, int],
+    entry_id: str,
+    location: str,
+    errors: list[str],
+    *,
+    prefix: str,
+) -> None:
+    for count_field in PUBLIC_COUNT_FIELDS:
+        if count_field in summary and summary[count_field] != expected_counts[count_field]:
+            errors.append(
+                f"{entry_id}: {location} {prefix} {count_field} "
+                f"{summary[count_field]!r} does not match {expected_counts[count_field]}"
+            )
+
+
 def _require_int(value: Any, field: str, entry_id: str, errors: list[str]) -> int:
     if not isinstance(value, int):
         errors.append(f"{entry_id}: {field} must be an integer")
@@ -143,6 +196,7 @@ def _validate_summary_file(
     current_fingerprint: dict[str, Any],
     errors: list[str],
     label: str = "summary",
+    enforce_current_public: bool = True,
 ) -> dict[str, Any] | None:
     summary_file = _summary_path(registry_path, summary_path)
     location = label if label == "summary" else f"{label} {_display_path(summary_file)}"
@@ -178,7 +232,7 @@ def _validate_summary_file(
             )
 
     suitability = str(raw_entry.get("release_suitability"))
-    if suitability in {"current_public_split", "current_public_harness_check"}:
+    if enforce_current_public and suitability in {"current_public_split", "current_public_harness_check"}:
         if expected_task_count != public_counts["task_count"]:
             errors.append(
                 f"{entry_id}: {suitability} must use current public task count "
@@ -209,6 +263,8 @@ def _has_repeated_run_evidence(
     public_counts: dict[str, int],
     current_fingerprint: dict[str, Any],
     errors: list[str],
+    enforce_current_public: bool = True,
+    snapshot_counts: dict[str, int] | None = None,
 ) -> bool:
     run_artifacts = raw_entry.get("run_artifacts")
     if not isinstance(run_artifacts, list):
@@ -246,8 +302,13 @@ def _has_repeated_run_evidence(
             current_fingerprint,
             errors,
             label="run artifact",
+            enforce_current_public=enforce_current_public,
         )
         run_id = str(artifact.get("run_id", "")).strip() if isinstance(artifact, dict) else ""
+        if isinstance(artifact, dict) and snapshot_counts is not None:
+            artifact_location = f"run artifact {_display_path(candidate)}"
+            _validate_summary_counts(artifact, snapshot_counts, entry_id, artifact_location, errors, prefix="snapshot")
+            _validate_fingerprint_counts(artifact, snapshot_counts, entry_id, artifact_location, errors)
         if not run_id:
             errors.append(f"{entry_id}: run artifact {_display_path(candidate)} must include a run_id")
             ok = False
@@ -257,6 +318,127 @@ def _has_repeated_run_evidence(
         else:
             seen_run_ids.add(run_id)
     return ok
+
+
+def _snapshot_counts(raw_snapshot: dict[str, Any], snapshot_id: str, errors: list[str]) -> dict[str, int]:
+    raw_counts = raw_snapshot.get("public_split")
+    if not isinstance(raw_counts, dict):
+        errors.append(f"{snapshot_id}: public_split must be an object")
+        raw_counts = {}
+    counts: dict[str, int] = {}
+    for field in PUBLIC_COUNT_FIELDS:
+        counts[field] = _require_int(raw_counts.get(field), f"public_split.{field}", snapshot_id, errors)
+    return counts
+
+
+def _validate_release_snapshot(
+    raw_snapshot: dict[str, Any],
+    entries_by_id: dict[str, dict[str, Any]],
+    summaries_by_id: dict[str, dict[str, Any]],
+    registry_path: Path,
+    errors: list[str],
+) -> dict[str, Any]:
+    snapshot_id = str(raw_snapshot.get("id", "<missing-id>"))
+    missing = sorted(REQUIRED_RELEASE_SNAPSHOT_FIELDS - set(raw_snapshot))
+    if missing:
+        errors.append(f"{snapshot_id}: missing release snapshot fields: {', '.join(missing)}")
+    counts = _snapshot_counts(raw_snapshot, snapshot_id, errors)
+    baseline_ids = raw_snapshot.get("baseline_ids")
+    if not isinstance(baseline_ids, list) or not baseline_ids:
+        errors.append(f"{snapshot_id}: baseline_ids must be a non-empty list")
+        baseline_ids = []
+
+    min_model_families = _require_int(
+        raw_snapshot.get("min_real_model_families"),
+        "min_real_model_families",
+        snapshot_id,
+        errors,
+    )
+    min_runs = _require_int(
+        raw_snapshot.get("min_runs_per_serious_baseline"),
+        "min_runs_per_serious_baseline",
+        snapshot_id,
+        errors,
+    )
+    requires_tool_agent = bool(raw_snapshot.get("requires_tool_agent_baseline"))
+    model_families: set[str] = set()
+    repeated_model_baselines = 0
+    has_tool_agent_baseline = False
+    snapshot_unmet: list[str] = []
+    seen_ids: set[str] = set()
+
+    for raw_baseline_id in baseline_ids:
+        baseline_id = str(raw_baseline_id)
+        if baseline_id in seen_ids:
+            errors.append(f"{snapshot_id}: duplicate baseline id {baseline_id}")
+            continue
+        seen_ids.add(baseline_id)
+        entry = entries_by_id.get(baseline_id)
+        if entry is None:
+            errors.append(f"{snapshot_id}: missing baseline id {baseline_id}")
+            continue
+        summary = summaries_by_id.get(baseline_id)
+        if summary is None:
+            continue
+
+        expected_task_count = _require_int(
+            entry.get("expected_task_count"),
+            f"{baseline_id}.expected_task_count",
+            snapshot_id,
+            errors,
+        )
+        if expected_task_count != counts["task_count"]:
+            errors.append(
+                f"{snapshot_id}: {baseline_id} expected_task_count {expected_task_count} "
+                f"does not match snapshot task_count {counts['task_count']}"
+            )
+        _validate_summary_counts(summary, counts, baseline_id, "release snapshot summary", errors, prefix=snapshot_id)
+        _validate_fingerprint_counts(summary, counts, baseline_id, "release snapshot summary", errors)
+
+        kind = str(entry.get("kind"))
+        if kind not in {"model_baseline", "tool_agent_baseline"}:
+            continue
+        model_family = str(entry.get("model_family", "")).strip()
+        if model_family:
+            model_families.add(model_family)
+        run_count = _require_int(entry.get("run_count"), f"{baseline_id}.run_count", snapshot_id, errors)
+        if kind == "tool_agent_baseline":
+            has_tool_agent_baseline = True
+        if run_count >= min_runs:
+            has_repeated_evidence = _has_repeated_run_evidence(
+                registry_path,
+                entry,
+                baseline_id,
+                run_count,
+                expected_task_count,
+                counts,
+                {},
+                errors,
+                enforce_current_public=False,
+                snapshot_counts=counts,
+            )
+            if has_repeated_evidence:
+                repeated_model_baselines += 1
+
+    if len(model_families) < min_model_families:
+        snapshot_unmet.append(f"model families: {len(model_families)} of {min_model_families}")
+    if repeated_model_baselines < min_model_families:
+        snapshot_unmet.append(f"repeated model baselines: {repeated_model_baselines} of {min_model_families}")
+    if requires_tool_agent and not has_tool_agent_baseline:
+        snapshot_unmet.append("missing tool-agent baseline")
+    if min_runs < 2:
+        snapshot_unmet.append("min_runs_per_serious_baseline should be at least 2")
+
+    return {
+        "id": snapshot_id,
+        "ready": not snapshot_unmet,
+        "baseline_count": len(seen_ids),
+        "model_family_count": len(model_families),
+        "repeated_model_baseline_count": repeated_model_baselines,
+        "has_tool_agent_baseline": has_tool_agent_baseline,
+        "public_split": counts,
+        "unmet": snapshot_unmet,
+    }
 
 
 def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-registry.json") -> dict[str, Any]:
@@ -291,6 +473,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
     has_tool_agent_baseline = False
     repeated_model_baselines = 0
     seen_entry_ids: set[str] = set()
+    entries_by_id: dict[str, dict[str, Any]] = {}
+    summaries_by_id: dict[str, dict[str, Any]] = {}
 
     for raw_entry in entries:
         if not isinstance(raw_entry, dict):
@@ -300,6 +484,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         if entry_id in seen_entry_ids:
             errors.append(f"{entry_id}: duplicate baseline id")
         seen_entry_ids.add(entry_id)
+        entries_by_id[entry_id] = raw_entry
         missing = sorted(REQUIRED_ENTRY_FIELDS - set(raw_entry))
         if missing:
             errors.append(f"{entry_id}: missing registry fields: {', '.join(missing)}")
@@ -335,6 +520,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         )
         if summary is None:
             continue
+        summaries_by_id[entry_id] = summary
 
         if suitability == "legacy_snapshot":
             if not requires_rerun:
@@ -403,6 +589,26 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         if run_count <= 0:
             errors.append(f"{entry_id}: run_count must be positive")
 
+    release_snapshot_results: list[dict[str, Any]] = []
+    raw_release_snapshots = registry.get("release_snapshots", [])
+    if raw_release_snapshots:
+        if not isinstance(raw_release_snapshots, list):
+            errors.append("release_snapshots must be a list")
+        else:
+            seen_snapshot_ids: set[str] = set()
+            for raw_snapshot in raw_release_snapshots:
+                if not isinstance(raw_snapshot, dict):
+                    errors.append("every release snapshot must be an object")
+                    continue
+                snapshot_id = str(raw_snapshot.get("id", "<missing-id>"))
+                if snapshot_id in seen_snapshot_ids:
+                    errors.append(f"{snapshot_id}: duplicate release snapshot id")
+                    continue
+                seen_snapshot_ids.add(snapshot_id)
+                release_snapshot_results.append(
+                    _validate_release_snapshot(raw_snapshot, entries_by_id, summaries_by_id, registry_path, errors)
+                )
+
     unmet_v0_requirements: list[str] = []
     if len(current_model_families) < min_model_families:
         unmet_v0_requirements.append(
@@ -416,6 +622,9 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         unmet_v0_requirements.append("missing current public tool-agent baseline")
     if min_runs < 2:
         warnings.append("v0 min_runs_per_serious_baseline should be at least 2")
+    v0_release_snapshot_ready = any(
+        item["id"] == "v0.0" and item["ready"] for item in release_snapshot_results
+    )
 
     return {
         "passed": not errors,
@@ -429,6 +638,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         "has_current_public_tool_agent_baseline": has_tool_agent_baseline,
         "v0_baseline_ready": not unmet_v0_requirements,
         "unmet_v0_requirements": unmet_v0_requirements,
+        "release_snapshots": release_snapshot_results,
+        "v0_release_snapshot_ready": v0_release_snapshot_ready,
     }
 
 

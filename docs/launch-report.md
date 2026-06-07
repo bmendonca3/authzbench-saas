@@ -1,6 +1,9 @@
 # AuthZBench-SaaS v0.0 Launch Report
 
-Status: v0.0 released; not a hosted leaderboard
+Status: v0.0 released; not a hosted leaderboard. Historical launch report for
+the frozen 46-task v0.0 snapshot; the v1-prep branch has since expanded the
+live public split to 49 tasks, so the baseline rows below are stale for current
+v1 comparison until rerun.
 
 ## Summary
 
@@ -14,7 +17,7 @@ The benchmark is designed around a narrow question:
 > backend proof for a SaaS authorization bug, while staying quiet when the
 > control path is secure?
 
-The current public split contains:
+The v0.0 public split contained:
 
 - 6 Dockerized target apps
 - 46 seeded tasks
@@ -28,8 +31,8 @@ The current public split contains:
 - alpha runner correlation into per-task `target-requests.jsonl` artifacts when
   `--target-log-dir` is supplied
 - scripted baseline agent for harness validation
-- a current deterministic scripted harness summary for all 46 public tasks
-- five repeated current public model/agent families, including one live HTTP
+- a deterministic scripted harness summary for all 46 public tasks
+- five repeated v0.0 public model/agent families, including one live HTTP
   tool-agent family
 - stale Kiro no-tools and live HTTP tool-agent snapshots from the previous
   44-task split
@@ -214,19 +217,19 @@ including secure controls. Panel review classified it as deterministic harness
 evidence, not a v0 tool-agent baseline.
 
 The Kiro snapshots are public-split baselines, not private leaderboard results.
-Qwen, Haiku, and Sonnet now have two current 46-task no-tools runs. Opus and
-DeepSeek remain repeated 44-task public model baseline families. The stale
+Qwen, Haiku, Sonnet, and GLM have two frozen v0.0 46-task no-tools runs. Opus
+and DeepSeek remain repeated 44-task public model baseline families. These
 families are useful historical diagnostics, but they are public-only no-tools
-runs, stale against the current split, and not leaderboard eligible.
+runs, stale against the current 49-task split, and not leaderboard eligible.
 
-The current Kiro live HTTP tool-agent baseline uses `claude-sonnet-4.6` to plan
-per-task HTTP probes against live Docker targets on the 46-task public split.
-Both current runs produced 46/46 model-tool plan artifacts, 46/46 tool-probe
-artifacts, and 46/46 target-request correlation. Each run passed 27 of 46
-tasks, replay-proved 14 of 19 vulnerable tasks, had zero control false reports,
-and had boundary reasoning pass rate `0.0`. It is useful repeated current
-public tool-agent evidence, but it is not private-holdout or hosted leaderboard
-evidence.
+The frozen v0.0 Kiro live HTTP tool-agent baseline uses `claude-sonnet-4.6` to
+plan per-task HTTP probes against live Docker targets on the 46-task public
+split. Both runs produced 46/46 model-tool plan artifacts, 46/46 tool-probe
+artifacts, and 46/46 target-request correlation. Each run passed 27 of 46 tasks,
+replay-proved 14 of 19 vulnerable tasks, had zero control false reports, and had
+boundary reasoning pass rate `0.0`. It is useful repeated v0.0 public
+tool-agent evidence, but it is not current v1, private-holdout, or hosted
+leaderboard evidence.
 
 The current Haiku runs proved 1-5 of 19 vulnerable replays, but no vulnerable
 task fully passed because boundary reasoning stayed at `0.0`; run 1 also had
@@ -249,10 +252,10 @@ positives but proved no vulnerable exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks and reports `v0_baseline_ready: true` after the GLM repeat
-restored five current repeated model/agent families on the 46-task split. That
-is a baseline sub-gate claim, not a hosted-leaderboard or v1-scale community
-benchmark claim.
+consistency checks, reports `v0_baseline_ready: false` for the live 49-task
+split, and reports `v0_release_snapshot_ready: true` for the frozen v0.0
+46-task release snapshot. That is a historical release-snapshot claim, not a
+current v1, hosted-leaderboard, or community-scale benchmark claim.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

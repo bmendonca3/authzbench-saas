@@ -291,19 +291,25 @@ def validate_v0_release() -> dict[str, Any]:
     )
 
     baseline_result = validate_registry(ROOT / "baselines" / "baseline-registry.json")
-    baseline_unmet = list(baseline_result["errors"]) + list(baseline_result["unmet_v0_requirements"])
-    if not baseline_result["v0_baseline_ready"]:
-        baseline_unmet.append("baseline registry reports v0_baseline_ready=false")
+    baseline_unmet = list(baseline_result["errors"])
+    has_v0_baseline_evidence = bool(baseline_result["v0_baseline_ready"]) or bool(
+        baseline_result.get("v0_release_snapshot_ready")
+    )
+    if not has_v0_baseline_evidence:
+        baseline_unmet.extend(baseline_result["unmet_v0_requirements"])
+        baseline_unmet.append("baseline registry has neither current v0 baselines nor a ready v0.0 release snapshot")
     _add_gate(
         gates,
         "baseline_credibility",
-        baseline_result["passed"] and baseline_result["v0_baseline_ready"],
+        baseline_result["passed"] and has_v0_baseline_evidence,
         {
             "baseline_count": baseline_result["baseline_count"],
             "current_public_model_family_count": baseline_result["current_public_model_family_count"],
             "repeated_model_baseline_count": baseline_result["repeated_model_baseline_count"],
             "has_current_public_tool_agent_baseline": baseline_result["has_current_public_tool_agent_baseline"],
             "v0_baseline_ready": baseline_result["v0_baseline_ready"],
+            "v0_release_snapshot_ready": baseline_result.get("v0_release_snapshot_ready", False),
+            "release_snapshots": baseline_result.get("release_snapshots", []),
         },
         unmet=baseline_unmet,
     )

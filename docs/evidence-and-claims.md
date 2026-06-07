@@ -8,12 +8,13 @@ cards, LinkedIn posts, or external-review notes.
 
 | Evidence | What It Proves | What It Does Not Prove |
 | --- | --- | --- |
-| 46 public tasks across 6 synthetic SaaS apps | the public scaffold covers multiple SaaS authorization surfaces, including the first project-management multi-step workflow wave | public-split scores are private leaderboard scores |
+| v0.0 release snapshot: 46 public tasks across 6 synthetic SaaS apps | the v0.0 public scaffold covers multiple SaaS authorization surfaces, including the first project-management multi-step workflow wave | that future expanded public splits have comparable current baselines before rerun |
+| v1-prep public split: 49 public tasks across 6 synthetic SaaS apps | the first billing entitlement expansion slice is present in public manifests and controls | v1 release readiness, current v1 model comparisons, or hosted leaderboard operation |
 | deterministic scorer replay | submitted evidence can be checked against backend behavior | the agent necessarily interacted with a live target unless request-log correlation is present |
 | secure controls and authorized-allow controls | the benchmark can penalize false positives and over-reporting | all real SaaS false-positive patterns are covered |
-| five repeated current 46-task public model/agent families | four no-tools model families plus one live HTTP tool-agent family have current public-split replay evidence | broad model rankings, private-holdout performance, or leaderboard eligibility |
-| two current 46-task public live HTTP tool-agent runs | the tool-agent harness can repeatedly emit per-task plan/probe artifacts and target-request correlation on the current public split | private-holdout tool-agent performance or hosted leaderboard readiness |
-| stale 44-task public model/tool-agent baselines | the harness has historical comparison artifacts and visible failure modes | current 46-task model rankings or leaderboard eligibility |
+| five repeated v0.0 46-task public model/agent families | four no-tools model families plus one live HTTP tool-agent family have v0.0 public-split replay evidence | broad model rankings, private-holdout performance, v1 comparability after task expansion, or leaderboard eligibility |
+| two v0.0 46-task public live HTTP tool-agent runs | the tool-agent harness can repeatedly emit per-task plan/probe artifacts and target-request correlation on the v0.0 public split | private-holdout tool-agent performance, v1 comparability after task expansion, or hosted leaderboard readiness |
+| stale public model/tool-agent baselines | the harness has historical comparison artifacts and visible failure modes | current model rankings or leaderboard eligibility |
 | target-side request logs | live target interaction can be observed and correlated when configured | target logs alone prove the exploit; replay remains authoritative |
 | historical workspace-separated private summaries | maintainers exercised rendered-context-only evaluation without publishing holdout internals | host-level isolation or current leaderboard eligibility |
 | one historical private-holdout leaderboard row | the stable schema can validate its redacted source and repeated-run provenance | current eligibility, because its fingerprint was reconstructed after execution |
@@ -27,6 +28,7 @@ Use:
 
 - `released v0.0 benchmark artifact`
 - `v0.0 release evidence`
+- `v0.0 release snapshot`
 - `v1-prep branch`
 - `v1 readiness checklist`
 - `public-split baseline`

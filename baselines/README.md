@@ -11,47 +11,48 @@ python3 scripts/validate_baseline_registry.py
 ```
 
 The registry is an honesty gate. It separates current public-split runs from
-stale public snapshots and legacy snapshots, harness checks from model
-baselines, and one-off runs from leaderboard-eligible evidence. After task or
-scorer changes, it can pass consistency validation while separately reporting
-whether `v0_baseline_ready` is true; that means the baseline files are
+stale public snapshots, frozen release snapshots, and legacy snapshots, harness
+checks from model baselines, and one-off runs from leaderboard-eligible
+evidence. After task or scorer changes, it can pass consistency validation while
+separately reporting whether `v0_baseline_ready` or
+`v0_release_snapshot_ready` is true; that means the baseline files are
 well-labeled before any release claim is made.
 
-## Current And Stale Baselines
+## Current, Frozen, And Stale Baselines
 
-- `scripted-baseline-public-46-summary.json`: current deterministic 46-task
-  harness sanity-check baseline.
+- `scripted-baseline-public-46-summary.json`: frozen v0.0 deterministic
+  46-task harness sanity-check baseline.
 - `kiro-qwen3-coder-next-current-public-46-run1-summary.json` and
-  `kiro-qwen3-coder-next-current-public-46-run2-summary.json`: repeated
-  current 46-task public split no-tools Qwen runs through the Kiro adapter.
-  These count as one current repeated public model-family baseline, but they are
-  not private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-qwen3-coder-next-current-public-46-run2-summary.json`: repeated frozen
+  v0.0 46-task public split no-tools Qwen runs through the Kiro adapter. These
+  count as one v0.0 repeated public model-family baseline, but they are not
+  current v1, private-holdout, tool-agent, or leaderboard-eligible submissions.
 - `kiro-claude-haiku-4.5-current-public-46-run1-summary.json` and
-  `kiro-claude-haiku-4.5-current-public-46-run2-summary.json`: repeated
-  current 46-task public split no-tools Haiku runs through the Kiro adapter.
-  These count as one current repeated public model-family baseline, but they
-  are not private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-claude-haiku-4.5-current-public-46-run2-summary.json`: repeated frozen
+  v0.0 46-task public split no-tools Haiku runs through the Kiro adapter. These
+  count as one v0.0 repeated public model-family baseline, but they are not
+  current v1, private-holdout, tool-agent, or leaderboard-eligible submissions.
   The paired runs span adjacent chart-only commits; task, app, scorer, runner,
   and harness behavior did not change between the paired SHAs.
 - `kiro-claude-sonnet-4.6-current-public-46-run1-summary.json` and
-  `kiro-claude-sonnet-4.6-current-public-46-run2-summary.json`: repeated
-  current 46-task public split no-tools Sonnet runs through the Kiro adapter.
-  These count as one current repeated public model-family baseline, but they
-  are not private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-claude-sonnet-4.6-current-public-46-run2-summary.json`: repeated frozen
+  v0.0 46-task public split no-tools Sonnet runs through the Kiro adapter. These
+  count as one v0.0 repeated public model-family baseline, but they are not
+  current v1, private-holdout, tool-agent, or leaderboard-eligible submissions.
 - `kiro-glm-5-current-public-46-run1-summary.json` and
-  `kiro-glm-5-current-public-46-run2-summary.json`: repeated current 46-task
-  public split no-tools GLM runs through the Kiro adapter. These count as one
-  current repeated public model-family baseline, but they are not
-  private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-glm-5-current-public-46-run2-summary.json`: repeated frozen v0.0
+  46-task public split no-tools GLM runs through the Kiro adapter. These count
+  as one v0.0 repeated public model-family baseline, but they are not current
+  v1, private-holdout, tool-agent, or leaderboard-eligible submissions.
 - `kiro-live-tool-agent-sonnet-current-public-46-summary.json` and
   `kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json`: repeated
-  current 46-task public split live HTTP tool-agent runs using
+  frozen v0.0 46-task public split live HTTP tool-agent runs using
   `claude-sonnet-4.6` through the Kiro adapter. Both runs write one model-tool
   plan artifact and one tool-probe artifact per task, correlate target-side
   requests for all 46 tasks, and share the same public task/scoring fingerprint.
   They span adjacent public-doc/test/tool-agent-tooling commits rather than
-  identical SHAs, so they remain public-split evidence only. They are not
-  private-holdout or leaderboard-eligible evidence.
+  identical SHAs, so they remain frozen v0.0 public-split evidence only. They
+  are not current v1, private-holdout, or leaderboard-eligible evidence.
 - `scripted-baseline-summary.json`: earlier deterministic 44-task harness
   sanity-check baseline.
 - `live-scripted-baseline-summary.json`: deterministic baseline that exercises

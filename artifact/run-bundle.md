@@ -68,8 +68,8 @@ Before accepting a repeated row, check:
   benchmark fingerprint, agent, model, and harness type expected for comparison;
 - the primary run ID appears in `source_run_ids`;
 - `variance_or_ci` matches the configured `variance_metric`;
-- stale 44-task or legacy 15-task artifacts are not mixed with current 46-task
-  evidence.
+- stale 44-task, frozen v0.0 46-task, or legacy 15-task artifacts are not mixed
+  with current v1 evidence.
 
 ## Exclusions
 

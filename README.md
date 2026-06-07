@@ -35,9 +35,9 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Area | Current state |
 | --- | --- |
 | Public apps | 6 synthetic SaaS targets |
-| Public tasks | 46 total: 19 vulnerable, 27 secure controls |
-| Control mix | 16 denial controls, 11 authorized-allow controls |
-| Baselines | 5 repeated current model/agent families, including one live HTTP tool-agent family |
+| Public tasks | 49 total: 20 vulnerable, 29 secure controls |
+| Control mix | 17 denial controls, 12 authorized-allow controls |
+| Baselines | v0.0 46-task snapshot preserved; current 49-task reruns pending |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
@@ -50,12 +50,12 @@ part of the contamination-control design, not a missing file.
 
 - 6 local SaaS fixtures: project management, billing, support, file sharing,
   API tokens, and audit settings
-- 46 public task manifests with seeded tenants, users, roles, objects, tokens,
+- 49 public task manifests with seeded tenants, users, roles, objects, tokens,
   scopes, routes, and controls
 - deterministic scorer-owned backend replay
 - Docker targets with request-log correlation for live HTTP agents
-- repeated public baseline summaries for Kiro no-tools model runs and one Kiro
-  live HTTP tool-agent family
+- frozen v0.0 public baseline summaries for Kiro no-tools model runs and one
+  Kiro live HTTP tool-agent family, stale for current v1 comparison
 - protected private-holdout summaries published only as redacted aggregate
   evidence
 - leaderboard-submission schema, source-summary validation, benchmark
@@ -72,8 +72,8 @@ Supported claims:
 
 - AuthZBench-SaaS is a released v0.0 artifact for SaaS authorization-agent
   evaluation.
-- The current public split has repeated baseline evidence across 5 current
-  model/agent families.
+- The v0.0 public split has repeated baseline evidence across 5 model/agent
+  families.
 - The scorer can verify backend-replayable evidence and false-positive behavior.
 - Maintainer-only private-holdout evidence exists without publishing private
   task bodies, routes, seeds, or oracles.
@@ -230,7 +230,7 @@ release-ranking metric. See [`docs/score-policy.md`](docs/score-policy.md) and
 The baseline registry lives at
 [`baselines/baseline-registry.json`](baselines/baseline-registry.json).
 
-Current public-split evidence:
+v0.0 public-split evidence:
 
 - deterministic scripted harness: 46/46 public tasks
 - Kiro `qwen3-coder-next`: two no-tools public runs
@@ -244,8 +244,10 @@ Important interpretation:
 
 - Public-split baselines are useful for methodology and harness comparison.
 - They are not private-holdout leaderboard rankings.
-- Current no-tools and tool-agent runs still show weak boundary reasoning on
-  vulnerable tasks, even when exploit replay succeeds.
+- After public task expansion, these 46-task entries remain v0.0 historical
+  evidence but must be rerun before current/v1 comparison.
+- The frozen v0.0 no-tools and tool-agent runs showed weak boundary reasoning on
+  vulnerable tasks, even when exploit replay succeeded.
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and

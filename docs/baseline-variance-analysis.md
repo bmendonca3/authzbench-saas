@@ -1,13 +1,14 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from current public 46-task baseline
-artifacts.
+Status: descriptive two-run analysis from v0.0 public 46-task baseline
+artifacts. The live checkout has expanded to 49 public tasks, so these entries
+are frozen v0.0 historical evidence until rerun.
 
 This file uses only tracked public-safe summaries named by
 `baselines/baseline-registry.json` entries with
-`release_suitability: current_public_split`. Each row below has exactly two
-runs. These ranges are descriptive stability checks, not confidence intervals
-and not private-holdout leaderboard evidence.
+`release_suitability: current_public_split` at the time this file was computed.
+Each row below has exactly two runs. These ranges are descriptive stability
+checks, not confidence intervals and not private-holdout leaderboard evidence.
 
 ## Artifact Set
 
@@ -31,23 +32,23 @@ and not private-holdout leaderboard evidence.
 
 ## Interpretation
 
-The repeated current public runs show stable false-positive behavior, stable
+The repeated v0.0 public runs show stable false-positive behavior, stable
 authorized-allow behavior, and zero vulnerable full-pass counts across these
 families. Exploit proof varies meaningfully for several no-tools families:
 Claude Haiku and Claude Sonnet each span roughly 0.21 exploit-proven success
 rate, GLM spans roughly 0.16, and Qwen spans roughly 0.05. The live tool-agent
 runs are stable on exploit proof and target-request coverage in this pair.
 
-The central current research signal is not a model ranking. It is the gap
-between exploit replay and boundary reasoning: the live tool-agent proves 14 of
-19 vulnerable public tasks in both runs (`0.7368` exploit-proven success), yet
-still records zero vulnerable full passes because boundary reasoning remains at
+The central v0.0 research signal is not a model ranking. It is the gap between
+exploit replay and boundary reasoning: the live tool-agent proves 14 of 19
+vulnerable public tasks in both runs (`0.7368` exploit-proven success), yet still
+records zero vulnerable full passes because boundary reasoning remains at
 `0.0000`.
 
 ## Reproduction Notes
 
 The table was recomputed by reading `baselines/baseline-registry.json`, selecting
-the five `current_public_split` entries, and loading each entry's
+the five entries in the `v0.0` release snapshot, and loading each entry's
 `run_artifacts` from `baselines/`.
 
 Useful checks:
@@ -58,11 +59,12 @@ python3 - <<'PY'
 import json
 from pathlib import Path
 registry = json.loads(Path("baselines/baseline-registry.json").read_text())
-print(sum(
-    1
-    for entry in registry["baselines"]
-    if entry.get("release_suitability") == "current_public_split"
-))
+snapshot = next(item for item in registry["release_snapshots"] if item["id"] == "v0.0")
+print(len([
+    baseline_id
+    for baseline_id in snapshot["baseline_ids"]
+    if baseline_id != "scripted-sanity-public-46"
+]))
 PY
 ```
 
@@ -70,4 +72,5 @@ Expected count: `5`.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,
 or run-artifact change. Mark older 46-task ranges stale before comparing them
-with a changed task set.
+with a changed task set; the `v0.0` release snapshot remains historical evidence,
+not current/v1 comparison evidence.

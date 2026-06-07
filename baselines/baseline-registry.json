@@ -1,38 +1,62 @@
 {
   "schema_version": "baseline-registry-v1",
   "public_split": {
-    "task_count": 46,
-    "vulnerable_task_count": 19,
-    "control_task_count": 27,
-    "denial_control_task_count": 16,
-    "authorized_allow_control_task_count": 11
+    "task_count": 49,
+    "vulnerable_task_count": 20,
+    "control_task_count": 29,
+    "denial_control_task_count": 17,
+    "authorized_allow_control_task_count": 12
   },
   "v0_requirements": {
     "min_real_model_families": 5,
     "min_runs_per_serious_baseline": 2,
     "requires_tool_agent_baseline": true
   },
+  "release_snapshots": [
+    {
+      "id": "v0.0",
+      "public_split": {
+        "task_count": 46,
+        "vulnerable_task_count": 19,
+        "control_task_count": 27,
+        "denial_control_task_count": 16,
+        "authorized_allow_control_task_count": 11
+      },
+      "baseline_ids": [
+        "scripted-sanity-public-46",
+        "kiro-qwen3-coder-next-current-public-46",
+        "kiro-claude-haiku-4-5-current-public-46",
+        "kiro-claude-sonnet-4-6-current-public-46",
+        "kiro-glm-5-current-public-46",
+        "kiro-live-tool-agent-sonnet-current-public-46"
+      ],
+      "min_real_model_families": 5,
+      "min_runs_per_serious_baseline": 2,
+      "requires_tool_agent_baseline": true,
+      "notes": "Frozen v0.0 public baseline evidence. These IDs remain auditable as the v0.0 release snapshot even after future public task expansion marks them stale for current comparisons."
+    }
+  ],
   "baselines": [
     {
       "id": "scripted-sanity-public-46",
       "summary_path": "scripted-baseline-public-46-summary.json",
       "kind": "harness_check",
-      "release_suitability": "current_public_harness_check",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 1,
       "expected_harness_type": "scripted",
       "expected_agent": "scripted_baseline_agent",
       "expected_model": "deterministic-script",
       "expected_task_count": 46,
-      "requires_rerun_before_v0": false,
-      "notes": "Current deterministic harness sanity check for the 46-task public split. Useful for validating scorer and manifests, but not a model result."
+      "requires_rerun_before_v0": true,
+      "notes": "Frozen v0.0 deterministic harness sanity check for the 46-task public split. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence."
     },
     {
       "id": "kiro-qwen3-coder-next-current-public-46",
       "summary_path": "kiro-qwen3-coder-next-current-public-46-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-qwen",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -43,15 +67,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "qwen3-coder-next",
       "expected_task_count": 46,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 46-task public split no-tools Qwen baseline through the Kiro adapter. Public-split evidence only; not private-holdout or leaderboard eligible."
+      "requires_rerun_before_v0": true,
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools Qwen baseline through the Kiro adapter. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence."
     },
     {
       "id": "kiro-claude-haiku-4-5-current-public-46",
       "summary_path": "kiro-claude-haiku-4.5-current-public-46-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-haiku",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -62,15 +86,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-haiku-4.5",
       "expected_task_count": 46,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 46-task public split no-tools Claude Haiku baseline through the Kiro adapter. The paired runs span adjacent chart-only commits; public tasks, apps, scorer, runner, and harness behavior did not change. Public-split evidence only; not private-holdout or leaderboard eligible."
+      "requires_rerun_before_v0": true,
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools Claude Haiku baseline through the Kiro adapter. The paired runs span adjacent chart-only commits; public tasks, apps, scorer, runner, and harness behavior did not change. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence."
     },
     {
       "id": "kiro-claude-sonnet-4-6-current-public-46",
       "summary_path": "kiro-claude-sonnet-4.6-current-public-46-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-claude-sonnet",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -81,15 +105,15 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 46,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 46-task public split no-tools Claude Sonnet baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Public-split evidence only; not private-holdout or leaderboard eligible."
+      "requires_rerun_before_v0": true,
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools Claude Sonnet baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence."
     },
     {
       "id": "kiro-glm-5-current-public-46",
       "summary_path": "kiro-glm-5-current-public-46-run1-summary.json",
       "kind": "model_baseline",
       "model_family": "kiro-glm",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "run_artifacts": [
@@ -100,23 +124,23 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "glm-5",
       "expected_task_count": 46,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 46-task public split no-tools GLM baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Public-split evidence only; not private-holdout or leaderboard eligible."
+      "requires_rerun_before_v0": true,
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools GLM baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence."
     },
     {
       "id": "kiro-live-tool-agent-sonnet-current-public-46",
       "summary_path": "kiro-live-tool-agent-sonnet-current-public-46-summary.json",
       "kind": "tool_agent_baseline",
       "model_family": "kiro-live-tool-agent-sonnet",
-      "release_suitability": "current_public_split",
+      "release_suitability": "current_public_stale",
       "leaderboard_eligible": false,
       "run_count": 2,
       "expected_harness_type": "tool-agent",
       "expected_agent": "kiro_live_tool_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 46,
-      "requires_rerun_before_v0": false,
-      "notes": "Repeated current 46-task public split live HTTP tool-agent baseline through the Kiro adapter. Both runs include one model-plan artifact and one tool-probe artifact per task plus full target-request correlation. The paired runs span adjacent public-doc/test/tool-agent-tooling commits rather than identical SHAs; public tasks, apps, score policy, evidence contract, and task fingerprint match. Public-split evidence only; not private-holdout or leaderboard eligible.",
+      "requires_rerun_before_v0": true,
+      "notes": "Frozen v0.0 repeated 46-task public split live HTTP tool-agent baseline through the Kiro adapter. Both runs include one model-plan artifact and one tool-probe artifact per task plus full target-request correlation. The paired runs span adjacent public-doc/test/tool-agent-tooling commits rather than identical SHAs; public tasks, apps, score policy, evidence contract, and task fingerprint match. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence.",
       "run_artifacts": [
         "kiro-live-tool-agent-sonnet-current-public-46-summary.json",
         "kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json"
