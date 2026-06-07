@@ -124,7 +124,7 @@ class ValidatePublicScriptTests(unittest.TestCase):
             commands,
         )
 
-    def test_validate_runs_v1_readiness_gate_in_allow_incomplete_mode(self) -> None:
+    def test_validate_runs_v1_readiness_public_expected_output_gate(self) -> None:
         with (
             patch.object(validate_public, "run") as run,
             patch.object(validate_public, "scan_privacy"),
@@ -134,7 +134,14 @@ class ValidatePublicScriptTests(unittest.TestCase):
 
         commands = [call.args[0] for call in run.call_args_list]
         self.assertIn(
-            [validate_public.sys.executable, "scripts/validate_v1_readiness.py", "--allow-incomplete"],
+            [
+                validate_public.sys.executable,
+                "scripts/validate_v1_readiness.py",
+                "--allow-incomplete",
+                "--public-view",
+                "--expected-output",
+                "artifact/expected-output/v1-readiness-public-view.json",
+            ],
             commands,
         )
 

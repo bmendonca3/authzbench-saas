@@ -673,7 +673,11 @@ def _benchmark_source_sha_from_release_evidence(release_evidence_path: Path | No
     return value if _sha(value) else None
 
 
-def validate_v1_readiness(release_evidence_path: Path | None = None) -> dict[str, Any]:
+def validate_v1_readiness(
+    release_evidence_path: Path | None = None,
+    *,
+    public_view: bool = False,
+) -> dict[str, Any]:
     gates: list[dict[str, Any]] = []
     target_sha = _current_commit_sha()
     benchmark_source_sha = _benchmark_source_sha_from_release_evidence(release_evidence_path) or target_sha
@@ -682,7 +686,18 @@ def validate_v1_readiness(release_evidence_path: Path | None = None) -> dict[str
     registry_result = validate_registry()
     public_task_count = int(manifest_result["manifest_count"])
     vulnerable_task_count = int(manifest_result["vulnerable_count"])
-    rotation_result = _validate_private_rotation_metadata()
+    if public_view:
+        rotation_result = {
+            "passed": False,
+            "pack_ids": [],
+            "roles": [],
+            "validated_private_task_count": 0,
+            "active_pack_id": None,
+            "active_pack_fingerprint_sha256": None,
+            "unmet": ["private holdout rotation is intentionally not inspected in public view"],
+        }
+    else:
+        rotation_result = _validate_private_rotation_metadata()
     validated_private_holdout_task_count = int(rotation_result["validated_private_task_count"])
     active_private_pack_fingerprint = rotation_result.get("active_pack_fingerprint_sha256")
     if not isinstance(active_private_pack_fingerprint, str):
@@ -903,9 +918,34 @@ def main() -> int:
         type=Path,
         help="External JSON release-candidate evidence file for strict v1 readiness validation.",
     )
+    parser.add_argument(
+        "--public-view",
+        action="store_true",
+        help="Ignore ignored/private checkout state so public expected output is deterministic.",
+    )
+    parser.add_argument(
+        "--expected-output",
+        type=Path,
+        help="Require the rendered readiness JSON to match this expected-output fixture exactly.",
+    )
     args = parser.parse_args()
-    result = validate_v1_readiness(args.release_evidence)
+    if args.public_view and args.release_evidence is not None:
+        parser.error("--public-view cannot be combined with --release-evidence")
+    result = validate_v1_readiness(args.release_evidence, public_view=args.public_view)
     print(dump_json(result))
+    if args.expected_output is not None:
+        expected_path = args.expected_output if args.expected_output.is_absolute() else ROOT / args.expected_output
+        try:
+            expected = load_json(expected_path)
+        except Exception as exc:
+            print(f"failed to load expected output {expected_path}: {exc}", file=sys.stderr)
+            return 1
+        if expected != result:
+            print(
+                f"v1 readiness output does not match expected fixture: {expected_path}",
+                file=sys.stderr,
+            )
+            return 1
     if args.allow_incomplete:
         return 0
     return 0 if result["v1_ready"] else 1

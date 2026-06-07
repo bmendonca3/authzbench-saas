@@ -7,6 +7,8 @@ Stable signals:
 - baseline registry validates
 - protected redacted evidence validates
 - v0 release gates pass
+- public-view v1 readiness matches the tracked expected-output fixture and does
+  not claim v1 readiness
 - task-quality matrix regeneration has no tracked diff
 - public chart regeneration has no tracked diff
 - leaderboard examples validate

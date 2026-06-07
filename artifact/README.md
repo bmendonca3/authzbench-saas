@@ -9,8 +9,8 @@ here.
 
 - `install.md`: local setup and prerequisites.
 - `run-public-validation.sh`: bounded public validation entrypoint.
-- `expected-output/`: reserved for public-safe expected outputs after the
-  validation packet is frozen.
+- `expected-output/`: public-safe expected outputs for stable validation
+  signals, including the deterministic public view of v1 readiness.
 - `run-bundle.md`: guidance for packaging and checking submitted run evidence.
 
 ## Public Validation
@@ -35,6 +35,22 @@ Paper table reproducibility is checked separately:
 python3 scripts/generate_paper_tables.py
 git diff --exit-code -- paper/shared
 ```
+
+The public v1-readiness snapshot is checked with:
+
+```bash
+python3 scripts/validate_v1_readiness.py \
+  --allow-incomplete \
+  --public-view \
+  --expected-output artifact/expected-output/v1-readiness-public-view.json
+```
+
+`--public-view` intentionally ignores ignored/private checkout state. This keeps
+the public artifact result reproducible in a clean clone and prevents a local
+private pack from changing the public expected output. The expected fixture
+must continue to report `v1_ready: false` until the public claim boundary and
+tracked artifact state genuinely change. Maintainer-only strict readiness uses
+the private checkout and external release evidence instead.
 
 The expected-output fixtures in `artifact/expected-output/` summarize stable
 public-safe signals only. They are not raw run bundles.

@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.validate_v1_readiness import (
     _benchmark_source_compatibility_errors,
@@ -76,6 +77,45 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn('"v1_ready": false', result.stdout)
         self.assertEqual(result.stderr, "")
+
+    def test_public_view_ignores_private_checkout_rotation_state(self) -> None:
+        with patch(
+            "scripts.validate_v1_readiness._validate_private_rotation_metadata"
+        ) as rotation_validator:
+            result = validate_v1_readiness(public_view=True)
+
+        rotation_validator.assert_not_called()
+        gates = {gate["id"]: gate for gate in result["gates"]}
+        rotation_gate = gates["rotating_private_holdouts_implemented"]
+        self.assertFalse(rotation_gate["passed"])
+        self.assertEqual(
+            rotation_gate["unmet"],
+            ["private holdout rotation is intentionally not inspected in public view"],
+        )
+        self.assertIn("validated_private_holdout_task_count=0", rotation_gate["evidence"])
+
+    def test_expected_output_fixture_mismatch_fails_even_when_incomplete_is_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            fixture = Path(tmp) / "expected.json"
+            fixture.write_text('{"v1_ready": true}\n', encoding="utf-8")
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/validate_v1_readiness.py",
+                    "--allow-incomplete",
+                    "--public-view",
+                    "--expected-output",
+                    str(fixture),
+                ],
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('"v1_ready": false', result.stdout)
+        self.assertIn("does not match expected fixture", result.stderr)
 
     def test_hosted_smoke_requires_structured_passed_result(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

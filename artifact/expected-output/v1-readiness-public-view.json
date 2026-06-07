@@ -1,0 +1,127 @@
+{
+  "gate_count": 11,
+  "gates": [
+    {
+      "evidence": [
+        "public_task_count=49",
+        "vulnerable_task_count=20",
+        "current_public_model_family_count=6",
+        "has_current_public_tool_agent_baseline=True"
+      ],
+      "id": "stable_v1_prep_public_evidence",
+      "passed": true,
+      "unmet": []
+    },
+    {
+      "evidence": [
+        "docs/reviews/external-review-packet.md",
+        "docs/reviews/external-review-summary.md",
+        "review_lanes_present=3"
+      ],
+      "id": "external_review_packet_ready",
+      "passed": true,
+      "unmet": []
+    },
+    {
+      "evidence": [
+        "docs/reviews/external-review-summary.md must record real review dates, reviewed artifacts, findings or no-finding dispositions, and decisions",
+        "docs/reviews/external-review-summary.json"
+      ],
+      "id": "external_review_completed",
+      "passed": false,
+      "unmet": [
+        "independent external review lanes are not complete",
+        "missing structured evidence: docs/reviews/external-review-summary.json"
+      ]
+    },
+    {
+      "evidence": [
+        "docs/v1-community-submission-governance.md"
+      ],
+      "id": "submission_governance_spec_defined",
+      "passed": true,
+      "unmet": []
+    },
+    {
+      "evidence": [
+        "artifact/submission-runner-smoke.json"
+      ],
+      "id": "hosted_or_containerized_submission_execution",
+      "passed": false,
+      "unmet": [
+        "missing structured evidence: artifact/submission-runner-smoke.json"
+      ]
+    },
+    {
+      "evidence": [
+        "tasks_private/holdout/rotation-metadata.json",
+        "private_holdout_pack_ids=[]",
+        "private_holdout_pack_roles=[]",
+        "active_private_pack_id=None",
+        "active_private_pack_fingerprint_sha256=None",
+        "validated_private_holdout_task_count=0"
+      ],
+      "id": "rotating_private_holdouts_implemented",
+      "passed": false,
+      "unmet": [
+        "private holdout rotation is intentionally not inspected in public view"
+      ]
+    },
+    {
+      "evidence": [
+        "eligible_private_tool_agent_rows=[]"
+      ],
+      "id": "repeated_private_tool_agent_evidence",
+      "passed": false,
+      "unmet": [
+        "no repeated eligible private-holdout tool-agent leaderboard row exists"
+      ]
+    },
+    {
+      "evidence": [
+        "eligible_private_no_tools_rows=[]"
+      ],
+      "id": "repeated_private_no_tools_evidence",
+      "passed": false,
+      "unmet": [
+        "no repeated eligible private-holdout no-tools model leaderboard row exists"
+      ]
+    },
+    {
+      "evidence": [
+        "public_task_count=49",
+        "validated_private_holdout_task_count=0",
+        "total_task_count=49"
+      ],
+      "id": "v1_task_scale",
+      "passed": false,
+      "unmet": [
+        "total public plus private holdout tasks is 49, expected at least 100"
+      ]
+    },
+    {
+      "evidence": [
+        "docs/v1-paper-readiness.json"
+      ],
+      "id": "paper_and_artifact_readiness",
+      "passed": false,
+      "unmet": [
+        "missing structured evidence: docs/v1-paper-readiness.json"
+      ]
+    },
+    {
+      "evidence": [
+        "<external release evidence>"
+      ],
+      "id": "final_release_candidate_validation",
+      "passed": false,
+      "unmet": [
+        "release-candidate evidence must be supplied with --release-evidence"
+      ]
+    }
+  ],
+  "passed": false,
+  "passed_gate_count": 3,
+  "unmet_gate_count": 8,
+  "v1_ready": false
+}

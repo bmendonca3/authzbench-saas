@@ -300,13 +300,21 @@ The goal is complete only when all of these are true:
     summary, and eligible leaderboard evidence;
   - compatibility, retirement trigger, and rerun policy are documented.
 
-- [ ] Add validation for private-pack rotation metadata.
+- [x] Add validation for private-pack rotation metadata.
   Acceptance evidence:
   - validator checks active plus shadow/candidate pack presence and validates
     each declared pack's manifests in maintainer checkout;
   - validator fails clearly in strict mode when packs are absent or ambiguous;
   - public CI can still run without private manifests by using documented
     allow-incomplete behavior where appropriate.
+  Verification:
+  - `scripts/validate_v1_readiness.py` validates safe pack paths, unique pack
+    IDs and task IDs, exactly one active pack, at least one shadow/candidate
+    pack, manifest quality thresholds, and active-pack fingerprinting;
+  - public validation uses `--public-view` so ignored private checkout state
+    cannot change clean-clone expected output;
+  - focused rotation, duplicate-path, fingerprint, and public-view tests pass in
+    `tests/test_v1_readiness_validator.py`.
 
 ### Repeated Private Tool-Agent Evidence Gate
 
@@ -354,6 +362,51 @@ The goal is complete only when all of these are true:
   - new tasks include scorer fixtures or equivalent replay evidence;
   - stale baselines are not compared as current after task/scoring changes.
 
+- [ ] Complete and promote the 54-task support-reassignment expansion wave.
+  This item remains open until every child check below has direct evidence:
+  - [ ] Add one vulnerable ordered workflow that proves a normal same-org
+    support status update followed by an unauthorized agent-driven ticket
+    reassignment through an alias route.
+  - [ ] Add secure same-org agent denial, cross-org denial, secure admin allow,
+    and agent status-only authorized-allow tasks.
+  - [ ] Require backend replay for every step, exact boundary vocabulary for
+    the vulnerable task, `findings: []` for controls, and assignment-state
+    preservation where the task does not authorize reassignment.
+  - [ ] Add target tests for canonical, alias, secure, cross-org, invalid
+    assignee, authorized status-only, and authorized admin behavior.
+  - [ ] Add scorer tests proving missing, reordered, duplicated, or malformed
+    multi-step evidence cannot receive exploit-proof credit.
+  - [ ] Extend container smoke so the new vulnerable, denial, and authorized
+    paths are checked with target-request log correlation.
+  - [ ] Recompute the public split from manifests and verify the expected mix:
+    54 total, 21 vulnerable, 33 controls, 19 denial controls, 14
+    authorized-allow controls, and 2 explicit multi-step workflows.
+  - [ ] Regenerate the task-quality matrix, charts, paper tables, and public
+    expected-output fixtures; generated-file checks must leave no diff.
+  - [ ] Rerun and register a clean deterministic 54-task scripted baseline.
+  - [ ] Mark every 49-task model and tool-agent row stale for current
+    comparison before the task change is published.
+  - [ ] Update status, benchmark-card, evidence/claims, baseline, artifact, and
+    paper language so the 49-task model evidence is described as historical
+    v1-prep evidence pending 54-task reruns.
+  - [ ] Run focused tests, the full unit suite, manifest validation, baseline
+    registry validation, public validation with the scripted baseline,
+    leaderboard validation, compile checks, whitespace checks, and tracked
+    private-path checks.
+  - [ ] Commit as `bmendonca3`, push the intended public branches, and confirm
+    exact-head CI including Docker-backed container smoke.
+
+- [ ] Refresh model evidence after the 54-task promotion.
+  Acceptance evidence:
+  - at least five selected no-tools model families have two runner-emitted
+    54-task summaries each;
+  - at least one live HTTP tool-agent family has two 54-task runs with one
+    plan/probe artifact per task and full target-request correlation;
+  - registry rows use the live fingerprint and are no longer marked stale;
+  - variance, calibration, charts, status, report, and paper wording are
+    refreshed from the 54-task artifacts;
+  - no 49-task result is presented as a current comparison.
+
 - [ ] Expand task families without weakening v0.0 claim boundaries.
   Candidate areas:
   - billing entitlement misuse;
@@ -380,11 +433,17 @@ The goal is complete only when all of these are true:
   - paper readiness evidence `benchmark_source_sha` matches the benchmark
     source SHA in the external release evidence.
 
-- [ ] Add expected outputs or fixture snapshots for the new v1 readiness gates.
+- [x] Add expected outputs or fixture snapshots for the new v1 readiness gates.
   Acceptance evidence:
   - artifact README names how to inspect current v1-prep versus true v1
     readiness;
   - expected output does not imply v1 readiness while incomplete gates remain.
+  Verification:
+  - `artifact/expected-output/v1-readiness-public-view.json` records the
+    deterministic clean-clone state with three passed and eight unmet gates;
+  - `scripts/validate_public.py` requires the current public view to match that
+    fixture exactly;
+  - fixture mismatch exits nonzero even when `--allow-incomplete` is used.
 
 ### Final Release Candidate Gate
 
