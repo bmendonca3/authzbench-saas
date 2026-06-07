@@ -2,6 +2,21 @@
 
 Last updated: 2026-06-06
 
+## v1 Prep Status
+
+v1 work has started as planning and readiness work only. The source of truth for
+the startup gate is `docs/v1-readiness-checklist.md`.
+
+Current v1-prep boundary:
+
+- v0.0 remains frozen historical release evidence.
+- No v1 task-count, scoring, runner, or evidence-contract change has been
+  accepted as current comparable evidence yet.
+- Once v1 task or scoring changes begin, old 46-task baselines must be treated
+  as stale for v1 comparison until rerun.
+- v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
+  community-scale benchmark maturity.
+
 ## Public v0.0 Snapshot
 
 AuthZBench-SaaS currently contains a released v0.0 public split:

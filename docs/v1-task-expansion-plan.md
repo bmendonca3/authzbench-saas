@@ -2,12 +2,18 @@
 
 Status: planning document for post-`v0.0` benchmark growth.
 
+Start here: `docs/v1-readiness-checklist.md` defines the branch discipline,
+task acceptance criteria, stale-baseline policy, validation commands, and rerun
+matrix that must be satisfied before v1 task/scoring changes are treated as
+current comparable evidence.
+
 The v1 target is 100+ total tasks across public and private splits while
 preserving the benchmark's core evidence contract: replayable authorization
 proof, boundary reasoning, and false-positive discipline on secure controls.
 
 ## Expansion Rules
 
+- Treat v0.0 as frozen historical release evidence.
 - Keep vulnerable tasks paired with meaningful secure controls.
 - Preserve app coverage across project management, billing, support, file
   sharing, API tokens, and audit/settings.
@@ -43,6 +49,7 @@ proof, boundary reasoning, and false-positive discipline on secure controls.
 Once task count or scoring semantics change:
 
 - mark old 46-task baselines stale for current comparisons;
+- keep old v0.0 baselines visible as historical evidence only;
 - rerun the scripted harness sanity check;
 - rerun repeated public model/tool-agent families before comparing scores;
 - regenerate public-safe charts and paper tables;

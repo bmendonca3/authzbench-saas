@@ -19,6 +19,7 @@ cards, LinkedIn posts, or external-review notes.
 | one historical private-holdout leaderboard row | the stable schema can validate its redacted source and repeated-run provenance | current eligibility, because its fingerprint was reconstructed after execution |
 | one host-isolated private no-tools leaderboard-candidate row | the stable schema validates runner-emitted fingerprint provenance and release-candidate eligibility | hosted leaderboard operation, broad private model rankings, or private tool-agent eligibility |
 | strict maintainer release gate | the maintainer checkout can report exact pass/fail v0 gates while keeping private holdouts out of public Git history | hosted leaderboard readiness or v1-scale external validation |
+| v1 readiness checklist | v1 task expansion has a documented startup gate, stale-baseline policy, validation commands, and rerun matrix | v1 release readiness, new current model comparisons, or hosted leaderboard operation |
 
 ## Approved Public Framing
 
@@ -26,6 +27,8 @@ Use:
 
 - `released v0.0 benchmark artifact`
 - `v0.0 release evidence`
+- `v1-prep branch`
+- `v1 readiness checklist`
 - `public-split baseline`
 - `protected private-holdout evidence`
 - `deterministic backend replay`
@@ -36,6 +39,7 @@ Avoid:
 - `hosted leaderboard-ready`
 - `validated model benchmark`
 - `v1/community-scale benchmark`
+- `v1 release-ready`
 - `production vulnerability discovery benchmark`
 - `private holdouts are publicly reproducible`
 - `public-split scores are final rankings`
