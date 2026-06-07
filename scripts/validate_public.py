@@ -78,6 +78,12 @@ def run_container_smoke(cwd: Path) -> None:
     if hasattr(os, "getuid") and hasattr(os, "getgid"):
         compose_env.setdefault("AUTHZBENCH_DOCKER_UID", str(os.getuid()))
         compose_env.setdefault("AUTHZBENCH_DOCKER_GID", str(os.getgid()))
+    try:
+        run(["docker", "info"], cwd, env=compose_env)
+    except subprocess.CalledProcessError as exc:
+        raise SystemExit(
+            "docker daemon is required for --include-container-smoke; start Docker and rerun validation"
+        ) from exc
     run(["docker", "compose", "config"], cwd, env=compose_env)
     (cwd / "captures" / "request-logs").mkdir(parents=True, exist_ok=True)
     project_name = f"authzbench-public-smoke-{os.getpid()}"

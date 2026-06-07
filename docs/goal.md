@@ -12,6 +12,67 @@ medium-size public split. It is not a hosted leaderboard or community-scale
 benchmark, and the project should not claim the `v1` label until the scale,
 review, and submission-infrastructure gaps below are closed.
 
+## Active Perfection Pass
+
+Status: active as of 2026-06-07.
+
+This pass exists to make current `main` as trustworthy as possible after the
+first v1-prep task expansion. Do not mark this pass complete until every closed
+item below has direct evidence, and leave externally blocked work open with the
+exact blocker.
+
+### Current Objective
+
+Keep `main` honest as post-v0 active development: frozen v0.0 evidence remains
+auditable, the current 49-task v1-prep split has verified sanity evidence, and
+every remaining v1/community-benchmark gap is visible rather than implied away.
+
+### Verification Checklist
+
+- [x] Active goal/checklist in this file names the exact perfection criteria.
+  Evidence: this section defines the pass objective, verification checklist, and
+  open gaps that must remain unchecked until real evidence exists.
+- [x] Docker smoke fails clearly when Docker CLI exists but the daemon is not
+  available locally.
+  Evidence: direct local call to `run_container_smoke(ROOT)` prints Docker client
+  information and exits with `docker daemon is required for
+  --include-container-smoke; start Docker and rerun validation` when the daemon
+  socket is unavailable.
+- [ ] GitHub Actions no longer relies on the deprecated Node 20 default for
+  JavaScript actions.
+  Blocker: GitHub rejected the workflow-file update because the current token
+  does not have `workflow` scope. Leave this open until the workflow can be
+  updated and a pushed `main` run confirms the warning is gone.
+- [x] Focused tests for changed validation behavior pass.
+  Evidence: `python3 -m unittest discover -s tests -p
+  'test_validate_public.py'` and the full test suite pass.
+- [x] Full public validation without local Docker smoke passes.
+  Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`
+  passes on the current 49-task public split.
+- [ ] Docker-backed public validation is confirmed by GitHub Actions on `main`.
+  Blocker: pending push and new workflow run on `main`.
+- [x] Privacy scan shows no tracked private holdouts, raw results, captures, or
+  panel logs.
+  Evidence: `git ls-files tasks_private/holdout results captures
+  docs/reviews/panel-logs` returns no tracked paths.
+- [ ] Working tree is clean after generated validation artifacts are removed.
+  Blocker: pending commit.
+- [ ] Commit is authored as `bmendonca3` and pushed to `main`.
+  Blocker: pending commit and push.
+
+### Open Perfection Gaps
+
+These remain intentionally open until real evidence exists:
+
+- [ ] Current 49-task no-tools model baselines rerun with repeated artifacts.
+- [ ] Current 49-task live HTTP tool-agent baselines rerun with target-request
+  correlation.
+- [ ] Boundary-reasoning calibration study completed and reflected in the paper.
+- [ ] External AppSec, benchmark/evals, and AI-agent/tooling review lanes
+  completed.
+- [ ] Rotating private holdout and hosted or fully containerized submission
+  governance defined for v1/community use.
+
 ## Current Goal Statement
 
 Build AuthZBench-SaaS into a public benchmark that serious AI-agent and
