@@ -330,7 +330,11 @@ def run_benchmark(
     invalid_submissions = sum(1 for item in task_results if item["invalid_submission"])
     executed_tool_probe_total = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
     fallback_probe_total = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
-    submitted_finding_total = sum(int(item.get("submitted_finding_count", 0)) for item in task_results)
+    scored_submission_finding_total = 0
+    submitted_finding_total = 0
+    for task_result in task_results:
+        scored_submission_finding_total += int(task_result.get("submission_finding_count", 0))
+        submitted_finding_total += int(task_result.get("submitted_finding_count", 0))
     model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
     per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
     planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
@@ -368,6 +372,7 @@ def run_benchmark(
         "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
         "executed_tool_probe_total": executed_tool_probe_total,
         "fallback_probe_total": fallback_probe_total,
+        "scored_submission_finding_total": scored_submission_finding_total,
         "submitted_finding_total": submitted_finding_total,
         "planner_failure_count": planner_failure_count,
         "planner_parse_error_count": planner_parse_error_count,

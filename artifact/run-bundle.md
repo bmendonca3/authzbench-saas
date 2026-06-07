@@ -91,6 +91,9 @@ metadata, not private execution internals.
 4. Confirm repeated-run provenance and primary-run selection.
 5. Check false-positive, exploit-proof, boundary-reasoning, invalid-submission,
    and target-request coverage metrics.
+   Treat `scored_submission_finding_total` as scorer-derived and
+   `submitted_finding_total` as optional adapter telemetry; they are not
+   interchangeable.
 6. Confirm private-path protections for any private-holdout candidate.
 7. Record the decision as non-eligible evidence, needs rerun, parked, or
    eligible candidate.

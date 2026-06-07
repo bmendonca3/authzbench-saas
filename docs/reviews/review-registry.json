@@ -41,9 +41,10 @@
         "2026-06-05-docker-runtime-ci-panel-summary.md",
         "2026-06-05-live-baseline-refresh-panel-summary.md",
         "2026-06-05-private-live-tool-agent-panel-summary.md",
-        "2026-06-06-tool-agent-artifact-summary-panel-summary.md"
+        "2026-06-06-tool-agent-artifact-summary-panel-summary.md",
+        "2026-06-07-runner-finding-telemetry-review-summary.md"
       ],
-      "notes": "Scorer, runner, request-log correlation, live tool-agent execution proof on both public and private holdouts, and tool-agent plan/probe artifact summary telemetry have complete review coverage. This section is v0-ready."
+      "notes": "Scorer, runner, request-log correlation, live tool-agent execution proof on both public and private holdouts, tool-agent plan/probe artifact summary telemetry, and the distinction between scorer-derived and adapter-reported finding totals have complete review coverage. Public and protected paths also share the same false-positive versus false-report semantics. This section is v0-ready."
     },
     {
       "id": "baseline_methodology_leaderboard_schema",

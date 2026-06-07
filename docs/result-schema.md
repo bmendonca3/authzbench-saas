@@ -145,6 +145,7 @@ Run-level aggregate:
 - `per_task_tool_probe_artifact_count`
 - `executed_tool_probe_total`
 - `fallback_probe_total`
+- `scored_submission_finding_total`
 - `submitted_finding_total`
 - `planner_failure_count`
 - `planner_parse_error_count`
@@ -223,9 +224,13 @@ when an adapter writes them beside `submission.json`:
   older heuristic schema field `probe_count`.
 - `fallback_probe_count` and `fallback_probe_total` count safe fallback probes
   when the adapter reports them.
-- `submitted_finding_count` and `submitted_finding_total` are adapter telemetry,
-  not scorer-validated vulnerability evidence. Use the scorer's
-  `submission_finding_count` and task pass/fail fields for benchmark scoring.
+- `submission_finding_count` and `scored_submission_finding_total` are
+  scorer-derived counts from the actual submission files.
+- `submitted_finding_count` and `submitted_finding_total` are optional adapter
+  telemetry from `tool-probes.json`, not scorer-validated vulnerability
+  evidence. A no-tools run can therefore have a nonzero
+  `scored_submission_finding_total` and a zero `submitted_finding_total`.
+  Use scorer-derived counts and task pass/fail fields for benchmark scoring.
 - `planner_returncode`, `planner_failure_count`, `planner_parse_error`, and
   `planner_parse_error_count` come from `model-tool-plan.json.metadata` when
   available. `planner_failure_count` counts nonzero planner return codes from
