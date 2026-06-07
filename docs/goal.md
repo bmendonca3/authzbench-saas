@@ -395,10 +395,20 @@ The goal is complete only when all of these are true:
   - [x] Update status, benchmark-card, evidence/claims, baseline, artifact, and
     paper language so the 49-task model evidence is described as historical
     v1-prep evidence pending 54-task reruns.
-  - [ ] Run focused tests, the full unit suite, manifest validation, baseline
+  - [x] Run focused tests, the full unit suite, manifest validation, baseline
     registry validation, public validation with the scripted baseline,
     leaderboard validation, compile checks, whitespace checks, and tracked
     private-path checks.
+    Evidence on commit `247ef1cd9bb836866d012ce4872358c044b16bdf`:
+    168 unit tests passed; `validate_public.py --include-scripted-baseline`,
+    strict v0 release validation, baseline-registry validation, manifest
+    validation, and leaderboard-submission validation passed; the 54-task
+    scripted run passed 54/54 with zero false reports or invalid submissions;
+    task-quality, chart, and paper-table regeneration left no tracked diff;
+    the IEEE paper compiled successfully; `git diff --check` passed; and the
+    tracked private/raw-path scan returned no paths. Local Docker-backed smoke
+    remains assigned to the next child check because the installed Docker
+    client could not reach the absent Docker Desktop daemon.
   - [ ] Commit as `bmendonca3`, push the intended public branches, and confirm
     exact-head CI including Docker-backed container smoke.
 
