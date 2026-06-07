@@ -1,0 +1,9 @@
+.git/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+tasks_private/
+results/
+captures/
+docs/reviews/panel-logs/

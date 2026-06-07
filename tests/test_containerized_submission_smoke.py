@@ -10,8 +10,11 @@ from unittest.mock import patch
 
 from authzbench.core import load_json
 from scripts.containerized_submission_smoke import (
+    MAX_OUTPUT_FILE_BYTES,
     _private_pack_fingerprint,
     _select_control_task,
+    _sensitive_findings,
+    _validated_container_constraints,
     run_smoke,
     validate_smoke_evidence,
 )
@@ -21,6 +24,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ContainerizedSubmissionSmokeTests(unittest.TestCase):
+    @staticmethod
+    def _mount_source(command: list[str], destination: str) -> Path:
+        mount = next(
+            command[index + 1]
+            for index, argument in enumerate(command[:-1])
+            if argument == "--mount" and f"dst={destination}" in command[index + 1]
+        )
+        return Path(mount.split("src=", 1)[1].split(",dst=", 1)[0])
+
     def _private_control_pack(self, root: Path) -> Path:
         public_task = load_json(ROOT / "tasks/billing/bill_secure_member_plan_control.json")
         private_task = copy.deepcopy(public_task)
@@ -66,6 +78,9 @@ class ContainerizedSubmissionSmokeTests(unittest.TestCase):
                 "cap_drop=ALL",
                 "no_new_privileges",
                 "non_root_user",
+                "resource_limits",
+                "rendered_context_mount_only",
+                "output_file_size_limit",
             ],
         }
 
@@ -97,6 +112,9 @@ class ContainerizedSubmissionSmokeTests(unittest.TestCase):
                 "cap_drop=ALL",
                 "no_new_privileges",
                 "non_root_user",
+                "resource_limits",
+                "rendered_context_mount_only",
+                "output_file_size_limit",
             ],
             "task_id": "private-task",
             "scorer_result": {"passed": True},
@@ -106,6 +124,10 @@ class ContainerizedSubmissionSmokeTests(unittest.TestCase):
 
         self.assertTrue(any("sensitive key" in error for error in errors), errors)
         self.assertTrue(any("sensitive path marker" in error for error in errors), errors)
+        self.assertTrue(
+            any("absolute path" in error for error in _sensitive_findings("runner=/opt/build/cache/")),
+        )
+        self.assertEqual(_sensitive_findings("url=https://example.com/path/"), [])
 
     def test_timeout_force_removes_named_container_and_emits_failed_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -145,6 +167,160 @@ class ContainerizedSubmissionSmokeTests(unittest.TestCase):
             calls,
         )
         self.assertTrue(any(command[:3] == ["docker", "container", "ls"] for command in calls), calls)
+
+    def test_container_constraints_are_derived_from_actual_command(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            input_dir = root / "input"
+            output_dir = root / "output"
+            input_dir.mkdir()
+            output_dir.mkdir()
+            command = [
+                "docker",
+                "run",
+                "--rm",
+                "--network",
+                "none",
+                "--read-only",
+                "--cap-drop",
+                "ALL",
+                "--security-opt",
+                "no-new-privileges",
+                "--pids-limit",
+                "64",
+                "--memory",
+                "128m",
+                "--cpus",
+                "0.5",
+                "--user",
+                "65534:65534",
+                "--tmpfs",
+                "/tmp:rw,noexec,nosuid,size=16m",
+                "--ulimit",
+                f"fsize={MAX_OUTPUT_FILE_BYTES}:{MAX_OUTPUT_FILE_BYTES}",
+                "--mount",
+                f"type=bind,src={input_dir.resolve()},dst=/input,readonly",
+                "--mount",
+                f"type=bind,src={output_dir.resolve()},dst=/output",
+                "python:3.11-alpine",
+            ]
+
+            constraints = _validated_container_constraints(command, input_dir, output_dir)
+            with self.assertRaisesRegex(ValueError, "--network must be exactly none"):
+                _validated_container_constraints(
+                    [value for value in command if value != "--network" and value != "none"],
+                    input_dir,
+                    output_dir,
+                )
+            with self.assertRaisesRegex(ValueError, "container mounts must be exactly"):
+                _validated_container_constraints(
+                    command
+                    + [
+                        "--mount",
+                        "type=bind,src=/tmp/private,dst=/private-holdout,readonly",
+                    ],
+                    input_dir,
+                    output_dir,
+                )
+
+        self.assertIn("rendered_context_mount_only", constraints)
+        self.assertIn("output_file_size_limit", constraints)
+
+    def test_missing_submission_output_cannot_pass_secure_control_smoke(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pack = self._private_control_pack(root)
+            output = root / "submission-runner-smoke.json"
+
+            def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+                if command[:2] == ["docker", "run"]:
+                    input_dir = self._mount_source(command, "/input")
+                    output_dir = self._mount_source(command, "/output")
+                    self.assertEqual(input_dir.stat().st_mode & 0o777, 0o755)
+                    self.assertEqual((input_dir / "context.json").stat().st_mode & 0o777, 0o644)
+                    (output_dir / "probe.json").write_text(
+                        json.dumps(
+                            {
+                                "context_readable": True,
+                                "private_paths_readable": {
+                                    "/private-holdout/rotation-metadata.json": False,
+                                },
+                            }
+                        ),
+                        encoding="utf-8",
+                    )
+                    return subprocess.CompletedProcess(command, 0, "", "")
+                if command[:4] == ["docker", "container", "rm", "--force"]:
+                    return subprocess.CompletedProcess(command, 0, "", "")
+                if command[:3] == ["docker", "container", "ls"]:
+                    return subprocess.CompletedProcess(command, 0, "", "")
+                if command[:3] == ["docker", "image", "inspect"]:
+                    return subprocess.CompletedProcess(command, 0, "sha256:image\n", "")
+                raise AssertionError(f"unexpected command: {command}")
+
+            with patch("scripts.containerized_submission_smoke.subprocess.run", side_effect=fake_run):
+                with self.assertRaisesRegex(RuntimeError, "result must be passed"):
+                    run_smoke(
+                        pack,
+                        output_path=output,
+                        benchmark_source_sha="a" * 40,
+                        private_pack_version="ci-rehearsal",
+                        execution_scope="rehearsal",
+                    )
+
+            evidence = load_json(output)
+
+        self.assertEqual(evidence["result"], "failed")
+
+    def test_successful_rehearsal_emits_passed_public_safe_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pack = self._private_control_pack(root)
+            output = root / "submission-runner-smoke.json"
+
+            def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+                if command[:2] == ["docker", "run"]:
+                    output_dir = self._mount_source(command, "/output")
+                    (output_dir / "submission.json").write_text(
+                        json.dumps({"findings": []}),
+                        encoding="utf-8",
+                    )
+                    (output_dir / "probe.json").write_text(
+                        json.dumps(
+                            {
+                                "context_readable": True,
+                                "private_paths_readable": {
+                                    "/private-holdout/rotation-metadata.json": False,
+                                    "/workspace/tasks_private/holdout": False,
+                                    "/repo/tasks_private/holdout": False,
+                                },
+                            }
+                        ),
+                        encoding="utf-8",
+                    )
+                    return subprocess.CompletedProcess(command, 0, "", "")
+                if command[:4] == ["docker", "container", "rm", "--force"]:
+                    return subprocess.CompletedProcess(command, 0, "", "")
+                if command[:3] == ["docker", "container", "ls"]:
+                    return subprocess.CompletedProcess(command, 0, "", "")
+                if command[:3] == ["docker", "image", "inspect"]:
+                    return subprocess.CompletedProcess(command, 0, "sha256:image\n", "")
+                raise AssertionError(f"unexpected command: {command}")
+
+            with patch("scripts.containerized_submission_smoke.subprocess.run", side_effect=fake_run):
+                evidence = run_smoke(
+                    pack,
+                    output_path=output,
+                    benchmark_source_sha="a" * 40,
+                    private_pack_version="ci-rehearsal",
+                    execution_scope="rehearsal",
+                )
+
+        self.assertEqual(evidence["result"], "passed")
+        self.assertEqual(evidence["execution_scope"], "rehearsal")
+        self.assertTrue(evidence["privacy_scan_passed"])
+        self.assertTrue(evidence["submitter_private_manifest_read_denied"])
+        self.assertIn("rendered_context_mount_only", evidence["container_constraints"])
 
 
 if __name__ == "__main__":

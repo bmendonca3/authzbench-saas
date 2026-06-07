@@ -22,6 +22,18 @@ from authzbench.score import score_submission
 SCHEMA_VERSION = "submission-runner-smoke-v1"
 DEFAULT_IMAGE = "python:3.11-alpine"
 VALID_EXECUTION_SCOPES = {"rehearsal", "release_candidate"}
+MAX_OUTPUT_FILE_BYTES = 1_048_576
+DOCKER_CONTROL_TIMEOUT_SECONDS = 30
+REQUIRED_CONTAINER_CONSTRAINTS = {
+    "network=none",
+    "read_only_rootfs",
+    "cap_drop=ALL",
+    "no_new_privileges",
+    "non_root_user",
+    "resource_limits",
+    "rendered_context_mount_only",
+    "output_file_size_limit",
+}
 SENSITIVE_KEYS = {
     "task_id",
     "task_path",
@@ -87,7 +99,7 @@ def _sensitive_findings(value: Any, path: str = "$") -> list[str]:
         for marker in SENSITIVE_STRING_MARKERS:
             if marker in value:
                 findings.append(f"{path}: sensitive path marker is not allowed")
-        if re.search(r"(?:^|\s)/[A-Za-z0-9_.-]+/", value):
+        if re.search(r"(?<![A-Za-z0-9_.-/])/[A-Za-z0-9_.-]+/", value):
             findings.append(f"{path}: absolute path is not allowed")
     return findings
 
@@ -141,13 +153,7 @@ def validate_smoke_evidence(
     if evidence.get("public_output_private_artifacts_included") is not False:
         errors.append("public_output_private_artifacts_included must be false")
     constraints = evidence.get("container_constraints")
-    if not isinstance(constraints, list) or not {
-        "network=none",
-        "read_only_rootfs",
-        "cap_drop=ALL",
-        "no_new_privileges",
-        "non_root_user",
-    }.issubset(set(constraints)):
+    if not isinstance(constraints, list) or not REQUIRED_CONTAINER_CONSTRAINTS.issubset(set(constraints)):
         errors.append("container_constraints are incomplete")
     errors.extend(_sensitive_findings(evidence))
     return errors
@@ -160,6 +166,7 @@ def _image_identity(image: str) -> str:
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
     )
     return f"{image}@{completed.stdout.strip()}"
 
@@ -201,6 +208,60 @@ Path("/output/probe.json").write_text(
 """.strip()
 
 
+def _option_values(command: list[str], option: str) -> list[str]:
+    values: list[str] = []
+    for index, value in enumerate(command[:-1]):
+        if value == option:
+            values.append(command[index + 1])
+    return values
+
+
+def _require_single_option(
+    command: list[str],
+    option: str,
+    expected_value: str,
+    errors: list[str],
+) -> None:
+    values = _option_values(command, option)
+    if values != [expected_value]:
+        errors.append(f"{option} must be exactly {expected_value}")
+
+
+def _validated_container_constraints(command: list[str], input_dir: Path, output_dir: Path) -> list[str]:
+    errors: list[str] = []
+    for flag in ("--rm", "--read-only"):
+        if command.count(flag) != 1:
+            errors.append(f"{flag} must be present exactly once")
+    for option, expected_value in (
+        ("--network", "none"),
+        ("--cap-drop", "ALL"),
+        ("--security-opt", "no-new-privileges"),
+        ("--pids-limit", "64"),
+        ("--memory", "128m"),
+        ("--cpus", "0.5"),
+        ("--user", "65534:65534"),
+        ("--tmpfs", "/tmp:rw,noexec,nosuid,size=16m"),
+        ("--ulimit", f"fsize={MAX_OUTPUT_FILE_BYTES}:{MAX_OUTPUT_FILE_BYTES}"),
+    ):
+        _require_single_option(command, option, expected_value, errors)
+    expected_mounts = {
+        f"type=bind,src={input_dir.resolve()},dst=/input,readonly",
+        f"type=bind,src={output_dir.resolve()},dst=/output",
+    }
+    mounts = set(_option_values(command, "--mount"))
+    if mounts != expected_mounts:
+        errors.append("container mounts must be exactly readonly /input and writable /output")
+    if errors:
+        raise ValueError("invalid container isolation command: " + "; ".join(errors))
+    return sorted(REQUIRED_CONTAINER_CONSTRAINTS)
+
+
+def _load_bounded_json(path: Path) -> dict[str, Any]:
+    if path.stat().st_size > MAX_OUTPUT_FILE_BYTES:
+        raise ValueError(f"{path.name} exceeds {MAX_OUTPUT_FILE_BYTES} bytes")
+    return load_json(path)
+
+
 def run_smoke(
     private_pack: Path,
     *,
@@ -222,9 +283,12 @@ def run_smoke(
         input_dir = temp_root / "input"
         output_dir = temp_root / "output"
         input_dir.mkdir()
+        input_dir.chmod(0o755)
         output_dir.mkdir()
-        output_dir.chmod(0o777)
-        (input_dir / "context.json").write_text(dump_json(context) + "\n", encoding="utf-8")
+        output_dir.chmod(0o733)
+        context_path = input_dir / "context.json"
+        context_path.write_text(dump_json(context) + "\n", encoding="utf-8")
+        context_path.chmod(0o644)
 
         command = [
             "docker",
@@ -249,6 +313,8 @@ def run_smoke(
             "65534:65534",
             "--tmpfs",
             "/tmp:rw,noexec,nosuid,size=16m",
+            "--ulimit",
+            f"fsize={MAX_OUTPUT_FILE_BYTES}:{MAX_OUTPUT_FILE_BYTES}",
             "--mount",
             f"type=bind,src={input_dir.resolve()},dst=/input,readonly",
             "--mount",
@@ -258,6 +324,7 @@ def run_smoke(
             "-c",
             _probe_program(),
         ]
+        container_constraints = _validated_container_constraints(command, input_dir, output_dir)
         completed = None
         run_error = None
         try:
@@ -272,33 +339,47 @@ def run_smoke(
         except subprocess.SubprocessError as exc:
             run_error = exc
         finally:
-            subprocess.run(
-                ["docker", "container", "rm", "--force", container_name],
-                check=False,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            remaining = subprocess.run(
-                [
-                    "docker",
-                    "container",
-                    "ls",
-                    "--all",
-                    "--filter",
-                    f"name=^/{container_name}$",
-                    "--format",
-                    "{{.Names}}",
-                ],
-                check=False,
-                text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            cleanup_completed = remaining.returncode == 0 and not remaining.stdout.strip()
+            cleanup_completed = False
+            try:
+                subprocess.run(
+                    ["docker", "container", "rm", "--force", container_name],
+                    check=False,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
+                )
+                remaining = subprocess.run(
+                    [
+                        "docker",
+                        "container",
+                        "ls",
+                        "--all",
+                        "--filter",
+                        f"name=^/{container_name}$",
+                        "--format",
+                        "{{.Names}}",
+                    ],
+                    check=False,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
+                )
+                cleanup_completed = remaining.returncode == 0 and not remaining.stdout.strip()
+            except subprocess.SubprocessError:
+                cleanup_completed = False
         probe_path = output_dir / "probe.json"
         submission_path = output_dir / "submission.json"
-        probe = load_json(probe_path) if probe_path.exists() else {}
-        submission = load_json(submission_path) if submission_path.exists() else {"findings": []}
+        probe_present = probe_path.is_file()
+        submission_present = submission_path.is_file()
+        output_error = None
+        try:
+            probe = _load_bounded_json(probe_path) if probe_present else {}
+            submission = _load_bounded_json(submission_path) if submission_present else {}
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            output_error = exc
+            probe = {}
+            submission = {}
         score = score_submission(task, submission)
         private_reads = probe.get("private_paths_readable")
         private_manifest_read_denied = (
@@ -308,8 +389,11 @@ def run_smoke(
         )
         passed = (
             run_error is None
+            and output_error is None
             and completed is not None
             and completed.returncode == 0
+            and probe_present
+            and submission_present
             and probe.get("context_readable") is True
             and private_manifest_read_denied
             and score.get("passed") is True
@@ -334,15 +418,7 @@ def run_smoke(
         "cleanup_completed": cleanup_completed,
         "privacy_scan_passed": False,
         "public_output_private_artifacts_included": False,
-        "container_constraints": [
-            "network=none",
-            "read_only_rootfs",
-            "cap_drop=ALL",
-            "no_new_privileges",
-            "non_root_user",
-            "resource_limits",
-            "rendered_context_mount_only",
-        ],
+        "container_constraints": container_constraints,
     }
     evidence["privacy_scan_passed"] = not _sensitive_findings(evidence)
     validation_errors = validate_smoke_evidence(

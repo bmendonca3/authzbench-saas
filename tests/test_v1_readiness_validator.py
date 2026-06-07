@@ -261,6 +261,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "cap_drop=ALL",
                             "no_new_privileges",
                             "non_root_user",
+                            "resource_limits",
+                            "rendered_context_mount_only",
+                            "output_file_size_limit",
                         ],
                     }
                 ),

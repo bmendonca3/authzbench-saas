@@ -29,6 +29,20 @@ class CiWorkflowTests(unittest.TestCase):
         self.assertNotIn("secrets.", text)
         self.assertRegex(text, r"(?m)^\s+timeout-minutes:\s*25\s*$")
 
+    def test_dockerignore_excludes_private_and_raw_artifact_paths(self) -> None:
+        dockerignore = ROOT / ".dockerignore"
+        self.assertTrue(dockerignore.exists(), "missing Docker build-context ignore file")
+        ignored = dockerignore.read_text(encoding="utf-8").splitlines()
+
+        for path in (
+            ".git/",
+            "tasks_private/",
+            "results/",
+            "captures/",
+            "docs/reviews/panel-logs/",
+        ):
+            self.assertIn(path, ignored)
+
 
 if __name__ == "__main__":
     unittest.main()
