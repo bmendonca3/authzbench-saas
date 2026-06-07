@@ -65,12 +65,22 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   Evidence: commit `01435f406316641658520bc4e27cef0cbb2e460d` is authored and
   committed as `bmendonca3 <bmendonca3@users.noreply.github.com>` and is present
   on both `origin/main` and `origin/v1-task-expansion`.
+- [x] One current 49-task no-tools model-family baseline has repeated tracked
+  artifacts.
+  Evidence: `kiro-claude-haiku-4-5-current-public-49` is registered with two
+  current public split Haiku runs, `task_count: 49`, `run_count: 2`,
+  `harness_type: no-tools-model`, and explicit non-leaderboard claim-boundary
+  text.
 
 ### Open Perfection Gaps
 
 These remain intentionally open until real evidence exists:
 
 - [ ] Current 49-task no-tools model baselines rerun with repeated artifacts.
+  Progress: one repeated current 49-task no-tools Haiku family is tracked in
+  `baselines/kiro-claude-haiku-4.5-current-public-49-run1-summary.json` and
+  `baselines/kiro-claude-haiku-4.5-current-public-49-run2-summary.json`; leave
+  this open until the full five-family current public rerun exists.
 - [ ] Current 49-task live HTTP tool-agent baselines rerun with target-request
   correlation.
 - [ ] Boundary-reasoning calibration study completed and reflected in the paper.

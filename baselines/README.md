@@ -24,6 +24,12 @@ well-labeled before any release claim is made.
   deterministic harness sanity-check baseline. It proves the expanded public
   split, scorer, and scripted oracle path agree; it is not model capability,
   leaderboard, or v1 release evidence.
+- `kiro-claude-haiku-4.5-current-public-49-run1-summary.json` and
+  `kiro-claude-haiku-4.5-current-public-49-run2-summary.json`: repeated current
+  v1-prep 49-task public split no-tools Haiku runs through the Kiro adapter.
+  These count as one current public model-family baseline, but they are not
+  private-holdout, tool-agent, or leaderboard-eligible submissions. The full
+  five-family current public rerun remains open.
 - `scripted-baseline-public-46-summary.json`: frozen v0.0 deterministic
   46-task harness sanity-check baseline.
 - `kiro-qwen3-coder-next-current-public-46-run1-summary.json` and
