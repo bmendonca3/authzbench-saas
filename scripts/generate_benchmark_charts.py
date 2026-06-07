@@ -92,7 +92,9 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "label": label,
             "kind": entry["kind"],
             "release_suitability": entry["release_suitability"],
-            "requires_rerun_before_v0": bool(entry.get("requires_rerun_before_v0")),
+            "requires_rerun_before_current_comparison": bool(
+                entry.get("requires_rerun_before_current_comparison")
+            ),
             "run_count": len(artifacts),
             "task_count": artifacts[0]["task_count"],
             "pass_rate": mean(item["passed_count"] / item["task_count"] for item in artifacts),

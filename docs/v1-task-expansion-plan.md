@@ -2,10 +2,10 @@
 
 Status: planning document for post-`v0.0` benchmark growth.
 
-Start here: `docs/v1-readiness-checklist.md` defines the branch discipline,
-task acceptance criteria, stale-baseline policy, validation commands, and rerun
-matrix that must be satisfied before v1 task/scoring changes are treated as
-current comparable evidence.
+Start here: `docs/v1-readiness-checklist.md` defines the active-development
+discipline, task acceptance criteria, stale-baseline policy, validation
+commands, and rerun matrix that must be satisfied before v1 task/scoring
+changes are treated as current comparable evidence.
 
 The v1 target is 100+ total tasks across public and private splits while
 preserving the benchmark's core evidence contract: replayable authorization

@@ -42,7 +42,7 @@ are not part of the public repo.
   `current_public_harness_check`.
 - Legacy snapshots no longer have to be smaller than the current task count;
   staleness can also come from scorer, harness, task, or methodology changes.
-  They still must set `requires_rerun_before_v0: true`.
+  They still must set `requires_rerun_before_current_comparison: true`.
 - Baseline docs now describe the Kiro files as legacy 15-task alpha snapshots,
   not current full-split baselines.
 - Launch docs now describe the model summaries as initial legacy 15-task

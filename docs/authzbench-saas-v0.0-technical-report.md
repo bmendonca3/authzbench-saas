@@ -2,9 +2,10 @@
 
 Status: public v0.0 technical-report draft for the released benchmark artifact.
 This document is claim-disciplined by design: it describes what the repository
-currently proves, what it partially supports, and what remains future work.
-On the `v1-task-expansion` branch, the live public split has expanded to 49
-tasks; this report preserves the frozen v0.0 46-task release snapshot.
+proved at the frozen v0.0 release boundary, what it partially supported, and
+what remained future work. On current `main`, the live public split has
+expanded to 49 tasks; this report preserves the frozen v0.0 46-task release
+snapshot.
 
 ## Title Options
 
@@ -33,8 +34,8 @@ controls. Scoring separates exploit proof, boundary reasoning, false-positive
 behavior, control execution, safety, and live-target request correlation when
 Docker HTTP targets are used. Repeated public baselines across five frozen v0.0
 model/agent families show that agents can sometimes produce replayable exploit
-evidence, but current runs often fail full vulnerable-task passes because
-authorization-boundary reasoning remains weak. AuthZBench-SaaS v0.0 is a
+evidence, but those frozen v0.0 runs often fail full vulnerable-task passes
+because authorization-boundary reasoning remains weak. AuthZBench-SaaS v0.0 is a
 released benchmark artifact, not a hosted leaderboard or community-scale
 benchmark. Its contribution is an evidence-backed harness for studying SaaS
 authorization proof quality, false-positive discipline, and replay-centered
@@ -186,7 +187,7 @@ because boundary reasoning is weak. The live HTTP tool-agent repeatedly proves
 still has `boundary_reasoning_pass_rate: 0.0`. This suggests a gap between
 exercising an endpoint and correctly explaining the authorization violation.
 
-The public baselines also show why secure controls matter. Most current runs
+The public baselines also show why secure controls matter. Most frozen v0.0 runs
 keep false-positive rates at 0.0, but Claude Haiku run 1 and Claude Sonnet run 2
 each produce one secure-control false report. That is a small count, but it is
 important: a benchmark without controls could not distinguish a cautious
@@ -203,13 +204,14 @@ evidence-backed agent from one that over-reports.
 - **Maintainer-side private evidence.** Protected private-holdout evidence is
   summarized at aggregate level. Private task bodies, seeds, routes, and oracles
   are intentionally not public.
-- **Baseline scope.** Current baselines are useful public-split diagnostics, not
-  broad model rankings. Some repeated tool-agent runs span adjacent commits with
-  matching task fingerprints rather than identical SHAs.
-- **Boundary-reasoning strictness.** A `0.0` boundary-reasoning rate in current
-  baselines may reflect stringent schema and wording requirements as well as
-  model capability gaps. This should be studied further rather than treated as a
-  final model-quality conclusion.
+- **Baseline scope.** Frozen v0.0 baselines are useful public-split
+  diagnostics, not broad model rankings or current 49-task comparisons. Some
+  repeated tool-agent runs span adjacent commits with matching task
+  fingerprints rather than identical SHAs.
+- **Boundary-reasoning strictness.** A `0.0` boundary-reasoning rate in frozen
+  v0.0 baselines may reflect stringent schema and wording requirements as well
+  as model capability gaps. This should be studied further rather than treated
+  as a final model-quality conclusion.
 - **No hosted leaderboard yet.** The repository has schema and validation
   machinery, but not a hosted or fully containerized third-party submission
   service.
@@ -240,7 +242,7 @@ The detailed claim table is maintained in
 The short version is:
 
 - Supported: v0.0 released benchmark artifact, 6 apps, 46 public tasks,
-  deterministic replay scoring, secure controls, repeated current public
+  deterministic replay scoring, secure controls, repeated frozen v0.0 public
   model/agent baselines, protected private aggregate evidence.
 - Partially supported: private-holdout evaluation credibility, early
   leaderboard-submission shape, live tool-agent execution evidence.
@@ -255,9 +257,9 @@ The short version is:
 | The benchmark is too small. | True for v1 claims; acceptable for a first v0.0 release artifact. | Expand to at least 100 tasks across public/private splits. |
 | Public tasks are gameable. | Public tasks are for reproducibility, not leaderboard ranking. | Add rotating private packs and leakage-response rules. |
 | Synthetic apps may not transfer. | The benchmark measures proof mechanics in controlled SaaS authorization fixtures. | Add broader task families and external review. |
-| Baselines are not enough for ranking. | Correct; current baselines are diagnostic public-split evidence. | Add third-party runs, private repeats, and variance analysis. |
+| Baselines are not enough for ranking. | Correct; frozen v0.0 baselines are diagnostic public-split evidence. | Add third-party runs, private repeats, and variance analysis. |
 | Boundary reasoning may be too strict. | Possible; it is intentionally separated from replay proof and should be audited. | Run reviewer calibration and scorer-ablation studies. |
-| Tool-agent evidence is still early. | Current public tool-agent runs show full target-request correlation, not private leaderboard performance. | Add repeated private tool-agent rows and containerized submissions. |
+| Tool-agent evidence is still early. | Frozen v0.0 public tool-agent runs show full target-request correlation, not private leaderboard performance. | Add repeated private tool-agent rows and containerized submissions. |
 | Release docs overclaim readiness. | The intended framing is v0.0 released artifact, not hosted/community benchmark. | Keep claim ledger and benchmark card current after every release. |
 
 ## Self-Critique

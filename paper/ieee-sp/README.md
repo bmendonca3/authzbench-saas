@@ -1,13 +1,14 @@
 # IEEE S&P Paper Scaffold
 
-This folder is a working paper scaffold for the released `v0.0` research
+This folder is a working paper scaffold for the current v1-prep research
 artifact. It is intentionally claim-disciplined: the paper should describe
-AuthZBench-SaaS as a released benchmark artifact and methodology foundation, not
-as a hosted leaderboard or v1/community benchmark.
+AuthZBench-SaaS as a released v0.0 benchmark artifact plus active v1-prep
+methodology foundation, not as a hosted leaderboard or v1/community benchmark.
 
 ## Source Documents
 
 - `docs/authzbench-saas-v0.0-technical-report.md`
+- `docs/authzbench-saas-v1-prep-technical-report.md`
 - `docs/authzbench-saas-v0.0-evidence-map.md`
 - `docs/status.md`
 - `docs/benchmark-card.md`

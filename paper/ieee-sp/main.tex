@@ -22,7 +22,8 @@ SaaS targets and \publictaskcount{} public tasks
 covering tenant, organization, object, role, API-token, scope, sharing, and
 admin-action boundaries. It evaluates whether an agent can submit
 backend-replayable evidence for vulnerable tasks while avoiding false reports
-on secure controls. The current public split includes \vulnerabletaskcount{}
+on secure controls. The current main/v1-prep public split includes
+\vulnerabletaskcount{}
 vulnerable tasks, \securecontrolcount{} secure-control tasks,
 \denialcontrolcount{} denial controls, and \authorizedallowcount{}
 authorized-allow controls. This paper frames the repository as a research
@@ -149,8 +150,9 @@ validation path.
 \section{Limitations}
 
 The \releaseversion{} public split is small, synthetic, and inspectable. The
-current baseline table is diagnostic public-split evidence, not a final ordering
-of model quality. Hosted leaderboard operation, rotating private holdouts,
+baseline table is frozen v0.0 diagnostic public-split evidence, not a final
+ordering of model quality or current 49-task model comparison. Hosted
+leaderboard operation, rotating private holdouts,
 broader isolation, external review, and 100+ task scale are future v1 work.
 
 \section{LLM Usage Considerations}

@@ -10,32 +10,36 @@ the startup gate is `docs/v1-readiness-checklist.md`.
 Current v1-prep boundary:
 
 - v0.0 remains frozen historical release evidence.
-- The `v1-task-expansion` branch now carries the first billing entitlement task
-  slice, expanding the public task set to 49 tasks.
+- `main` is now post-v0 active development and carries the first billing
+  entitlement task slice, expanding the public task set to 49 tasks.
 - Old 46-task baselines are stale for v1 comparison until rerun against the
   expanded public split.
 - v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
   community-scale benchmark maturity.
 
-Current v1 branch split:
+Current main / v1-prep split:
 
 - 49 public task manifests
 - 20 vulnerable tasks
 - 29 secure-control tasks
 - 17 denial controls and 12 authorized-allow controls
+- one current 49-task deterministic scripted sanity baseline
 - zero current v1 model/tool-agent baseline families until rerun
 
-## Public v0.0 Snapshot
+## Current v1-Prep Public Split And Frozen v0.0 Snapshot
 
-AuthZBench-SaaS currently contains a 49-task public split. The v0.0 release
-snapshot remains frozen at 46 public tasks and is preserved in the baseline
-registry as historical evidence:
+AuthZBench-SaaS currently contains a 49-task public split on `main`. The v0.0
+release snapshot remains frozen at 46 public tasks and is preserved in the
+baseline registry as historical evidence.
+
+### Current main / v1-prep split
 
 - 6 Dockerized synthetic SaaS targets
 - 49 public task manifests
 - 20 vulnerable tasks
 - 29 secure-control tasks
 - 17 denial controls and 12 authorized-allow controls
+- zero current v1 model/tool-agent comparison baselines until rerun
 - seeded runtime fixtures for tenant, object, organization, invoice, file, link,
   workspace, API-token, scope, and actor IDs
 - route aliases and decoy controls across all six target apps
@@ -52,6 +56,7 @@ registry as historical evidence:
 - baseline registry validation that separates harness checks, legacy snapshots,
   current public split summaries, frozen release snapshots, and leaderboard
   eligibility
+- current 49-task deterministic scripted harness check
 - stale v0.0 46-task deterministic scripted harness check
 - repeated stale v0.0 46-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated stale v0.0 46-task no-tools Kiro `claude-haiku-4.5` model baseline
@@ -75,7 +80,16 @@ registry as historical evidence:
   leaderboard eligible
 - GitHub Actions workflow for public validation gates, including Docker runtime
   smoke
-- scripted and model baseline summaries
+
+### Frozen v0.0 release snapshot
+
+- 46 public task manifests
+- 19 vulnerable tasks
+- 27 secure-control tasks
+- 16 denial controls and 11 authorized-allow controls
+- historical 46-task scripted and model/tool-agent baseline summaries retained
+  for v0.0 auditability
+- 46-task baseline rows are stale for current 49-task comparison until rerun
 
 ## Verified Locally
 
@@ -125,6 +139,7 @@ as repeatability evidence, not a polished model ranking.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Scripted sanity baseline, current v1-prep split | 49 | 49 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Scripted sanity baseline, stale v0.0 snapshot | 46 | 46 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale v0.0 run 1 | 46 | 27 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale v0.0 run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |
@@ -183,6 +198,8 @@ expanded to 49 tasks.
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
+- current 49-task deterministic scripted harness summary exists for the live
+  v1-prep split
 - frozen v0.0 deterministic scripted harness summary exists for the 46-task
   release snapshot
 - four repeated v0.0 no-tools model-family baselines and one repeated v0.0 live

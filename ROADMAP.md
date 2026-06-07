@@ -33,8 +33,9 @@ Evidence already in place:
 - a maintainer-only private holdout pack with count-level redacted evidence
 - deterministic backend replay scoring
 - target-side request logging for live HTTP runs
-- five repeated current public model/agent baseline families
-- one repeated current public live HTTP tool-agent family
+- five repeated frozen v0.0 public model/agent baseline families
+- one repeated frozen v0.0 public live HTTP tool-agent family
+- one current 49-task scripted harness sanity baseline
 - protected private-holdout aggregate evidence
 - one source-backed private no-tools leaderboard-candidate row with
   runner-emitted fingerprint provenance
@@ -53,10 +54,10 @@ Not yet in place:
 ## Maturity Levels
 
 **Level 1: v0 benchmark.** The first legitimate public release. It requires a
-frozen public split, frozen scoring/evidence contracts, repeated current
-baselines, verified private-holdout separation, release evidence, privacy
-checks, CI, fresh-clone validation, and a `v0.0` tag. It does not require a
-hosted leaderboard.
+frozen public split, frozen scoring/evidence contracts, repeated release-snapshot
+baselines, verified private-holdout separation, release evidence, privacy checks,
+CI, fresh-clone validation, and a `v0.0` tag. It does not require a hosted
+leaderboard.
 
 **Level 2: research artifact.** A benchmark that can support academic or
 industry research. It needs independent review, reproducibility evidence,
@@ -77,7 +78,7 @@ privacy checks, fresh-clone validation, and CI all align to the final pushed
 commit.
 
 - [x] Build public 46-task split across 6 apps.
-- [x] Add current repeated public baselines for 5 model/agent families.
+- [x] Add repeated frozen v0.0 public baselines for 5 model/agent families.
 - [x] Add strict v0 release-gate validator.
 - [x] Add protected private-holdout aggregate evidence.
 - [x] Add source-backed leaderboard-submission validation.

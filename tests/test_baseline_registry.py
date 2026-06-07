@@ -53,7 +53,7 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 16, result)
+        self.assertEqual(result["baseline_count"], 17, result)
         self.assertEqual(result["public_split"]["task_count"], 49, result)
         self.assertEqual(result["current_public_model_family_count"], 0, result)
         self.assertEqual(result["repeated_model_baseline_count"], 0, result)
@@ -74,20 +74,20 @@ class BaselineRegistryTests(unittest.TestCase):
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
             future_counts = {
-                "task_count": 49,
-                "vulnerable_task_count": 20,
+                "task_count": 50,
+                "vulnerable_task_count": 21,
                 "control_task_count": 29,
                 "denial_control_task_count": 17,
                 "authorized_allow_control_task_count": 12,
             }
             registry["public_split"] = future_counts
             for entry in registry["baselines"]:
-                if entry["expected_task_count"] == 46 and entry["release_suitability"] in {
+                if entry["expected_task_count"] != future_counts["task_count"] and entry["release_suitability"] in {
                     "current_public_split",
                     "current_public_harness_check",
                 }:
                     entry["release_suitability"] = "current_public_stale"
-                    entry["requires_rerun_before_v0"] = True
+                    entry["requires_rerun_before_current_comparison"] = True
             registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             with mock.patch(
@@ -95,12 +95,20 @@ class BaselineRegistryTests(unittest.TestCase):
                 return_value=future_counts,
             ), mock.patch(
                 "scripts.validate_baseline_registry.benchmark_fingerprint",
-                return_value={"task_set_sha256": "future", **future_counts},
+                return_value={
+                    "schema_version": "benchmark-fingerprint-v1",
+                    "task_set_sha256": "future",
+                    "task_path_set_sha256": "future-paths",
+                    "score_policy_version": "score-policy-v1",
+                    "scorer_contract": "v0-candidate-authz-evidence",
+                    "evidence_contract_version": "evidence-requirements-v1",
+                    **future_counts,
+                },
             ):
                 result = validate_registry(registry_path)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["public_split"]["task_count"], 49, result)
+        self.assertEqual(result["public_split"]["task_count"], 50, result)
         self.assertEqual(result["current_public_model_family_count"], 0, result)
         self.assertEqual(result["repeated_model_baseline_count"], 0, result)
         self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
@@ -317,13 +325,19 @@ class BaselineRegistryTests(unittest.TestCase):
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
             model_entry = _baseline_by_id(registry, STALE_QWEN_ID)
-            model_entry["requires_rerun_before_v0"] = False
+            model_entry["requires_rerun_before_current_comparison"] = False
             registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             result = validate_registry(registry_path)
 
         self.assertFalse(result["passed"], result)
-        self.assertTrue(any("current_public_stale must set requires_rerun_before_v0=true" in error for error in result["errors"]), result)
+        self.assertTrue(
+            any(
+                "current_public_stale must set requires_rerun_before_current_comparison=true" in error
+                for error in result["errors"]
+            ),
+            result,
+        )
 
 
 if __name__ == "__main__":

@@ -23,6 +23,7 @@ REQUIRED_ENTRY_FIELDS = {
     "run_count",
     "expected_harness_type",
     "expected_task_count",
+    "requires_rerun_before_current_comparison",
 }
 
 REQUIRED_SUMMARY_FIELDS = {
@@ -495,7 +496,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         run_count = _require_int(raw_entry.get("run_count"), "run_count", entry_id, errors)
         expected_task_count = _require_int(raw_entry.get("expected_task_count"), "expected_task_count", entry_id, errors)
         leaderboard_eligible = raw_entry.get("leaderboard_eligible")
-        requires_rerun = bool(raw_entry.get("requires_rerun_before_v0"))
+        requires_rerun_before_current = bool(raw_entry.get("requires_rerun_before_current_comparison"))
 
         if kind not in VALID_KINDS:
             errors.append(f"{entry_id}: kind must be one of {', '.join(sorted(VALID_KINDS))}")
@@ -523,11 +524,15 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         summaries_by_id[entry_id] = summary
 
         if suitability == "legacy_snapshot":
-            if not requires_rerun:
-                errors.append(f"{entry_id}: legacy_snapshot must set requires_rerun_before_v0=true")
+            if not requires_rerun_before_current:
+                errors.append(
+                    f"{entry_id}: legacy_snapshot must set requires_rerun_before_current_comparison=true"
+                )
         if suitability == "current_public_stale":
-            if not requires_rerun:
-                errors.append(f"{entry_id}: current_public_stale must set requires_rerun_before_v0=true")
+            if not requires_rerun_before_current:
+                errors.append(
+                    f"{entry_id}: current_public_stale must set requires_rerun_before_current_comparison=true"
+                )
             if leaderboard_eligible:
                 errors.append(f"{entry_id}: current_public_stale entries cannot be leaderboard_eligible")
 

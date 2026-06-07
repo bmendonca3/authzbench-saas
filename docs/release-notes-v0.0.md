@@ -14,7 +14,7 @@ Included:
 - 19 vulnerable tasks and 27 secure-control tasks
 - deterministic backend replay scoring
 - public baseline summaries
-- repeated current public model/tool-agent baseline evidence
+- repeated frozen v0.0 public model/tool-agent baseline evidence
 - protected private-holdout evidence summarized without private task leakage
 - leaderboard-submission schema and validation
 - release-gate, privacy, Docker smoke, fresh-clone, and CI evidence

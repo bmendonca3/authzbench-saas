@@ -37,7 +37,7 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Public apps | 6 synthetic SaaS targets |
 | Public tasks | 49 total: 20 vulnerable, 29 secure controls |
 | Control mix | 17 denial controls, 12 authorized-allow controls |
-| Baselines | v0.0 46-task snapshot preserved; current 49-task reruns pending |
+| Baselines | v0.0 46-task snapshot preserved; 49-task scripted sanity check tracked; model/tool-agent reruns pending |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
@@ -56,6 +56,8 @@ part of the contamination-control design, not a missing file.
 - Docker targets with request-log correlation for live HTTP agents
 - frozen v0.0 public baseline summaries for Kiro no-tools model runs and one
   Kiro live HTTP tool-agent family, stale for current v1 comparison
+- current 49-task scripted sanity baseline proving the expanded public split,
+  scorer, and scripted oracle path agree
 - protected private-holdout summaries published only as redacted aggregate
   evidence
 - leaderboard-submission schema, source-summary validation, benchmark
@@ -318,6 +320,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use and limits
 - [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim ledger
 - [`docs/authzbench-saas-v0.0-technical-report.md`](docs/authzbench-saas-v0.0-technical-report.md): technical report draft
+- [`docs/authzbench-saas-v1-prep-technical-report.md`](docs/authzbench-saas-v1-prep-technical-report.md): current v1-prep report draft
 - [`docs/authzbench-saas-v0.0-evidence-map.md`](docs/authzbench-saas-v0.0-evidence-map.md): claim-to-evidence map
 - [`docs/methodology.md`](docs/methodology.md): scoring methodology
 - [`docs/result-schema.md`](docs/result-schema.md): result artifact schema

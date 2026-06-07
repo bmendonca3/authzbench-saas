@@ -6,12 +6,14 @@ AuthZBench-SaaS v0.0 remains frozen as historical release evidence. v1 begins
 when task bodies, task count, scoring semantics, evidence contracts, or runner
 contracts change. From that point forward, old 46-task baselines are stale for
 current comparison until rerun against the v1 task set and scoring contract.
+`main` is now post-v0 active development; the frozen v0.0 claim boundary lives
+at the v0.0 release/tag and in the release snapshot metadata.
 
 ## Claim Boundary
 
 Use this language while v1 is in progress:
 
-- `v1-prep branch`
+- `main post-v0 active development`
 - `v1 task expansion work`
 - `v1 readiness checklist`
 - `candidate v1 task family`
@@ -28,7 +30,8 @@ Do not claim:
 
 ## Before Adding Tasks
 
-- [ ] Confirm branch is not `main`.
+- [ ] Confirm whether the work is intended for active `main` development or a
+  separate feature branch.
 - [ ] Confirm v0.0 release evidence remains documented as historical evidence.
 - [ ] Define the first task family and its expected authorization boundary.
 - [ ] Identify the target app surface and fixture data needed.

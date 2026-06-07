@@ -20,6 +20,10 @@ well-labeled before any release claim is made.
 
 ## Current, Frozen, And Stale Baselines
 
+- `scripted-baseline-public-49-summary.json`: current v1-prep 49-task
+  deterministic harness sanity-check baseline. It proves the expanded public
+  split, scorer, and scripted oracle path agree; it is not model capability,
+  leaderboard, or v1 release evidence.
 - `scripted-baseline-public-46-summary.json`: frozen v0.0 deterministic
   46-task harness sanity-check baseline.
 - `kiro-qwen3-coder-next-current-public-46-run1-summary.json` and
@@ -102,11 +106,11 @@ well-labeled before any release claim is made.
   stale public-split model snapshots, not current, private-holdout, or
   leaderboard-eligible submissions.
 
-The scripted summary should match the current public split. Older Kiro and live
-HTTP summaries may remain tracked as stale snapshots when the task set expands,
-but they must be rerun before any tagged release or current comparison. Current
-public Kiro summaries must include distinct `run_artifacts` before they count
-as repeated evidence.
+The current scripted summary should match the current public split. Older Kiro
+and live HTTP summaries may remain tracked as stale snapshots when the task set
+expands, but they must be rerun before any current comparison or future release
+claim. Current public Kiro summaries must include distinct `run_artifacts`
+before they count as repeated evidence.
 
 For every model baseline, preserve:
 

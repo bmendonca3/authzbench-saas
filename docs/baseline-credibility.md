@@ -28,9 +28,10 @@ It also labels every summary as one of:
 - `current_public_harness_check`: current public split, but only a deterministic
   harness sanity check.
 - `current_public_stale`: previously current public-split evidence that no
-  longer matches the active public task count and must be rerun before v0.
+  longer matches the active public task count and must be rerun before current
+  comparison.
 - `legacy_snapshot`: useful historical evidence that must be rerun before a
-  release tag.
+  current comparison or future release claim.
 
 It also keeps explicit `release_snapshots`. A release snapshot names the frozen
 baseline IDs and public-split counts for a tagged release such as `v0.0`, so old
@@ -76,6 +77,11 @@ The v0.0 scripted baseline is a 46-task deterministic harness sanity check. It
 proves the scorer, task manifests, and scripted oracle path fit the frozen v0.0
 public split. It is not model capability evidence and is stale for current
 49-task comparison.
+
+The current scripted baseline is a 49-task deterministic harness sanity check.
+It proves the expanded v1-prep public split, scorer, and scripted oracle path
+agree. It is not model capability evidence, a leaderboard row, private-holdout
+evidence, or a substitute for current model/tool-agent reruns.
 
 The v0.0 `qwen3-coder-next` no-tools Kiro baseline has two 46-task public runs.
 It is useful historical public model evidence, but it is still not
@@ -140,7 +146,11 @@ positive rates on controls, uneven exploit-proof success, and weak boundary
 reasoning for several model families. They should be read as historical
 diagnostics, not current rankings.
 
+The registry uses `requires_rerun_before_current_comparison` to mark stale rows.
+That field means the row cannot support live 49-task comparison. It does not
+mean the frozen v0.0 release snapshot itself needs to be rerun.
+
 The next baseline milestone is not another count-filling rerun. It is to keep
 the frozen v0.0 release snapshot separate from future current-public evidence,
-then rerun the scripted, no-tools, and tool-agent baselines after any v1 task or
-scoring change before making new comparisons.
+then rerun the no-tools and tool-agent baselines after any v1 task or scoring
+change before making new comparisons.

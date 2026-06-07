@@ -3,8 +3,8 @@
 This file maps paper/report claims to public-safe repository evidence. It is
 intended to keep external writing grounded and to prevent accidental
 overclaiming.
-On the `v1-task-expansion` branch, the live public split has expanded to 49
-tasks. This file preserves the frozen v0.0 46-task release evidence map.
+On current `main`, the live public split has expanded to 49 tasks. This file
+preserves the frozen v0.0 46-task release evidence map.
 
 ## Source Files Inspected
 
@@ -83,7 +83,7 @@ Baseline and evidence files:
 | Public-split scores are private leaderboard rankings. | Public tasks are inspectable and intended for reproducibility/integration. |
 | The benchmark proves production vulnerability-discovery ability. | Targets are synthetic local fixtures. |
 | The benchmark measures broad cyber capability. | Scope is SaaS authorization proof quality. |
-| Current baselines establish definitive model rankings. | Runs are diagnostic, public-split evidence with limited scale and no private leaderboard operation. |
+| Public baseline rows establish definitive model rankings. | Runs are diagnostic, public-split evidence with limited scale and no private leaderboard operation. |
 | Boundary-reasoning failures alone prove the models cannot reason about authorization. | The scorer is strict and should be studied; the result is a benchmark signal, not a universal model-capability conclusion. |
 
 ## Current Baseline Table
