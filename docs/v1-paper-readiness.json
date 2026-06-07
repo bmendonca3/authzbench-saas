@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "a1b8b000d1b4789d03f780c969224e69f08f7b2f",
+  "benchmark_source_sha": "5ad9d11daa45b9b6f34297bf8a0305d8c587c294",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "v1_prep_preflight",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "The paper preflight source is pinned to the current Haiku 54-task evidence promotion, which includes the earlier telemetry hardening that separates scorer-derived finding totals from optional adapter telemetry and aligns protected false-positive semantics with the public runner. The Haiku promotion passed local validation, independent internal audit, and exact-head CI run 27102791303 on its preflight descendant. Final paper readiness remains incomplete.",
+    "ci_refresh_note": "The paper preflight source is pinned to the verified Haiku 54-task evidence and review-record checkpoint, which includes the earlier telemetry hardening that separates scorer-derived finding totals from optional adapter telemetry and aligns protected false-positive semantics with the public runner. Exact-head CI run 27102791303 passed on the prior preflight descendant. Run 27102829604 correctly rejected the next evidence-recording commit because this source pin had not yet advanced; exact-head CI for the corrective preflight descendant remains required. Final paper readiness remains incomplete.",
     "prior_exact_head_ci": {
       "commit_sha": "9cd06e2b017a3071ccb398026654c78e949fbe3f",
       "conclusion": "success",
