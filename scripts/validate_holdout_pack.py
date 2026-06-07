@@ -97,6 +97,7 @@ def validate_holdout_pack(
     patterns: list[str],
     *,
     public_patterns: list[str],
+    comparison_private_patterns: list[str] | None = None,
     min_count: int,
     preferred_count: int,
     max_count: int,
@@ -120,16 +121,26 @@ def validate_holdout_pack(
 
     holdout_manifests = _load_manifest_metadata(patterns)
     public_manifests = _load_manifest_metadata(public_patterns)
+    comparison_private_manifests = _load_manifest_metadata(comparison_private_patterns or [])
     app_counts = Counter(str(item.get("app")) for item in holdout_manifests)
     public_ids = {str(item.get("id")) for item in public_manifests}
     public_seeds = {str(item.get("seed")) for item in public_manifests}
     public_signatures = {_public_structure_signature(item) for item in public_manifests}
+    comparison_private_signatures = {
+        _public_structure_signature(item) for item in comparison_private_manifests
+    }
     holdout_ids = {str(item.get("id")) for item in holdout_manifests}
     holdout_seeds = {str(item.get("seed")) for item in holdout_manifests}
     rehearsal_count = sum(1 for item in holdout_manifests if _is_rehearsal_manifest(item))
     structure_overlap_count = sum(
         1 for item in holdout_manifests if _public_structure_signature(item) in public_signatures
     )
+    private_structure_overlaps = {
+        _public_structure_signature(item)
+        for item in holdout_manifests
+        if _public_structure_signature(item) in comparison_private_signatures
+    }
+    private_structure_overlap_count = len(private_structure_overlaps)
     non_rehearsal_structure_overlaps = [
         str(item.get("id"))
         for item in holdout_manifests
@@ -194,6 +205,11 @@ def validate_holdout_pack(
             "non-rehearsal holdout manifest(s) reuse public task structure: "
             f"{', '.join(non_rehearsal_structure_overlaps[:5])}"
         )
+    if private_structure_overlap_count:
+        errors.append(
+            "holdout pack reuses "
+            f"{private_structure_overlap_count} structural fingerprint(s) from comparison private pack"
+        )
     if rehearsal_count:
         warnings.append(
             "holdout pack contains rehearsal manifests generated from public task structure; "
@@ -225,6 +241,7 @@ def validate_holdout_pack(
             "decoy_variant_count": len(decoy_variants),
             "rehearsal_manifest_count": rehearsal_count,
             "public_structure_overlap_count": structure_overlap_count,
+            "private_structure_overlap_count": private_structure_overlap_count,
             "leaderboard_suitable": leaderboard_suitable,
             "warnings": warnings,
             "passed": not errors,
@@ -241,6 +258,11 @@ def main() -> int:
         "--public-task",
         action="append",
         help="Public manifest glob used to reject reused task IDs and seeds. Can be repeated.",
+    )
+    parser.add_argument(
+        "--comparison-private-task",
+        action="append",
+        help="Existing private-pack glob used to reject structural overlap. Can be repeated.",
     )
     parser.add_argument("--min-count", type=int, default=20)
     parser.add_argument("--preferred-count", type=int, default=24)
@@ -260,6 +282,7 @@ def main() -> int:
     result = validate_holdout_pack(
         patterns,
         public_patterns=public_patterns,
+        comparison_private_patterns=args.comparison_private_task,
         min_count=args.min_count,
         preferred_count=args.preferred_count,
         max_count=args.max_count,

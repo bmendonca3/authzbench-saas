@@ -624,6 +624,54 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn("candidate-pack: pack path duplicates another declared private pack", result["unmet"])
 
+    def test_rotation_metadata_compares_declared_private_pack_structures(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            holdout = root / "tasks_private" / "holdout"
+            for pack_name in ("active-pack", "candidate-pack"):
+                pack = holdout / pack_name / "billing"
+                pack.mkdir(parents=True)
+                (pack / "task.json").write_text("{}\n", encoding="utf-8")
+            metadata = holdout / "rotation-metadata.json"
+            metadata.write_text(
+                json.dumps(
+                    {
+                        "packs": [
+                            {
+                                "id": "active-pack",
+                                "role": "active",
+                                "path": "tasks_private/holdout/active-pack",
+                            },
+                            {
+                                "id": "candidate-pack",
+                                "role": "candidate",
+                                "path": "tasks_private/holdout/candidate-pack",
+                            },
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            invalid_result = {
+                "passed": False,
+                "leaderboard_suitable": False,
+                "manifest_count": 0,
+            }
+
+            with patch(
+                "scripts.validate_v1_readiness.validate_holdout_pack",
+                return_value=invalid_result,
+            ) as validator:
+                result = _validate_private_rotation_metadata(root)
+
+        self.assertFalse(result["passed"])
+        self.assertEqual(validator.call_count, 2)
+        first_comparison = validator.call_args_list[0].kwargs["comparison_private_patterns"]
+        second_comparison = validator.call_args_list[1].kwargs["comparison_private_patterns"]
+        self.assertEqual(first_comparison, [])
+        self.assertEqual(len(second_comparison), 1)
+        self.assertIn("active-pack", second_comparison[0])
+
     def test_clean_tree_check_rejects_untracked_inputs_except_release_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

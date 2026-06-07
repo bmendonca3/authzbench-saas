@@ -56,6 +56,7 @@ def _write_tasks(root: Path, tasks: list[dict[str, Any]]) -> list[str]:
 def _validate(patterns: list[str], **overrides: Any) -> dict[str, Any]:
     params = {
         "public_patterns": [str(ROOT / "tasks" / "*" / "*.json")],
+        "comparison_private_patterns": None,
         "min_count": 20,
         "preferred_count": 24,
         "max_count": 30,
@@ -312,6 +313,49 @@ class HoldoutValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertEqual(result["public_structure_overlap_count"], 1, result)
         self.assertTrue(any("reuse public task structure" in error for error in result["errors"]), result)
+
+    def test_rejects_structure_reused_from_comparison_private_pack(self) -> None:
+        task = next(task for tasks in _public_tasks_by_app().values() for task in tasks)
+        source_private = _private_copy(task, 1)
+        candidate_private = copy.deepcopy(source_private)
+        candidate_private["id"] = "candidate_private_task"
+        candidate_private["seed"] = "private-v1-candidate-seed"
+        candidate_private["holdout_variant"] = {
+            "route_variant": "candidate-route",
+            "decoy_variant": "candidate-decoy",
+        }
+        duplicate_candidate_private = copy.deepcopy(candidate_private)
+        duplicate_candidate_private["id"] = "candidate_private_task_duplicate"
+        duplicate_candidate_private["seed"] = "private-v1-candidate-duplicate-seed"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source_patterns = _write_tasks(root / "source-pack", [source_private])
+            candidate_patterns = _write_tasks(
+                root / "candidate-pack",
+                [candidate_private, duplicate_candidate_private],
+            )
+            result = _validate(
+                candidate_patterns,
+                comparison_private_patterns=source_patterns,
+                min_count=1,
+                max_count=5,
+                min_vulnerable=0,
+                min_controls=0,
+                min_apps=1,
+                max_per_app=5,
+                min_denial_controls=0,
+                min_authorized_allow_controls=0,
+                min_route_variants=1,
+                min_decoy_variants=1,
+            )
+
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["private_structure_overlap_count"], 1, result)
+        self.assertTrue(
+            any("structural fingerprint(s) from comparison private pack" in error for error in result["errors"]),
+            result,
+        )
 
 
 if __name__ == "__main__":

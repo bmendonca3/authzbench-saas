@@ -371,10 +371,23 @@ The goal is complete only when all of these are true:
   - `scripts/validate_v1_readiness.py` validates safe pack paths, unique pack
     IDs and task IDs, exactly one active pack, at least one shadow/candidate
     pack, manifest quality thresholds, and active-pack fingerprinting;
+  - `scripts/validate_holdout_pack.py` rejects private-to-private structural
+    overlap through `comparison_private_patterns`, and
+    `scripts/validate_v1_readiness.py` validates each successive declared pack
+    against all preceding private-pack fingerprints without emitting private
+    task IDs, seeds, routes, oracle strings, or manifest bodies;
+  - the standalone holdout validator exposes `--comparison-private-task` for
+    manual cross-pack validation before any shadow or candidate pack is promoted;
   - public validation uses `--public-view` so ignored private checkout state
     cannot change clean-clone expected output;
-  - focused rotation, duplicate-path, fingerprint, and public-view tests pass in
-    `tests/test_v1_readiness_validator.py`.
+  - focused rotation, duplicate-path, fingerprint, private-to-private overlap,
+    and public-view tests pass in `tests/test_v1_readiness_validator.py` and
+    `tests/test_holdout_validator.py`;
+  - the independent review record in
+    `docs/reviews/2026-06-07-private-holdout-overlap-review-summary.md`
+    documents the bounded Kiro Opus passes, the accepted unique-fingerprint
+    count correction, the post-fix `CLEAN` verdict, and the boundary that
+    actual active plus shadow/candidate pack implementation remains open.
 
 ### Repeated Private Tool-Agent Evidence Gate
 

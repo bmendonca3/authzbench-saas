@@ -280,6 +280,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
     seen_ids: set[str] = set()
     seen_pack_paths: set[Path] = set()
     seen_task_ids: set[str] = set()
+    comparison_private_patterns: list[str] = []
     for index, pack in enumerate(packs, start=1):
         if not isinstance(pack, dict):
             unmet.append(f"packs[{index}] must be an object")
@@ -321,6 +322,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         result = validate_holdout_pack(
             [pattern],
             public_patterns=[str(root / "tasks" / "*" / "*.json")],
+            comparison_private_patterns=list(comparison_private_patterns),
             min_count=20,
             preferred_count=24,
             max_count=40,
@@ -333,6 +335,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
             min_route_variants=6,
             min_decoy_variants=6,
         )
+        comparison_private_patterns.append(pattern)
         if not result["passed"]:
             unmet.append(f"{pack_id}: private pack manifests do not validate")
             continue
