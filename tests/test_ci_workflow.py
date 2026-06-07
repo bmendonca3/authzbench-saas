@@ -20,6 +20,7 @@ class CiWorkflowTests(unittest.TestCase):
         self.assertRegex(text, r"(?m)^\s+- main\s*$")
         self.assertRegex(text, r"(?m)^jobs:\s*$")
         self.assertIn("actions/checkout@v6", text)
+        self.assertRegex(text, r"(?m)^\s+fetch-depth:\s*0\s*$")
         self.assertIn("actions/setup-python@v6", text)
         self.assertIn('FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"', text)
         self.assertRegex(text, r"(?m)^\s+python-version:\s*[\"']?3\.11[\"']?\s*$")
