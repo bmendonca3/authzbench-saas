@@ -40,10 +40,9 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   socket is unavailable.
 - [ ] GitHub Actions no longer relies on the deprecated Node 20 default for
   JavaScript actions.
-  Blocker: GitHub rejected the workflow-file update because the current token
-  does not have `workflow` scope. Leave this open until the workflow can be
-  updated and a pushed `main` run confirms the warning is gone. Run
-  `27083165359` still reports the Node 20 deprecation annotation.
+  Evidence pending: workflow now opts into Node 24 with
+  `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`; leave this open until a pushed
+  `main` run confirms the Node 20 annotation is gone.
 - [x] Focused tests for changed validation behavior pass.
   Evidence: `python3 -m unittest discover -s tests -p
   'test_validate_public.py'` and the full test suite pass.
