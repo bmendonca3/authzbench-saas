@@ -40,9 +40,9 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   socket is unavailable.
 - [ ] GitHub Actions no longer relies on the deprecated Node 20 default for
   JavaScript actions.
-  Evidence pending: workflow now opts into Node 24 with
-  `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true`; leave this open until a pushed
-  `main` run confirms the Node 20 annotation is gone.
+  Evidence pending: workflow now opts into Node 24 and uses Node-24-native
+  `actions/checkout@v6` and `actions/setup-python@v6`; leave this open until a
+  pushed `main` run confirms the Node 20 annotation is gone.
 - [x] Focused tests for changed validation behavior pass.
   Evidence: `python3 -m unittest discover -s tests -p
   'test_validate_public.py'` and the full test suite pass.
