@@ -555,7 +555,7 @@ The goal is complete only when all of these are true:
     paper-preflight commit `9cd06e2b017a3071ccb398026654c78e949fbe3f`
     are authored as `bmendonca3`, pushed to `main` and `v1-task-expansion`, and
     exact-head GitHub Actions run `27102791303` passed.
-  - [ ] `claude-sonnet-4.6` has two runner-emitted 54-task base summaries with
+  - [x] `claude-sonnet-4.6` has two runner-emitted 54-task base summaries with
     distinct run IDs, the active fingerprint, complete 54-task artifacts, zero
     adapter/runner failures, and zero invalid submissions.
     Evidence: run `20260607T194520410841Z-23511868` passes 32 tasks, proves 15
@@ -564,8 +564,20 @@ The goal is complete only when all of these are true:
     replays, and has 21 scorer-counted findings. Both keep boundary reasoning at
     `0.0` and fully pass zero vulnerable tasks. Run 1 falsely reports the
     authorized-allow admin reassignment control; run 2 falsely reports the
-    secure viewer-status denial control. Promotion audit, commit/push, and
-    exact-head CI remain required before this subitem may close.
+    secure viewer-status denial control. Kiro Claude Opus 4.8 and 4.6 audits,
+    plus a post-fix Opus 4.6 audit, returned `VERDICT: CLEAN`; the only
+    low-severity test-coverage suggestion was fixed. Local verification
+    included 194 passing tests, exact raw-to-promoted JSON fidelity after
+    stripping declared review annotations, 54 complete task bundles per run,
+    zero return-code/parse failures across 108 model outputs, public validation
+    with the 54-task scripted baseline, strict v0, registry, leaderboard,
+    deterministic chart/table, paper compile, whitespace, and privacy checks.
+    Local container smoke remained unavailable because the Docker Desktop
+    socket was absent. Promotion commit
+    `e1b7dcf43338b8baa97c117493700b3dddbf0211` and paper-preflight commit
+    `c3c3d702d1f8fd6eccfca76ad523da2651ac46aa` are authored as `bmendonca3`,
+    pushed to `main` and `v1-task-expansion`, and exact-head GitHub Actions run
+    `27103482713` passed.
   - [ ] `glm-5` and `claude-opus-4.6` no-tools families each have two
     runner-emitted 54-task summaries;
   - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs

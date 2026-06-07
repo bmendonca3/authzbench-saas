@@ -1,8 +1,7 @@
 # Current 54-Task Sonnet Evidence Review Summary
 
-Status: independent audits and local integration complete; commit/push and
-exact-head CI remain open. This is internal review evidence, not one of the
-three required external v1 review lanes.
+Status: promotion gate complete. This is internal review evidence, not one of
+the three required external v1 review lanes.
 
 ## Scope
 
@@ -71,8 +70,15 @@ totals and add only public-safe artifact-review diagnostics.
   fatal error was present.
 - `git diff --check` passed and the tracked private/raw-path scan was empty.
 - Local container smoke was not rerun because the Docker Desktop socket was
-  unavailable. Exact-head CI remains required before this promotion closes.
+  unavailable. Exact-head GitHub Actions run `27103482713` passed public
+  validation on preflight commit
+  `c3c3d702d1f8fd6eccfca76ad523da2651ac46aa`.
+- Promotion commit `e1b7dcf43338b8baa97c117493700b3dddbf0211` and paper-preflight
+  commit `c3c3d702d1f8fd6eccfca76ad523da2651ac46aa` are authored as
+  `bmendonca3` and pushed to both `main` and `v1-task-expansion`.
 
 ## Completion Gate
 
-This review remains open until commit/push and exact-head CI pass.
+Complete for the current 54-task Sonnet public-split promotion. This does not
+close the external-review, current tool-agent, private-holdout, or v1 release
+gates.
