@@ -1,0 +1,23 @@
+Expected public validation summary
+
+Stable signals:
+
+- unit tests pass
+- public task manifests validate
+- baseline registry validates
+- protected redacted evidence validates
+- v0 release gates pass
+- task-quality matrix regeneration has no tracked diff
+- public chart regeneration has no tracked diff
+- leaderboard examples validate
+- Python modules compile
+- privacy scan passes
+- optional scripted public baseline passes all 46 public tasks
+
+Volatile details intentionally excluded:
+
+- timestamps
+- temporary directories
+- local machine paths
+- per-task raw run bundles
+- network port lines

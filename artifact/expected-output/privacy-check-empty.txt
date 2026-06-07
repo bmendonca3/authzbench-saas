@@ -1,0 +1,13 @@
+Expected tracked-path privacy check output
+
+Command:
+
+the tracked private/raw path check in artifact/run-public-validation.sh
+
+Expected stdout:
+
+(empty)
+
+Expected exit status:
+
+0

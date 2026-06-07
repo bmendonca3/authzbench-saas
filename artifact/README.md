@@ -11,6 +11,33 @@ here.
 - `run-public-validation.sh`: bounded public validation entrypoint.
 - `expected-output/`: reserved for public-safe expected outputs after the
   validation packet is frozen.
+- `run-bundle.md`: guidance for packaging and checking submitted run evidence.
+
+## Public Validation
+
+Run the public validation entrypoint from the repository root:
+
+```bash
+artifact/run-public-validation.sh
+```
+
+The script runs the public validation gate, baseline registry validation,
+leaderboard submission validation, and the tracked-path privacy check. Its final
+line should be:
+
+```text
+Artifact privacy check passed: no private/raw artifact paths are tracked.
+```
+
+Paper table reproducibility is checked separately:
+
+```bash
+python3 scripts/generate_paper_tables.py
+git diff --exit-code -- paper/shared
+```
+
+The expected-output fixtures in `artifact/expected-output/` summarize stable
+public-safe signals only. They are not raw run bundles.
 
 ## Claim Boundary
 
