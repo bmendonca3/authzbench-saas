@@ -42,23 +42,30 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   JavaScript actions.
   Blocker: GitHub rejected the workflow-file update because the current token
   does not have `workflow` scope. Leave this open until the workflow can be
-  updated and a pushed `main` run confirms the warning is gone.
+  updated and a pushed `main` run confirms the warning is gone. Run
+  `27083165359` still reports the Node 20 deprecation annotation.
 - [x] Focused tests for changed validation behavior pass.
   Evidence: `python3 -m unittest discover -s tests -p
   'test_validate_public.py'` and the full test suite pass.
 - [x] Full public validation without local Docker smoke passes.
   Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`
   passes on the current 49-task public split.
-- [ ] Docker-backed public validation is confirmed by GitHub Actions on `main`.
-  Blocker: pending push and new workflow run on `main`.
+- [x] Docker-backed public validation is confirmed by GitHub Actions on `main`.
+  Evidence: GitHub Actions run `27083165359` passed on `main` for commit
+  `01435f406316641658520bc4e27cef0cbb2e460d`.
 - [x] Privacy scan shows no tracked private holdouts, raw results, captures, or
   panel logs.
   Evidence: `git ls-files tasks_private/holdout results captures
   docs/reviews/panel-logs` returns no tracked paths.
-- [ ] Working tree is clean after generated validation artifacts are removed.
-  Blocker: pending commit.
-- [ ] Commit is authored as `bmendonca3` and pushed to `main`.
-  Blocker: pending commit and push.
+- [x] Tracked working tree is clean after generated validation artifacts are
+  removed.
+  Evidence: generated `results/validation-scripted-baseline/...` output was
+  removed after validation, leaving no tracked working-tree changes before the
+  pushed implementation commit.
+- [x] Commit is authored as `bmendonca3` and pushed to `main`.
+  Evidence: commit `01435f406316641658520bc4e27cef0cbb2e460d` is authored and
+  committed as `bmendonca3 <bmendonca3@users.noreply.github.com>` and is present
+  on both `origin/main` and `origin/v1-task-expansion`.
 
 ### Open Perfection Gaps
 
