@@ -48,10 +48,11 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   'test_validate_public.py'` and the full test suite pass.
 - [x] Full public validation without local Docker smoke passes.
   Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`
-  passes on the current 49-task public split.
+  passed on commit `ede97d01ecb708feb24985dec0fc3b51d37ac7d1` for the current
+  49-task public split.
 - [x] Docker-backed public validation is confirmed by GitHub Actions on `main`.
-  Evidence: GitHub Actions run `27083165359` passed on `main` for commit
-  `01435f406316641658520bc4e27cef0cbb2e460d`.
+  Evidence: GitHub Actions run `27083952334` passed on `main` for commit
+  `ede97d01ecb708feb24985dec0fc3b51d37ac7d1`.
 - [x] Privacy scan shows no tracked private holdouts, raw results, captures, or
   panel logs.
   Evidence: `git ls-files tasks_private/holdout results captures
@@ -62,7 +63,7 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   removed after validation, leaving no tracked working-tree changes before the
   pushed implementation commit.
 - [x] Commit is authored as `bmendonca3` and pushed to `main`.
-  Evidence: commit `01435f406316641658520bc4e27cef0cbb2e460d` is authored and
+  Evidence: commit `ede97d01ecb708feb24985dec0fc3b51d37ac7d1` is authored and
   committed as `bmendonca3 <bmendonca3@users.noreply.github.com>` and is present
   on both `origin/main` and `origin/v1-task-expansion`.
 - [x] One current 49-task no-tools model-family baseline has repeated tracked
