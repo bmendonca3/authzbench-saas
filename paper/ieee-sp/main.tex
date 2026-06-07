@@ -73,17 +73,60 @@ full vulnerable-task passes because boundary reasoning remains weak.
 
 \section{Related Work}
 
-\benchmarkname{} sits at the intersection of API authorization testing,
-cybersecurity evaluation for language models, agent benchmarks, and benchmark
-documentation. OWASP API Security Top 10 distinguishes object-level and
-function-level authorization risks~\cite{owasp-api-top10-2023}. Cybersecurity
-evaluation suites such as CyberSecEval motivate narrower, evidence-backed cyber
-capabilities~\cite{bhatt2024cyberseceval2,bhatt2024cyberseceval3}. Agent
-benchmarks such as SWE-bench motivate task-level environments and reproducible
-grading~\cite{jimenez2024swebench}. Model cards and datasheets inform the
-repository's claim ledger and documentation
-discipline~\cite{mitchell2019modelcards,gebru2021datasheets}. The IEEE S\&P
-scaffold follows the venue-facing formatting path noted in the current call for
+\paragraph{Authorization and API security testing.}
+API authorization failures are a recurring SaaS security class because the
+security decision depends on object ownership, tenant membership, role,
+function, and token scope rather than on authentication alone. The OWASP API
+Security Top 10 treats broken object-level authorization and broken
+function-level authorization as separate high-priority risks, which matches the
+benchmark's split between cross-object or cross-tenant access, role-bound admin
+actions, and secure controls~\cite{owasp-api-top10-2023}. \benchmarkname{}
+inherits this emphasis but converts it into scorer-owned replay: a submitted
+finding is not enough unless the backend request, actor, and object boundary can
+be checked against the task oracle.
+
+\paragraph{AI cyber benchmarks.}
+Broad cyber evaluation suites measure multiple risk and capability categories
+for language models, including exploit assistance, secure-code reasoning, and
+offensive or defensive workflows~\cite{bhatt2024cyberseceval2,
+bhatt2024cyberseceval3}. Those suites motivate careful task construction and
+clear risk boundaries, but their breadth can make it difficult to isolate one
+security skill. \benchmarkname{} is intentionally narrower: it measures whether
+an agent can prove SaaS authorization failures and avoid false reports on paired
+controls. The release therefore should be read as a focused authorization-proof
+artifact, not a broad cyber-capability benchmark.
+
+\paragraph{Agent and software-engineering benchmarks.}
+Agent benchmarks increasingly use executable environments and task-level
+grading so results are tied to observable behavior rather than free-form
+claims. SWE-bench, for example, popularized repository-grounded issue tasks and
+automated grading for software-engineering agents~\cite{jimenez2024swebench}.
+\benchmarkname{} applies the same general lesson to API security: the unit of
+evaluation is an executable task with expected evidence, controls, and a
+scoring contract. Unlike code-repair benchmarks, however, the central artifact
+is a replayable authorization proof and a false-positive decision on secure
+routes.
+
+\paragraph{Benchmark documentation and artifact practice.}
+Model cards and datasheets provide useful precedents for documenting intended
+use, evidence limits, evaluation context, and misuse risk~\cite{
+mitchell2019modelcards,gebru2021datasheets}. \benchmarkname{} uses that style
+of documentation discipline through its benchmark card, evidence-and-claims
+ledger, release evidence, and artifact validation script. This matters because
+public-split results are easy to overread: the repository can support
+reproducible public validation without becoming a hosted leaderboard or a final
+ordering of model quality.
+
+\paragraph{Positioning of \benchmarkname{}.}
+\benchmarkname{} differs from broad cyber suites and general agent benchmarks
+by making authorization proof quality the primary object of study. Its current
+\releaseversion{} contribution is the combination of synthetic SaaS tasks,
+paired secure controls, replayable backend evidence, boundary-reasoning fields,
+public-safe baselines, and an explicit claim boundary. That combination is meant
+to make the proof gap inspectable: agents may find exploitable routes while
+still failing to name the tenant, actor, role, object, or scope boundary that
+makes the route a vulnerability. The IEEE S\&P scaffold follows the
+venue-facing formatting path noted in the current call for
 papers~\cite{ieeesp2026cfp}.
 
 \section{Ethical Considerations}
@@ -104,9 +147,9 @@ validation path.
 \section{Limitations}
 
 The \releaseversion{} public split is small, synthetic, and inspectable. The
-current baseline table is not a definitive model ranking. Hosted leaderboard
-operation, rotating private holdouts, broader isolation, external review, and
-100+ task scale are future v1 work.
+current baseline table is diagnostic public-split evidence, not a final ordering
+of model quality. Hosted leaderboard operation, rotating private holdouts,
+broader isolation, external review, and 100+ task scale are future v1 work.
 
 \section{LLM Usage Considerations}
 

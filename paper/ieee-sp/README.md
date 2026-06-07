@@ -29,6 +29,9 @@ After generation, tracked table files should be stable:
 git diff --exit-code -- paper/shared
 ```
 
+Treat both commands as a reproducibility check before paper commits. A clean
+diff means the shared LaTeX tables still match the tracked benchmark artifacts.
+
 ## Figures
 
 Public-safe chart sources live under:
@@ -50,6 +53,23 @@ The current scaffold documents these charts but does not require conversion to
 compile the draft. If figures are added to `main.tex`, convert SVG sources to
 PDF under `paper/ieee-sp/figures/` first and keep the conversion command in this
 README.
+
+Figure inclusion is deferred for the current scaffold. The SVG chart sources are
+public-safe and useful for draft planning, but the paper needs a deliberate
+conversion choice before committing figure PDFs:
+
+- task mix: source `docs/assets/benchmark-charts/task-mix.svg`
+- exploit proof vs boundary reasoning: sources
+  `docs/assets/benchmark-charts/exploit-proven-success.svg` and
+  `docs/assets/benchmark-charts/boundary-reasoning.svg`
+- false-positive rate: source
+  `docs/assets/benchmark-charts/false-positive-rate.svg`
+- evidence readiness: source
+  `docs/assets/benchmark-charts/evidence-readiness.svg`
+
+Before enabling figures in `main.tex`, verify that the converted files are
+readable in a two-column IEEE layout and that they do not imply hosted
+leaderboard operation or private-holdout rankings.
 
 ## Build
 
