@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "47790857146f21ff52ef800dc92f75da205f29f9",
+  "benchmark_source_sha": "805226e7d18703a649aa3834bf6d403b41055b3a",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "v1_prep_preflight",
@@ -10,8 +10,8 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "GitHub Actions run 27100165515 on commit 47790857146f21ff52ef800dc92f75da205f29f9 failed because the public v1-readiness fixture still reflected the previous paper preflight source SHA; this evidence refresh updates the source SHA and fixture without marking final paper readiness complete.",
-    "exact_head_ci": {
+    "ci_refresh_note": "The paper preflight source was refreshed after hardening Kiro baseline JSON extraction. Exact-head CI must be rerun after this evidence update; final paper readiness remains incomplete.",
+    "prior_exact_head_ci": {
       "commit_sha": "b163e90cc8c96a9b3c8e61f784f8999603c809ea",
       "conclusion": "success",
       "run_id": 27100247433,
