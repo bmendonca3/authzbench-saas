@@ -92,13 +92,15 @@ mixed with current evidence without a compatibility label.
 - Five current 49-task public no-tools Kiro model-family baselines exist as
   repeated diagnostic evidence. They are not private-holdout, tool-agent,
   hosted-leaderboard, or v1 release evidence.
+- One current 49-task public live HTTP Kiro tool-agent baseline exists as
+  repeated diagnostic evidence with 49/49 target-request correlation in both
+  runs. It is not private-holdout, hosted-leaderboard, or v1 release evidence.
 - The repeated 46-task public live HTTP tool-agent baseline remains auditable as
-  frozen v0.0 evidence, but it is stale for the current 49-task split. The
-  older 44-task baselines are retained as stale public-split snapshots only.
+  frozen v0.0 evidence, but it is stale for the current 49-task split. The older
+  44-task baselines are retained as stale public-split snapshots only.
 - Baseline registry validation is present and currently reports the baseline
-  sub-gate as incomplete for the live 49-task split because the current
-  tool-agent rerun is still missing, while keeping public-split and
-  private-holdout claims separate.
+  sub-gate as complete for the live 49-task public baseline bar, while keeping
+  public-split and private-holdout claims separate.
 - Stable leaderboard submission validation is present. A source-backed
   protected private no-tools row with runner-emitted fingerprint provenance is
   eligible as release-candidate schema evidence. An older reconstructed

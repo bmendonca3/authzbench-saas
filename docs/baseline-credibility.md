@@ -40,11 +40,11 @@ as current-comparable evidence.
 
 ## v0 Baseline Bar
 
-The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
+The baseline sub-gate currently reports `v0_baseline_ready: true` for the live
 49-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
-46-task release snapshot. The old 46-task evidence includes five repeated
-model/agent families: four no-tools model-family baselines and one live HTTP
-tool-agent family.
+46-task release snapshot. The live 49-task public split has five repeated
+no-tools model-family baselines plus one repeated live HTTP tool-agent family.
+The old 46-task evidence remains auditable as frozen v0.0 release evidence.
 
 The v0 baseline bar is:
 
@@ -91,6 +91,17 @@ no-tools model-family repeat gate, but they are still public-split diagnostic
 evidence only. They are not private-holdout, live HTTP tool-agent,
 hosted-leaderboard, or v1 release evidence, and all five families still have
 `boundary_reasoning_pass_rate: 0.0`.
+
+The current 49-task `claude-sonnet-4.6` live HTTP Kiro tool-agent baseline has
+two runs using benchmark commit
+`3d4293cd24305ad410ddad8cb68654bf10adc9ff`. Both runs write one
+`model-tool-plan.json` and one `tool-probes.json` artifact per task, correlate
+target-side requests for all 49 tasks, and report zero planner failures and zero
+parser failures. Run 1 executed 124 probes and run 2 executed 126 probes; both
+proved 15 of 20 vulnerable replays, produced zero secure-control false reports,
+and still fully passed zero vulnerable tasks because vulnerable boundary
+reasoning remained `0.0`. This closes the current public tool-agent rerun gate,
+but it is not private-holdout, hosted-leaderboard, or v1 release evidence.
 
 The v0.0 `qwen3-coder-next` no-tools Kiro baseline has two 46-task public runs.
 It is useful historical public model evidence, but it is still not
@@ -159,7 +170,8 @@ The registry uses `requires_rerun_before_current_comparison` to mark stale rows.
 That field means the row cannot support live 49-task comparison. It does not
 mean the frozen v0.0 release snapshot itself needs to be rerun.
 
-The next baseline milestone is not another count-filling rerun. It is to keep
-the frozen v0.0 release snapshot separate from future current-public evidence,
-then rerun the no-tools and tool-agent baselines after any v1 task or scoring
-change before making new comparisons.
+The next baseline milestone is not another count-filling public rerun. It is to
+keep the frozen v0.0 release snapshot separate from future current-public
+evidence, rerun the no-tools and tool-agent baselines after any v1 task or
+scoring change before making new comparisons, and pair future public baselines
+with private-holdout governance before making leaderboard claims.

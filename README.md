@@ -37,7 +37,7 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Public apps | 6 synthetic SaaS targets |
 | Public tasks | 49 total: 20 vulnerable, 29 secure controls |
 | Control mix | 17 denial controls, 12 authorized-allow controls |
-| Baselines | v0.0 46-task snapshot preserved; 49-task scripted sanity and five no-tools model-family reruns tracked; live HTTP tool-agent rerun pending |
+| Baselines | v0.0 46-task snapshot preserved; 49-task scripted sanity, five no-tools model-family reruns, and one repeated live HTTP tool-agent rerun tracked |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
@@ -58,6 +58,9 @@ part of the contamination-control design, not a missing file.
   Kiro live HTTP tool-agent family, stale for current v1 comparison
 - current 49-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
+- current 49-task repeated Kiro no-tools model-family baselines and one repeated
+  Kiro live HTTP tool-agent baseline with 49/49 target-request correlation in
+  both tool-agent runs
 - protected private-holdout summaries published only as redacted aggregate
   evidence
 - leaderboard-submission schema, source-summary validation, benchmark
@@ -250,6 +253,10 @@ Important interpretation:
   evidence but must be rerun before current/v1 comparison.
 - The frozen v0.0 no-tools and tool-agent runs showed weak boundary reasoning on
   vulnerable tasks, even when exploit replay succeeded.
+- Current 49-task public-split runs now include repeated no-tools evidence for
+  five model families and a repeated live HTTP tool-agent family, but they remain
+  public-split diagnostic evidence rather than hosted leaderboard or private
+  holdout rankings.
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and
@@ -305,12 +312,11 @@ benchmark until the hosted or containerized leaderboard process exists.
 
 The next path is:
 
-1. Add repeated private tool-agent evidence.
-2. Expand multi-step workflow realism across more app families.
-3. Implement rotating private holdout packs.
-4. Add research-grade variance analysis and external review.
-5. Build a hosted or fully containerized submission path.
-6. Keep release docs and claim boundaries synchronized after every tagged
+1. Expand multi-step workflow realism across more app families.
+2. Implement rotating private holdout packs.
+3. Add research-grade boundary-reasoning calibration and external review.
+4. Build a hosted or fully containerized submission path.
+5. Keep release docs and claim boundaries synchronized after every tagged
    release.
 
 See [`ROADMAP.md`](ROADMAP.md).

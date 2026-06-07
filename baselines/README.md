@@ -49,6 +49,14 @@ well-labeled before any release claim is made.
   v1-prep 49-task public split no-tools Opus runs through the Kiro adapter.
   These count as one current public model-family baseline, but they are not
   private-holdout, tool-agent, or leaderboard-eligible submissions.
+- `kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json` and
+  `kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json`: repeated
+  current v1-prep 49-task public split live HTTP tool-agent runs using
+  `claude-sonnet-4.6` through the Kiro adapter. Both runs write one model-tool
+  plan artifact and one tool-probe artifact per task, correlate target-side
+  requests for all 49 tasks, and have zero planner failures or parser failures.
+  These count as the current public tool-agent baseline family, but they are not
+  private-holdout or leaderboard-eligible submissions.
 - `scripted-baseline-public-46-summary.json`: frozen v0.0 deterministic
   46-task harness sanity-check baseline.
 - `kiro-qwen3-coder-next-current-public-46-run1-summary.json` and
@@ -136,8 +144,9 @@ and live HTTP summaries may remain tracked as stale snapshots when the task set
 expands, but they must be rerun before any current comparison or future release
 claim. Current public Kiro summaries must include distinct `run_artifacts`
 before they count as repeated evidence. As of the 49-task v1-prep public split,
-the no-tools model-family gate has five repeated current public families; the
-current live HTTP tool-agent rerun remains open.
+the no-tools model-family gate has five repeated current public families and the
+current live HTTP tool-agent gate has one repeated public family with full
+target-request correlation.
 
 For every model baseline, preserve:
 

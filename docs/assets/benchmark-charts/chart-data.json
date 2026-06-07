@@ -13,8 +13,24 @@
   "public_baselines": [
     {
       "boundary_reasoning_pass_rate": 0.0,
+      "exploit_proven_success_rate": 0.75,
+      "false_positive_rate": 0.0,
+      "harness_type": "tool-agent",
+      "id": "kiro-live-tool-agent-sonnet-current-public-49",
+      "kind": "tool_agent_baseline",
+      "label": "Tool agent: Claude Sonnet 4.6",
+      "pass_rate": 0.5918367346938775,
+      "release_suitability": "current_public_split",
+      "requires_rerun_before_current_comparison": false,
+      "run_count": 2,
+      "target_request_coverage_rate": 1.0,
+      "task_count": 49
+    },
+    {
+      "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.55,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-opus-4-6-current-public-49",
       "kind": "model_baseline",
       "label": "Claude Opus 4.6",
@@ -22,12 +38,14 @@
       "release_suitability": "current_public_split",
       "requires_rerun_before_current_comparison": false,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 49
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.22499999999999998,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-haiku-4-5-current-public-49",
       "kind": "model_baseline",
       "label": "Claude Haiku 4.5",
@@ -35,12 +53,14 @@
       "release_suitability": "current_public_split",
       "requires_rerun_before_current_comparison": false,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 49
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.2,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-sonnet-4-6-current-public-49",
       "kind": "model_baseline",
       "label": "Claude Sonnet 4.6",
@@ -48,12 +68,14 @@
       "release_suitability": "current_public_split",
       "requires_rerun_before_current_comparison": false,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 49
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.125,
       "false_positive_rate": 0.01725,
+      "harness_type": "no-tools-model",
       "id": "kiro-glm-5-current-public-49",
       "kind": "model_baseline",
       "label": "glm-5",
@@ -61,12 +83,14 @@
       "release_suitability": "current_public_split",
       "requires_rerun_before_current_comparison": false,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 49
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.07500000000000001,
       "false_positive_rate": 0.01725,
+      "harness_type": "no-tools-model",
       "id": "kiro-qwen3-coder-next-current-public-49",
       "kind": "model_baseline",
       "label": "Qwen3 Coder Next",
@@ -74,12 +98,14 @@
       "release_suitability": "current_public_split",
       "requires_rerun_before_current_comparison": false,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 49
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.7778,
       "false_positive_rate": 0.0,
+      "harness_type": "tool-agent",
       "id": "kiro-live-tool-agent-sonnet-current-public-44",
       "kind": "tool_agent_baseline",
       "label": "Tool agent: Claude Sonnet 4.6",
@@ -87,12 +113,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 1,
+      "target_request_coverage_rate": 1.0,
       "task_count": 44
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.7368,
       "false_positive_rate": 0.0,
+      "harness_type": "tool-agent",
       "id": "kiro-live-tool-agent-sonnet-current-public-46",
       "kind": "tool_agent_baseline",
       "label": "Tool agent: Claude Sonnet 4.6",
@@ -100,12 +128,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": 1.0,
       "task_count": 46
     },
     {
       "boundary_reasoning_pass_rate": 0.1667,
       "exploit_proven_success_rate": 0.7778,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-sonnet-4-6-current-public-44",
       "kind": "model_baseline",
       "label": "Claude Sonnet 4.6",
@@ -113,12 +143,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 44
     },
     {
       "boundary_reasoning_pass_rate": 0.0556,
       "exploit_proven_success_rate": 0.6667,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-opus-4-6-current-public-44",
       "kind": "model_baseline",
       "label": "Claude Opus 4.6",
@@ -126,12 +158,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 44
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.52635,
       "false_positive_rate": 0.0185,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-sonnet-4-6-current-public-46",
       "kind": "model_baseline",
       "label": "Claude Sonnet 4.6",
@@ -139,12 +173,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 46
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.2222,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-haiku-4-5-current-public-44",
       "kind": "model_baseline",
       "label": "Claude Haiku 4.5",
@@ -152,12 +188,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 44
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.15789999999999998,
       "false_positive_rate": 0.0185,
+      "harness_type": "no-tools-model",
       "id": "kiro-claude-haiku-4-5-current-public-46",
       "kind": "model_baseline",
       "label": "Claude Haiku 4.5",
@@ -165,12 +203,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 46
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.13155,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-glm-5-current-public-46",
       "kind": "model_baseline",
       "label": "glm-5",
@@ -178,12 +218,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 46
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.0263,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-qwen3-coder-next-current-public-46",
       "kind": "model_baseline",
       "label": "Qwen3 Coder Next",
@@ -191,12 +233,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 46
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.0,
       "false_positive_rate": 0.0,
+      "harness_type": "no-tools-model",
       "id": "kiro-deepseek-3-2-current-public-44",
       "kind": "model_baseline",
       "label": "DeepSeek 3.2",
@@ -204,12 +248,14 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 44
     },
     {
       "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.0,
       "false_positive_rate": 0.01925,
+      "harness_type": "no-tools-model",
       "id": "kiro-qwen3-coder-next-current-public-44",
       "kind": "model_baseline",
       "label": "Qwen3 Coder Next",
@@ -217,6 +263,7 @@
       "release_suitability": "current_public_stale",
       "requires_rerun_before_current_comparison": true,
       "run_count": 2,
+      "target_request_coverage_rate": null,
       "task_count": 44
     }
   ],
@@ -240,6 +287,8 @@
     "baselines/kiro-glm-5-current-public-49-run2-summary.json",
     "baselines/kiro-claude-opus-4.6-current-public-49-run1-summary.json",
     "baselines/kiro-claude-opus-4.6-current-public-49-run2-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json",
     "baselines/scripted-baseline-public-46-summary.json",
     "baselines/kiro-qwen3-coder-next-current-public-46-run1-summary.json",
     "baselines/kiro-qwen3-coder-next-current-public-46-run2-summary.json",

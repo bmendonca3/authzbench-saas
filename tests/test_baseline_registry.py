@@ -17,7 +17,7 @@ LEGACY_CLAUDE_ID = "kiro-claude-sonnet-4-6-legacy-15"
 STALE_QWEN_ID = "kiro-qwen3-coder-next-current-public-44"
 CURRENT_QWEN_ID = "kiro-qwen3-coder-next-current-public-46"
 CURRENT_SONNET_ID = "kiro-claude-sonnet-4-6-current-public-46"
-CURRENT_TOOL_AGENT_ID = "kiro-live-tool-agent-sonnet-current-public-46"
+CURRENT_TOOL_AGENT_ID = "kiro-live-tool-agent-sonnet-current-public-49"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
@@ -53,12 +53,12 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 22, result)
+        self.assertEqual(result["baseline_count"], 23, result)
         self.assertEqual(result["public_split"]["task_count"], 49, result)
-        self.assertEqual(result["current_public_model_family_count"], 5, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 5, result)
-        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
-        self.assertFalse(result["v0_baseline_ready"], result)
+        self.assertEqual(result["current_public_model_family_count"], 6, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 6, result)
+        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
+        self.assertTrue(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
         self.assertEqual(len(result["release_snapshots"]), 1, result)
         self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
@@ -67,7 +67,7 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
         self.assertNotIn("current public model families: 1 of 5", result["unmet_v0_requirements"])
         self.assertNotIn("repeated model baselines: 1 of 5", result["unmet_v0_requirements"])
-        self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
+        self.assertEqual(result["unmet_v0_requirements"], [], result)
 
     def test_current_public_model_repeats_share_one_benchmark_commit(self) -> None:
         registry = load_json(REGISTRY)
@@ -316,25 +316,20 @@ class BaselineRegistryTests(unittest.TestCase):
             registry = load_json(registry_path)
             tool_entry = _baseline_by_id(registry, CURRENT_TOOL_AGENT_ID)
             tool_entry["release_suitability"] = "current_public_split"
-            tool_entry["expected_task_count"] = 46
+            tool_entry["expected_task_count"] = 49
             summary_path = registry_path.parent / tool_entry["summary_path"]
             summary = load_json(summary_path)
-            summary["task_count"] = 46
-            summary["vulnerable_task_count"] = 19
-            summary["control_task_count"] = 27
-            summary["denial_control_task_count"] = 16
-            summary["authorized_allow_control_task_count"] = 11
-            summary["model_tool_plan_artifact_count"] = 46
-            summary["per_task_tool_probe_artifact_count"] = 46
-            summary["target_request_correlated_task_count"] = 45
-            summary["target_request_coverage_rate"] = 0.9783
+            summary["model_tool_plan_artifact_count"] = 49
+            summary["per_task_tool_probe_artifact_count"] = 49
+            summary["target_request_correlated_task_count"] = 48
+            summary["target_request_coverage_rate"] = 0.9796
             summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             result = validate_registry(registry_path)
 
         self.assertFalse(result["passed"], result)
-        self.assertTrue(any("correlate target requests for all 46 tasks" in error for error in result["errors"]), result)
+        self.assertTrue(any("correlate target requests for all 49 tasks" in error for error in result["errors"]), result)
         self.assertTrue(any("target_request_coverage_rate must be 1.0" in error for error in result["errors"]), result)
 
     def test_rejects_stale_public_baseline_without_rerun_flag(self) -> None:

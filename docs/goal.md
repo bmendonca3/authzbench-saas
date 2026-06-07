@@ -24,7 +24,7 @@ exact blocker.
 ### Current Objective
 
 Keep `main` honest as post-v0 active development: frozen v0.0 evidence remains
-auditable, the current 49-task v1-prep split has verified sanity evidence, and
+auditable, the current 49-task v1-prep split has verified public baseline evidence, and
 every remaining v1/community-benchmark gap is visible rather than implied away.
 
 ### Verification Checklist
@@ -82,13 +82,32 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   `run_artifacts`, `task_count: 49`, matching model labels, benchmark commit
   `1eaac973ffe5229dad5796b9a5b144fa3af37a3a`, and non-leaderboard
   claim-boundary notes.
+- [x] Current 49-task live HTTP tool-agent baseline has repeated tracked runs
+  with target-request correlation.
+  Evidence: `kiro-live-tool-agent-sonnet-current-public-49` is registered as a
+  current public split tool-agent baseline with two `claude-sonnet-4.6` Kiro live
+  HTTP runs from benchmark commit
+  `3d4293cd24305ad410ddad8cb68654bf10adc9ff`. Run
+  `20260607T071431380750Z-fc6636f1` reports `task_count: 49`,
+  `model_tool_plan_artifact_count: 49`, `per_task_tool_probe_artifact_count:
+  49`, `target_request_correlated_task_count: 49`,
+  `target_request_coverage_rate: 1.0`, `planner_failure_count: 0`,
+  `planner_parse_error_count: 0`, and `executed_tool_probe_total: 124`. Run
+  `20260607T072056877797Z-2be17ca0` reports the same 49/49 artifact and
+  correlation counts, `target_request_coverage_rate: 1.0`, zero planner/parser
+  failures, and `executed_tool_probe_total: 126`.
+- [x] Baseline registry and release gates recognize the new evidence.
+  Evidence: `python3 scripts/validate_baseline_registry.py` passes with
+  `baseline_count: 23`, `current_public_model_family_count: 6`,
+  `repeated_model_baseline_count: 6`, `has_current_public_tool_agent_baseline:
+  true`, `v0_baseline_ready: true`, `v0_release_snapshot_ready: true`, and no
+  unmet baseline requirements. Strict `python3 scripts/validate_v0_release.py`
+  passes with all 8 gates green and `v0_ready: true` in this maintainer checkout.
 
 ### Open Perfection Gaps
 
 These remain intentionally open until real evidence exists:
 
-- [ ] Current 49-task live HTTP tool-agent baselines rerun with target-request
-  correlation.
 - [ ] Boundary-reasoning calibration study completed and reflected in the paper.
 - [ ] External AppSec, benchmark/evals, and AI-agent/tooling review lanes
   completed.

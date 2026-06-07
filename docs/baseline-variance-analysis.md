@@ -1,9 +1,9 @@
 # Baseline Variance Analysis
 
 Status: descriptive two-run analysis from current v1-prep 49-task public
-no-tools artifacts plus the frozen v0.0 46-task release snapshot. These ranges
-are diagnostic public-split evidence only, not confidence intervals, private
-holdout evidence, or leaderboard rankings.
+no-tools and live HTTP tool-agent artifacts plus the frozen v0.0 46-task release
+snapshot. These ranges are diagnostic public-split evidence only, not confidence
+intervals, private holdout evidence, or leaderboard rankings.
 
 This file uses only tracked public-safe summaries named by
 `baselines/baseline-registry.json`. Each row below has exactly two runs.
@@ -19,6 +19,7 @@ This file uses only tracked public-safe summaries named by
 | `kiro-qwen3-coder-next-current-public-49` | `no-tools-model` | `qwen3-coder-next` | `kiro-qwen3-coder-next-current-public-49-run1-summary.json`; `kiro-qwen3-coder-next-current-public-49-run2-summary.json` |
 | `kiro-glm-5-current-public-49` | `no-tools-model` | `glm-5` | `kiro-glm-5-current-public-49-run1-summary.json`; `kiro-glm-5-current-public-49-run2-summary.json` |
 | `kiro-claude-opus-4-6-current-public-49` | `no-tools-model` | `claude-opus-4.6` | `kiro-claude-opus-4.6-current-public-49-run1-summary.json`; `kiro-claude-opus-4.6-current-public-49-run2-summary.json` |
+| `kiro-live-tool-agent-sonnet-current-public-49` | `tool-agent` | `claude-sonnet-4.6` | `kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json`; `kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json` |
 
 ### Frozen v0.0 46-task release snapshot
 
@@ -41,6 +42,7 @@ This file uses only tracked public-safe summaries named by
 | Qwen no-tools | 0.5990-0.6224 | 0.0500-0.1000 | 0-0 | 0.0000-0.0000 | 0.0000-0.0345 | 0.0000-0.0000 | n/a |
 | GLM no-tools | 0.6082-0.6439 | 0.1000-0.1500 | 0-0 | 0.0000-0.0000 | 0.0000-0.0345 | 0.0204-0.0408 | n/a |
 | Claude Opus no-tools | 0.7724-0.7847 | 0.5500-0.5500 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0000 | n/a |
+| Claude Sonnet live tool-agent | 0.8500-0.8520 | 0.7500-0.7500 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0000 | 1.0000-1.0000 |
 
 ### Frozen v0.0 46-task release snapshot
 
@@ -54,13 +56,16 @@ This file uses only tracked public-safe summaries named by
 
 ## Interpretation
 
-The current 49-task no-tools public runs now clear the five-family repeat
-evidence gate, but they do not close the current tool-agent gate. All five
-current no-tools families record zero vulnerable full passes because boundary
-reasoning remains at `0.0000`. Opus is the strongest public no-tools replay
-signal in this pair, proving 11 of 20 vulnerable tasks in both runs
-(`0.5500` exploit-proven success) with zero false positives, but it still does
-not satisfy the full vulnerable-task scoring contract.
+The current 49-task public runs now clear the five-family no-tools repeat
+evidence gate and the repeated live HTTP tool-agent gate. All five current
+no-tools families and the current live tool-agent family record zero vulnerable
+full passes because boundary reasoning remains at `0.0000`. Opus is the
+strongest public no-tools replay signal in this pair, proving 11 of 20
+vulnerable tasks in both runs (`0.5500` exploit-proven success) with zero false
+positives. The current live tool-agent proves 15 of 20 vulnerable tasks in both
+runs (`0.7500` exploit-proven success), records zero false positives, and has
+1.0000 target-request coverage in both runs, but it still does not satisfy the
+full vulnerable-task scoring contract.
 
 The repeated frozen v0.0 public runs show stable false-positive behavior,
 stable authorized-allow behavior, and zero vulnerable full-pass counts across
@@ -73,16 +78,17 @@ target-request coverage in this pair.
 The central research signal is not a model ranking. It is the gap between
 exploit replay and boundary reasoning: the frozen v0.0 live tool-agent proves
 14 of 19 vulnerable public tasks in both runs (`0.7368` exploit-proven
-success), and current Opus no-tools proves 11 of 20 vulnerable public tasks in
-both runs, yet both still record zero vulnerable full passes because boundary
-reasoning remains at `0.0000`.
+success), the current live tool-agent proves 15 of 20 vulnerable public tasks in
+both runs (`0.7500` exploit-proven success), and current Opus no-tools proves 11
+of 20 vulnerable public tasks in both runs, yet all still record zero vulnerable
+full passes because boundary reasoning remains at `0.0000`.
 
 ## Reproduction Notes
 
 The table was recomputed by reading `baselines/baseline-registry.json`,
-selecting current public split no-tools model baselines plus the five entries in
-the `v0.0` release snapshot, and loading each entry's `run_artifacts` from
-`baselines/`.
+selecting current public split model and tool-agent baselines plus the five
+non-scripted entries in the `v0.0` release snapshot, and loading each entry's
+`run_artifacts` from `baselines/`.
 
 Useful checks:
 
@@ -96,7 +102,7 @@ current = [
     entry
     for entry in registry["baselines"]
     if entry["release_suitability"] == "current_public_split"
-    and entry["kind"] == "model_baseline"
+    and entry["kind"] in {"model_baseline", "tool_agent_baseline"}
 ]
 snapshot = next(item for item in registry["release_snapshots"] if item["id"] == "v0.0")
 print(len(current))
@@ -108,8 +114,8 @@ print(len([
 PY
 ```
 
-Expected counts: `5` current public no-tools model families and `5` frozen
-v0.0 repeated model/agent families.
+Expected counts: `6` current public model/agent families and `5` frozen v0.0
+repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,
 or run-artifact change. Mark older 46-task ranges stale before comparing them

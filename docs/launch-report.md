@@ -197,8 +197,9 @@ not replace the frozen v0.0 snapshot and they are not leaderboard eligible.
 | Kiro `claude-opus-4.6` current v1-prep run 2 | 49 | 29 | 0.55 | 0.0 | 0.0 |
 
 All five current 49-task no-tools families kept `boundary_reasoning_pass_rate:
-0.0`. The current v1-prep split still lacks a live HTTP tool-agent rerun with
-49/49 target-request correlation.
+0.0`. The current 49-task live HTTP tool-agent pair also kept vulnerable
+boundary reasoning at `0.0`, while producing 49/49 target-request correlation in
+both runs.
 
 Tracked summaries:
 
@@ -214,6 +215,8 @@ Tracked summaries:
 - [kiro-glm-5-current-public-49-run2-summary.json](../baselines/kiro-glm-5-current-public-49-run2-summary.json)
 - [kiro-claude-opus-4.6-current-public-49-run1-summary.json](../baselines/kiro-claude-opus-4.6-current-public-49-run1-summary.json)
 - [kiro-claude-opus-4.6-current-public-49-run2-summary.json](../baselines/kiro-claude-opus-4.6-current-public-49-run2-summary.json)
+- [kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json)
+- [kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json](../baselines/kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json)
 - [kiro-qwen3-coder-next-current-public-46-run1-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run1-summary.json)
 - [kiro-qwen3-coder-next-current-public-46-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run2-summary.json)
 - [kiro-claude-haiku-4.5-current-public-46-run1-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-46-run1-summary.json)
@@ -273,6 +276,15 @@ run 2. Current Opus proved 11 of 20 vulnerable replays in both runs and kept
 zero false positives, but still had no vulnerable full-pass tasks because
 boundary reasoning stayed at `0.0`.
 
+The current 49-task Kiro live HTTP tool-agent baseline uses
+`claude-sonnet-4.6` to plan per-task HTTP probes against the live local targets.
+Both runs produced 49/49 model-tool plan artifacts, 49/49 tool-probe artifacts,
+49/49 target-request correlation, zero planner failures, and zero parser
+failures. Each run passed 29 of 49 tasks, replay-proved 15 of 20 vulnerable
+tasks, had zero control false reports, and had boundary reasoning pass rate
+`0.0`. It is useful repeated current public-split tool-agent evidence, but it is
+not private-holdout or hosted leaderboard evidence.
+
 The frozen v0.0 46-task rows remain the release snapshot: Qwen, Haiku, Sonnet,
 and GLM have two 46-task no-tools runs, plus the repeated 46-task live HTTP
 tool-agent runs. The stale 44-task Opus no-tools runs proved 12 of 18
@@ -290,10 +302,10 @@ exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks, reports `v0_baseline_ready: false` for the live 49-task
-split, and reports `v0_release_snapshot_ready: true` for the frozen v0.0
-46-task release snapshot. That is a historical release-snapshot claim, not a
-current v1, hosted-leaderboard, or community-scale benchmark claim.
+consistency checks, reports `v0_baseline_ready: true` for the live 49-task
+public baseline bar, and reports `v0_release_snapshot_ready: true` for the
+frozen v0.0 46-task release snapshot. That is a public-split baseline credibility
+claim, not a current v1, hosted-leaderboard, or community-scale benchmark claim.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

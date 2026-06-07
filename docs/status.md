@@ -15,7 +15,8 @@ Current v1-prep boundary:
 - Old 46-task baselines are stale for v1 comparison until rerun against the
   expanded public split.
 - The current 49-task public split now has five repeated no-tools Kiro model
-  families. It still does not have a current 49-task live HTTP tool-agent rerun.
+  families and one repeated live HTTP Kiro tool-agent family with 49/49
+  target-request correlation in both runs.
 - v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
   community-scale benchmark maturity.
 
@@ -27,7 +28,7 @@ Current main / v1-prep split:
 - 17 denial controls and 12 authorized-allow controls
 - one current 49-task deterministic scripted sanity baseline
 - five current repeated no-tools Kiro model-family baselines
-- zero current 49-task live HTTP tool-agent baselines until rerun
+- one current repeated 49-task live HTTP Kiro tool-agent baseline
 
 ## Current v1-Prep Public Split And Frozen v0.0 Snapshot
 
@@ -43,7 +44,8 @@ baseline registry as historical evidence.
 - 29 secure-control tasks
 - 17 denial controls and 12 authorized-allow controls
 - five current v1-prep no-tools Kiro model-family comparison baselines
-- zero current v1-prep live HTTP tool-agent comparison baselines until rerun
+- one current v1-prep live HTTP Kiro tool-agent comparison baseline with 49/49
+  target-request correlation in both runs
 - seeded runtime fixtures for tenant, object, organization, invoice, file, link,
   workspace, API-token, scope, and actor IDs
 - route aliases and decoy controls across all six target apps
@@ -66,6 +68,9 @@ baseline registry as historical evidence.
 - repeated current 49-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated current 49-task no-tools Kiro `glm-5` model baseline
 - repeated current 49-task no-tools Kiro `claude-opus-4.6` model baseline
+- repeated current 49-task live HTTP Kiro `claude-sonnet-4.6` tool-agent
+  baseline with per-task plan/probe artifacts and 49/49 target-request
+  correlation in both runs
 - stale v0.0 46-task deterministic scripted harness check
 - repeated stale v0.0 46-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated stale v0.0 46-task no-tools Kiro `claude-haiku-4.5` model baseline
@@ -118,11 +123,11 @@ python3 scripts/validate_public.py --include-scripted-baseline
 python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
 ```
 
-The baseline credibility gate has five repeated no-tools model families for the
-live 49-task public split and five repeated model/agent families for the frozen
-v0.0 release snapshot. The live public split still lacks a current 49-task live
-HTTP tool-agent rerun, so `v0_baseline_ready` remains false while the no-tools
-model-family gap is closed. Strict
+The baseline credibility gate has five repeated no-tools model families plus one
+repeated live HTTP tool-agent family for the live 49-task public split, and five
+repeated model/agent families for the frozen v0.0 release snapshot. The live
+public-split baseline bar is now closed, but this is still public-split
+diagnostic evidence rather than private-holdout leaderboard readiness. Strict
 `python3 scripts/validate_v0_release.py` should be rerun in a maintainer
 checkout before future tags because release evidence and CI references are
 time-sensitive.
@@ -150,6 +155,14 @@ The current 49-task no-tools Kiro baselines now have two runs each for
 `claude-opus-4.6`. They are public-split diagnostic evidence only: all five
 families still have `boundary_reasoning_pass_rate: 0.0`, and none are
 private-holdout, tool-agent, hosted-leaderboard, or v1 release evidence.
+
+The current 49-task live HTTP Kiro `claude-sonnet-4.6` tool-agent baseline has
+two runs with one model-plan artifact and one tool-probe artifact per task,
+49/49 target-request correlation in both runs, zero planner failures, and zero
+parser failures. Both runs proved 15 of 20 vulnerable replays and produced zero
+secure-control false reports, but vulnerable boundary reasoning remained
+`0.0`, so no vulnerable task fully passed. It is still public-split diagnostic
+evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence.
 
 ## Baseline Results
 
@@ -232,8 +245,10 @@ expanded to 49 tasks.
   HTTP tool-agent family exist on the 46-task release snapshot
 - one repeated v0.0 live HTTP tool-agent baseline exists on the 46-task release
   snapshot, with plan/probe artifacts and full target-request correlation
+- five repeated current 49-task no-tools model-family baselines and one repeated
+  current 49-task live HTTP tool-agent family exist on the live public split
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: false` for the live 49-task split and
+  `v0_baseline_ready: true` for the live 49-task public baseline bar and
   `v0_release_snapshot_ready: true` for the frozen v0.0 release snapshot
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence

@@ -39,6 +39,13 @@ that the expanded manifests, scorer, scripted oracle path, and baseline registry
 agree. It does not prove model capability, leaderboard eligibility,
 private-holdout performance, or v1 readiness.
 
+The current 49-task public split also has repeated diagnostic Kiro baselines:
+five no-tools model families and one live HTTP `claude-sonnet-4.6` tool-agent
+family. The tool-agent pair preserves one model-plan artifact and one tool-probe
+artifact per task, correlates target-side requests for all 49 tasks in both runs,
+and reports zero planner or parser failures. These are public-split comparison
+artifacts, not private-holdout rankings or hosted leaderboard rows.
+
 The current registry separates:
 
 - `current_public_harness_check` for deterministic current-split sanity checks
@@ -67,9 +74,9 @@ when describing current `main`.
 
 ## Next Work
 
-Before any current tool-agent comparison, rerun live HTTP tool-agent baselines
-on the 49-task split and preserve source summaries, fingerprints, artifacts,
-target-request correlation, and repeated-run provenance. Before a v1 release,
-expand task volume, add rotating private holdouts, complete reviewer
-calibration, and keep chart/table captions explicit about current versus stale
-evidence.
+Before a v1 release, expand task volume, add rotating private holdouts, complete
+boundary-reasoning calibration and external reviewer calibration, define hosted
+or fully containerized submission governance, and keep chart/table captions
+explicit about current versus stale evidence. After any v1 task or scoring
+change, rerun current public no-tools and tool-agent baselines before making new
+comparisons.

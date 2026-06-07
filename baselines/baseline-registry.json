@@ -147,6 +147,25 @@
       "notes": "Current v1-prep repeated 49-task public split no-tools Claude Opus baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
     },
     {
+      "id": "kiro-live-tool-agent-sonnet-current-public-49",
+      "summary_path": "kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json",
+      "kind": "tool_agent_baseline",
+      "model_family": "kiro-live-tool-agent-sonnet",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json",
+        "kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json"
+      ],
+      "expected_harness_type": "tool-agent",
+      "expected_agent": "kiro_live_tool_agent",
+      "expected_model": "claude-sonnet-4.6",
+      "expected_task_count": 49,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current v1-prep repeated 49-task public split live HTTP tool-agent baseline through the Kiro adapter. Both runs include one model-plan artifact and one tool-probe artifact per task, full target-request correlation for all 49 tasks, zero planner failures, and zero parser failures. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+    },
+    {
       "id": "scripted-sanity-public-46",
       "summary_path": "scripted-baseline-public-46-summary.json",
       "kind": "harness_check",

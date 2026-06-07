@@ -91,6 +91,7 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "id": entry["id"],
             "label": label,
             "kind": entry["kind"],
+            "harness_type": entry.get("expected_harness_type"),
             "release_suitability": entry["release_suitability"],
             "requires_rerun_before_current_comparison": bool(
                 entry.get("requires_rerun_before_current_comparison")
@@ -101,6 +102,13 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "exploit_proven_success_rate": mean(item["exploit_proven_success_rate"] for item in artifacts),
             "false_positive_rate": mean(item["false_positive_rate"] for item in artifacts),
             "boundary_reasoning_pass_rate": mean(item["boundary_reasoning_pass_rate"] for item in artifacts),
+            "target_request_coverage_rate": mean(
+                item["target_request_coverage_rate"]
+                for item in artifacts
+                if isinstance(item.get("target_request_coverage_rate"), (int, float))
+            )
+            if any(isinstance(item.get("target_request_coverage_rate"), (int, float)) for item in artifacts)
+            else None,
         }
         rows.append(row)
     rows.sort(
