@@ -38,11 +38,11 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   information and exits with `docker daemon is required for
   --include-container-smoke; start Docker and rerun validation` when the daemon
   socket is unavailable.
-- [ ] GitHub Actions no longer relies on the deprecated Node 20 default for
+- [x] GitHub Actions no longer relies on the deprecated Node 20 default for
   JavaScript actions.
-  Evidence pending: workflow now opts into Node 24 and uses Node-24-native
-  `actions/checkout@v6` and `actions/setup-python@v6`; leave this open until a
-  pushed `main` run confirms the Node 20 annotation is gone.
+  Evidence: workflow opts into Node 24 and uses Node-24-native
+  `actions/checkout@v6` and `actions/setup-python@v6`; GitHub Actions run
+  `27083608925` passed on `main` with no Node 20 annotation in the watch output.
 - [x] Focused tests for changed validation behavior pass.
   Evidence: `python3 -m unittest discover -s tests -p
   'test_validate_public.py'` and the full test suite pass.
