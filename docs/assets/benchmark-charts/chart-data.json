@@ -13,6 +13,21 @@
   "public_baselines": [
     {
       "boundary_reasoning_pass_rate": 0.0,
+      "exploit_proven_success_rate": 0.07145,
+      "false_positive_rate": 0.01515,
+      "harness_type": "no-tools-model",
+      "id": "kiro-qwen3-coder-next-current-public-54",
+      "kind": "model_baseline",
+      "label": "Qwen3 Coder Next",
+      "pass_rate": 0.6018518518518519,
+      "release_suitability": "current_public_split",
+      "requires_rerun_before_current_comparison": false,
+      "run_count": 2,
+      "target_request_coverage_rate": null,
+      "task_count": 54
+    },
+    {
+      "boundary_reasoning_pass_rate": 0.0,
       "exploit_proven_success_rate": 0.7778,
       "false_positive_rate": 0.0,
       "harness_type": "tool-agent",
@@ -277,6 +292,8 @@
   "source_files": [
     "baselines/baseline-registry.json",
     "baselines/scripted-baseline-public-54-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-54-run1-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-54-run2-summary.json",
     "baselines/scripted-baseline-public-49-summary.json",
     "baselines/kiro-claude-haiku-4.5-current-public-49-run1-summary.json",
     "baselines/kiro-claude-haiku-4.5-current-public-49-run2-summary.json",

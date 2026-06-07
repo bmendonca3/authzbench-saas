@@ -24,6 +24,15 @@ well-labeled before any release claim is made.
   deterministic harness sanity-check baseline. It proves the expanded public
   split, scorer, and scripted oracle path agree; it is not model capability,
   leaderboard, or v1 release evidence.
+- `kiro-qwen3-coder-next-current-public-54-run1-summary.json` and
+  `kiro-qwen3-coder-next-current-public-54-run2-summary.json`: current repeated
+  54-task public split no-tools Qwen runs through the hardened Kiro adapter.
+  The summaries retain task-level adapter failures, outer runner failures, and
+  inner/outer timeout semantics. Inner Kiro command or JSON-extraction failures
+  produce a valid empty-findings fallback that remains in the scored
+  denominator; it can pass a secure control or fail a vulnerable task. They are
+  current public-split evidence for one model family, not private-holdout,
+  leaderboard-eligible, or v1 release evidence.
 - `scripted-baseline-public-49-summary.json`: historical v1-prep 49-task
   deterministic harness sanity-check baseline, now stale for current
   comparison.

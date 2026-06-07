@@ -16,6 +16,7 @@ LIVE_SCRIPTED_ID = "live-scripted-public-44"
 LEGACY_CLAUDE_ID = "kiro-claude-sonnet-4-6-legacy-15"
 STALE_QWEN_ID = "kiro-qwen3-coder-next-current-public-44"
 CURRENT_QWEN_ID = "kiro-qwen3-coder-next-current-public-46"
+CURRENT_QWEN_54_ID = "kiro-qwen3-coder-next-current-public-54"
 CURRENT_SONNET_ID = "kiro-claude-sonnet-4-6-current-public-46"
 CURRENT_TOOL_AGENT_ID = "kiro-live-tool-agent-sonnet-current-public-49"
 
@@ -53,10 +54,10 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 24, result)
+        self.assertEqual(result["baseline_count"], 25, result)
         self.assertEqual(result["public_split"]["task_count"], 54, result)
-        self.assertEqual(result["current_public_model_family_count"], 0, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertEqual(result["current_public_model_family_count"], 1, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
         self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
         self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
@@ -65,9 +66,16 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertIn("current public model families: 0 of 5", result["unmet_v0_requirements"])
-        self.assertIn("repeated model baselines: 0 of 5", result["unmet_v0_requirements"])
+        self.assertIn("current public model families: 1 of 5", result["unmet_v0_requirements"])
+        self.assertIn("repeated model baselines: 1 of 5", result["unmet_v0_requirements"])
         self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
+
+        registry = load_json(REGISTRY)
+        current_qwen = _baseline_by_id(registry, CURRENT_QWEN_54_ID)
+        self.assertEqual(current_qwen["expected_task_count"], 54)
+        self.assertEqual(current_qwen["run_count"], 2)
+        self.assertEqual(current_qwen["release_suitability"], "current_public_split")
+        self.assertFalse(current_qwen["requires_rerun_before_current_comparison"])
 
     def test_stale_49_task_model_repeats_share_one_benchmark_commit(self) -> None:
         registry = load_json(REGISTRY)

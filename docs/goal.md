@@ -227,8 +227,11 @@ The goal is complete only when all of these are true:
   fingerprint.
   Current evidence:
   - the 54-task scripted sanity baseline is current and passes 54/54;
+  - the repeated 54-task `qwen3-coder-next` no-tools family is current, with
+    matching runner-emitted fingerprints and explicit model-output failure
+    diagnostics across both runs;
   - `python3 scripts/validate_baseline_registry.py` currently reports
-    `current_public_model_family_count: 0` and
+    `current_public_model_family_count: 1` and
     `has_current_public_tool_agent_baseline: false`;
   - the readiness gate is therefore correctly red even though the historical
     49-task checkpoint above was green.
@@ -501,6 +504,9 @@ The goal is complete only when all of these are true:
 
 - [ ] Refresh model evidence after the 54-task promotion.
   Acceptance evidence:
+  - [x] `qwen3-coder-next` has two runner-emitted 54-task base summaries,
+    promoted with distinct run IDs, the active fingerprint, and public-safe
+    task-level command/output failure diagnostics;
   - `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
     `claude-opus-4.6` no-tools families each have two runner-emitted 54-task
     summaries;

@@ -52,6 +52,25 @@
       "notes": "Current 54-task deterministic harness sanity check for the live v1-prep public split. Useful for validating scorer and manifests, but not a model result."
     },
     {
+      "id": "kiro-qwen3-coder-next-current-public-54",
+      "summary_path": "kiro-qwen3-coder-next-current-public-54-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-qwen",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-qwen3-coder-next-current-public-54-run1-summary.json",
+        "kiro-qwen3-coder-next-current-public-54-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "qwen3-coder-next",
+      "expected_task_count": 54,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 54-task public split no-tools Qwen baseline through the hardened Kiro adapter. Public-split evidence only; explicit model-output failure diagnostics are retained, and the row is not private-holdout, leaderboard-eligible, or v1 release evidence."
+    },
+    {
       "id": "scripted-sanity-public-49",
       "summary_path": "scripted-baseline-public-49-summary.json",
       "kind": "harness_check",

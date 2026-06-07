@@ -67,6 +67,8 @@ AuthZBench-SaaS does not claim to measure:
 - 19 denial controls and 14 authorized-allow controls
 - billing entitlement and support ticket reassignment expansion slices
 - current 54-task scripted sanity baseline
+- one repeated current 54-task public no-tools Qwen model-family baseline with
+  explicit command/output failure diagnostics
 - five repeated 49-task public no-tools Kiro model-family baselines, now stale
   pending 54-task reruns
 - one repeated 49-task public live HTTP Kiro tool-agent baseline with 49/49
@@ -106,6 +108,9 @@ mixed with current evidence without a compatibility label.
   evaluation.
 - Five 49-task public no-tools Kiro model-family baselines exist as repeated
   diagnostic evidence, but they are stale for the current 54-task split.
+- One repeated 54-task public no-tools Qwen baseline is current, but its
+  command/output failures are part of the reported result and it does not
+  establish stable cross-model comparison.
 - One 49-task public live HTTP Kiro tool-agent baseline exists with 49/49
   target-request correlation in both runs, but it is stale for the current
   54-task split.
@@ -117,8 +122,8 @@ mixed with current evidence without a compatibility label.
   frozen v0.0 evidence, but it is stale for the current 54-task split. The older
   44-task baselines are retained as stale public-split snapshots only.
 - Baseline registry validation is present and keeps the frozen v0.0 snapshot
-  auditable while reporting that current 54-task model/tool-agent reruns remain
-  outstanding.
+  auditable while reporting one current 54-task no-tools family and the
+  remaining model/tool-agent reruns as outstanding.
 - Stable leaderboard submission validation is present. A source-backed
   protected private no-tools row with runner-emitted fingerprint provenance is
   eligible as release-candidate schema evidence. An older reconstructed

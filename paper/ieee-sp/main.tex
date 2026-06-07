@@ -68,6 +68,17 @@ that agents can sometimes produce replayable exploit evidence while still
 failing full vulnerable-task passes because boundary reasoning remains weak.
 They must be rerun before current 54-task v1-prep comparison.
 
+On the current 54-task fingerprint, two Qwen no-tools runs pass 32 and 33 tasks,
+span 0.0000--0.1429 exploit-proven success, and retain zero vulnerable full
+passes because boundary reasoning remains at 0.0000. Their public summaries
+also retain seven and twelve task-level adapter failures, respectively,
+including inner command failures and outputs without a usable submission
+object. The adapter converts those failures to empty-findings submissions that
+remain in the scored denominator; the first run separately records two outer
+runner failures as invalid submissions. This pair provides current diagnostic
+evidence for one model family, not a stable cross-model comparison or a
+leaderboard result.
+
 For the preceding 49-task v1-prep public split, repeated live HTTP tool-agent
 runs sharpen this observation. The tool-agent proved vulnerable backend
 behavior for 15 of 20 vulnerable public tasks in each run and preserves
@@ -78,7 +89,9 @@ oracle-compatible actor, role, tenant, object, or scope labels. We therefore
 interpret the result as a structured boundary-vocabulary failure under the
 current scoring contract, not as evidence that exploit replay was absent. The
 support-reassignment expansion raises the live public split to 54 tasks; those
-49-task model and tool-agent rows are now stale until rerun.
+49-task model and tool-agent rows are now stale. The Qwen no-tools family has
+been rerun, while the remaining no-tools families and live HTTP tool-agent pair
+remain pending.
 
 \begin{table*}[t]
 \centering
@@ -163,7 +176,9 @@ validation path.
 
 The \releaseversion{} public split is small, synthetic, and inspectable. The
 baseline table is frozen v0.0 diagnostic public-split evidence, not a final
-ordering of model quality or current 54-task model comparison. Governance for
+ordering of model quality. The current 54-task Qwen pair covers only one
+no-tools family and is insufficient for a stable current model comparison.
+Governance for
 future v1/community submission states, run bundles, private-pack rotation, and
 hosted or containerized evaluation is specified in the repository, but hosted
 leaderboard operation, implemented rotating multi-pack holdouts, broader

@@ -71,9 +71,10 @@
         "2026-06-06-sonnet-current-public-46-panel-summary.md",
         "2026-06-06-glm-current-public-46-panel-summary.md",
         "2026-06-06-leaderboard-schema-v1-panel-summary.md",
-        "2026-06-06-v0-report-panel-summary.md"
+        "2026-06-06-v0-report-panel-summary.md",
+        "2026-06-07-current-qwen-54-evidence-review-summary.md"
       ],
-      "notes": "Review coverage for registry, leaderboard validators, frozen v0.0 46-task public model summaries, the repeated frozen v0.0 46-task public tool-agent baseline, chart readability, and then-current benchmark fingerprint comparability is complete. The historical 49-task public split has five repeated no-tools model families plus one repeated live HTTP tool-agent family with full target-request correlation; those rows are stale for the active 54-task split. This supports Level 1/v0 baseline credibility and historical v1-prep diagnostic evidence, not current 54-task model comparison, hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
+      "notes": "Review coverage for registry, leaderboard validators, frozen v0.0 46-task public model summaries, the repeated frozen v0.0 46-task public tool-agent baseline, chart readability, and benchmark fingerprint comparability is complete. The active 54-task split has one internally reviewed repeated no-tools Qwen family with explicit task-level adapter and runner failure diagnostics. The historical 49-task split has five repeated no-tools model families plus one repeated live HTTP tool-agent family with full target-request correlation; those rows are stale for the active 54-task split. This supports Level 1/v0 baseline credibility and limited current 54-task public diagnostics, not stable current cross-model comparison, hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
     },
     {
       "id": "holdout_contamination_anti_gaming",

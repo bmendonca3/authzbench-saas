@@ -1,15 +1,22 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from the historical v1-prep 49-task public
-no-tools and live HTTP tool-agent artifacts plus the frozen v0.0 46-task release
-snapshot. These ranges are diagnostic public-split evidence only, not confidence
-intervals, private holdout evidence, or leaderboard rankings. The 49-task rows
-are stale for the active 54-task split.
+Status: descriptive two-run analysis from one current v1-prep 54-task public
+no-tools family, the historical 49-task public no-tools and live HTTP tool-agent
+artifacts, and the frozen v0.0 46-task release snapshot. These ranges are
+diagnostic public-split evidence only, not confidence intervals, private holdout
+evidence, or leaderboard rankings. The 49-task rows are stale for the active
+54-task split.
 
 This file uses only tracked public-safe summaries named by
 `baselines/baseline-registry.json`. Each row below has exactly two runs.
 
 ## Artifact Set
+
+### Current v1-prep 54-task public split
+
+| Baseline family | Harness | Model | Source summaries |
+| --- | --- | --- | --- |
+| `kiro-qwen3-coder-next-current-public-54` | `no-tools-model` | `qwen3-coder-next` | `kiro-qwen3-coder-next-current-public-54-run1-summary.json`; `kiro-qwen3-coder-next-current-public-54-run2-summary.json` |
 
 ### Historical v1-prep 49-task public split
 
@@ -34,6 +41,23 @@ This file uses only tracked public-safe summaries named by
 
 ## Two-Run Metric Ranges
 
+### Current v1-prep 54-task public split
+
+| Baseline family | `mean_score` | `exploit_proven_success_rate` | `vulnerable_full_pass_count` | `boundary_reasoning_pass_rate` | `false_positive_rate` | `invalid_submission_rate` | `target_request_coverage_rate` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Qwen no-tools | 0.5981-0.6528 | 0.0000-0.1429 | 0-0 | 0.0000-0.0000 | 0.0000-0.0303 | 0.0000-0.0370 | n/a |
+
+The two current Qwen runs also preserve adapter diagnostics. Run 1 records
+seven task-level adapter failures: two inner Kiro command failures and five
+outputs without a usable submission object, plus two outer runner failures.
+Run 2 records twelve task-level adapter failures: seven inner Kiro command
+failures and five outputs without a usable submission object, with no outer
+runner failure. The adapter converts each inner failure to a valid
+`{"findings":[]}` fallback, which stays in the 54-task scored denominator and
+can pass a secure control or fail a vulnerable task. The outer runner failures
+become invalid submissions. The agent command uses a 60-second inner
+model-call timeout while the runner uses a 75-second per-task timeout.
+
 ### Historical v1-prep 49-task public split
 
 | Baseline family | `mean_score` | `exploit_proven_success_rate` | `vulnerable_full_pass_count` | `boundary_reasoning_pass_rate` | `false_positive_rate` | `invalid_submission_rate` | `target_request_coverage_rate` |
@@ -56,6 +80,23 @@ This file uses only tracked public-safe summaries named by
 | Claude Sonnet live tool-agent | 0.5870-0.5870 | 0.7368-0.7368 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0000 | 1.0000-1.0000 |
 
 ## Interpretation
+
+The current 54-task Qwen pair establishes repeated evidence for one no-tools
+model family on the active fingerprint. The pair passes 32-33 of 54 tasks,
+proves 0-3 of 21 vulnerable replays, keeps vulnerable boundary reasoning at
+`0.0000`, and fully passes zero vulnerable tasks. One run has one reported
+secure-control failure caused by an invalid submission, but no submitted
+control finding; its two invalid submissions produce the `0.0370`
+invalid-submission rate and the reported `0.0303` false-positive rate. The
+second run has no invalid submissions or secure-control failures. The command
+and missing-submission diagnostics make the pair useful for adapter and
+model-output variance analysis, but they also make clear why this is diagnostic
+public evidence rather than a polished ranking row.
+
+Run 1's `vulnerable_safety_pass_rate` is `0.9524` because its outer runner
+failure on one vulnerable task produced an invalid submission with no safety
+credit. This is a malformed-submission outcome, not evidence that the model
+attempted an unsafe or out-of-scope action.
 
 The 49-task public runs cleared the five-family no-tools repeat evidence gate
 and the repeated live HTTP tool-agent gate for that fingerprint. All five
@@ -87,9 +128,9 @@ full passes because boundary reasoning remains at `0.0000`.
 ## Reproduction Notes
 
 The table was recomputed by reading `baselines/baseline-registry.json`,
-selecting the stale 49-task model and tool-agent baselines plus the five
-non-scripted entries in the `v0.0` release snapshot, and loading each entry's
-`run_artifacts` from `baselines/`.
+selecting the current 54-task Qwen row, the stale 49-task model and tool-agent
+baselines, and the five non-scripted entries in the `v0.0` release snapshot,
+then loading each entry's `run_artifacts` from `baselines/`.
 
 Useful checks:
 
@@ -99,6 +140,13 @@ python3 - <<'PY'
 import json
 from pathlib import Path
 registry = json.loads(Path("baselines/baseline-registry.json").read_text())
+current_54 = [
+    entry
+    for entry in registry["baselines"]
+    if entry["release_suitability"] == "current_public_split"
+    and entry.get("expected_task_count") == 54
+    and entry["kind"] in {"model_baseline", "tool_agent_baseline"}
+]
 stale_49 = [
     entry
     for entry in registry["baselines"]
@@ -107,6 +155,7 @@ stale_49 = [
     and entry["kind"] in {"model_baseline", "tool_agent_baseline"}
 ]
 snapshot = next(item for item in registry["release_snapshots"] if item["id"] == "v0.0")
+print(len(current_54))
 print(len(stale_49))
 print(len([
     baseline_id
@@ -116,8 +165,8 @@ print(len([
 PY
 ```
 
-Expected counts: `6` stale 49-task model/agent families and `5` frozen v0.0
-repeated model/agent families.
+Expected counts: `1` current 54-task model family, `6` stale 49-task
+model/agent families, and `5` frozen v0.0 repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,
 or run-artifact change. Mark older 46-task ranges stale before comparing them

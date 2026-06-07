@@ -42,7 +42,8 @@ as current-comparable evidence.
 
 The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
 54-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
-46-task release snapshot. The preceding 49-task split has five repeated
+46-task release snapshot. One repeated 54-task Qwen no-tools family is current.
+The preceding 49-task split has five repeated
 no-tools model-family baselines plus one repeated live HTTP tool-agent family,
 but every one of those rows is stale for current 54-task comparison. The old
 46-task evidence remains auditable as frozen v0.0 release evidence.
@@ -83,6 +84,22 @@ The current scripted baseline is a 54-task deterministic harness sanity check.
 It proves the expanded v1-prep public split, scorer, and scripted oracle path
 agree. It is not model capability evidence, a leaderboard row, private-holdout
 evidence, or a substitute for current model or tool-agent reruns.
+
+The current 54-task `qwen3-coder-next` no-tools baseline has two runs on the
+active fingerprint. They pass 32 and 33 tasks, prove 0 and 3 of 21 vulnerable
+replays, keep vulnerable boundary reasoning at `0.0`, and fully pass no
+vulnerable task. Run 1 records two invalid submissions and seven total
+task-level adapter failures plus two outer runner failures; run 2 records no
+invalid submissions, twelve task-level adapter failures, and no outer runner
+failure. The adapter converts an inner Kiro command or JSON-extraction failure
+to a valid empty-findings fallback, so the task remains in the denominator and
+can pass a secure control or fail a vulnerable task. The summaries also explain
+the 60-second inner model-call timeout and 75-second outer per-task timeout.
+Run 1's `0.9524` vulnerable safety rate is caused by an invalid submission from
+an outer runner failure, not an unsafe action. This is current public-split
+evidence for one model family, not private evidence, a stable cross-model
+comparison, a leaderboard row, or a substitute for the remaining 54-task
+no-tools and tool-agent reruns.
 
 The stale 49-task no-tools Kiro baselines have two runs each for
 `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
@@ -173,8 +190,8 @@ The registry uses `requires_rerun_before_current_comparison` to mark stale rows.
 That field means the row cannot support live 54-task comparison. It does not
 mean the frozen v0.0 release snapshot itself needs to be rerun.
 
-The next baseline milestone is not another count-filling public rerun. It is to
-keep the frozen v0.0 release snapshot separate from future current-public
-evidence, rerun the no-tools and tool-agent baselines after any v1 task or
-scoring change before making new comparisons, and pair future public baselines
-with private-holdout governance before making leaderboard claims.
+The next baseline milestone is to complete the remaining current 54-task
+no-tools and live HTTP tool-agent reruns while keeping the frozen v0.0 release
+snapshot separate from current-public evidence. Any later v1 task or scoring
+change must make those rows stale again until rerun. Public baselines must be
+paired with protected private-holdout operation before leaderboard claims.

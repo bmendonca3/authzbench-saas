@@ -184,6 +184,13 @@ Historical 49-task v1-prep no-tools diagnostic rows exist separately. They do
 not replace the frozen v0.0 snapshot, are stale for the active 54-task split,
 and are not leaderboard eligible.
 
+The active 54-task split now has two current no-tools
+`qwen3-coder-next` runs. They pass 32 and 33 tasks, span
+`0.0000-0.1429` exploit-proven success, keep boundary reasoning at `0.0`,
+and retain explicit command/output failure diagnostics. They are current
+public-split diagnostics for one family only, not part of the frozen v0.0
+launch evidence and not a stable cross-model comparison.
+
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Kiro `claude-haiku-4.5` stale 49-task run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 |
