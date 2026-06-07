@@ -110,7 +110,8 @@
       "passed": false,
       "unmet": [
         "evidence_scope must be release_candidate",
-        "upstream_review_and_infrastructure_complete must be true"
+        "upstream_review_and_infrastructure_complete must be true",
+        "live upstream review and infrastructure gates must pass"
       ]
     },
     {

@@ -521,7 +521,7 @@ The goal is complete only when all of these are true:
     infrastructure are complete.
   Verification:
   - benchmark source commit:
-    `4a0a82a685c8f011971689b42ab67ac92068d287`;
+    `1b148123bd3a947c8474c973c64ae31494a82061`;
   - `python3 scripts/generate_paper_tables.py && git diff --exit-code --
     paper/shared` passed;
   - `python3 scripts/generate_benchmark_charts.py && git diff --exit-code --
@@ -536,7 +536,9 @@ The goal is complete only when all of these are true:
   - `scripts/validate_v1_readiness.py` requires `evidence_scope:
     release_candidate` and
     `upstream_review_and_infrastructure_complete: true` before the final paper
-    gate can pass.
+    gate can pass, and independently cross-checks the live external-review,
+    hosted-execution, and private-rotation gates instead of trusting that
+    evidence field alone.
 
 - [ ] Update the v1-prep technical report and IEEE scaffold after review and
   infrastructure gates change.
