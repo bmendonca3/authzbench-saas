@@ -143,6 +143,284 @@ These remain intentionally open until real evidence exists:
   findings or explicit no-finding dispositions; local repository work cannot
   honestly manufacture that evidence.
 
+## Active v1 Readiness Goal
+
+Status: active as of 2026-06-07. This is the current source of truth for the
+remaining work needed before any `v1`, hosted leaderboard, or community-ready
+claim is fair.
+
+Do not mark this goal complete until every checklist item below is checked with
+fresh evidence, and until strict `python3 scripts/validate_v1_readiness.py
+--release-evidence <external-json>` exits successfully on the release candidate
+commit. Until then, the correct claim is stable `v1-prep`, not `v1-ready`.
+
+### Objective
+
+Advance AuthZBench-SaaS from a validated v1-prep research artifact into a
+reviewed, scaled, protected, and operational v1/community benchmark. The project
+must preserve the frozen v0.0 evidence boundary while adding enough independent
+review, private-holdout operation, submission infrastructure, and repeated
+private evidence to support stronger claims.
+
+### Non-Negotiable Completion Rule
+
+The goal is complete only when all of these are true:
+
+- every item in this section is checked;
+- strict `python3 scripts/validate_v1_readiness.py --release-evidence
+  <external-json>` passes without `--allow-incomplete`;
+- `python3 scripts/validate_public.py --include-scripted-baseline` passes on the
+  exact commit;
+- container smoke passes either locally or in exact-head CI, with any local
+  Docker daemon limitation recorded as environment-only;
+- `python3 scripts/validate_baseline_registry.py` and
+  `python3 scripts/validate_leaderboard_submission.py --submission
+  'leaderboard_submissions/**/*.json' --require-source-summary` pass;
+- generated paper tables and chart artifacts are clean after regeneration;
+- `git diff --check` passes;
+- `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
+  returns no tracked paths;
+- the release commit is pushed and exact-head CI is green.
+
+### Automated Readiness Gate
+
+- [x] Add a v1 readiness validator that reports each major v1/community gate as
+  `passed` or `unmet`.
+  Acceptance evidence:
+  - strict mode fails while true v1 gates are incomplete:
+    `python3 scripts/validate_v1_readiness.py` exits with status 1 and reports
+    `v1_ready: false`;
+  - `--allow-incomplete` mode exits successfully for current v1-prep validation:
+    `python3 scripts/validate_v1_readiness.py --allow-incomplete` exits with
+    status 0 and reports three passed gates plus eight unmet gates;
+  - the gate is called from `scripts/validate_public.py` in
+    `--allow-incomplete` mode;
+  - focused unit tests assert current stable v1-prep is not misrepresented as
+    v1-ready: `python3 -m unittest discover -s tests -p
+    'test_v1_readiness_validator.py'` and `python3 -m unittest discover -s
+    tests -p 'test_validate_public.py'` pass.
+
+### Stable v1-Prep Baseline Gate
+
+- [x] Current repo state is a verified stable v1-prep artifact.
+  Evidence:
+  - exact-head CI passed on commit `8da35643b1685fbb31892793d7ab50de0a5ad6f3`;
+  - local public validation, v0 release validation, baseline registry
+    validation, leaderboard-submission validation, generated paper table check,
+    whitespace check, and tracked-private-path scan passed;
+  - local Docker container smoke was not rerun only because the Docker daemon
+    was unavailable locally, while exact-head CI covered the Docker-backed public
+    validation path.
+
+### External Review Gate
+
+- [ ] Complete the Application Security review lane.
+  Acceptance evidence:
+  - structured review evidence exists in
+    `docs/reviews/external-review-summary.json`;
+  - reviewer role/scope and review date recorded;
+  - artifacts reviewed listed;
+  - findings or explicit no-finding disposition recorded;
+  - every finding has an accepted, rejected, or unresolved decision;
+  - accepted findings link to follow-up commits, docs, tasks, or tests; issue or
+    PR references must be mirrored by a real repo artifact or resolvable commit
+    before strict validation passes;
+  - claim-boundary impact is recorded.
+
+- [ ] Complete the Benchmark/Evals methodology review lane.
+  Acceptance evidence:
+  - structured review evidence exists in
+    `docs/reviews/external-review-summary.json`;
+  - reviewer role/scope and review date recorded;
+  - split design, scoring semantics, variance framing, stale/current evidence
+    separation, and paper claim boundary reviewed;
+  - findings or explicit no-finding disposition recorded;
+  - every finding has an accepted, rejected, or unresolved decision;
+  - docs and paper language are updated for accepted findings.
+
+- [ ] Complete the AI-agent/tooling review lane.
+  Acceptance evidence:
+  - structured review evidence exists in
+    `docs/reviews/external-review-summary.json`;
+  - reviewer role/scope and review date recorded;
+  - harness assumptions, tool access, target-request correlation, model/agent
+    comparability, and run-bundle evidence reviewed;
+  - findings or explicit no-finding disposition recorded;
+  - every finding has an accepted, rejected, or unresolved decision;
+  - accepted harness or evidence-packaging findings are implemented and tested.
+
+- [ ] Re-run the external-review completion gate after all three lanes.
+  Acceptance evidence:
+  - `docs/reviews/external-review-summary.md` contains no placeholder `TBD`
+    completion rows for required lanes;
+  - `docs/reviews/external-review-summary.json` records all required lanes with
+    review date, reviewer role/scope, reviewed artifacts, disposition, decisions,
+    follow-up artifact for accepted/unresolved findings, and claim-boundary
+    impact;
+  - `python3 scripts/validate_v1_readiness.py --allow-incomplete` reports
+    `external_review_completed` as passed.
+
+### Hosted Or Fully Containerized Submission Gate
+
+- [ ] Implement or document an executable hosted/containerized private
+  submission smoke path.
+  Acceptance evidence:
+  - structured evidence exists at `artifact/submission-runner-smoke.json`;
+  - smoke evidence records command, commit SHA, runner image or hosted-runner
+    version, private-pack version label, isolation model, expected denial of
+    private manifest reads by submitter code, pass/fail result, and cleanup;
+  - smoke evidence `benchmark_source_sha` matches the benchmark source SHA in
+    the external release evidence;
+  - smoke evidence `private_pack_fingerprint_sha256` matches the active private
+    holdout pack fingerprint computed from validated private manifests;
+  - public output excludes private task bodies, private routes, private seeds,
+    raw private results, captures, credentials, and local absolute paths.
+
+- [ ] Prove protected execution on the intended maintainer platform.
+  Acceptance evidence:
+  - submitter process cannot read private manifests directly;
+  - scorer-controlled process can evaluate private tasks;
+  - raw private evidence is written only to ignored/protected locations;
+  - redacted summary and candidate row are generated from source summaries;
+  - privacy scan confirms no private or raw paths are tracked.
+
+### Rotating Private Holdout Gate
+
+- [ ] Implement at least one active and one shadow or candidate private holdout
+  pack.
+  Acceptance evidence:
+  - structured rotation metadata exists at
+    `tasks_private/holdout/rotation-metadata.json`;
+  - pack directories are versioned by role and pack label;
+  - active and shadow/candidate labels are documented without exposing task
+    bodies publicly;
+  - each pack has manifest validation evidence;
+  - the active pack fingerprint is computed from canonical private manifest
+    content plus manifest paths and is recorded in release, hosted-smoke, source
+    summary, and eligible leaderboard evidence;
+  - compatibility, retirement trigger, and rerun policy are documented.
+
+- [ ] Add validation for private-pack rotation metadata.
+  Acceptance evidence:
+  - validator checks active plus shadow/candidate pack presence and validates
+    each declared pack's manifests in maintainer checkout;
+  - validator fails clearly in strict mode when packs are absent or ambiguous;
+  - public CI can still run without private manifests by using documented
+    allow-incomplete behavior where appropriate.
+
+### Repeated Private Tool-Agent Evidence Gate
+
+- [ ] Produce at least one repeated private-holdout tool-agent candidate row.
+  Acceptance evidence:
+  - `leaderboard_eligible: true`;
+  - `split: private-holdout`;
+  - `harness_type: tool-agent`;
+  - `run_count >= 2`;
+  - `benchmark_commit_sha` matches the benchmark source SHA declared in the
+    external release evidence;
+  - `private_pack_fingerprint_sha256` matches the active private holdout pack
+    fingerprint declared in release evidence and source summaries;
+  - source run summaries are present and validated;
+  - benchmark fingerprint and comparability key are runner-emitted;
+  - target-request coverage is present for live/tool runs;
+  - protected execution metadata proves private-path denial;
+  - `scripts/validate_leaderboard_submission.py --submission
+    'leaderboard_submissions/**/*.json' --require-source-summary` passes.
+
+- [ ] Refresh repeated private no-tools baseline evidence for comparison.
+  Acceptance evidence:
+  - repeated eligible private-holdout no-tools rows match the benchmark source
+    SHA declared in the external release evidence;
+  - the benchmark source SHA exists, is an ancestor of the release commit, and
+    has no release-affecting file changes between source and release unless the
+    changed path is an explicitly allowed evidence-only JSON record;
+  - any future compatibility attestation is tied to the same benchmark
+    fingerprint, active private-pack version, and active private-pack
+    fingerprint;
+  - source summaries are present and validate;
+  - old rows affected by task, scoring, private-pack, or evidence-contract
+    changes are marked stale, legacy, or deprecated;
+  - baseline registry and variance docs distinguish public diagnostics from
+    private leaderboard candidates.
+
+### v1 Scale Gate
+
+- [ ] Reach at least 100 tasks across public and protected private splits.
+  Acceptance evidence:
+  - task counts are recomputed from manifests;
+  - vulnerable/control mix remains meaningful;
+  - denial controls and authorized-allow controls are preserved;
+  - task-quality matrix is regenerated and clean;
+  - new tasks include scorer fixtures or equivalent replay evidence;
+  - stale baselines are not compared as current after task/scoring changes.
+
+- [ ] Expand task families without weakening v0.0 claim boundaries.
+  Candidate areas:
+  - billing entitlement misuse;
+  - support ticket reassignment;
+  - file share revoke and stale-link access;
+  - API token scope change and unauthorized export/read;
+  - audit export cross-org access;
+  - invitation, role downgrade, and stale-permission behavior;
+  - admin setting, report export, object ownership, and cross-org workflow
+    variations.
+
+### Paper And Artifact Gate
+
+- [ ] Update the v1-prep technical report and IEEE scaffold after review and
+  infrastructure gates change.
+  Acceptance evidence:
+  - structured evidence exists at `docs/v1-paper-readiness.json`;
+  - paper distinguishes frozen v0.0, current v1-prep, and true v1 claims;
+  - figures and tables label current/stale/legacy evidence clearly;
+  - `python3 scripts/generate_paper_tables.py` leaves no diff under
+    `paper/shared`;
+  - `latexmk -pdf -interaction=nonstopmode -halt-on-error
+    paper/ieee-sp/main.tex` passes;
+  - paper readiness evidence `benchmark_source_sha` matches the benchmark
+    source SHA in the external release evidence.
+
+- [ ] Add expected outputs or fixture snapshots for the new v1 readiness gates.
+  Acceptance evidence:
+  - artifact README names how to inspect current v1-prep versus true v1
+    readiness;
+  - expected output does not imply v1 readiness while incomplete gates remain.
+
+### Final Release Candidate Gate
+
+- [ ] Run full exact-head local validation.
+  Required commands:
+  - `python3 -m unittest discover -s tests`
+  - `python3 scripts/validate_public.py --include-scripted-baseline`
+  - `python3 scripts/validate_public.py --include-scripted-baseline
+    --include-container-smoke`
+  - `python3 scripts/validate_v0_release.py`
+  - `python3 scripts/validate_baseline_registry.py`
+  - `python3 scripts/validate_leaderboard_submission.py --submission
+    'leaderboard_submissions/**/*.json' --require-source-summary`
+  - `python3 scripts/generate_paper_tables.py`
+  - `git diff --exit-code -- paper/shared`
+  - `git diff --check`
+  - `git ls-files tasks_private/holdout results captures
+    docs/reviews/panel-logs`
+  Acceptance evidence:
+  - structured release evidence exists outside tracked Git history and is passed
+    to strict validation with `--release-evidence`;
+  - the structured evidence records the current release commit SHA, the
+    benchmark source SHA used for hosted/paper/private-run evidence, every
+    required command above with `passed: true`, exact-head CI conclusion, active
+    private-pack fingerprint, and pushed commit status;
+  - strict `python3 scripts/validate_v1_readiness.py --release-evidence
+    <external-json>` passes from a clean working tree.
+
+- [ ] Push release candidate and confirm exact-head CI.
+  Acceptance evidence:
+  - commit authored as `bmendonca3`;
+  - pushed to the intended public remote;
+  - exact-head GitHub Actions workflow passes;
+  - no open validator gate remains;
+  - this section is updated with final evidence and only then marked complete.
+
 ## Current Goal Statement
 
 Build AuthZBench-SaaS into a public benchmark that serious AI-agent and

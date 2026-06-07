@@ -124,6 +124,20 @@ class ValidatePublicScriptTests(unittest.TestCase):
             commands,
         )
 
+    def test_validate_runs_v1_readiness_gate_in_allow_incomplete_mode(self) -> None:
+        with (
+            patch.object(validate_public, "run") as run,
+            patch.object(validate_public, "scan_privacy"),
+            patch.object(validate_public, "run_container_smoke"),
+        ):
+            validate_public.validate(validate_public.ROOT, include_scripted_baseline=False, include_container_smoke=False)
+
+        commands = [call.args[0] for call in run.call_args_list]
+        self.assertIn(
+            [validate_public.sys.executable, "scripts/validate_v1_readiness.py", "--allow-incomplete"],
+            commands,
+        )
+
     def test_validate_runs_leaderboard_submission_gate(self) -> None:
         with (
             patch.object(validate_public, "run") as run,

@@ -112,6 +112,7 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         cwd,
     )
     run([sys.executable, "scripts/validate_v0_release.py", "--allow-incomplete"], cwd)
+    run([sys.executable, "scripts/validate_v1_readiness.py", "--allow-incomplete"], cwd)
     run([sys.executable, "scripts/generate_task_quality_matrix.py"], cwd)
     run(["git", "diff", "--exit-code", "--", "docs/task-quality-matrix.json", "docs/task-quality-matrix.md"], cwd)
     run([sys.executable, "scripts/generate_benchmark_charts.py"], cwd)
