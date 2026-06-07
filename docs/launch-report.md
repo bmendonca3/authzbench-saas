@@ -129,7 +129,7 @@ python3 -m authzbench.run \
   --harness-type scripted
 ```
 
-Expected current result:
+Expected frozen v0.0 result:
 
 - `task_count`: 46
 - `passed_count`: 46
@@ -142,20 +142,22 @@ Tracked summary:
 
 - [scripted-baseline-public-46-summary.json](../baselines/scripted-baseline-public-46-summary.json)
 
-Initial model baselines were also run through the Kiro no-tools adapter.
+Initial frozen v0.0 model baselines were also run through the Kiro no-tools
+adapter. These 46-task rows remain auditable v0.0 evidence, but they are stale
+for the live 49-task v1-prep split.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Kiro `qwen3-coder-next` current run 1 | 46 | 27 | 0.0 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
-| Kiro `claude-haiku-4.5` current run 1 | 46 | 26 | 0.2632 | 0.0 | 0.037 |
-| Kiro `claude-haiku-4.5` current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` no-tools current run 1 | 46 | 27 | 0.6316 | 0.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` no-tools current run 2 | 46 | 26 | 0.4211 | 0.0 | 0.037 |
-| Kiro `glm-5` no-tools current run 1 | 46 | 27 | 0.2105 | 0.0 | 0.0 |
-| Kiro `glm-5` no-tools current run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
-| Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 1 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
-| Kiro live HTTP tool-agent `claude-sonnet-4.6` current run 2 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` frozen v0.0 run 1 | 46 | 27 | 0.0 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` frozen v0.0 run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
+| Kiro `claude-haiku-4.5` frozen v0.0 run 1 | 46 | 26 | 0.2632 | 0.0 | 0.037 |
+| Kiro `claude-haiku-4.5` frozen v0.0 run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools frozen v0.0 run 1 | 46 | 27 | 0.6316 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` no-tools frozen v0.0 run 2 | 46 | 26 | 0.4211 | 0.0 | 0.037 |
+| Kiro `glm-5` no-tools frozen v0.0 run 1 | 46 | 27 | 0.2105 | 0.0 | 0.0 |
+| Kiro `glm-5` no-tools frozen v0.0 run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` frozen v0.0 run 1 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` frozen v0.0 run 2 | 46 | 27 | 0.7368 | 0.0 | 0.0 |
 | Live HTTP scripted baseline, stale 44-task snapshot | 44 | 44 | 1.0 | 1.0 | 0.0 |
 | Heuristic live HTTP prober, stale 44-task snapshot | 44 | 33 | 0.6111 | 0.6667 | 0.0 |
 | Kiro `claude-sonnet-4.6` legacy snapshot | 15 | 11 | 0.3333 | not tracked | 0.0 |
@@ -172,15 +174,46 @@ Initial model baselines were also run through the Kiro no-tools adapter.
 | Kiro `qwen3-coder-next` stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6`, stale 44-task snapshot | 44 | 26 | 0.7778 | 0.0 | 0.0 |
 
-The current Qwen, Haiku, Sonnet, and GLM no-tools rows are public-split
+The frozen v0.0 Qwen, Haiku, Sonnet, and GLM no-tools rows are public-split
 repeatability evidence, not rankings. Qwen run 2 had one invalid submission on
 a vulnerable task (`invalid_submission_rate: 0.0217`). Haiku run 1 and Sonnet
 run 2 each had one secure-control false report, and all four no-tools families
 had `boundary_reasoning_pass_rate: 0.0`.
 
+Current 49-task v1-prep no-tools diagnostic rows now exist separately. They do
+not replace the frozen v0.0 snapshot and they are not leaderboard eligible.
+
+| Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Kiro `claude-haiku-4.5` current v1-prep run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 |
+| Kiro `claude-haiku-4.5` current v1-prep run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` current v1-prep run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` current v1-prep run 2 | 49 | 29 | 0.2 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` current v1-prep run 1 | 49 | 28 | 0.05 | 0.0 | 0.0345 |
+| Kiro `qwen3-coder-next` current v1-prep run 2 | 49 | 29 | 0.1 | 0.0 | 0.0 |
+| Kiro `glm-5` current v1-prep run 1 | 49 | 29 | 0.15 | 0.0 | 0.0 |
+| Kiro `glm-5` current v1-prep run 2 | 49 | 28 | 0.1 | 0.0 | 0.0345 |
+| Kiro `claude-opus-4.6` current v1-prep run 1 | 49 | 29 | 0.55 | 0.0 | 0.0 |
+| Kiro `claude-opus-4.6` current v1-prep run 2 | 49 | 29 | 0.55 | 0.0 | 0.0 |
+
+All five current 49-task no-tools families kept `boundary_reasoning_pass_rate:
+0.0`. The current v1-prep split still lacks a live HTTP tool-agent rerun with
+49/49 target-request correlation.
+
 Tracked summaries:
 
+- [scripted-baseline-public-49-summary.json](../baselines/scripted-baseline-public-49-summary.json)
 - [scripted-baseline-public-46-summary.json](../baselines/scripted-baseline-public-46-summary.json)
+- [kiro-claude-haiku-4.5-current-public-49-run1-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-49-run1-summary.json)
+- [kiro-claude-haiku-4.5-current-public-49-run2-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-49-run2-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-49-run1-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-49-run1-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-49-run2-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-49-run2-summary.json)
+- [kiro-qwen3-coder-next-current-public-49-run1-summary.json](../baselines/kiro-qwen3-coder-next-current-public-49-run1-summary.json)
+- [kiro-qwen3-coder-next-current-public-49-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-49-run2-summary.json)
+- [kiro-glm-5-current-public-49-run1-summary.json](../baselines/kiro-glm-5-current-public-49-run1-summary.json)
+- [kiro-glm-5-current-public-49-run2-summary.json](../baselines/kiro-glm-5-current-public-49-run2-summary.json)
+- [kiro-claude-opus-4.6-current-public-49-run1-summary.json](../baselines/kiro-claude-opus-4.6-current-public-49-run1-summary.json)
+- [kiro-claude-opus-4.6-current-public-49-run2-summary.json](../baselines/kiro-claude-opus-4.6-current-public-49-run2-summary.json)
 - [kiro-qwen3-coder-next-current-public-46-run1-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run1-summary.json)
 - [kiro-qwen3-coder-next-current-public-46-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-46-run2-summary.json)
 - [kiro-claude-haiku-4.5-current-public-46-run1-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-46-run1-summary.json)
@@ -231,23 +264,28 @@ boundary reasoning pass rate `0.0`. It is useful repeated v0.0 public
 tool-agent evidence, but it is not current v1, private-holdout, or hosted
 leaderboard evidence.
 
-The current Haiku runs proved 1-5 of 19 vulnerable replays, but no vulnerable
-task fully passed because boundary reasoning stayed at `0.0`; run 1 also had
-one false positive. The current Sonnet no-tools runs proved 8-12 of 19
-vulnerable replays, but no vulnerable task fully passed because boundary
-reasoning stayed at `0.0`; run 2 also had one false positive. The current GLM
-no-tools runs proved 1-4 of 19 vulnerable replays, kept zero false positives,
-and had no vulnerable full-pass tasks because boundary reasoning stayed at
-`0.0`. The stale 44-task Opus no-tools runs proved 12 of 18 vulnerable replays
-in both runs and kept zero false positives, but only 1 vulnerable task fully
-passed because boundary reasoning remained weak at `0.0556`. The stale 44-task
-Sonnet no-tools runs remain useful historical contrast: both proved 14 of 18
-vulnerable replays, but only 3 vulnerable tasks fully passed because boundary
-reasoning remained weak at `0.1667`. The stale 44-task Haiku runs proved 4 of
-18 vulnerable replays in both runs, kept zero false positives, and had no full
-vulnerable-task passes because boundary reasoning was `0.0`. The DeepSeek rows
-provide another control-restrained contrast: both stale runs kept zero false
-positives but proved no vulnerable exploits.
+The current 49-task Haiku runs proved 3-6 of 20 vulnerable replays, and the
+current Sonnet runs proved 4 of 20 vulnerable replays per run, but no vulnerable
+task fully passed because boundary reasoning stayed at `0.0`. Current Qwen
+proved 1-2 of 20 vulnerable replays and had one false positive in run 1.
+Current GLM proved 2-3 of 20 vulnerable replays and had one false positive in
+run 2. Current Opus proved 11 of 20 vulnerable replays in both runs and kept
+zero false positives, but still had no vulnerable full-pass tasks because
+boundary reasoning stayed at `0.0`.
+
+The frozen v0.0 46-task rows remain the release snapshot: Qwen, Haiku, Sonnet,
+and GLM have two 46-task no-tools runs, plus the repeated 46-task live HTTP
+tool-agent runs. The stale 44-task Opus no-tools runs proved 12 of 18
+vulnerable replays in both runs and kept zero false positives, but only 1
+vulnerable task fully passed because boundary reasoning remained weak at
+`0.0556`. The stale 44-task Sonnet no-tools runs remain useful historical
+contrast: both proved 14 of 18 vulnerable replays, but only 3 vulnerable tasks
+fully passed because boundary reasoning remained weak at `0.1667`. The stale
+44-task Haiku runs proved 4 of 18 vulnerable replays in both runs, kept zero
+false positives, and had no full vulnerable-task passes because boundary
+reasoning was `0.0`. The DeepSeek rows provide another control-restrained
+contrast: both stale runs kept zero false positives but proved no vulnerable
+exploits.
 
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by

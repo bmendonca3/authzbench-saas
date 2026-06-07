@@ -27,7 +27,7 @@
         "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md",
         "2026-06-06-task-quality-matrix-panel-summary.md"
       ],
-      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, the first project-management multi-step workflow wave, and the generated public task-quality matrix have review coverage. This section is reviewed; current model/tool-agent reruns remain tracked by the baseline credibility gate."
+      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, the first project-management multi-step workflow wave, and the generated public task-quality matrix have review coverage. This section is reviewed; the remaining current live HTTP tool-agent rerun is tracked by the baseline credibility gate."
     },
     {
       "id": "scorer_runner_request_logs_live_proof",
@@ -73,7 +73,7 @@
         "2026-06-06-leaderboard-schema-v1-panel-summary.md",
         "2026-06-06-v0-report-panel-summary.md"
       ],
-      "notes": "Review coverage for registry, leaderboard validators, current 46-task public model summaries, the repeated current 46-task public tool-agent baseline, chart readability, and current-public benchmark fingerprint comparability is complete. The GLM 46-task no-tools repeat restores the baseline sub-gate to five repeated current model/agent families. This supports Level 1/v0 baseline credibility, not hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
+      "notes": "Review coverage for registry, leaderboard validators, frozen v0.0 46-task public model summaries, the repeated frozen v0.0 46-task public tool-agent baseline, chart readability, and current-public benchmark fingerprint comparability is complete. The current 49-task public split now has five repeated no-tools model families, but its live HTTP tool-agent rerun remains open. This supports Level 1/v0 baseline credibility and v1-prep diagnostic evidence, not hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
     },
     {
       "id": "holdout_contamination_anti_gaming",

@@ -28,8 +28,27 @@ well-labeled before any release claim is made.
   `kiro-claude-haiku-4.5-current-public-49-run2-summary.json`: repeated current
   v1-prep 49-task public split no-tools Haiku runs through the Kiro adapter.
   These count as one current public model-family baseline, but they are not
-  private-holdout, tool-agent, or leaderboard-eligible submissions. The full
-  five-family current public rerun remains open.
+  private-holdout, tool-agent, or leaderboard-eligible submissions.
+- `kiro-claude-sonnet-4.6-current-public-49-run1-summary.json` and
+  `kiro-claude-sonnet-4.6-current-public-49-run2-summary.json`: repeated current
+  v1-prep 49-task public split no-tools Sonnet runs through the Kiro adapter.
+  These count as one current public model-family baseline, but they are not
+  private-holdout, tool-agent, or leaderboard-eligible submissions.
+- `kiro-qwen3-coder-next-current-public-49-run1-summary.json` and
+  `kiro-qwen3-coder-next-current-public-49-run2-summary.json`: repeated current
+  v1-prep 49-task public split no-tools Qwen runs through the Kiro adapter.
+  These count as one current public model-family baseline, but they are not
+  private-holdout, tool-agent, or leaderboard-eligible submissions.
+- `kiro-glm-5-current-public-49-run1-summary.json` and
+  `kiro-glm-5-current-public-49-run2-summary.json`: repeated current v1-prep
+  49-task public split no-tools GLM runs through the Kiro adapter. These count
+  as one current public model-family baseline, but they are not private-holdout,
+  tool-agent, or leaderboard-eligible submissions.
+- `kiro-claude-opus-4.6-current-public-49-run1-summary.json` and
+  `kiro-claude-opus-4.6-current-public-49-run2-summary.json`: repeated current
+  v1-prep 49-task public split no-tools Opus runs through the Kiro adapter.
+  These count as one current public model-family baseline, but they are not
+  private-holdout, tool-agent, or leaderboard-eligible submissions.
 - `scripted-baseline-public-46-summary.json`: frozen v0.0 deterministic
   46-task harness sanity-check baseline.
 - `kiro-qwen3-coder-next-current-public-46-run1-summary.json` and
@@ -116,7 +135,9 @@ The current scripted summary should match the current public split. Older Kiro
 and live HTTP summaries may remain tracked as stale snapshots when the task set
 expands, but they must be rerun before any current comparison or future release
 claim. Current public Kiro summaries must include distinct `run_artifacts`
-before they count as repeated evidence.
+before they count as repeated evidence. As of the 49-task v1-prep public split,
+the no-tools model-family gate has five repeated current public families; the
+current live HTTP tool-agent rerun remains open.
 
 For every model baseline, preserve:
 

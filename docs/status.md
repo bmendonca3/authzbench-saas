@@ -1,6 +1,6 @@
 # Release Status
 
-Last updated: 2026-06-06
+Last updated: 2026-06-07
 
 ## v1 Prep Status
 
@@ -14,6 +14,8 @@ Current v1-prep boundary:
   entitlement task slice, expanding the public task set to 49 tasks.
 - Old 46-task baselines are stale for v1 comparison until rerun against the
   expanded public split.
+- The current 49-task public split now has five repeated no-tools Kiro model
+  families. It still does not have a current 49-task live HTTP tool-agent rerun.
 - v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
   community-scale benchmark maturity.
 
@@ -24,7 +26,8 @@ Current main / v1-prep split:
 - 29 secure-control tasks
 - 17 denial controls and 12 authorized-allow controls
 - one current 49-task deterministic scripted sanity baseline
-- zero current v1 model/tool-agent baseline families until rerun
+- five current repeated no-tools Kiro model-family baselines
+- zero current 49-task live HTTP tool-agent baselines until rerun
 
 ## Current v1-Prep Public Split And Frozen v0.0 Snapshot
 
@@ -39,7 +42,8 @@ baseline registry as historical evidence.
 - 20 vulnerable tasks
 - 29 secure-control tasks
 - 17 denial controls and 12 authorized-allow controls
-- zero current v1 model/tool-agent comparison baselines until rerun
+- five current v1-prep no-tools Kiro model-family comparison baselines
+- zero current v1-prep live HTTP tool-agent comparison baselines until rerun
 - seeded runtime fixtures for tenant, object, organization, invoice, file, link,
   workspace, API-token, scope, and actor IDs
 - route aliases and decoy controls across all six target apps
@@ -57,6 +61,11 @@ baseline registry as historical evidence.
   current public split summaries, frozen release snapshots, and leaderboard
   eligibility
 - current 49-task deterministic scripted harness check
+- repeated current 49-task no-tools Kiro `claude-haiku-4.5` model baseline
+- repeated current 49-task no-tools Kiro `claude-sonnet-4.6` model baseline
+- repeated current 49-task no-tools Kiro `qwen3-coder-next` model baseline
+- repeated current 49-task no-tools Kiro `glm-5` model baseline
+- repeated current 49-task no-tools Kiro `claude-opus-4.6` model baseline
 - stale v0.0 46-task deterministic scripted harness check
 - repeated stale v0.0 46-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated stale v0.0 46-task no-tools Kiro `claude-haiku-4.5` model baseline
@@ -109,10 +118,11 @@ python3 scripts/validate_public.py --include-scripted-baseline
 python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
 ```
 
-The baseline credibility gate has five repeated model/agent families for the
-frozen v0.0 release snapshot. The live public split has now expanded to 49 tasks,
-so those 46-task entries are stale for current comparison while remaining
-auditable as v0.0 historical evidence. Strict
+The baseline credibility gate has five repeated no-tools model families for the
+live 49-task public split and five repeated model/agent families for the frozen
+v0.0 release snapshot. The live public split still lacks a current 49-task live
+HTTP tool-agent rerun, so `v0_baseline_ready` remains false while the no-tools
+model-family gap is closed. Strict
 `python3 scripts/validate_v0_release.py` should be rerun in a maintainer
 checkout before future tags because release evidence and CI references are
 time-sensitive.
@@ -135,11 +145,27 @@ The second Qwen run also had one invalid submission on a vulnerable task
 (`invalid_submission_rate: 0.0217`), so the v0.0 Qwen evidence should be read
 as repeatability evidence, not a polished model ranking.
 
+The current 49-task no-tools Kiro baselines now have two runs each for
+`claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
+`claude-opus-4.6`. They are public-split diagnostic evidence only: all five
+families still have `boundary_reasoning_pass_rate: 0.0`, and none are
+private-holdout, tool-agent, hosted-leaderboard, or v1 release evidence.
+
 ## Baseline Results
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline, current v1-prep split | 49 | 49 | 1.0 | 1.0 | 0.0 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools current v1-prep run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools current v1-prep run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-sonnet-4.6` no-tools current v1-prep run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-sonnet-4.6` no-tools current v1-prep run 2 | 49 | 29 | 0.2 | 0.0 | 0.0 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools current v1-prep run 1 | 49 | 28 | 0.05 | 0.0 | 0.0345 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools current v1-prep run 2 | 49 | 29 | 0.1 | 0.0 | 0.0 | 1.0 |
+| Kiro `glm-5` no-tools current v1-prep run 1 | 49 | 29 | 0.15 | 0.0 | 0.0 | 1.0 |
+| Kiro `glm-5` no-tools current v1-prep run 2 | 49 | 28 | 0.1 | 0.0 | 0.0345 | 1.0 |
+| Kiro `claude-opus-4.6` no-tools current v1-prep run 1 | 49 | 29 | 0.55 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-opus-4.6` no-tools current v1-prep run 2 | 49 | 29 | 0.55 | 0.0 | 0.0 | 1.0 |
 | Scripted sanity baseline, stale v0.0 snapshot | 46 | 46 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale v0.0 run 1 | 46 | 27 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale v0.0 run 2 | 46 | 27 | 0.0526 | 0.0 | 0.0 | 1.0 |

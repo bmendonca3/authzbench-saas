@@ -72,16 +72,21 @@ every remaining v1/community-benchmark gap is visible rather than implied away.
   current public split Haiku runs, `task_count: 49`, `run_count: 2`,
   `harness_type: no-tools-model`, and explicit non-leaderboard claim-boundary
   text.
+- [x] Current 49-task no-tools model baselines have five repeated tracked model
+  families.
+  Evidence: `kiro-claude-haiku-4-5-current-public-49`,
+  `kiro-claude-sonnet-4-6-current-public-49`,
+  `kiro-qwen3-coder-next-current-public-49`, `kiro-glm-5-current-public-49`,
+  and `kiro-claude-opus-4-6-current-public-49` are registered as current public
+  split no-tools model baselines with `run_count: 2`, distinct
+  `run_artifacts`, `task_count: 49`, matching model labels, benchmark commit
+  `1eaac973ffe5229dad5796b9a5b144fa3af37a3a`, and non-leaderboard
+  claim-boundary notes.
 
 ### Open Perfection Gaps
 
 These remain intentionally open until real evidence exists:
 
-- [ ] Current 49-task no-tools model baselines rerun with repeated artifacts.
-  Progress: one repeated current 49-task no-tools Haiku family is tracked in
-  `baselines/kiro-claude-haiku-4.5-current-public-49-run1-summary.json` and
-  `baselines/kiro-claude-haiku-4.5-current-public-49-run2-summary.json`; leave
-  this open until the full five-family current public rerun exists.
 - [ ] Current 49-task live HTTP tool-agent baselines rerun with target-request
   correlation.
 - [ ] Boundary-reasoning calibration study completed and reflected in the paper.

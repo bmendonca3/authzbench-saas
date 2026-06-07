@@ -46,8 +46,8 @@ rewriting the released `v0.0` claim boundary.
 - [x] Preserve the existing leaderboard schema and holdout-rotation docs as the
       current source of truth.
 - [x] Add an artifact packet scaffold under `artifact/`.
-- [ ] Add expected-output fixtures after the public validation packet is frozen.
-- [ ] Add signed or attestable run-bundle guidance.
+- [x] Add expected-output fixtures after the public validation packet is frozen.
+- [x] Add signed or attestable run-bundle guidance.
 - [ ] Add hosted or fully containerized submission operation only when the
       governance model exists.
 
@@ -55,7 +55,7 @@ rewriting the released `v0.0` claim boundary.
 
 - [x] Add `docs/baseline-variance-analysis.md`.
 - [x] Add `docs/reviews/external-review-summary.md`.
-- [ ] Fill variance analysis from repeated current baseline artifacts.
+- [x] Fill variance analysis from repeated current baseline artifacts.
 - [ ] Obtain external appsec review.
 - [ ] Obtain external benchmark/evals review.
 - [ ] Obtain external AI-agent/tooling review.

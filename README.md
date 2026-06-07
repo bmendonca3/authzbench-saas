@@ -37,7 +37,7 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Public apps | 6 synthetic SaaS targets |
 | Public tasks | 49 total: 20 vulnerable, 29 secure controls |
 | Control mix | 17 denial controls, 12 authorized-allow controls |
-| Baselines | v0.0 46-task snapshot preserved; 49-task scripted sanity check tracked; model/tool-agent reruns pending |
+| Baselines | v0.0 46-task snapshot preserved; 49-task scripted sanity and five no-tools model-family reruns tracked; live HTTP tool-agent rerun pending |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |

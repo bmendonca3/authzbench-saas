@@ -81,7 +81,16 @@ public split. It is not model capability evidence and is stale for current
 The current scripted baseline is a 49-task deterministic harness sanity check.
 It proves the expanded v1-prep public split, scorer, and scripted oracle path
 agree. It is not model capability evidence, a leaderboard row, private-holdout
-evidence, or a substitute for current model/tool-agent reruns.
+evidence, or a substitute for current model or tool-agent reruns.
+
+The current 49-task no-tools Kiro baselines now have two runs each for
+`claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
+`claude-opus-4.6`, all using benchmark commit
+`1eaac973ffe5229dad5796b9a5b144fa3af37a3a`. They close the current public
+no-tools model-family repeat gate, but they are still public-split diagnostic
+evidence only. They are not private-holdout, live HTTP tool-agent,
+hosted-leaderboard, or v1 release evidence, and all five families still have
+`boundary_reasoning_pass_rate: 0.0`.
 
 The v0.0 `qwen3-coder-next` no-tools Kiro baseline has two 46-task public runs.
 It is useful historical public model evidence, but it is still not

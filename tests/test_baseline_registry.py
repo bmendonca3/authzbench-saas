@@ -53,10 +53,10 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 18, result)
+        self.assertEqual(result["baseline_count"], 22, result)
         self.assertEqual(result["public_split"]["task_count"], 49, result)
-        self.assertEqual(result["current_public_model_family_count"], 1, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
+        self.assertEqual(result["current_public_model_family_count"], 5, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 5, result)
         self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
         self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
@@ -65,9 +65,26 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertIn("current public model families: 1 of 5", result["unmet_v0_requirements"])
-        self.assertIn("repeated model baselines: 1 of 5", result["unmet_v0_requirements"])
+        self.assertNotIn("current public model families: 1 of 5", result["unmet_v0_requirements"])
+        self.assertNotIn("repeated model baselines: 1 of 5", result["unmet_v0_requirements"])
         self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
+
+    def test_current_public_model_repeats_share_one_benchmark_commit(self) -> None:
+        registry = load_json(REGISTRY)
+        current_entries = [
+            entry
+            for entry in registry["baselines"]
+            if entry["kind"] == "model_baseline" and entry["release_suitability"] == "current_public_split"
+        ]
+
+        self.assertEqual(len(current_entries), 5)
+        commit_shas = {
+            load_json(REGISTRY.parent / artifact_path)["benchmark_commit_sha"]
+            for entry in current_entries
+            for artifact_path in entry["run_artifacts"]
+        }
+
+        self.assertEqual(commit_shas, {"1eaac973ffe5229dad5796b9a5b144fa3af37a3a"})
 
     def test_future_public_expansion_can_keep_v0_release_snapshot_honest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

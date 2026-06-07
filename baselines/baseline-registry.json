@@ -71,6 +71,82 @@
       "notes": "Current v1-prep repeated 49-task public split no-tools Claude Haiku baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
     },
     {
+      "id": "kiro-claude-sonnet-4-6-current-public-49",
+      "summary_path": "kiro-claude-sonnet-4.6-current-public-49-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-claude-sonnet",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-claude-sonnet-4.6-current-public-49-run1-summary.json",
+        "kiro-claude-sonnet-4.6-current-public-49-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-sonnet-4.6",
+      "expected_task_count": 49,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current v1-prep repeated 49-task public split no-tools Claude Sonnet baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+    },
+    {
+      "id": "kiro-qwen3-coder-next-current-public-49",
+      "summary_path": "kiro-qwen3-coder-next-current-public-49-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-qwen",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-qwen3-coder-next-current-public-49-run1-summary.json",
+        "kiro-qwen3-coder-next-current-public-49-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "qwen3-coder-next",
+      "expected_task_count": 49,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current v1-prep repeated 49-task public split no-tools Qwen baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+    },
+    {
+      "id": "kiro-glm-5-current-public-49",
+      "summary_path": "kiro-glm-5-current-public-49-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-glm",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-glm-5-current-public-49-run1-summary.json",
+        "kiro-glm-5-current-public-49-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "glm-5",
+      "expected_task_count": 49,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current v1-prep repeated 49-task public split no-tools GLM baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+    },
+    {
+      "id": "kiro-claude-opus-4-6-current-public-49",
+      "summary_path": "kiro-claude-opus-4.6-current-public-49-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-claude-opus",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-claude-opus-4.6-current-public-49-run1-summary.json",
+        "kiro-claude-opus-4.6-current-public-49-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-opus-4.6",
+      "expected_task_count": 49,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current v1-prep repeated 49-task public split no-tools Claude Opus baseline through the Kiro adapter. Counts as one current public model-family baseline. Public-split evidence only; not private-holdout or leaderboard-eligible evidence."
+    },
+    {
       "id": "scripted-sanity-public-46",
       "summary_path": "scripted-baseline-public-46-summary.json",
       "kind": "harness_check",

@@ -67,8 +67,9 @@ when describing current `main`.
 
 ## Next Work
 
-Before any current model comparison, rerun no-tools and tool-agent baselines on
-the 49-task split and preserve source summaries, fingerprints, artifacts, and
-repeated-run provenance. Before a v1 release, expand task volume, add rotating
-private holdouts, complete reviewer calibration, and keep chart/table captions
-explicit about current versus stale evidence.
+Before any current tool-agent comparison, rerun live HTTP tool-agent baselines
+on the 49-task split and preserve source summaries, fingerprints, artifacts,
+target-request correlation, and repeated-run provenance. Before a v1 release,
+expand task volume, add rotating private holdouts, complete reviewer
+calibration, and keep chart/table captions explicit about current versus stale
+evidence.
