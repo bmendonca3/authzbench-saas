@@ -1,6 +1,6 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from two current v1-prep 54-task public
+Status: descriptive two-run analysis from three current v1-prep 54-task public
 no-tools families, the historical 49-task public no-tools and live HTTP tool-agent
 artifacts, and the frozen v0.0 46-task release snapshot. These ranges are
 diagnostic public-split evidence only, not confidence intervals, private holdout
@@ -18,6 +18,7 @@ This file uses only tracked public-safe summaries named by
 | --- | --- | --- | --- |
 | `kiro-qwen3-coder-next-current-public-54` | `no-tools-model` | `qwen3-coder-next` | `kiro-qwen3-coder-next-current-public-54-run1-summary.json`; `kiro-qwen3-coder-next-current-public-54-run2-summary.json` |
 | `kiro-claude-haiku-4-5-current-public-54` | `no-tools-model` | `claude-haiku-4.5` | `kiro-claude-haiku-4.5-current-public-54-run1-summary.json`; `kiro-claude-haiku-4.5-current-public-54-run2-summary.json` |
+| `kiro-claude-sonnet-4-6-current-public-54` | `no-tools-model` | `claude-sonnet-4.6` | `kiro-claude-sonnet-4.6-current-public-54-run1-summary.json`; `kiro-claude-sonnet-4.6-current-public-54-run2-summary.json` |
 
 ### Historical v1-prep 49-task public split
 
@@ -48,6 +49,7 @@ This file uses only tracked public-safe summaries named by
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Qwen no-tools | 0.5981-0.6528 | 0.0000-0.1429 | 0-0 | 0.0000-0.0000 | 0.0000-0.0303 | 0.0000-0.0370 | n/a |
 | Claude Haiku no-tools | 0.6815-0.6954 | 0.1905-0.2381 | 0-0 | 0.0000-0.0000 | 0.0303-0.0303 | 0.0000-0.0000 | n/a |
+| Claude Sonnet no-tools | 0.8204-0.8343 | 0.6667-0.7143 | 0-0 | 0.0000-0.0000 | 0.0303-0.0303 | 0.0000-0.0000 | n/a |
 
 The two current Qwen runs also preserve adapter diagnostics. Run 1 records
 seven task-level adapter failures: two inner Kiro command failures and five
@@ -66,6 +68,14 @@ findings, respectively; the promoted aggregates were derived exactly from the
 retained per-task rows because the runs completed immediately before the runner
 began emitting `scored_submission_finding_total`. Both runs submit one false
 finding on the same authorized-allow support reassignment control.
+
+Both current Claude Sonnet 4.6 runs also have zero adapter failures, zero outer
+runner failures, and zero invalid submissions. They contain 22 and 21
+runner-counted findings and prove 15 and 14 vulnerable replays, respectively.
+Run 1 falsely reports the authorized-allow admin reassignment control; run 2
+falsely reports the secure viewer-status denial control. Each therefore has one
+control false report and `false_positive_rate: 0.0303`, while their
+authorized-allow pass rates differ (`0.9286` and `1.0000`).
 
 ### Historical v1-prep 49-task public split
 
@@ -90,8 +100,9 @@ finding on the same authorized-allow support reassignment control.
 
 ## Interpretation
 
-The current 54-task Qwen and Claude Haiku pairs establish repeated evidence for
-two no-tools model families on the active fingerprint. The Qwen pair passes
+The current 54-task Qwen, Claude Haiku, and Claude Sonnet pairs establish
+repeated evidence for three no-tools model families on the active fingerprint.
+The Qwen pair passes
 32-33 of 54 tasks,
 proves 0-3 of 21 vulnerable replays, keeps vulnerable boundary reasoning at
 `0.0000`, and fully passes zero vulnerable tasks. One run has one reported
@@ -109,8 +120,15 @@ vulnerable tasks. Both runs have a `0.0303` false-positive and false-report rate
 because each reports the same authorized-allow control as vulnerable; the
 authorized-allow pass rate is `0.9286`. The absence of adapter, runner, and
 invalid-submission failures makes this a cleaner model-output comparison than
-the current Qwen pair, but two families remain insufficient for stable
+the current Qwen pair, but three families remain insufficient for stable
 cross-model conclusions.
+
+The Claude Sonnet pair passes 32 of 54 tasks in both runs, proves 14-15 of 21
+vulnerable replays, keeps boundary reasoning at `0.0000`, and fully passes zero
+vulnerable tasks. Both runs have one false-reported support control, but the
+control type differs across runs. This pair is a substantially stronger exploit
+replay signal than the current Qwen and Haiku pairs, yet remains public-split
+diagnostic evidence rather than a model ranking.
 
 Qwen run 1's `vulnerable_safety_pass_rate` is `0.9524` because its outer
 runner failure on one vulnerable task produced an invalid submission with no
@@ -184,7 +202,7 @@ print(len([
 PY
 ```
 
-Expected counts: `2` current 54-task model families, `6` stale 49-task
+Expected counts: `3` current 54-task model families, `6` stale 49-task
 model/agent families, and `5` frozen v0.0 repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,

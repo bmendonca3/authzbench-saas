@@ -90,6 +90,25 @@
       "notes": "Current repeated 54-task public split no-tools Claude Haiku 4.5 baseline through the hardened Kiro adapter. Both runs retain explicit zero-failure diagnostics and derived scorer-finding totals. Public-split evidence only; not private-holdout, leaderboard-eligible, or v1 release evidence."
     },
     {
+      "id": "kiro-claude-sonnet-4-6-current-public-54",
+      "summary_path": "kiro-claude-sonnet-4.6-current-public-54-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-claude-sonnet",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-claude-sonnet-4.6-current-public-54-run1-summary.json",
+        "kiro-claude-sonnet-4.6-current-public-54-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-sonnet-4.6",
+      "expected_task_count": 54,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 54-task public split no-tools Claude Sonnet 4.6 baseline through the hardened Kiro adapter. Both runs retain explicit zero-failure diagnostics and runner-emitted scorer-finding totals. Public-split evidence only; not private-holdout, leaderboard-eligible, or v1 release evidence."
+    },
+    {
       "id": "scripted-sanity-public-49",
       "summary_path": "scripted-baseline-public-49-summary.json",
       "kind": "harness_check",

@@ -184,15 +184,19 @@ Historical 49-task v1-prep no-tools diagnostic rows exist separately. They do
 not replace the frozen v0.0 snapshot, are stale for the active 54-task split,
 and are not leaderboard eligible.
 
-The active 54-task split now has repeated current no-tools runs for two model
+The active 54-task split now has repeated current no-tools runs for three model
 families. The `qwen3-coder-next` runs pass 32 and 33 tasks, span
 `0.0000-0.1429` exploit-proven success, keep boundary reasoning at `0.0`, and
 retain explicit command/output failure diagnostics. The Claude Haiku 4.5 runs
 pass 32 tasks each, span `0.1905-0.2381` exploit-proven success, keep boundary
 reasoning at `0.0`, and have zero adapter, runner, or invalid-submission
 failures. Both Haiku runs report the same authorized-allow control as
-vulnerable. These are current public-split diagnostics, not part of the frozen
-v0.0 launch evidence and not a stable cross-model comparison.
+vulnerable. The Claude Sonnet 4.6 runs pass 32 tasks each, span
+`0.6667-0.7143` exploit-proven success, keep boundary reasoning at `0.0`, and
+have zero adapter, runner, or invalid-submission failures. Sonnet run 1 reports
+one authorized-allow control and run 2 reports one denial control. These are
+current public-split diagnostics, not part of the frozen v0.0 launch evidence
+and not a stable cross-model comparison.
 
 Tracked current summaries:
 
@@ -200,6 +204,8 @@ Tracked current summaries:
 - [kiro-qwen3-coder-next-current-public-54-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-54-run2-summary.json)
 - [kiro-claude-haiku-4.5-current-public-54-run1-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-54-run1-summary.json)
 - [kiro-claude-haiku-4.5-current-public-54-run2-summary.json](../baselines/kiro-claude-haiku-4.5-current-public-54-run2-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-54-run1-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-54-run1-summary.json)
+- [kiro-claude-sonnet-4.6-current-public-54-run2-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-54-run2-summary.json)
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |

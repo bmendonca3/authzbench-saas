@@ -27,9 +27,10 @@ Current main / v1-prep split:
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current 54-task deterministic scripted sanity baseline
-- two current repeated 54-task no-tools model-family baselines: Qwen with
+- three current repeated 54-task no-tools model-family baselines: Qwen with
   model-output failure diagnostics, and Claude Haiku 4.5 with complete
-  zero-failure task artifacts
+  zero-failure task artifacts, and Claude Sonnet 4.6 with complete zero-failure
+  task artifacts and runner-emitted finding totals
 - five repeated 49-task no-tools Kiro model-family baselines, now stale
 - one repeated 49-task live HTTP Kiro tool-agent baseline, now stale
 
@@ -47,10 +48,11 @@ baseline registry as historical evidence.
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current deterministic scripted harness check
-- two current repeated 54-task no-tools Kiro model baselines:
+- three current repeated 54-task no-tools Kiro model baselines:
   `qwen3-coder-next`, with explicit model-output failure diagnostics, and
   `claude-haiku-4.5`, with zero adapter, runner, and invalid-submission failures;
-  public-split evidence only
+  and `claude-sonnet-4.6`, with zero adapter, runner, and invalid-submission
+  failures; public-split evidence only
 - five stale 49-task no-tools Kiro model-family baselines
 - one stale 49-task live HTTP Kiro tool-agent baseline with 49/49 target-request
   correlation in both historical runs
@@ -73,6 +75,7 @@ baseline registry as historical evidence.
 - current 54-task deterministic scripted harness check
 - repeated current 54-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated current 54-task no-tools Kiro `claude-haiku-4.5` model baseline
+- repeated current 54-task no-tools Kiro `claude-sonnet-4.6` model baseline
 - repeated stale 49-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated stale 49-task no-tools Kiro `claude-sonnet-4.6` model baseline
 - repeated stale 49-task no-tools Kiro `qwen3-coder-next` model baseline
@@ -182,6 +185,8 @@ evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence.
 | Kiro `qwen3-coder-next` no-tools current 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools current 54-task run 1 | 54 | 32 | 0.1905 | 0.0 | 0.0303 | 0.9286 |
 | Kiro `claude-haiku-4.5` no-tools current 54-task run 2 | 54 | 32 | 0.2381 | 0.0 | 0.0303 | 0.9286 |
+| Kiro `claude-sonnet-4.6` no-tools current 54-task run 1 | 54 | 32 | 0.7143 | 0.0 | 0.0303 | 0.9286 |
+| Kiro `claude-sonnet-4.6` no-tools current 54-task run 2 | 54 | 32 | 0.6667 | 0.0 | 0.0303 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools stale 49-task run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 | 1.0 |
@@ -236,6 +241,17 @@ authorized-allow support reassignment control, so both
 `false_positive_rate` and `control_false_report_rate` are `0.0303`, while
 `authorized_allow_pass_rate` is `0.9286`. This is current public diagnostic
 evidence for a second no-tools family, not a stable cross-model ranking.
+
+The current Claude Sonnet 4.6 pair also passes 32 tasks in both runs, proves 15
+and 14 of 21 vulnerable replays, keeps boundary reasoning at `0.0`, and fully
+passes no vulnerable task. Both runs have zero adapter failures, zero outer
+runner failures, and zero invalid submissions. Run 1 reports the
+authorized-allow admin reassignment control as vulnerable, producing
+`authorized_allow_pass_rate: 0.9286`; run 2 reports the secure viewer-status
+denial control as vulnerable while preserving `authorized_allow_pass_rate:
+1.0`. Both therefore have `false_positive_rate` and
+`control_false_report_rate` of `0.0303`. This is current public diagnostic
+evidence for a third no-tools family, not a stable cross-model ranking.
 
 The v0.0 Qwen repeat is useful because it shows variance, not because it is
 a strong model result. Run 2 found one replay-proven vulnerable task but still

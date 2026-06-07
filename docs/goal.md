@@ -231,7 +231,7 @@ The goal is complete only when all of these are true:
     matching runner-emitted fingerprints and explicit model-output failure
     diagnostics across both runs;
   - `python3 scripts/validate_baseline_registry.py` currently reports
-    `current_public_model_family_count: 2` and
+    `current_public_model_family_count: 3` and
     `has_current_public_tool_agent_baseline: false`;
   - the readiness gate is therefore correctly red even though the historical
     49-task checkpoint above was green.
@@ -555,8 +555,19 @@ The goal is complete only when all of these are true:
     paper-preflight commit `9cd06e2b017a3071ccb398026654c78e949fbe3f`
     are authored as `bmendonca3`, pushed to `main` and `v1-task-expansion`, and
     exact-head GitHub Actions run `27102791303` passed.
-  - [ ] `claude-sonnet-4.6`, `glm-5`, and `claude-opus-4.6` no-tools families
-    each have two runner-emitted 54-task summaries;
+  - [ ] `claude-sonnet-4.6` has two runner-emitted 54-task base summaries with
+    distinct run IDs, the active fingerprint, complete 54-task artifacts, zero
+    adapter/runner failures, and zero invalid submissions.
+    Evidence: run `20260607T194520410841Z-23511868` passes 32 tasks, proves 15
+    of 21 vulnerable replays, and has 22 scorer-counted findings; run
+    `20260607T195114220157Z-ad7ce734` passes 32 tasks, proves 14 of 21 vulnerable
+    replays, and has 21 scorer-counted findings. Both keep boundary reasoning at
+    `0.0` and fully pass zero vulnerable tasks. Run 1 falsely reports the
+    authorized-allow admin reassignment control; run 2 falsely reports the
+    secure viewer-status denial control. Promotion audit, commit/push, and
+    exact-head CI remain required before this subitem may close.
+  - [ ] `glm-5` and `claude-opus-4.6` no-tools families each have two
+    runner-emitted 54-task summaries;
   - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs
     with one plan/probe artifact per task and full target-request correlation;
   - registry rows use the live fingerprint and are no longer marked stale;

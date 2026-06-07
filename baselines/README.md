@@ -42,6 +42,15 @@ well-labeled before any release claim is made.
   runs completed immediately before the runner began emitting that aggregate.
   They are current public-split evidence for a second model family, not
   private-holdout, leaderboard-eligible, or v1 release evidence.
+- `kiro-claude-sonnet-4.6-current-public-54-run1-summary.json` and
+  `kiro-claude-sonnet-4.6-current-public-54-run2-summary.json`: current repeated
+  54-task public split no-tools Claude Sonnet 4.6 runs. Both retain complete
+  54-task artifacts, zero adapter or runner failures, zero invalid submissions,
+  and runner-emitted scorer-finding totals. They pass 32 tasks each and prove
+  15 and 14 of 21 vulnerable replays. Each reports one different support
+  control as vulnerable. They are current public-split evidence for a third
+  model family, not private-holdout, leaderboard-eligible, or v1 release
+  evidence.
 - `scripted-baseline-public-49-summary.json`: historical v1-prep 49-task
   deterministic harness sanity-check baseline, now stale for current
   comparison.
@@ -160,7 +169,7 @@ and live HTTP summaries may remain tracked as stale snapshots when the task set
 expands, but they must be rerun before any current comparison or future release
 claim. Current public Kiro summaries must include distinct `run_artifacts`
 before they count as repeated evidence. As of the 54-task v1-prep public split,
-the deterministic harness check and two repeated no-tools families are current.
+the deterministic harness check and three repeated no-tools families are current.
 The remaining no-tools and live HTTP tool-agent comparison gates remain open
 pending 54-task reruns.
 
