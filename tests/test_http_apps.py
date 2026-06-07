@@ -424,6 +424,20 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(alias_body["route"], "case_owner_alias")
         self.assertEqual(alias_body["ticket"]["assigned_to"], "acme_viewer")
 
+        canonical_status, canonical_body = _request(
+            (
+                f"{base_url}/api/orgs/{refs['ACME_ORG_ID']}"
+                f"/tickets/{refs['ACME_TICKET_ID']}/assignee"
+            ),
+            "acme_agent",
+            method="PATCH",
+            body={"assigned_to": "acme_agent"},
+            headers=headers,
+        )
+        self.assertEqual(canonical_status, 200)
+        self.assertEqual(canonical_body["route"], "ticket_assignee")
+        self.assertEqual(canonical_body["ticket"]["assigned_to"], "acme_agent")
+
         secure_agent_status, secure_agent_body = _request(
             (
                 f"{base_url}/api/secure/orgs/{refs['ACME_ORG_ID']}"

@@ -2,7 +2,7 @@
 
 Status: v0.0 released; not a hosted leaderboard. Historical launch report for
 the frozen 46-task v0.0 snapshot; current `main` has since expanded the live
-public split to 49 tasks, so the baseline rows below are stale for current v1
+public split to 54 tasks, so the baseline rows below are stale for current v1
 comparison until rerun.
 
 ## Summary

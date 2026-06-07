@@ -73,7 +73,7 @@
         "2026-06-06-leaderboard-schema-v1-panel-summary.md",
         "2026-06-06-v0-report-panel-summary.md"
       ],
-      "notes": "Review coverage for registry, leaderboard validators, frozen v0.0 46-task public model summaries, the repeated frozen v0.0 46-task public tool-agent baseline, chart readability, and current-public benchmark fingerprint comparability is complete. The current 49-task public split now has five repeated no-tools model families plus one repeated live HTTP tool-agent family with full target-request correlation. This supports Level 1/v0 baseline credibility and v1-prep diagnostic evidence, not hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
+      "notes": "Review coverage for registry, leaderboard validators, frozen v0.0 46-task public model summaries, the repeated frozen v0.0 46-task public tool-agent baseline, chart readability, and then-current benchmark fingerprint comparability is complete. The historical 49-task public split has five repeated no-tools model families plus one repeated live HTTP tool-agent family with full target-request correlation; those rows are stale for the active 54-task split. This supports Level 1/v0 baseline credibility and historical v1-prep diagnostic evidence, not current 54-task model comparison, hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
     },
     {
       "id": "holdout_contamination_anti_gaming",

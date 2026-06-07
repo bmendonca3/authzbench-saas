@@ -4,7 +4,7 @@ Status: public v0.0 technical-report draft for the released benchmark artifact.
 This document is claim-disciplined by design: it describes what the repository
 proved at the frozen v0.0 release boundary, what it partially supported, and
 what remained future work. On current `main`, the live public split has
-expanded to 49 tasks; this report preserves the frozen v0.0 46-task release
+expanded to 54 tasks; this report preserves the frozen v0.0 46-task release
 snapshot.
 
 ## Title Options
@@ -205,7 +205,7 @@ evidence-backed agent from one that over-reports.
   summarized at aggregate level. Private task bodies, seeds, routes, and oracles
   are intentionally not public.
 - **Baseline scope.** Frozen v0.0 baselines are useful public-split
-  diagnostics, not broad model rankings or current 49-task comparisons. Some
+  diagnostics, not broad model rankings or current 54-task comparisons. Some
   repeated tool-agent runs span adjacent commits with matching task
   fingerprints rather than identical SHAs.
 - **Boundary-reasoning strictness.** A `0.0` boundary-reasoning rate in frozen

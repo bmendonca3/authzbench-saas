@@ -42,8 +42,8 @@ no-finding dispositions.
   and target-request coverage separated clearly enough?
 - Are two-run ranges framed as descriptive evidence rather than statistical
   certainty?
-- Are stale 44-task, frozen 46-task, and current 49-task baselines clearly
-  separated?
+- Are stale 44-task, frozen 46-task, historical 49-task, and current 54-task
+  evidence clearly separated?
 - Does the validation packet give enough public reproducibility without leaking
   private holdout internals?
 

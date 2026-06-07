@@ -190,7 +190,7 @@
       "expected_agent": "scripted_baseline_agent",
       "expected_model": "deterministic-script",
       "expected_task_count": 46,
-      "notes": "Frozen v0.0 deterministic harness sanity check for the 46-task public split. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence.",
+      "notes": "Frozen v0.0 deterministic harness sanity check for the 46-task public split. Stale for v1 comparison after the public split expanded beyond the release snapshot and now contains 54 tasks; rerun before using as current v1 evidence.",
       "requires_rerun_before_current_comparison": true
     },
     {
@@ -209,7 +209,7 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "qwen3-coder-next",
       "expected_task_count": 46,
-      "notes": "Frozen v0.0 repeated 46-task public split no-tools Qwen baseline through the Kiro adapter. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence.",
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools Qwen baseline through the Kiro adapter. Stale for v1 comparison after the public split expanded beyond the release snapshot and now contains 54 tasks; rerun before using as current v1 evidence.",
       "requires_rerun_before_current_comparison": true
     },
     {
@@ -228,7 +228,7 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-haiku-4.5",
       "expected_task_count": 46,
-      "notes": "Frozen v0.0 repeated 46-task public split no-tools Claude Haiku baseline through the Kiro adapter. The paired runs span adjacent chart-only commits; public tasks, apps, scorer, runner, and harness behavior did not change. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence.",
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools Claude Haiku baseline through the Kiro adapter. The paired runs span adjacent chart-only commits; public tasks, apps, scorer, runner, and harness behavior did not change. Stale for v1 comparison after the public split expanded beyond the release snapshot and now contains 54 tasks; rerun before using as current v1 evidence.",
       "requires_rerun_before_current_comparison": true
     },
     {
@@ -247,7 +247,7 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 46,
-      "notes": "Frozen v0.0 repeated 46-task public split no-tools Claude Sonnet baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence.",
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools Claude Sonnet baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Stale for v1 comparison after the public split expanded beyond the release snapshot and now contains 54 tasks; rerun before using as current v1 evidence.",
       "requires_rerun_before_current_comparison": true
     },
     {
@@ -266,7 +266,7 @@
       "expected_agent": "kiro_baseline_agent",
       "expected_model": "glm-5",
       "expected_task_count": 46,
-      "notes": "Frozen v0.0 repeated 46-task public split no-tools GLM baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence.",
+      "notes": "Frozen v0.0 repeated 46-task public split no-tools GLM baseline through the Kiro adapter. Both runs use the same public task fingerprint, score policy, evidence contract, commit SHA, agent, model, and harness type. Stale for v1 comparison after the public split expanded beyond the release snapshot and now contains 54 tasks; rerun before using as current v1 evidence.",
       "requires_rerun_before_current_comparison": true
     },
     {
@@ -281,7 +281,7 @@
       "expected_agent": "kiro_live_tool_agent",
       "expected_model": "claude-sonnet-4.6",
       "expected_task_count": 46,
-      "notes": "Frozen v0.0 repeated 46-task public split live HTTP tool-agent baseline through the Kiro adapter. Both runs include one model-plan artifact and one tool-probe artifact per task plus full target-request correlation. The paired runs span adjacent public-doc/test/tool-agent-tooling commits rather than identical SHAs; public tasks, apps, score policy, evidence contract, and task fingerprint match. Stale for v1 comparison after the public split expanded to 49 tasks; rerun before using as current v1 evidence.",
+      "notes": "Frozen v0.0 repeated 46-task public split live HTTP tool-agent baseline through the Kiro adapter. Both runs include one model-plan artifact and one tool-probe artifact per task plus full target-request correlation. The paired runs span adjacent public-doc/test/tool-agent-tooling commits rather than identical SHAs; public tasks, apps, score policy, evidence contract, and task fingerprint match. Stale for v1 comparison after the public split expanded beyond the release snapshot and now contains 54 tasks; rerun before using as current v1 evidence.",
       "run_artifacts": [
         "kiro-live-tool-agent-sonnet-current-public-46-summary.json",
         "kiro-live-tool-agent-sonnet-current-public-46-run2-summary.json"

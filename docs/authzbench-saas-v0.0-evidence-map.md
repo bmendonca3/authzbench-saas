@@ -3,7 +3,7 @@
 This file maps paper/report claims to public-safe repository evidence. It is
 intended to keep external writing grounded and to prevent accidental
 overclaiming.
-On current `main`, the live public split has expanded to 49 tasks. This file
+On current `main`, the live public split has expanded to 54 tasks. This file
 preserves the frozen v0.0 46-task release evidence map.
 
 ## Source Files Inspected
@@ -52,7 +52,7 @@ Baseline and evidence files:
 | --- | --- | --- | --- |
 | AuthZBench-SaaS v0.0 is a released benchmark artifact. | Supported | `v0.0` tag and GitHub Release; release notes; release evidence | This does not imply hosted leaderboard readiness. |
 | The public split contains 6 synthetic SaaS apps. | Supported | `README.md`, `docs/benchmark-card.md`, task manifests, manifest validator | Apps are local fixtures, not production targets. |
-| The v0.0 public split contains 46 tasks. | Supported | `baselines/baseline-registry.json`, `docs/status.md`, manifest validator | Public tasks are inspectable; live v1-prep has expanded to 49. |
+| The v0.0 public split contains 46 tasks. | Supported | `baselines/baseline-registry.json`, `docs/status.md`, manifest validator | Public tasks are inspectable; live v1-prep has expanded to 54. |
 | The v0.0 public split contains 19 vulnerable tasks and 27 secure controls. | Supported | `baseline-registry.json`, `docs/benchmark-card.md`, `docs/status.md` | v0.0 secure controls include denial and authorized-allow controls. |
 | The control mix is 16 denial controls and 11 authorized-allow controls. | Supported | `baseline-registry.json`, `README.md`, `docs/status.md` | Authorized-allow controls are central to false-positive discipline. |
 | The benchmark uses deterministic backend replay. | Supported | `docs/methodology.md`, `docs/score-policy.md`, scorer and transcript docs | Replay is scorer-owned and stronger than prose-only claims. |

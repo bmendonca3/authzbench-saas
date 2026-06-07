@@ -108,6 +108,10 @@ def main() -> int:
         f"http://127.0.0.1:8013/api/orgs/{support_refs['ACME_ORG_ID']}"
         f"/cases/{support_refs['ACME_TICKET_ID']}/owner"
     )
+    support_assignment_canonical = (
+        f"http://127.0.0.1:8013/api/orgs/{support_refs['ACME_ORG_ID']}"
+        f"/tickets/{support_refs['ACME_TICKET_ID']}/assignee"
+    )
     support_assignment_secure = (
         f"http://127.0.0.1:8013/api/secure/orgs/{support_refs['ACME_ORG_ID']}"
         f"/tickets/{support_refs['ACME_TICKET_ID']}/assignee"
@@ -203,6 +207,18 @@ def main() -> int:
                 {"assigned_to": "acme_viewer"},
                 seed=support_seed,
                 task_id="support_agent_assignment_alias",
+            ),
+            200,
+        ),
+        (
+            "support_agent_assignment_canonical",
+            _request(
+                support_assignment_canonical,
+                "acme_agent",
+                "PATCH",
+                {"assigned_to": "acme_agent"},
+                seed=support_seed,
+                task_id="support_agent_assignment_canonical",
             ),
             200,
         ),
