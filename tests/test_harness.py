@@ -204,6 +204,18 @@ class HarnessTests(unittest.TestCase):
                     result,
                 )
 
+    def test_multistep_support_reassignment_rejects_malformed_evidence(self) -> None:
+        task, submission = self._support_reassignment_submission()
+        submission["findings"][0]["evidence"] = {"request": {"actor": "acme_agent"}}
+        result = score_submission(task, submission)
+
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["subscores"]["exploit_proof"], 0, result)
+        self.assertTrue(
+            any("finding evidence must be a list" in str(item) for item in result["observations"]),
+            result,
+        )
+
     def test_malformed_evidence_fails_without_crashing(self) -> None:
         task = load_json(ROOT / "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json")
         submission = {

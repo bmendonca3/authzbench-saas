@@ -67,27 +67,25 @@ v1/community-benchmark gap is visible rather than implied away.
   Evidence: commit `ede97d01ecb708feb24985dec0fc3b51d37ac7d1` is authored and
   committed as `bmendonca3 <bmendonca3@users.noreply.github.com>` and is present
   on both `origin/main` and `origin/v1-task-expansion`.
-- [x] One current 49-task no-tools model-family baseline has repeated tracked
-  artifacts.
+- [x] The 49-task checkpoint had one repeated no-tools model-family baseline.
   Evidence: `kiro-claude-haiku-4-5-current-public-49` is registered with two
-  current public split Haiku runs, `task_count: 49`, `run_count: 2`,
+  then-current public split Haiku runs, `task_count: 49`, `run_count: 2`,
   `harness_type: no-tools-model`, and explicit non-leaderboard claim-boundary
   text.
-- [x] Current 49-task no-tools model baselines have five repeated tracked model
-  families.
+- [x] The 49-task checkpoint had five repeated no-tools model families.
   Evidence: `kiro-claude-haiku-4-5-current-public-49`,
   `kiro-claude-sonnet-4-6-current-public-49`,
   `kiro-qwen3-coder-next-current-public-49`, `kiro-glm-5-current-public-49`,
-  and `kiro-claude-opus-4-6-current-public-49` are registered as current public
-  split no-tools model baselines with `run_count: 2`, distinct
+  and `kiro-claude-opus-4-6-current-public-49` were registered as current public
+  split no-tools model baselines at that checkpoint, with `run_count: 2`, distinct
   `run_artifacts`, `task_count: 49`, matching model labels, benchmark commit
   `1eaac973ffe5229dad5796b9a5b144fa3af37a3a`, and non-leaderboard
   claim-boundary notes.
-- [x] Current 49-task live HTTP tool-agent baseline has repeated tracked runs
-  with target-request correlation.
-  Evidence: `kiro-live-tool-agent-sonnet-current-public-49` is registered as a
-  current public split tool-agent baseline with two `claude-sonnet-4.6` Kiro live
-  HTTP runs from benchmark commit
+- [x] The 49-task checkpoint had repeated live HTTP tool-agent runs with
+  target-request correlation.
+  Evidence: `kiro-live-tool-agent-sonnet-current-public-49` was registered as a
+  current public split tool-agent baseline at that checkpoint, with two
+  `claude-sonnet-4.6` Kiro live HTTP runs from benchmark commit
   `3d4293cd24305ad410ddad8cb68654bf10adc9ff`. Run
   `20260607T071431380750Z-fc6636f1` reports `task_count: 49`,
   `model_tool_plan_artifact_count: 49`, `per_task_tool_probe_artifact_count:
@@ -97,14 +95,14 @@ v1/community-benchmark gap is visible rather than implied away.
   `20260607T072056877797Z-2be17ca0` reports the same 49/49 artifact and
   correlation counts, `target_request_coverage_rate: 1.0`, zero planner/parser
   failures, and `executed_tool_probe_total: 126`.
-- [x] Baseline registry and release gates recognize the new evidence.
+- [x] Baseline registry and release gates recognized the 49-task checkpoint.
   Evidence: `python3 scripts/validate_baseline_registry.py` passes with
   `baseline_count: 23`, `current_public_model_family_count: 6`,
   `repeated_model_baseline_count: 6`, `has_current_public_tool_agent_baseline:
   true`, `v0_baseline_ready: true`, `v0_release_snapshot_ready: true`, and no
   unmet baseline requirements. Strict `python3 scripts/validate_v0_release.py`
   passes with all 8 gates green and `v0_ready: true` in this maintainer checkout.
-- [x] Current public tool-agent baseline checkpoint is committed, pushed, and CI
+- [x] The 49-task public tool-agent checkpoint was committed, pushed, and CI
   verified.
   Evidence: commit `fd0bfcb41e0f8db0b52a0a7f56106c9c2e2e416b` (`Add current
   public tool-agent baseline evidence`) is authored as `bmendonca3`, pushed to
@@ -116,8 +114,8 @@ v1/community-benchmark gap is visible rather than implied away.
 These remain intentionally open until real evidence exists:
 
 - [x] Boundary-reasoning calibration study completed and reflected in the paper.
-  Evidence: `docs/boundary-reasoning-calibration-study.md` audits both current
-  49-task live HTTP `claude-sonnet-4.6` tool-agent runs, covering all 30
+  Evidence: `docs/boundary-reasoning-calibration-study.md` audits both
+  then-current 49-task live HTTP `claude-sonnet-4.6` tool-agent runs, covering all 30
   exploit-proven vulnerable task-run cases where boundary reasoning failed.
   `docs/authzbench-saas-v1-prep-technical-report.md` and
   `paper/ieee-sp/main.tex` now state the calibrated interpretation: exploit
@@ -368,29 +366,33 @@ The goal is complete only when all of these are true:
 
 - [ ] Complete and promote the 54-task support-reassignment expansion wave.
   This item remains open until every child check below has direct evidence:
-  - [ ] Add one vulnerable ordered workflow that proves a normal same-org
+  - [x] Add one vulnerable ordered workflow that proves a normal same-org
     support status update followed by an unauthorized agent-driven ticket
     reassignment through an alias route.
-  - [ ] Add secure same-org agent denial, cross-org denial, secure admin allow,
+  - [x] Add secure same-org agent denial, cross-org denial, secure admin allow,
     and agent status-only authorized-allow tasks.
-  - [ ] Require backend replay for every step, exact boundary vocabulary for
+  - [x] Require backend replay for every step, exact boundary vocabulary for
     the vulnerable task, `findings: []` for controls, and assignment-state
     preservation where the task does not authorize reassignment.
-  - [ ] Add target tests for canonical, alias, secure, cross-org, invalid
+  - [x] Add target tests for canonical, alias, secure, cross-org, invalid
     assignee, authorized status-only, and authorized admin behavior.
-  - [ ] Add scorer tests proving missing, reordered, duplicated, or malformed
+  - [x] Add scorer tests proving missing, reordered, duplicated, or malformed
     multi-step evidence cannot receive exploit-proof credit.
   - [ ] Extend container smoke so the new vulnerable, denial, and authorized
     paths are checked with target-request log correlation.
-  - [ ] Recompute the public split from manifests and verify the expected mix:
+  - [x] Recompute the public split from manifests and verify the expected mix:
     54 total, 21 vulnerable, 33 controls, 19 denial controls, 14
     authorized-allow controls, and 2 explicit multi-step workflows.
-  - [ ] Regenerate the task-quality matrix, charts, paper tables, and public
+  - [x] Regenerate the task-quality matrix, charts, paper tables, and public
     expected-output fixtures; generated-file checks must leave no diff.
-  - [ ] Rerun and register a clean deterministic 54-task scripted baseline.
-  - [ ] Mark every 49-task model and tool-agent row stale for current
+  - [x] Rerun and register a clean deterministic 54-task scripted baseline.
+    Evidence: `baselines/scripted-baseline-public-54-summary.json` is
+    runner-emitted from benchmark source commit
+    `3448564f84afbaba7841b52233e5404e86d81937`, passes all 54 tasks, and
+    carries the live 54-task fingerprint.
+  - [x] Mark every 49-task model and tool-agent row stale for current
     comparison before the task change is published.
-  - [ ] Update status, benchmark-card, evidence/claims, baseline, artifact, and
+  - [x] Update status, benchmark-card, evidence/claims, baseline, artifact, and
     paper language so the 49-task model evidence is described as historical
     v1-prep evidence pending 54-task reruns.
   - [ ] Run focused tests, the full unit suite, manifest validation, baseline

@@ -1,16 +1,17 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from current v1-prep 49-task public
+Status: descriptive two-run analysis from the historical v1-prep 49-task public
 no-tools and live HTTP tool-agent artifacts plus the frozen v0.0 46-task release
 snapshot. These ranges are diagnostic public-split evidence only, not confidence
-intervals, private holdout evidence, or leaderboard rankings.
+intervals, private holdout evidence, or leaderboard rankings. The 49-task rows
+are stale for the active 54-task split.
 
 This file uses only tracked public-safe summaries named by
 `baselines/baseline-registry.json`. Each row below has exactly two runs.
 
 ## Artifact Set
 
-### Current v1-prep 49-task public split
+### Historical v1-prep 49-task public split
 
 | Baseline family | Harness | Model | Source summaries |
 | --- | --- | --- | --- |
@@ -33,7 +34,7 @@ This file uses only tracked public-safe summaries named by
 
 ## Two-Run Metric Ranges
 
-### Current v1-prep 49-task public split
+### Historical v1-prep 49-task public split
 
 | Baseline family | `mean_score` | `exploit_proven_success_rate` | `vulnerable_full_pass_count` | `boundary_reasoning_pass_rate` | `false_positive_rate` | `invalid_submission_rate` | `target_request_coverage_rate` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -56,13 +57,13 @@ This file uses only tracked public-safe summaries named by
 
 ## Interpretation
 
-The current 49-task public runs now clear the five-family no-tools repeat
-evidence gate and the repeated live HTTP tool-agent gate. All five current
-no-tools families and the current live tool-agent family record zero vulnerable
+The 49-task public runs cleared the five-family no-tools repeat evidence gate
+and the repeated live HTTP tool-agent gate for that fingerprint. All five
+no-tools families and the live tool-agent family record zero vulnerable
 full passes because boundary reasoning remains at `0.0000`. Opus is the
 strongest public no-tools replay signal in this pair, proving 11 of 20
 vulnerable tasks in both runs (`0.5500` exploit-proven success) with zero false
-positives. The current live tool-agent proves 15 of 20 vulnerable tasks in both
+positives. The 49-task live tool-agent proves 15 of 20 vulnerable tasks in both
 runs (`0.7500` exploit-proven success), records zero false positives, and has
 1.0000 target-request coverage in both runs, but it still does not satisfy the
 full vulnerable-task scoring contract.
@@ -78,15 +79,15 @@ target-request coverage in this pair.
 The central research signal is not a model ranking. It is the gap between
 exploit replay and boundary reasoning: the frozen v0.0 live tool-agent proves
 14 of 19 vulnerable public tasks in both runs (`0.7368` exploit-proven
-success), the current live tool-agent proves 15 of 20 vulnerable public tasks in
-both runs (`0.7500` exploit-proven success), and current Opus no-tools proves 11
+success), the 49-task live tool-agent proves 15 of 20 vulnerable public tasks in
+both runs (`0.7500` exploit-proven success), and 49-task Opus no-tools proves 11
 of 20 vulnerable public tasks in both runs, yet all still record zero vulnerable
 full passes because boundary reasoning remains at `0.0000`.
 
 ## Reproduction Notes
 
 The table was recomputed by reading `baselines/baseline-registry.json`,
-selecting current public split model and tool-agent baselines plus the five
+selecting the stale 49-task model and tool-agent baselines plus the five
 non-scripted entries in the `v0.0` release snapshot, and loading each entry's
 `run_artifacts` from `baselines/`.
 
@@ -98,14 +99,15 @@ python3 - <<'PY'
 import json
 from pathlib import Path
 registry = json.loads(Path("baselines/baseline-registry.json").read_text())
-current = [
+stale_49 = [
     entry
     for entry in registry["baselines"]
-    if entry["release_suitability"] == "current_public_split"
+    if entry["release_suitability"] == "current_public_stale"
+    and entry.get("expected_task_count") == 49
     and entry["kind"] in {"model_baseline", "tool_agent_baseline"}
 ]
 snapshot = next(item for item in registry["release_snapshots"] if item["id"] == "v0.0")
-print(len(current))
+print(len(stale_49))
 print(len([
     baseline_id
     for baseline_id in snapshot["baseline_ids"]
@@ -114,7 +116,7 @@ print(len([
 PY
 ```
 
-Expected counts: `6` current public model/agent families and `5` frozen v0.0
+Expected counts: `6` stale 49-task model/agent families and `5` frozen v0.0
 repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,

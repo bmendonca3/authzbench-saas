@@ -276,6 +276,7 @@
   },
   "source_files": [
     "baselines/baseline-registry.json",
+    "baselines/scripted-baseline-public-54-summary.json",
     "baselines/scripted-baseline-public-49-summary.json",
     "baselines/kiro-claude-haiku-4.5-current-public-49-run1-summary.json",
     "baselines/kiro-claude-haiku-4.5-current-public-49-run2-summary.json",

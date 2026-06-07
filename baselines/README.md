@@ -20,43 +20,41 @@ well-labeled before any release claim is made.
 
 ## Current, Frozen, And Stale Baselines
 
-- `scripted-baseline-public-49-summary.json`: current v1-prep 49-task
+- `scripted-baseline-public-54-summary.json`: current v1-prep 54-task
   deterministic harness sanity-check baseline. It proves the expanded public
   split, scorer, and scripted oracle path agree; it is not model capability,
   leaderboard, or v1 release evidence.
+- `scripted-baseline-public-49-summary.json`: historical v1-prep 49-task
+  deterministic harness sanity-check baseline, now stale for current
+  comparison.
 - `kiro-claude-haiku-4.5-current-public-49-run1-summary.json` and
-  `kiro-claude-haiku-4.5-current-public-49-run2-summary.json`: repeated current
-  v1-prep 49-task public split no-tools Haiku runs through the Kiro adapter.
-  These count as one current public model-family baseline, but they are not
-  private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-claude-haiku-4.5-current-public-49-run2-summary.json`: repeated
+  historical 49-task public split no-tools Haiku runs through the Kiro adapter.
+  They are stale for current 54-task comparison.
 - `kiro-claude-sonnet-4.6-current-public-49-run1-summary.json` and
-  `kiro-claude-sonnet-4.6-current-public-49-run2-summary.json`: repeated current
-  v1-prep 49-task public split no-tools Sonnet runs through the Kiro adapter.
-  These count as one current public model-family baseline, but they are not
-  private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-claude-sonnet-4.6-current-public-49-run2-summary.json`: repeated
+  historical 49-task public split no-tools Sonnet runs through the Kiro adapter,
+  stale for current 54-task comparison.
 - `kiro-qwen3-coder-next-current-public-49-run1-summary.json` and
-  `kiro-qwen3-coder-next-current-public-49-run2-summary.json`: repeated current
-  v1-prep 49-task public split no-tools Qwen runs through the Kiro adapter.
-  These count as one current public model-family baseline, but they are not
-  private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-qwen3-coder-next-current-public-49-run2-summary.json`: repeated
+  historical 49-task public split no-tools Qwen runs through the Kiro adapter,
+  stale for current 54-task comparison.
 - `kiro-glm-5-current-public-49-run1-summary.json` and
-  `kiro-glm-5-current-public-49-run2-summary.json`: repeated current v1-prep
-  49-task public split no-tools GLM runs through the Kiro adapter. These count
-  as one current public model-family baseline, but they are not private-holdout,
-  tool-agent, or leaderboard-eligible submissions.
+  `kiro-glm-5-current-public-49-run2-summary.json`: repeated historical
+  49-task public split no-tools GLM runs through the Kiro adapter, stale for
+  current 54-task comparison.
 - `kiro-claude-opus-4.6-current-public-49-run1-summary.json` and
-  `kiro-claude-opus-4.6-current-public-49-run2-summary.json`: repeated current
-  v1-prep 49-task public split no-tools Opus runs through the Kiro adapter.
-  These count as one current public model-family baseline, but they are not
-  private-holdout, tool-agent, or leaderboard-eligible submissions.
+  `kiro-claude-opus-4.6-current-public-49-run2-summary.json`: repeated
+  historical 49-task public split no-tools Opus runs through the Kiro adapter,
+  stale for current 54-task comparison.
 - `kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json` and
   `kiro-live-tool-agent-sonnet-current-public-49-run2-summary.json`: repeated
-  current v1-prep 49-task public split live HTTP tool-agent runs using
+  historical 49-task public split live HTTP tool-agent runs using
   `claude-sonnet-4.6` through the Kiro adapter. Both runs write one model-tool
   plan artifact and one tool-probe artifact per task, correlate target-side
   requests for all 49 tasks, and have zero planner failures or parser failures.
-  These count as the current public tool-agent baseline family, but they are not
-  private-holdout or leaderboard-eligible submissions.
+  They are stale for current 54-task comparison and are not private-holdout or
+  leaderboard-eligible submissions.
 - `scripted-baseline-public-46-summary.json`: frozen v0.0 deterministic
   46-task harness sanity-check baseline.
 - `kiro-qwen3-coder-next-current-public-46-run1-summary.json` and
@@ -143,10 +141,9 @@ The current scripted summary should match the current public split. Older Kiro
 and live HTTP summaries may remain tracked as stale snapshots when the task set
 expands, but they must be rerun before any current comparison or future release
 claim. Current public Kiro summaries must include distinct `run_artifacts`
-before they count as repeated evidence. As of the 49-task v1-prep public split,
-the no-tools model-family gate has five repeated current public families and the
-current live HTTP tool-agent gate has one repeated public family with full
-target-request correlation.
+before they count as repeated evidence. As of the 54-task v1-prep public split,
+the deterministic harness check is current, while the no-tools and live HTTP
+tool-agent comparison gates remain open pending 54-task reruns.
 
 For every model baseline, preserve:
 

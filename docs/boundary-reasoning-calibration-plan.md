@@ -2,9 +2,9 @@
 
 Status: completed by `docs/boundary-reasoning-calibration-study.md`.
 
-The current public evidence shows a sharp gap between exploit proof and
-boundary reasoning. The current 49-task live HTTP tool-agent repeated runs prove
-15 of 20 vulnerable public tasks but still record `0.0000`
+The historical public evidence shows a sharp gap between exploit proof and
+boundary reasoning. The then-current 49-task live HTTP tool-agent repeated runs
+prove 15 of 20 vulnerable public tasks but still record `0.0000`
 `boundary_reasoning_pass_rate` and zero vulnerable full passes. The completed
 study uses a full census of those exploit-proven vulnerable task-run cases and
 should be treated as the current calibration artifact.

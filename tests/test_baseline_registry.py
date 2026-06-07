@@ -53,7 +53,7 @@ class BaselineRegistryTests(unittest.TestCase):
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 23, result)
+        self.assertEqual(result["baseline_count"], 24, result)
         self.assertEqual(result["public_split"]["task_count"], 54, result)
         self.assertEqual(result["current_public_model_family_count"], 0, result)
         self.assertEqual(result["repeated_model_baseline_count"], 0, result)

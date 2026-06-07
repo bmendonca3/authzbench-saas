@@ -1,9 +1,9 @@
 # Boundary-Reasoning Calibration Study
 
-Status: completed public-safe calibration for the current 49-task v1-prep
+Status: completed public-safe calibration for the historical 49-task v1-prep
 public split.
 
-This study audits the current repeated live HTTP Kiro
+This study audits the historical repeated live HTTP Kiro
 `claude-sonnet-4.6` tool-agent runs where exploit replay succeeded but boundary
 reasoning did not receive credit. It uses public task manifests and ignored
 local public-run bundles only. It does not use private holdout manifests, raw
@@ -14,7 +14,7 @@ absolute paths.
 
 | Evidence | Value |
 | --- | --- |
-| Public split | Current v1-prep public split |
+| Public split | Historical 49-task v1-prep public split |
 | Task count | 49 public tasks |
 | Vulnerable task count | 20 |
 | Baseline family | `kiro-live-tool-agent-sonnet-current-public-49` |

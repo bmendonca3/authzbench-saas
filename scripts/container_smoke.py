@@ -100,6 +100,10 @@ def main() -> int:
     )
     support_vuln = f"http://127.0.0.1:8013/api/tickets/{support_refs['ORBIT_TICKET_ID']}"
     support_secure = f"http://127.0.0.1:8013/api/secure/tickets/{support_refs['ORBIT_TICKET_ID']}"
+    support_status_secure = (
+        f"http://127.0.0.1:8013/api/secure/orgs/{support_refs['ACME_ORG_ID']}"
+        f"/tickets/{support_refs['ACME_TICKET_ID']}/status"
+    )
     support_assignment_alias = (
         f"http://127.0.0.1:8013/api/orgs/{support_refs['ACME_ORG_ID']}"
         f"/cases/{support_refs['ACME_TICKET_ID']}/owner"
@@ -178,6 +182,18 @@ def main() -> int:
         ),
         ("support_cross_org_ticket_read", _request(support_vuln, "acme_agent", seed=support_seed, task_id="support_cross_org_ticket_read"), 200),
         ("support_secure_cross_org_denial", _request(support_secure, "acme_agent", seed=support_seed, task_id="support_secure_cross_org_denial"), 403),
+        (
+            "support_agent_status_only_allowed",
+            _request(
+                support_status_secure,
+                "acme_agent",
+                "PATCH",
+                {"status": "pending"},
+                seed=support_seed,
+                task_id="support_agent_status_only_allowed",
+            ),
+            200,
+        ),
         (
             "support_agent_assignment_alias",
             _request(

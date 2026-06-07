@@ -38,6 +38,20 @@
   ],
   "baselines": [
     {
+      "id": "scripted-sanity-public-54",
+      "summary_path": "scripted-baseline-public-54-summary.json",
+      "kind": "harness_check",
+      "release_suitability": "current_public_harness_check",
+      "leaderboard_eligible": false,
+      "run_count": 1,
+      "expected_harness_type": "scripted",
+      "expected_agent": "scripted_baseline_agent",
+      "expected_model": "deterministic-script",
+      "expected_task_count": 54,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current 54-task deterministic harness sanity check for the live v1-prep public split. Useful for validating scorer and manifests, but not a model result."
+    },
+    {
       "id": "scripted-sanity-public-49",
       "summary_path": "scripted-baseline-public-49-summary.json",
       "kind": "harness_check",

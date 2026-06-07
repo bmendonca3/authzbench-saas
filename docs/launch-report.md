@@ -144,7 +144,7 @@ Tracked summary:
 
 Initial frozen v0.0 model baselines were also run through the Kiro no-tools
 adapter. These 46-task rows remain auditable v0.0 evidence, but they are stale
-for the live 49-task v1-prep split.
+for the live 54-task v1-prep split.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -180,24 +180,25 @@ a vulnerable task (`invalid_submission_rate: 0.0217`). Haiku run 1 and Sonnet
 run 2 each had one secure-control false report, and all four no-tools families
 had `boundary_reasoning_pass_rate: 0.0`.
 
-Current 49-task v1-prep no-tools diagnostic rows now exist separately. They do
-not replace the frozen v0.0 snapshot and they are not leaderboard eligible.
+Historical 49-task v1-prep no-tools diagnostic rows exist separately. They do
+not replace the frozen v0.0 snapshot, are stale for the active 54-task split,
+and are not leaderboard eligible.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Kiro `claude-haiku-4.5` current v1-prep run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 |
-| Kiro `claude-haiku-4.5` current v1-prep run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` current v1-prep run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 |
-| Kiro `claude-sonnet-4.6` current v1-prep run 2 | 49 | 29 | 0.2 | 0.0 | 0.0 |
-| Kiro `qwen3-coder-next` current v1-prep run 1 | 49 | 28 | 0.05 | 0.0 | 0.0345 |
-| Kiro `qwen3-coder-next` current v1-prep run 2 | 49 | 29 | 0.1 | 0.0 | 0.0 |
-| Kiro `glm-5` current v1-prep run 1 | 49 | 29 | 0.15 | 0.0 | 0.0 |
-| Kiro `glm-5` current v1-prep run 2 | 49 | 28 | 0.1 | 0.0 | 0.0345 |
-| Kiro `claude-opus-4.6` current v1-prep run 1 | 49 | 29 | 0.55 | 0.0 | 0.0 |
-| Kiro `claude-opus-4.6` current v1-prep run 2 | 49 | 29 | 0.55 | 0.0 | 0.0 |
+| Kiro `claude-haiku-4.5` stale 49-task run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 |
+| Kiro `claude-haiku-4.5` stale 49-task run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` stale 49-task run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 |
+| Kiro `claude-sonnet-4.6` stale 49-task run 2 | 49 | 29 | 0.2 | 0.0 | 0.0 |
+| Kiro `qwen3-coder-next` stale 49-task run 1 | 49 | 28 | 0.05 | 0.0 | 0.0345 |
+| Kiro `qwen3-coder-next` stale 49-task run 2 | 49 | 29 | 0.1 | 0.0 | 0.0 |
+| Kiro `glm-5` stale 49-task run 1 | 49 | 29 | 0.15 | 0.0 | 0.0 |
+| Kiro `glm-5` stale 49-task run 2 | 49 | 28 | 0.1 | 0.0 | 0.0345 |
+| Kiro `claude-opus-4.6` stale 49-task run 1 | 49 | 29 | 0.55 | 0.0 | 0.0 |
+| Kiro `claude-opus-4.6` stale 49-task run 2 | 49 | 29 | 0.55 | 0.0 | 0.0 |
 
-All five current 49-task no-tools families kept `boundary_reasoning_pass_rate:
-0.0`. The current 49-task live HTTP tool-agent pair also kept vulnerable
+All five 49-task no-tools families kept `boundary_reasoning_pass_rate:
+0.0`. The 49-task live HTTP tool-agent pair also kept vulnerable
 boundary reasoning at `0.0`, while producing 49/49 target-request correlation in
 both runs.
 
@@ -256,7 +257,7 @@ The Kiro snapshots are public-split baselines, not private leaderboard results.
 Qwen, Haiku, Sonnet, and GLM have two frozen v0.0 46-task no-tools runs. Opus
 and DeepSeek remain repeated 44-task public model baseline families. These
 families are useful historical diagnostics, but they are public-only no-tools
-runs, stale against the current 49-task split, and not leaderboard eligible.
+runs, stale against the current 54-task split, and not leaderboard eligible.
 
 The frozen v0.0 Kiro live HTTP tool-agent baseline uses `claude-sonnet-4.6` to
 plan per-task HTTP probes against live Docker targets on the 46-task public
@@ -267,23 +268,23 @@ boundary reasoning pass rate `0.0`. It is useful repeated v0.0 public
 tool-agent evidence, but it is not current v1, private-holdout, or hosted
 leaderboard evidence.
 
-The current 49-task Haiku runs proved 3-6 of 20 vulnerable replays, and the
-current Sonnet runs proved 4 of 20 vulnerable replays per run, but no vulnerable
-task fully passed because boundary reasoning stayed at `0.0`. Current Qwen
+The 49-task Haiku runs proved 3-6 of 20 vulnerable replays, and the
+49-task Sonnet runs proved 4 of 20 vulnerable replays per run, but no vulnerable
+task fully passed because boundary reasoning stayed at `0.0`. The 49-task Qwen
 proved 1-2 of 20 vulnerable replays and had one false positive in run 1.
-Current GLM proved 2-3 of 20 vulnerable replays and had one false positive in
-run 2. Current Opus proved 11 of 20 vulnerable replays in both runs and kept
+The 49-task GLM runs proved 2-3 of 20 vulnerable replays and had one false
+positive in run 2. The 49-task Opus runs proved 11 of 20 vulnerable replays and kept
 zero false positives, but still had no vulnerable full-pass tasks because
 boundary reasoning stayed at `0.0`.
 
-The current 49-task Kiro live HTTP tool-agent baseline uses
+The stale 49-task Kiro live HTTP tool-agent baseline uses
 `claude-sonnet-4.6` to plan per-task HTTP probes against the live local targets.
 Both runs produced 49/49 model-tool plan artifacts, 49/49 tool-probe artifacts,
 49/49 target-request correlation, zero planner failures, and zero parser
 failures. Each run passed 29 of 49 tasks, replay-proved 15 of 20 vulnerable
 tasks, had zero control false reports, and had boundary reasoning pass rate
-`0.0`. It is useful repeated current public-split tool-agent evidence, but it is
-not private-holdout or hosted leaderboard evidence.
+`0.0`. It is useful historical public-split tool-agent evidence, but it is not
+current 54-task, private-holdout, or hosted leaderboard evidence.
 
 The frozen v0.0 46-task rows remain the release snapshot: Qwen, Haiku, Sonnet,
 and GLM have two 46-task no-tools runs, plus the repeated 46-task live HTTP
@@ -302,7 +303,7 @@ exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks, reports `v0_baseline_ready: true` for the live 49-task
+consistency checks, reports `v0_baseline_ready: false` for the live 54-task
 public baseline bar, and reports `v0_release_snapshot_ready: true` for the
 frozen v0.0 46-task release snapshot. That is a public-split baseline credibility
 claim, not a current v1, hosted-leaderboard, or community-scale benchmark claim.
