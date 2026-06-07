@@ -16,18 +16,19 @@
 
 \begin{abstract}
 AI security agents can produce plausible vulnerability reports without proving
-that an authorization failure occurred. \benchmarkname{} \releaseversion{}
-introduces a focused benchmark for this proof gap. The benchmark contains
-\publicappcount{} synthetic SaaS targets and \publictaskcount{} public tasks
+that an authorization failure occurred. \benchmarkname{} is a focused benchmark
+for this proof gap. This \releaseversion{} contains \publicappcount{} synthetic
+SaaS targets and \publictaskcount{} public tasks
 covering tenant, organization, object, role, API-token, scope, sharing, and
 admin-action boundaries. It evaluates whether an agent can submit
 backend-replayable evidence for vulnerable tasks while avoiding false reports
 on secure controls. The current public split includes \vulnerabletaskcount{}
 vulnerable tasks, \securecontrolcount{} secure-control tasks,
 \denialcontrolcount{} denial controls, and \authorizedallowcount{}
-authorized-allow controls. This paper frames the released \releaseversion{}
-repository as a research artifact and methodology foundation, not as a hosted
-leaderboard or v1 community benchmark.
+authorized-allow controls. This paper frames the repository as a research
+artifact and methodology foundation, preserving the frozen v0.0 evidence while
+beginning v1 task expansion; it is not a hosted leaderboard or v1 community
+benchmark.
 \end{abstract}
 
 \section{Introduction}
@@ -61,13 +62,14 @@ live-target request coverage.
 
 \section{Experimental Results}
 
-Current public baselines are diagnostic public-split evidence. They show that
-agents can sometimes produce replayable exploit evidence while still failing
-full vulnerable-task passes because boundary reasoning remains weak.
+Frozen v0.0 public baselines are diagnostic public-split evidence. They show
+that agents can sometimes produce replayable exploit evidence while still
+failing full vulnerable-task passes because boundary reasoning remains weak.
+They must be rerun before current 49-task v1 comparison.
 
 \begin{table*}[t]
 \centering
-\caption{Current public baseline evidence generated from repository artifacts.}
+\caption{Frozen v0.0 public baseline evidence generated from repository artifacts.}
 \input{../shared/baseline-table.tex}
 \end{table*}
 

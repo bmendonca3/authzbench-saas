@@ -17,12 +17,12 @@ python3 scripts/generate_task_quality_matrix.py
 
 | Metric | Value |
 | --- | ---: |
-| Public tasks | 46 |
+| Public tasks | 49 |
 | App families | 6 |
-| Vulnerable tasks | 19 |
-| Secure controls | 27 |
-| Denial controls | 16 |
-| Authorized-allow controls | 11 |
+| Vulnerable tasks | 20 |
+| Secure controls | 29 |
+| Denial controls | 17 |
+| Authorized-allow controls | 12 |
 | Tasks with explicit workflow evidence requirements | 1 |
 | Vulnerable workflow tasks with evidence requirements | 1 |
 
@@ -32,7 +32,7 @@ python3 scripts/generate_task_quality_matrix.py
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | api_tokens | 8 | 3 | 5 | 3 | 2 | 0 |
 | audit_settings | 7 | 3 | 4 | 1 | 3 | 0 |
-| billing | 8 | 3 | 5 | 3 | 2 | 0 |
+| billing | 11 | 4 | 7 | 4 | 3 | 0 |
 | file_sharing | 8 | 3 | 5 | 3 | 2 | 0 |
 | project_mgmt | 9 | 4 | 5 | 3 | 2 | 1 |
 | support | 6 | 3 | 3 | 3 | 0 | 0 |
@@ -56,13 +56,16 @@ python3 scripts/generate_task_quality_matrix.py
 | aud_bfla_member_downloads_audit_export | audit_settings | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, required_role, resource | 0 |
 | aud_bola_nimbus_reads_quasar_audit_log | audit_settings | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, required_boundary, victim_org | 0 |
 | aud_secure_cross_org_audit_control | audit_settings | control:denial | secure_control_oracle | 1 | n/a | 0 |
+| bill_admin_entitlement_access_control | billing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | bill_admin_plan_access_control | billing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
+| bill_bfla_member_enables_export_entitlement | billing | vulnerable | direct_oracle_and_controls | 3 | attacker_actor, entitlement, org, required_role | 0 |
 | bill_bfla_member_plan_change | billing | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, required_role | 0 |
 | bill_bfla_member_reads_plan_settings | billing | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |
 | bill_bfla_peer_member_plan_change | billing | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |
 | bill_cross_org_invoice_control | billing | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | bill_cross_org_plan_write_control | billing | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | bill_same_org_invoice_read_control | billing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
+| bill_secure_member_entitlement_control | billing | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | bill_secure_member_plan_control | billing | control:denial | secure_control_oracle | 2 | n/a | 0 |
 | fs_active_share_link_control | file_sharing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | fs_bfla_viewer_creates_public_link | file_sharing | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |

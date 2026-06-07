@@ -195,7 +195,7 @@ def focused_metric_chart(
         value = float(row[metric_key])
         is_stale = row["release_suitability"] == "current_public_stale"
         label = row["label"] if not is_stale else f'{row["label"]} (stale)'
-        status = "current 46-task split" if not is_stale else f'stale {row["task_count"]}-task split'
+        status = f'current {row["task_count"]}-task split' if not is_stale else f'stale {row["task_count"]}-task split'
         fill = COLORS["gray"] if is_stale else COLORS[color_key]
         body.append(text(label_x, y + 4, label, size=13, color="gray" if is_stale else "text", weight="600"))
         body.append(text(label_x, y + 22, status, size=11, color="muted"))
@@ -300,7 +300,7 @@ def evidence_status_chart(registry: dict[str, Any], private_summaries: list[dict
     tool_detail = (
         "Current public tool-agent summary with target correlation"
         if tool_entries
-        else "Only stale 44-task public tool-agent evidence is tracked" if stale_tool_entries
+        else "Only stale public tool-agent evidence is tracked" if stale_tool_entries
         else "No public tool-agent summary tracked"
     )
     rows = [
