@@ -542,6 +542,8 @@ The goal is complete only when all of these are true:
   - exact-head CI uses `actions/checkout` with `fetch-depth: 0`, and
     `tests/test_ci_workflow.py` enforces that history requirement so the
     ancestor source SHA remains resolvable in a clean runner.
+  - exact-head GitHub Actions run `27099623059` passed for commit
+    `04c09ccd6e74c81deefdfca5e7952024e4a4173a`.
 
 - [ ] Update the v1-prep technical report and IEEE scaffold after review and
   infrastructure gates change.
