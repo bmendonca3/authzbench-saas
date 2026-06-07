@@ -364,7 +364,7 @@ The goal is complete only when all of these are true:
   - new tasks include scorer fixtures or equivalent replay evidence;
   - stale baselines are not compared as current after task/scoring changes.
 
-- [ ] Complete and promote the 54-task support-reassignment expansion wave.
+- [x] Complete and promote the 54-task support-reassignment expansion wave.
   This item remains open until every child check below has direct evidence:
   - [x] Add one vulnerable ordered workflow that proves a normal same-org
     support status update followed by an unauthorized agent-driven ticket
@@ -378,8 +378,13 @@ The goal is complete only when all of these are true:
     assignee, authorized status-only, and authorized admin behavior.
   - [x] Add scorer tests proving missing, reordered, duplicated, or malformed
     multi-step evidence cannot receive exploit-proof credit.
-  - [ ] Extend container smoke so the new vulnerable, denial, and authorized
+  - [x] Extend container smoke so the new vulnerable, denial, and authorized
     paths are checked with target-request log correlation.
+    Evidence: `scripts/container_smoke.py` covers the vulnerable canonical and
+    alias reassignment routes, secure same-org denial, cross-org denial,
+    authorized status update, and secure admin allow with per-request task IDs;
+    exact-head GitHub Actions run `27089965403` passed the Docker-backed public
+    validation on commit `c1c2b7d35ae8944d91d598361e80b4c9c857ee31`.
   - [x] Recompute the public split from manifests and verify the expected mix:
     54 total, 21 vulnerable, 33 controls, 19 denial controls, 14
     authorized-allow controls, and 2 explicit multi-step workflows.
@@ -409,8 +414,12 @@ The goal is complete only when all of these are true:
     tracked private/raw-path scan returned no paths. Local Docker-backed smoke
     remains assigned to the next child check because the installed Docker
     client could not reach the absent Docker Desktop daemon.
-  - [ ] Commit as `bmendonca3`, push the intended public branches, and confirm
+  - [x] Commit as `bmendonca3`, push the intended public branches, and confirm
     exact-head CI including Docker-backed container smoke.
+    Evidence: commits through `c1c2b7d35ae8944d91d598361e80b4c9c857ee31`
+    are authored as `bmendonca3 <bmendonca3@users.noreply.github.com>`, that
+    commit is present on `origin/main` and `origin/v1-task-expansion`, and
+    GitHub Actions run `27089965403` passed.
 
 - [ ] Refresh model evidence after the 54-task promotion.
   Acceptance evidence:
