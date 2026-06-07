@@ -63,6 +63,11 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     HOSTED_EXECUTION_EVIDENCE_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
 }
+PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
+    PAPER_READINESS_EVIDENCE_PATH,
+    "artifact/expected-output/v1-readiness-public-view.json",
+    "docs/goal.md",
+}
 
 
 def _text(path: Path) -> str:
@@ -176,7 +181,13 @@ def _git_ok(root: Path, cmd: list[str]) -> bool:
     return subprocess.run(["git", *cmd], cwd=root, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode == 0
 
 
-def _benchmark_source_compatibility_errors(root: Path, source_sha: str, release_sha: str) -> list[str]:
+def _benchmark_source_compatibility_errors(
+    root: Path,
+    source_sha: str,
+    release_sha: str,
+    *,
+    allowed_post_source_paths: set[str] | None = None,
+) -> list[str]:
     errors: list[str] = []
     if not _git_ok(root, ["cat-file", "-e", f"{source_sha}^{{commit}}"]):
         errors.append("benchmark_source_sha must exist as a commit")
@@ -194,7 +205,8 @@ def _benchmark_source_compatibility_errors(root: Path, source_sha: str, release_
         text=True,
         stdout=subprocess.PIPE,
     ).stdout.splitlines()
-    release_affecting = [path for path in diff if path not in POST_SOURCE_EVIDENCE_ONLY_PATHS]
+    allowed_paths = allowed_post_source_paths or POST_SOURCE_EVIDENCE_ONLY_PATHS
+    release_affecting = [path for path in diff if path not in allowed_paths]
     if release_affecting:
         errors.append(
             "release-affecting files changed after benchmark_source_sha: "
@@ -598,7 +610,13 @@ def _validate_hosted_execution_evidence(
     }
 
 
-def _validate_paper_readiness_evidence(root: Path = ROOT, benchmark_source_sha: str | None = None) -> dict[str, Any]:
+def _validate_paper_readiness_evidence(
+    root: Path = ROOT,
+    *,
+    benchmark_source_sha: str | None = None,
+    release_sha: str | None = None,
+    allowed_post_source_paths: set[str] | None = None,
+) -> dict[str, Any]:
     unmet: list[str] = []
     data = _json_object(root / PAPER_READINESS_EVIDENCE_PATH, unmet)
     if data is None:
@@ -611,9 +629,30 @@ def _validate_paper_readiness_evidence(root: Path = ROOT, benchmark_source_sha: 
     ):
         if data.get(field) is not True:
             unmet.append(f"{field} must be true")
-    expected_sha = benchmark_source_sha or _current_commit_sha()
-    if data.get("benchmark_source_sha") != expected_sha:
-        unmet.append("benchmark_source_sha must match release benchmark_source_sha")
+    if data.get("evidence_scope") != "release_candidate":
+        unmet.append("evidence_scope must be release_candidate")
+    if data.get("upstream_review_and_infrastructure_complete") is not True:
+        unmet.append("upstream_review_and_infrastructure_complete must be true")
+    evidence_sha = data.get("benchmark_source_sha")
+    if not _sha(evidence_sha):
+        unmet.append("benchmark_source_sha must be a 40-character lowercase Git SHA")
+    else:
+        if benchmark_source_sha is not None and evidence_sha != benchmark_source_sha:
+            unmet.append("benchmark_source_sha must match release benchmark_source_sha")
+        if release_sha is not None:
+            if evidence_sha == release_sha:
+                unmet.append("benchmark_source_sha must reference an ancestor commit, not the release commit")
+            elif _sha(release_sha):
+                unmet.extend(
+                    _benchmark_source_compatibility_errors(
+                        root,
+                        str(evidence_sha),
+                        release_sha,
+                        allowed_post_source_paths=allowed_post_source_paths,
+                    )
+                )
+            else:
+                unmet.append("release_sha must be a 40-character lowercase Git SHA")
     return {"passed": not unmet, "path": PAPER_READINESS_EVIDENCE_PATH, "unmet": unmet}
 
 
@@ -887,7 +926,16 @@ def validate_v1_readiness(
         scale_unmet,
     )
 
-    paper_result = _validate_paper_readiness_evidence(benchmark_source_sha=benchmark_source_sha)
+    paper_allowed_paths = (
+        PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS
+        if release_evidence_path is None
+        else POST_SOURCE_EVIDENCE_ONLY_PATHS
+    )
+    paper_result = _validate_paper_readiness_evidence(
+        benchmark_source_sha=_benchmark_source_sha_from_release_evidence(release_evidence_path),
+        release_sha=target_sha,
+        allowed_post_source_paths=paper_allowed_paths,
+    )
     _add_gate(
         gates,
         "paper_and_artifact_readiness",

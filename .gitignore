@@ -9,3 +9,11 @@ captures/
 tasks_private/holdout/
 docs/reviews/panel-logs/
 .kiro/
+paper/ieee-sp/*.aux
+paper/ieee-sp/*.bbl
+paper/ieee-sp/*.blg
+paper/ieee-sp/*.fdb_latexmk
+paper/ieee-sp/*.fls
+paper/ieee-sp/*.log
+paper/ieee-sp/*.out
+paper/ieee-sp/*.pdf

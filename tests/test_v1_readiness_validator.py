@@ -14,6 +14,7 @@ from scripts.validate_v1_readiness import (
     _source_summaries_have_private_denial,
     _validate_external_review_evidence,
     _validate_hosted_execution_evidence,
+    _validate_paper_readiness_evidence,
     _validate_private_rotation_metadata,
     _working_tree_clean,
     validate_v1_readiness,
@@ -727,6 +728,282 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         errors = self._source_and_release_with_changed_path("artifact/submission-runner-smoke.json")
 
         self.assertEqual(errors, [])
+
+    def test_paper_readiness_allows_only_narrow_post_source_evidence_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.PIPE)
+            (root / "paper" / "ieee-sp").mkdir(parents=True)
+            (root / "paper" / "ieee-sp" / "main.tex").write_text("source\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=bmendonca3",
+                    "-c",
+                    "user.email=bmendonca3@users.noreply.github.com",
+                    "commit",
+                    "-m",
+                    "source",
+                ],
+                cwd=root,
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            source_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "benchmark_source_sha": source_sha,
+                        "claim_boundary_reviewed": True,
+                        "generated_paper_tables_clean": True,
+                        "charts_current_stale_legacy_labeled": True,
+                        "latexmk_main_tex_passed": True,
+                        "evidence_scope": "release_candidate",
+                        "upstream_review_and_infrastructure_complete": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            fixture = root / "artifact" / "expected-output" / "v1-readiness-public-view.json"
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text("{}\n", encoding="utf-8")
+            (root / "docs" / "goal.md").write_text("paper evidence\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=bmendonca3",
+                    "-c",
+                    "user.email=bmendonca3@users.noreply.github.com",
+                    "commit",
+                    "-m",
+                    "evidence",
+                ],
+                cwd=root,
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            release_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+
+            result = _validate_paper_readiness_evidence(
+                root,
+                release_sha=release_sha,
+                allowed_post_source_paths={
+                    "docs/v1-paper-readiness.json",
+                    "artifact/expected-output/v1-readiness-public-view.json",
+                    "docs/goal.md",
+                },
+            )
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["unmet"], [])
+
+    def test_paper_readiness_rejects_release_affecting_post_source_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.PIPE)
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text("{}\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=bmendonca3",
+                    "-c",
+                    "user.email=bmendonca3@users.noreply.github.com",
+                    "commit",
+                    "-m",
+                    "source",
+                ],
+                cwd=root,
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            source_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "benchmark_source_sha": source_sha,
+                        "claim_boundary_reviewed": True,
+                        "generated_paper_tables_clean": True,
+                        "charts_current_stale_legacy_labeled": True,
+                        "latexmk_main_tex_passed": True,
+                        "evidence_scope": "release_candidate",
+                        "upstream_review_and_infrastructure_complete": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            paper = root / "paper" / "ieee-sp" / "main.tex"
+            paper.parent.mkdir(parents=True)
+            paper.write_text("changed after source\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=bmendonca3",
+                    "-c",
+                    "user.email=bmendonca3@users.noreply.github.com",
+                    "commit",
+                    "-m",
+                    "release-affecting change",
+                ],
+                cwd=root,
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            release_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+
+            result = _validate_paper_readiness_evidence(
+                root,
+                release_sha=release_sha,
+                allowed_post_source_paths={
+                    "docs/v1-paper-readiness.json",
+                    "artifact/expected-output/v1-readiness-public-view.json",
+                    "docs/goal.md",
+                },
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "release-affecting files changed after benchmark_source_sha: paper/ieee-sp/main.tex",
+            result["unmet"],
+        )
+
+    def test_paper_readiness_rejects_non_sha_benchmark_source(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "benchmark_source_sha": "tbd",
+                        "claim_boundary_reviewed": True,
+                        "generated_paper_tables_clean": True,
+                        "charts_current_stale_legacy_labeled": True,
+                        "latexmk_main_tex_passed": True,
+                        "evidence_scope": "release_candidate",
+                        "upstream_review_and_infrastructure_complete": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_paper_readiness_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("benchmark_source_sha must be a 40-character lowercase Git SHA", result["unmet"])
+
+    def test_paper_readiness_rejects_self_referential_release_sha(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.PIPE)
+            (root / "seed.txt").write_text("seed\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=bmendonca3",
+                    "-c",
+                    "user.email=bmendonca3@users.noreply.github.com",
+                    "commit",
+                    "-m",
+                    "release",
+                ],
+                cwd=root,
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            release_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "benchmark_source_sha": release_sha,
+                        "claim_boundary_reviewed": True,
+                        "generated_paper_tables_clean": True,
+                        "charts_current_stale_legacy_labeled": True,
+                        "latexmk_main_tex_passed": True,
+                        "evidence_scope": "release_candidate",
+                        "upstream_review_and_infrastructure_complete": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_paper_readiness_evidence(root, release_sha=release_sha)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "benchmark_source_sha must reference an ancestor commit, not the release commit",
+            result["unmet"],
+        )
+
+    def test_paper_readiness_rejects_mismatch_with_release_evidence_sha(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "benchmark_source_sha": "a" * 40,
+                        "claim_boundary_reviewed": True,
+                        "generated_paper_tables_clean": True,
+                        "charts_current_stale_legacy_labeled": True,
+                        "latexmk_main_tex_passed": True,
+                        "evidence_scope": "release_candidate",
+                        "upstream_review_and_infrastructure_complete": True,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_paper_readiness_evidence(root, benchmark_source_sha="b" * 40)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("benchmark_source_sha must match release benchmark_source_sha", result["unmet"])
 
     def test_private_pack_fingerprint_changes_when_manifest_content_changes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
