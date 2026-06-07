@@ -26,8 +26,8 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         else:
             self.assertFalse(gates["task_mix"]["passed"], result)
             self.assertIn("real private holdout pack is missing", gates["private_holdout_pack"]["unmet"])
-            self.assertIn("total vulnerable tasks must be at least 25; got 19", gates["task_mix"]["unmet"])
-            self.assertIn("total secure controls must be at least 30; got 27", gates["task_mix"]["unmet"])
+            self.assertIn("total vulnerable tasks must be at least 25; got 20", gates["task_mix"]["unmet"])
+            self.assertIn("total secure controls must be at least 30; got 29", gates["task_mix"]["unmet"])
         self.assertTrue(gates["baseline_credibility"]["passed"], result)
         self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
         self.assertTrue(gates["sectional_reviews"]["passed"], result)
