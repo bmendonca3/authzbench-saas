@@ -79,6 +79,14 @@ runner failures as invalid submissions. This pair provides current diagnostic
 evidence for one model family, not a stable cross-model comparison or a
 leaderboard result.
 
+Two Claude Haiku 4.5 no-tools runs provide a second current family. Both pass
+32 tasks, prove 4 and 5 of 21 vulnerable replays, retain zero boundary-reasoning
+credit and zero vulnerable full passes, and have no adapter, runner, or invalid
+submission failures. Each run reports one false finding on an authorized-allow
+support reassignment control, giving a 0.0303 false-positive and false-report
+rate and a 0.9286 authorized-allow pass rate. This is cleaner execution evidence
+than the Qwen pair, but it remains public-split diagnostic evidence.
+
 For the preceding 49-task v1-prep public split, repeated live HTTP tool-agent
 runs sharpen this observation. The tool-agent proved vulnerable backend
 behavior for 15 of 20 vulnerable public tasks in each run and preserves
@@ -176,8 +184,9 @@ validation path.
 
 The \releaseversion{} public split is small, synthetic, and inspectable. The
 baseline table is frozen v0.0 diagnostic public-split evidence, not a final
-ordering of model quality. The current 54-task Qwen pair covers only one
-no-tools family and is insufficient for a stable current model comparison.
+ordering of model quality. The current 54-task Qwen and Claude Haiku 4.5 pairs
+cover only two no-tools families and are insufficient for a stable current
+model comparison.
 Governance for
 future v1/community submission states, run bundles, private-pack rotation, and
 hosted or containerized evaluation is specified in the repository, but hosted

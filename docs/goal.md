@@ -231,7 +231,7 @@ The goal is complete only when all of these are true:
     matching runner-emitted fingerprints and explicit model-output failure
     diagnostics across both runs;
   - `python3 scripts/validate_baseline_registry.py` currently reports
-    `current_public_model_family_count: 1` and
+    `current_public_model_family_count: 2` and
     `has_current_public_tool_agent_baseline: false`;
   - the readiness gate is therefore correctly red even though the historical
     49-task checkpoint above was green.
@@ -504,6 +504,19 @@ The goal is complete only when all of these are true:
 
 - [ ] Refresh model evidence after the 54-task promotion.
   Acceptance evidence:
+  - [x] Finding-total telemetry is unambiguous and aligned across public and
+    protected runners.
+    Evidence: commit `1dc264b1d54c0608102b52231b0663d007543a11`
+    adds scorer-derived `scored_submission_finding_total` while preserving
+    legacy adapter-reported `submitted_finding_total`, aligns protected
+    `false_positive_rate` with the public runner and leaderboard validator, and
+    adds divergent-total, redaction, and control-failure regression tests.
+    Paper-preflight refresh commit
+    `220ebd980a4cde4fd9661185b6dae1bbed42c3f6` is pushed to `main` and
+    `v1-task-expansion`; exact-head GitHub Actions run `27102314090` passed.
+    Independent Kiro Opus audits first identified missing protected-path test
+    coverage and a pre-existing false-positive semantic mismatch; both were
+    fixed, and the final audit returned `CLEAN`.
   - [x] `qwen3-coder-next` has two runner-emitted 54-task base summaries,
     promoted with distinct run IDs, the active fingerprint, and public-safe
     task-level command/output failure diagnostics;
@@ -519,9 +532,29 @@ The goal is complete only when all of these are true:
     returned actionable disclosure findings; after fixes, an independent narrow
     replacement audit returned `CLEAN`. The broad intermediate audit that
     stalled without a verdict is explicitly excluded from review evidence.
-  - `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
-    `claude-opus-4.6` no-tools families each have two runner-emitted 54-task
-    summaries;
+  - [ ] `claude-haiku-4.5` has two runner-emitted 54-task base summaries with
+    distinct run IDs, the active fingerprint, complete 54-task artifacts, zero
+    adapter/runner failures, and zero invalid submissions.
+    Evidence: run `20260607T185502191241Z-ac053a0a` passes 32 tasks, proves 4 of
+    21 vulnerable replays, and has 11 scorer-counted findings; run
+    `20260607T190024255303Z-8f2cac6a` passes 32 tasks, proves 5 of 21 vulnerable
+    replays, and has 12 scorer-counted findings. Both keep boundary reasoning at
+    `0.0`, fully pass zero vulnerable tasks, and report the same
+    authorized-allow support reassignment control as vulnerable. The promoted
+    scorer-finding aggregates are exact sums of retained task rows because the
+    base runs immediately predate the aggregate emitter. A broad Kiro Claude
+    Opus 4.8 audit found one ambiguous Qwen safety-rate attribution and then
+    stalled without a verdict; the attribution was fixed and that incomplete
+    audit is excluded from completion evidence. A narrow replacement Kiro
+    Claude Opus 4.6 audit returned `VERDICT: CLEAN`. Local checks include 193
+    passing tests, exact raw artifact counts, zero return-code/parse failures
+    across 108 model outputs, deterministic chart and paper-table regeneration,
+    successful public, strict-v0, registry, and leaderboard validation, an
+    empty tracked-private/raw-path scan, and successful IEEE paper compilation.
+    Commit/push and exact-head CI remain required before this subitem may be
+    treated as fully closed.
+  - [ ] `claude-sonnet-4.6`, `glm-5`, and `claude-opus-4.6` no-tools families
+    each have two runner-emitted 54-task summaries;
   - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs
     with one plan/probe artifact per task and full target-request correlation;
   - registry rows use the live fingerprint and are no longer marked stale;

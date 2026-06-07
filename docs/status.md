@@ -27,8 +27,9 @@ Current main / v1-prep split:
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current 54-task deterministic scripted sanity baseline
-- one current repeated 54-task no-tools Qwen model-family baseline with
-  model-output failure diagnostics
+- two current repeated 54-task no-tools model-family baselines: Qwen with
+  model-output failure diagnostics, and Claude Haiku 4.5 with complete
+  zero-failure task artifacts
 - five repeated 49-task no-tools Kiro model-family baselines, now stale
 - one repeated 49-task live HTTP Kiro tool-agent baseline, now stale
 
@@ -46,8 +47,10 @@ baseline registry as historical evidence.
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current deterministic scripted harness check
-- one current repeated 54-task no-tools Kiro `qwen3-coder-next` model baseline;
-  public-split evidence only, with explicit model-output failure diagnostics
+- two current repeated 54-task no-tools Kiro model baselines:
+  `qwen3-coder-next`, with explicit model-output failure diagnostics, and
+  `claude-haiku-4.5`, with zero adapter, runner, and invalid-submission failures;
+  public-split evidence only
 - five stale 49-task no-tools Kiro model-family baselines
 - one stale 49-task live HTTP Kiro tool-agent baseline with 49/49 target-request
   correlation in both historical runs
@@ -69,6 +72,7 @@ baseline registry as historical evidence.
   eligibility
 - current 54-task deterministic scripted harness check
 - repeated current 54-task no-tools Kiro `qwen3-coder-next` model baseline
+- repeated current 54-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated stale 49-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated stale 49-task no-tools Kiro `claude-sonnet-4.6` model baseline
 - repeated stale 49-task no-tools Kiro `qwen3-coder-next` model baseline
@@ -176,6 +180,8 @@ evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence.
 | Scripted sanity baseline, current v1-prep split | 54 | 54 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools current 54-task run 1 | 54 | 32 | 0.0 | 0.0 | 0.0303 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools current 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools current 54-task run 1 | 54 | 32 | 0.1905 | 0.0 | 0.0303 | 0.9286 |
+| Kiro `claude-haiku-4.5` no-tools current 54-task run 2 | 54 | 32 | 0.2381 | 0.0 | 0.0303 | 0.9286 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools stale 49-task run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 | 1.0 |
@@ -221,6 +227,15 @@ controls failed because the outer runner produced an invalid submission.
 secure control. Inner Kiro command or JSON-extraction failures are separately
 counted as task-level adapter diagnostics; the adapter's empty-findings fallback
 remains in the scored denominator.
+
+The current Claude Haiku 4.5 pair passes 32 tasks in both runs, proves 4 and 5
+of 21 vulnerable replays, keeps boundary reasoning at `0.0`, and fully passes
+no vulnerable task. Both runs have zero adapter failures, zero outer runner
+failures, and zero invalid submissions. Each reports one false finding on the
+authorized-allow support reassignment control, so both
+`false_positive_rate` and `control_false_report_rate` are `0.0303`, while
+`authorized_allow_pass_rate` is `0.9286`. This is current public diagnostic
+evidence for a second no-tools family, not a stable cross-model ranking.
 
 The v0.0 Qwen repeat is useful because it shows variance, not because it is
 a strong model result. Run 2 found one replay-proven vulnerable task but still

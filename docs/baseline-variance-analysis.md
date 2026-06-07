@@ -1,7 +1,7 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from one current v1-prep 54-task public
-no-tools family, the historical 49-task public no-tools and live HTTP tool-agent
+Status: descriptive two-run analysis from two current v1-prep 54-task public
+no-tools families, the historical 49-task public no-tools and live HTTP tool-agent
 artifacts, and the frozen v0.0 46-task release snapshot. These ranges are
 diagnostic public-split evidence only, not confidence intervals, private holdout
 evidence, or leaderboard rankings. The 49-task rows are stale for the active
@@ -17,6 +17,7 @@ This file uses only tracked public-safe summaries named by
 | Baseline family | Harness | Model | Source summaries |
 | --- | --- | --- | --- |
 | `kiro-qwen3-coder-next-current-public-54` | `no-tools-model` | `qwen3-coder-next` | `kiro-qwen3-coder-next-current-public-54-run1-summary.json`; `kiro-qwen3-coder-next-current-public-54-run2-summary.json` |
+| `kiro-claude-haiku-4-5-current-public-54` | `no-tools-model` | `claude-haiku-4.5` | `kiro-claude-haiku-4.5-current-public-54-run1-summary.json`; `kiro-claude-haiku-4.5-current-public-54-run2-summary.json` |
 
 ### Historical v1-prep 49-task public split
 
@@ -46,6 +47,7 @@ This file uses only tracked public-safe summaries named by
 | Baseline family | `mean_score` | `exploit_proven_success_rate` | `vulnerable_full_pass_count` | `boundary_reasoning_pass_rate` | `false_positive_rate` | `invalid_submission_rate` | `target_request_coverage_rate` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Qwen no-tools | 0.5981-0.6528 | 0.0000-0.1429 | 0-0 | 0.0000-0.0000 | 0.0000-0.0303 | 0.0000-0.0370 | n/a |
+| Claude Haiku no-tools | 0.6815-0.6954 | 0.1905-0.2381 | 0-0 | 0.0000-0.0000 | 0.0303-0.0303 | 0.0000-0.0000 | n/a |
 
 The two current Qwen runs also preserve adapter diagnostics. Run 1 records
 seven task-level adapter failures: two inner Kiro command failures and five
@@ -57,6 +59,13 @@ runner failure. The adapter converts each inner failure to a valid
 can pass a secure control or fail a vulnerable task. The outer runner failures
 become invalid submissions. The agent command uses a 60-second inner
 model-call timeout while the runner uses a 75-second per-task timeout.
+
+Both current Claude Haiku 4.5 runs have zero adapter failures, zero outer runner
+failures, and zero invalid submissions. They contain 11 and 12 scorer-counted
+findings, respectively; the promoted aggregates were derived exactly from the
+retained per-task rows because the runs completed immediately before the runner
+began emitting `scored_submission_finding_total`. Both runs submit one false
+finding on the same authorized-allow support reassignment control.
 
 ### Historical v1-prep 49-task public split
 
@@ -81,8 +90,9 @@ model-call timeout while the runner uses a 75-second per-task timeout.
 
 ## Interpretation
 
-The current 54-task Qwen pair establishes repeated evidence for one no-tools
-model family on the active fingerprint. The pair passes 32-33 of 54 tasks,
+The current 54-task Qwen and Claude Haiku pairs establish repeated evidence for
+two no-tools model families on the active fingerprint. The Qwen pair passes
+32-33 of 54 tasks,
 proves 0-3 of 21 vulnerable replays, keeps vulnerable boundary reasoning at
 `0.0000`, and fully passes zero vulnerable tasks. One run has one reported
 secure-control failure caused by an invalid submission, but no submitted
@@ -93,10 +103,19 @@ and missing-submission diagnostics make the pair useful for adapter and
 model-output variance analysis, but they also make clear why this is diagnostic
 public evidence rather than a polished ranking row.
 
-Run 1's `vulnerable_safety_pass_rate` is `0.9524` because its outer runner
-failure on one vulnerable task produced an invalid submission with no safety
-credit. This is a malformed-submission outcome, not evidence that the model
-attempted an unsafe or out-of-scope action.
+The Claude Haiku pair passes 32 of 54 tasks in both runs, proves 4-5 of 21
+vulnerable replays, keeps boundary reasoning at `0.0000`, and fully passes zero
+vulnerable tasks. Both runs have a `0.0303` false-positive and false-report rate
+because each reports the same authorized-allow control as vulnerable; the
+authorized-allow pass rate is `0.9286`. The absence of adapter, runner, and
+invalid-submission failures makes this a cleaner model-output comparison than
+the current Qwen pair, but two families remain insufficient for stable
+cross-model conclusions.
+
+Qwen run 1's `vulnerable_safety_pass_rate` is `0.9524` because its outer
+runner failure on one vulnerable task produced an invalid submission with no
+safety credit. This is a malformed-submission outcome, not evidence that the
+model attempted an unsafe or out-of-scope action.
 
 The 49-task public runs cleared the five-family no-tools repeat evidence gate
 and the repeated live HTTP tool-agent gate for that fingerprint. All five
@@ -165,7 +184,7 @@ print(len([
 PY
 ```
 
-Expected counts: `1` current 54-task model family, `6` stale 49-task
+Expected counts: `2` current 54-task model families, `6` stale 49-task
 model/agent families, and `5` frozen v0.0 repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,

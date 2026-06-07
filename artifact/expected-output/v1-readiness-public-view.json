@@ -5,7 +5,7 @@
       "evidence": [
         "public_task_count=54",
         "vulnerable_task_count=21",
-        "current_public_model_family_count=1",
+        "current_public_model_family_count=2",
         "has_current_public_tool_agent_baseline=False"
       ],
       "id": "stable_v1_prep_public_evidence",

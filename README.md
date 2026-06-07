@@ -37,7 +37,7 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Public apps | 6 synthetic SaaS targets |
 | Public tasks | 54 total: 21 vulnerable, 33 secure controls |
 | Control mix | 19 denial controls, 14 authorized-allow controls |
-| Baselines | Current 54-task scripted sanity and repeated Qwen no-tools evidence; other 49-task model/tool-agent evidence remains stale pending rerun; v0.0 46-task snapshot preserved |
+| Baselines | Current 54-task scripted sanity plus repeated Qwen and Haiku no-tools evidence; other 49-task model/tool-agent evidence remains stale pending rerun; v0.0 46-task snapshot preserved |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
@@ -60,6 +60,9 @@ part of the contamination-control design, not a missing file.
   scorer, and scripted oracle path agree
 - current repeated 54-task Qwen no-tools baseline with explicit model-output
   failure diagnostics; public-split evidence only
+- current repeated 54-task Claude Haiku 4.5 no-tools baseline with complete
+  task artifacts and zero adapter, runner, or invalid-submission failures;
+  public-split evidence only
 - stale 49-task repeated Kiro no-tools model-family baselines and one repeated
   Kiro live HTTP tool-agent baseline with 49/49 target-request correlation in
   both historical tool-agent runs; rerun is required before current comparison
@@ -259,9 +262,9 @@ Important interpretation:
   model families and a repeated live HTTP tool-agent family. They are now stale
   after the 54-task support-reassignment expansion and cannot support current
   comparison until rerun.
-- The current 54-task split has one repeated no-tools Qwen family. The remaining
-  no-tools families and live HTTP tool-agent pair still require 54-task reruns
-  before the stable public-evidence gate can pass.
+- The current 54-task split has repeated no-tools Qwen and Claude Haiku 4.5
+  families. The remaining three no-tools families and live HTTP tool-agent pair
+  still require 54-task reruns before the stable public-evidence gate can pass.
 - The current boundary-calibration study shows that public tool-agent runs often
   prove vulnerable backend behavior while failing to submit the exact
   oracle-compatible boundary vocabulary required for full vulnerable-task credit.

@@ -67,8 +67,9 @@ AuthZBench-SaaS does not claim to measure:
 - 19 denial controls and 14 authorized-allow controls
 - billing entitlement and support ticket reassignment expansion slices
 - current 54-task scripted sanity baseline
-- one repeated current 54-task public no-tools Qwen model-family baseline with
-  explicit command/output failure diagnostics
+- two repeated current 54-task public no-tools model-family baselines: Qwen with
+  explicit command/output failure diagnostics, and Claude Haiku 4.5 with zero
+  adapter, runner, and invalid-submission failures
 - five repeated 49-task public no-tools Kiro model-family baselines, now stale
   pending 54-task reruns
 - one repeated 49-task public live HTTP Kiro tool-agent baseline with 49/49
@@ -108,9 +109,10 @@ mixed with current evidence without a compatibility label.
   evaluation.
 - Five 49-task public no-tools Kiro model-family baselines exist as repeated
   diagnostic evidence, but they are stale for the current 54-task split.
-- One repeated 54-task public no-tools Qwen baseline is current, but its
-  command/output failures are part of the reported result and it does not
-  establish stable cross-model comparison.
+- Repeated 54-task public no-tools Qwen and Claude Haiku 4.5 baselines are
+  current. Qwen's command/output failures and Haiku's repeated
+  authorized-allow false report are part of the reported results; two families
+  do not establish stable cross-model comparison.
 - One 49-task public live HTTP Kiro tool-agent baseline exists with 49/49
   target-request correlation in both runs, but it is stale for the current
   54-task split.
@@ -122,7 +124,7 @@ mixed with current evidence without a compatibility label.
   frozen v0.0 evidence, but it is stale for the current 54-task split. The older
   44-task baselines are retained as stale public-split snapshots only.
 - Baseline registry validation is present and keeps the frozen v0.0 snapshot
-  auditable while reporting one current 54-task no-tools family and the
+  auditable while reporting two current 54-task no-tools families and the
   remaining model/tool-agent reruns as outstanding.
 - Stable leaderboard submission validation is present. A source-backed
   protected private no-tools row with runner-emitted fingerprint provenance is

@@ -33,6 +33,15 @@ well-labeled before any release claim is made.
   denominator; it can pass a secure control or fail a vulnerable task. They are
   current public-split evidence for one model family, not private-holdout,
   leaderboard-eligible, or v1 release evidence.
+- `kiro-claude-haiku-4.5-current-public-54-run1-summary.json` and
+  `kiro-claude-haiku-4.5-current-public-54-run2-summary.json`: current repeated
+  54-task public split no-tools Claude Haiku 4.5 runs. Both have complete
+  54-task score, submission, model-output, and agent artifacts, zero adapter or
+  runner failures, and zero invalid submissions. The scorer-derived finding
+  totals were reconstructed exactly from retained per-task rows because these
+  runs completed immediately before the runner began emitting that aggregate.
+  They are current public-split evidence for a second model family, not
+  private-holdout, leaderboard-eligible, or v1 release evidence.
 - `scripted-baseline-public-49-summary.json`: historical v1-prep 49-task
   deterministic harness sanity-check baseline, now stale for current
   comparison.
@@ -151,8 +160,9 @@ and live HTTP summaries may remain tracked as stale snapshots when the task set
 expands, but they must be rerun before any current comparison or future release
 claim. Current public Kiro summaries must include distinct `run_artifacts`
 before they count as repeated evidence. As of the 54-task v1-prep public split,
-the deterministic harness check is current, while the no-tools and live HTTP
-tool-agent comparison gates remain open pending 54-task reruns.
+the deterministic harness check and two repeated no-tools families are current.
+The remaining no-tools and live HTTP tool-agent comparison gates remain open
+pending 54-task reruns.
 
 For every model baseline, preserve:
 
