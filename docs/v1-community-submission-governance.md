@@ -116,6 +116,9 @@ That rehearsal verifies container constraints, rendered-context-only mounting,
 private-manifest read denial, scorer-controlled evaluation, cleanup, and
 public-output redaction. It cannot satisfy the release gate because the emitted
 scope is `rehearsal`, not `release_candidate`.
+Release-candidate smoke evidence must replace all angle-bracket placeholders
+with concrete values; placeholders embedded inside required strings, such as
+`runner:<digest>` or `--private-pack <active-pack>`, are rejected.
 
 ## Rotating Private Packs
 

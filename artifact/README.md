@@ -108,7 +108,8 @@ Use `artifact/submission-runner-smoke.template.json` only as a starting shape
 for that release-candidate record. Replace every placeholder with real
 maintainer-platform or containerized smoke evidence before writing
 `artifact/submission-runner-smoke.json`. The validator rejects the template if
-it is copied unchanged.
+it is copied unchanged, and it also rejects angle-bracket placeholders embedded
+inside required fields such as `runner:<digest>` or `--private-pack <active-pack>`.
 
 Use `artifact/hosted-submission-execution-runbook.json` as the public-safe
 procedure checklist for that release-candidate smoke. The readiness validator

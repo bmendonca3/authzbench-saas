@@ -83,6 +83,7 @@
   "release_notes": [
     "A passing runbook check only proves that the release smoke procedure is specified.",
     "The hosted execution gate requires artifact/submission-runner-smoke.json with result=passed and execution_scope=release_candidate.",
-    "The private pack fingerprint in smoke evidence must match validated rotation metadata."
+    "The private pack fingerprint in smoke evidence must match validated rotation metadata.",
+    "Smoke evidence must not contain angle-bracket placeholders, including placeholders embedded inside required strings."
   ]
 }
