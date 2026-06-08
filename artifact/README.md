@@ -176,7 +176,9 @@ infrastructure inputs, refresh steps, commands, acceptance checks, and
 publication rules. A valid runbook still does not satisfy the
 `paper_and_artifact_readiness` gate; that gate requires release-candidate
 evidence in `docs/v1-paper-readiness.json` after the upstream gates are
-complete.
+complete, including the exact paper-table refresh, chart refresh, chart diff,
+paper-table diff, and `latexmk` commands plus concrete LaTeX result and
+`YYYY-MM-DD` verification date.
 
 ## Release-Candidate Evidence Template
 

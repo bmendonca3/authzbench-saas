@@ -77,6 +77,10 @@ Recent repo-side hardening checkpoints:
   versions, declared SHA-256 fingerprints matching computed pack fingerprints,
   compatibility policy, retirement triggers, and rerun policy before an active
   plus shadow/candidate rotation can pass;
+- the paper-readiness evidence hardening checkpoint requires final
+  release-candidate paper evidence to include the exact table, chart, and
+  `latexmk` verification commands plus concrete LaTeX result and verification
+  date, rather than relying on booleans alone;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
@@ -898,6 +902,9 @@ private operation, protected execution, scale, and release-candidate evidence.
     `paper/shared`;
   - `latexmk -pdf -interaction=nonstopmode -halt-on-error
     paper/ieee-sp/main.tex` passes;
+  - structured paper evidence records the exact table-generation, chart
+    generation, chart diff, paper-table diff, and `latexmk` verification
+    commands, plus concrete LaTeX result and verification date;
   - paper readiness evidence `benchmark_source_sha` matches the benchmark
     source SHA in the external release evidence.
 
