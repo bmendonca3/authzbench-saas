@@ -12,6 +12,9 @@ here.
 - `expected-output/`: public-safe expected outputs for stable validation
   signals, including the deterministic public view of v1 readiness.
 - `run-bundle.md`: guidance for packaging and checking submitted run evidence.
+- `submission-runner-smoke.template.json`: public-safe release-candidate
+  hosted/containerized smoke evidence template. It is not smoke evidence and
+  cannot satisfy strict v1 readiness.
 - `v1-release-candidate-validation.template.json`: public-safe template for
   external release evidence. It is not release evidence and cannot satisfy
   strict v1 readiness.
@@ -81,6 +84,12 @@ python3 scripts/containerized_submission_smoke.py \
   --private-pack-version <active-pack-version> \
   --execution-scope release_candidate
 ```
+
+Use `artifact/submission-runner-smoke.template.json` only as a starting shape
+for that release-candidate record. Replace every placeholder with real
+maintainer-platform or containerized smoke evidence before writing
+`artifact/submission-runner-smoke.json`. The validator rejects the template if
+it is copied unchanged.
 
 The tracked `artifact/submission-runner-smoke.json` file is allowed to contain a
 public-safe blocker record while the active private pack and maintainer-platform

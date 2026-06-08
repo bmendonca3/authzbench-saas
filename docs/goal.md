@@ -155,6 +155,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   - `artifact/submission-runner-smoke.json` is replaced by a passing
     `execution_scope: release_candidate` smoke record tied to the active private
     pack;
+  - `artifact/submission-runner-smoke.template.json` is used only as a
+    public-safe starting shape and every placeholder is replaced before hosted
+    smoke evidence is recorded;
   - the smoke record includes command, commit SHA, runner image or hosted-runner
     version, private-pack version, active private-pack fingerprint, isolation
     model, expected submitter private-manifest denial, pass/fail result, and
@@ -167,6 +170,9 @@ private operation, protected execution, scale, and release-candidate evidence.
     credentials, and local absolute paths.
   Current blocker evidence:
   - `artifact/submission-runner-smoke.json` is only structured blocker evidence;
+  - `artifact/submission-runner-smoke.template.json` defines the required
+    release-candidate smoke evidence shape and is rejected by the validator if
+    copied unchanged as evidence;
   - the public CI container rehearsal is valuable but cannot satisfy this gate.
 
 - [ ] Prove protected execution on the intended maintainer platform.
@@ -442,6 +448,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   - smoke evidence records command, commit SHA, runner image or hosted-runner
     version, private-pack version label, isolation model, expected denial of
     private manifest reads by submitter code, pass/fail result, and cleanup;
+  - the tracked smoke template has not been counted as hosted execution
+    evidence; placeholders are replaced by real maintainer-platform or
+    containerized release-candidate facts;
   - smoke evidence `benchmark_source_sha` matches the benchmark source SHA in
     the external release evidence;
   - smoke evidence `private_pack_fingerprint_sha256` matches the active private

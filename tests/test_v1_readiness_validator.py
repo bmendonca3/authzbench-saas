@@ -9,8 +9,10 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
+from scripts.containerized_submission_smoke import REQUIRED_CONTAINER_CONSTRAINTS
 from scripts.validate_v1_readiness import (
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HOSTED_EXECUTION_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
     REQUIRED_REVIEW_LANES,
@@ -353,6 +355,52 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn(
             "private_pack_fingerprint_sha256 must match the active private pack fingerprint",
+            result["unmet"],
+        )
+
+    def test_hosted_smoke_template_lists_release_candidate_shape(self) -> None:
+        template = json.loads(Path(HOSTED_EXECUTION_TEMPLATE_PATH).read_text(encoding="utf-8"))
+
+        self.assertTrue(template["template_only"])
+        self.assertEqual(template["execution_scope"], "release_candidate")
+        self.assertEqual(set(template["container_constraints"]), REQUIRED_CONTAINER_CONSTRAINTS)
+        for field in (
+            "result",
+            "benchmark_source_sha",
+            "runner_image_or_hosted_version",
+            "private_pack_version",
+            "private_pack_fingerprint_sha256",
+            "isolation_model",
+            "command",
+            "submitter_private_manifest_read_denied",
+            "scorer_controlled_private_eval",
+            "cleanup_completed",
+            "privacy_scan_passed",
+            "public_output_private_artifacts_included",
+        ):
+            self.assertIn(field, template)
+            self.assertNotEqual(template[field], True)
+            self.assertNotEqual(template[field], False)
+
+    def test_hosted_smoke_template_is_not_release_candidate_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                Path(HOSTED_EXECUTION_TEMPLATE_PATH).read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(
+                root,
+                benchmark_source_sha="a" * 40,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "submission-runner smoke template is not release-candidate hosted execution evidence",
             result["unmet"],
         )
 
