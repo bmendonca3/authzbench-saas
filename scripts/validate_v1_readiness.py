@@ -75,6 +75,9 @@ PAPER_READINESS_RUNBOOK_SCHEMA_VERSION = "v1-paper-readiness-runbook-v1"
 RELEASE_VALIDATION_RUNBOOK_SCHEMA_VERSION = "v1-release-candidate-validation-runbook-v1"
 RELEASE_VALIDATION_SCHEMA_VERSION = "v1-release-candidate-validation-v1"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
+RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND = (
+    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs"
+)
 PRIVATE_OPERATION_BLOCKED_GATES = (
     "rotating_private_holdouts_implemented",
     "repeated_private_tool_agent_evidence",
@@ -119,7 +122,7 @@ REQUIRED_RELEASE_VALIDATION_COMMANDS = (
     "python3 scripts/generate_paper_tables.py",
     "git diff --exit-code -- paper/shared",
     "git diff --check",
-    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs",
+    RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND,
 )
 VALID_REVIEW_DECISIONS = {"accepted", "rejected", "unresolved"}
 VALID_REVIEW_DISPOSITIONS = {"findings", "no_findings"}
@@ -1568,6 +1571,8 @@ def _validate_release_candidate_evidence(
             unmet.append(f"release validation command must record exit_code 0: {command}")
         if not _nonempty_string(command_result.get("evidence")) or _placeholder(command_result.get("evidence")):
             unmet.append(f"release validation command must record non-placeholder evidence: {command}")
+        elif command == RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND and command_result["evidence"].strip() != "empty output":
+            unmet.append(f"privacy scan command must record evidence exactly 'empty output': {command}")
     if data.get("pushed_commit") is not True:
         unmet.append("pushed_commit must be true")
     evidence_resolved = {(evidence_path if evidence_path.is_absolute() else root / evidence_path).resolve()}
@@ -1659,7 +1664,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "private pack fingerprint matches validated active pack",
         "benchmark source sha is an ancestor of release commit",
         "working tree clean except external release evidence file",
-        "privacy scan output is empty",
+        "privacy scan command evidence is exactly empty output",
     }
     if not isinstance(acceptance_checks, list):
         unmet.append("acceptance_checks must be a list")

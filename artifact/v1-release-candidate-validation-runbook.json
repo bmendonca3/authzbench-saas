@@ -47,7 +47,7 @@
     "private pack fingerprint matches validated active pack",
     "benchmark source sha is an ancestor of release commit",
     "working tree clean except external release evidence file",
-    "privacy scan output is empty"
+    "privacy scan command evidence is exactly empty output"
   ],
   "publication_rules": [
     "external release evidence is kept outside tracked public Git unless explicitly redacted",
