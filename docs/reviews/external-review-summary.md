@@ -12,11 +12,12 @@ The machine-readable pending-review tracker lives in
 lanes, requested artifacts, reviewer questions, blockers, and next actions, but
 keeps `review_status` as `pending` for every lane.
 When a reviewer returns a lane, use
-`docs/reviews/external-review-response.template.json` only as a starting shape
-for the completed response. Replace every placeholder with real reviewer
-evidence before updating `external-review-summary.json`; the validator rejects
-the unchanged template and unresolved placeholder text embedded inside otherwise
-non-empty pending or completed lane fields.
+`docs/reviews/external-review-intake.md` as the human-facing response form and
+`docs/reviews/external-review-response.template.json` only as the machine-shape
+starting point for the completed response. Replace every placeholder with real
+reviewer evidence before updating `external-review-summary.json`; the validator
+rejects the unchanged template and unresolved placeholder text embedded inside
+otherwise non-empty pending or completed lane fields.
 
 Current blocker: the repository can prepare and validate the review packet, but
 it cannot honestly mark review complete without independent AppSec,
@@ -96,4 +97,4 @@ inside longer strings.
 
 | Date | Lane | Reviewer role | Finding | Decision | Follow-up artifact |
 | --- | --- | --- | --- | --- | --- |
-| TBD | TBD | Role only | TBD | accepted, rejected, or unresolved | Path or issue reference |
+| Use ISO date | Required lane | Role and scope only | Public-safe finding summary | accepted, rejected, or unresolved | Tracked file path or existing commit SHA |
