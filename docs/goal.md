@@ -72,7 +72,8 @@ Recent repo-side hardening checkpoints:
 - the hosted-smoke placeholder hardening checkpoint ensures a copied
   release-candidate smoke template cannot pass after only changing the schema
   version: angle bracket placeholders are rejected in runner/version,
-  private-pack version, isolation model, and command fields;
+  private-pack version, isolation model, and command fields, including embedded
+  placeholders such as `runner:<digest>` or `--private-pack <active-pack>`;
 - the private-rotation metadata hardening checkpoint requires declared pack
   versions, declared SHA-256 fingerprints matching computed pack fingerprints,
   compatibility policy, retirement triggers, and rerun policy before an active
