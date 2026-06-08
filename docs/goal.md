@@ -99,6 +99,10 @@ Recent repo-side hardening checkpoints:
   not depend on a preloaded `python:3.11-alpine` image: the smoke resolves the
   runner image identity after pulling the image when local Docker inspection
   reports it missing;
+- the public blocker evidence current-head refresh ties both structured blocker
+  records to exact-head GitHub Actions run `27151712736` on merge commit
+  `5d76970ecefb0c4959834e4f7acd81e8b51e11d9`, while keeping hosted/private
+  operation gates red because release-candidate private inputs are still absent;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
