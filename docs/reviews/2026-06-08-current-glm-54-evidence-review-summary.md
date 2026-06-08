@@ -91,8 +91,7 @@ clean retry with complete artifacts.
   boxes. Existing underfull-box warnings and the Tectonic bibliography rerun
   warning remain nonblocking.
 - Local container smoke was not rerun because the Docker Desktop daemon is
-  unavailable at
-  `unix:///Users/brianmendonca/.docker/run/docker.sock`.
+  unavailable in the local environment.
 
 ## Completion Gate
 
