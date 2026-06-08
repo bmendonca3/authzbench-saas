@@ -21,6 +21,7 @@ from scripts.validate_v1_readiness import (
     RELEASE_VALIDATION_CI_WORKFLOW_NAME,
     RELEASE_VALIDATION_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
+    REQUIRED_REVIEW_PACKET_ARTIFACTS,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
     REQUIRED_REVIEW_LANES,
     _benchmark_source_compatibility_errors,
@@ -160,6 +161,12 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn(
             "total public plus private holdout tasks is 54, expected at least 100",
             gates["v1_task_scale"]["unmet"],
+        )
+
+    def test_external_review_packet_requires_human_intake_form(self) -> None:
+        self.assertIn(
+            "docs/reviews/external-review-intake.md",
+            REQUIRED_REVIEW_PACKET_ARTIFACTS,
         )
 
     def test_strict_cli_fails_until_v1_is_really_ready(self) -> None:
