@@ -17,6 +17,7 @@ from scripts.validate_v1_readiness import (
     PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_RUNBOOK_PATH,
+    RELEASE_VALIDATION_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
     REQUIRED_REVIEW_LANES,
@@ -32,6 +33,7 @@ from scripts.validate_v1_readiness import (
     _validate_private_operation_runbook,
     _validate_private_rotation_metadata,
     _validate_release_candidate_evidence,
+    _validate_release_candidate_runbook,
     _validate_v1_scale_roadmap,
     _working_tree_clean,
     validate_v1_readiness,
@@ -61,6 +63,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["paper_and_artifact_readiness"]["evidence"],
         )
         self.assertFalse(gates["final_release_candidate_validation"]["passed"])
+        self.assertIn(
+            RELEASE_VALIDATION_RUNBOOK_PATH,
+            gates["final_release_candidate_validation"]["evidence"],
+        )
         self.assertIn(
             "independent external review lanes are not complete",
             gates["external_review_completed"]["unmet"],
@@ -2001,6 +2007,87 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("release validation template is not release-candidate evidence", result["unmet"])
+
+    def test_release_candidate_runbook_is_structured_procedure_evidence(self) -> None:
+        result = _validate_release_candidate_runbook()
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["path"], RELEASE_VALIDATION_RUNBOOK_PATH)
+        self.assertEqual(result["unmet"], [])
+
+    def test_release_candidate_runbook_rejects_overclaiming_and_incomplete_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runbook = root / RELEASE_VALIDATION_RUNBOOK_PATH
+            runbook.parent.mkdir(parents=True)
+            runbook.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "wrong",
+                        "evidence_status": "passed",
+                        "public_claim_boundary": "release-candidate validation evidence",
+                        "required_inputs": ["TBD"],
+                        "required_commands": [
+                            "python3 -m unittest discover -s tests",
+                            "TBD",
+                        ],
+                        "required_evidence_fields": ["commit_sha", "TBD"],
+                        "acceptance_checks": ["all required commands passed", "TBD"],
+                        "publication_rules": ["TBD"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_release_candidate_runbook(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "schema_version must be v1-release-candidate-validation-runbook-v1",
+            result["unmet"],
+        )
+        self.assertIn("evidence_status must be runbook", result["unmet"])
+        self.assertIn(
+            "public_claim_boundary must state that the runbook is not release-candidate validation evidence",
+            result["unmet"],
+        )
+        self.assertIn("required_inputs cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("required_inputs missing:") for item in result["unmet"])
+        )
+        self.assertIn("required_commands cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("required_commands missing:") for item in result["unmet"])
+        )
+        self.assertIn("required_evidence_fields cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("required_evidence_fields missing:") for item in result["unmet"])
+        )
+        self.assertIn("acceptance_checks cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("acceptance_checks missing:") for item in result["unmet"])
+        )
+        self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("publication_rules missing:") for item in result["unmet"])
+        )
+
+    def test_release_candidate_runbook_rejects_local_absolute_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runbook = root / RELEASE_VALIDATION_RUNBOOK_PATH
+            runbook.parent.mkdir(parents=True)
+            data = json.loads(Path(RELEASE_VALIDATION_RUNBOOK_PATH).read_text(encoding="utf-8"))
+            data["release_notes"].append("debug artifact at /Users/example/private-log.json")
+            runbook.write_text(json.dumps(data), encoding="utf-8")
+
+            result = _validate_release_candidate_runbook(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "$.release_notes[3]: absolute path is not allowed in public release runbook",
+            result["unmet"],
+        )
 
     def test_private_pack_fingerprint_changes_when_manifest_content_changes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

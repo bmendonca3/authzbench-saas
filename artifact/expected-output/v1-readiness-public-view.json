@@ -124,7 +124,8 @@
     },
     {
       "evidence": [
-        "<external release evidence>"
+        "<external release evidence>",
+        "artifact/v1-release-candidate-validation-runbook.json"
       ],
       "id": "final_release_candidate_validation",
       "passed": false,

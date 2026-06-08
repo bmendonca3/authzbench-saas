@@ -1,0 +1,60 @@
+{
+  "schema_version": "v1-release-candidate-validation-runbook-v1",
+  "evidence_status": "runbook",
+  "public_claim_boundary": "This runbook is not release-candidate validation evidence. It defines the final evidence collection procedure, but final_release_candidate_validation remains incomplete until an external release evidence JSON is supplied to validate_v1_readiness.py with every required command passed.",
+  "required_inputs": [
+    "release commit sha",
+    "benchmark source sha",
+    "active private pack fingerprint",
+    "exact-head CI URL and conclusion",
+    "pushed commit confirmation",
+    "external release evidence path",
+    "clean working tree"
+  ],
+  "required_commands": [
+    "python3 -m unittest discover -s tests",
+    "python3 scripts/validate_public.py --include-scripted-baseline",
+    "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
+    "python3 scripts/validate_v0_release.py",
+    "python3 scripts/validate_baseline_registry.py",
+    "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary",
+    "python3 scripts/generate_paper_tables.py",
+    "git diff --exit-code -- paper/shared",
+    "git diff --check",
+    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs"
+  ],
+  "required_evidence_fields": [
+    "commit_sha",
+    "benchmark_source_sha",
+    "private_pack_fingerprint_sha256",
+    "exact_head_ci_conclusion",
+    "exact_head_ci_url",
+    "pushed_commit",
+    "commands"
+  ],
+  "acceptance_checks": [
+    "all required commands passed",
+    "container smoke passed on an environment with Docker daemon available",
+    "exact-head CI succeeded for release commit",
+    "release commit pushed to intended public remote",
+    "private pack fingerprint matches validated active pack",
+    "benchmark source sha is an ancestor of release commit",
+    "working tree clean except external release evidence file",
+    "privacy scan output is empty"
+  ],
+  "publication_rules": [
+    "external release evidence is kept outside tracked public Git unless explicitly redacted",
+    "private task bodies are never published",
+    "nonpublic task identifiers are never published",
+    "private routes and seeds are never published",
+    "raw private outputs and captures are never published",
+    "credentials are never published",
+    "local absolute paths are never published",
+    "v1-prep and v1-ready claims are not conflated"
+  ],
+  "release_notes": [
+    "A passing runbook check only proves that the release-candidate validation procedure is specified.",
+    "The final gate requires validate_v1_readiness.py --release-evidence <external-json> without --allow-incomplete.",
+    "The tracked template artifact/v1-release-candidate-validation.template.json is rejected as release evidence."
+  ]
+}

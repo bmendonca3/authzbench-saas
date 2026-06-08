@@ -63,6 +63,7 @@ PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-met
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 PAPER_READINESS_RUNBOOK_PATH = "artifact/v1-paper-readiness-runbook.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
+RELEASE_VALIDATION_RUNBOOK_PATH = "artifact/v1-release-candidate-validation-runbook.json"
 ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
 SCALE_ROADMAP_PATH = "artifact/v1-task-scale-roadmap.json"
 
@@ -71,6 +72,7 @@ HOSTED_EXECUTION_RUNBOOK_SCHEMA_VERSION = "hosted-submission-execution-runbook-v
 PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION = "private-holdout-operation-blocker-v1"
 PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION = "private-holdout-operation-runbook-v1"
 PAPER_READINESS_RUNBOOK_SCHEMA_VERSION = "v1-paper-readiness-runbook-v1"
+RELEASE_VALIDATION_RUNBOOK_SCHEMA_VERSION = "v1-release-candidate-validation-runbook-v1"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 PRIVATE_OPERATION_BLOCKED_GATES = (
     "rotating_private_holdouts_implemented",
@@ -133,6 +135,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
     PAPER_READINESS_RUNBOOK_PATH,
+    RELEASE_VALIDATION_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     SCALE_ROADMAP_PATH,
 }
@@ -146,6 +149,7 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_RUNBOOK_PATH,
+    RELEASE_VALIDATION_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     SCALE_ROADMAP_PATH,
     "docs/goal.md",
@@ -695,6 +699,23 @@ def _private_operation_public_safety_errors(value: Any, path: str = "$") -> list
             errors.append(f"{path}: sensitive path marker is not allowed in public blocker evidence")
         if PRIVATE_OPERATION_ABSOLUTE_PATH_RE.search(value):
             errors.append(f"{path}: absolute path is not allowed in public blocker evidence")
+    return errors
+
+
+def _release_validation_runbook_public_safety_errors(value: Any, path: str = "$") -> list[str]:
+    errors: list[str] = []
+    if isinstance(value, dict):
+        for raw_key, child in value.items():
+            key = str(raw_key)
+            child_path = f"{path}.{key}"
+            if key.lower() in PRIVATE_OPERATION_SENSITIVE_KEYS:
+                errors.append(f"{child_path}: sensitive key is not allowed in public release runbook")
+            errors.extend(_release_validation_runbook_public_safety_errors(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            errors.extend(_release_validation_runbook_public_safety_errors(child, f"{path}[{index}]"))
+    elif isinstance(value, str) and PRIVATE_OPERATION_ABSOLUTE_PATH_RE.search(value):
+        errors.append(f"{path}: absolute path is not allowed in public release runbook")
     return errors
 
 
@@ -1492,6 +1513,122 @@ def _validate_release_candidate_evidence(
     return {"passed": not unmet, "path": str(evidence_path), "unmet": unmet}
 
 
+def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
+    unmet: list[str] = []
+    data = _json_object(root / RELEASE_VALIDATION_RUNBOOK_PATH, unmet)
+    if data is None:
+        return {"passed": False, "path": RELEASE_VALIDATION_RUNBOOK_PATH, "unmet": unmet}
+    unmet.extend(_release_validation_runbook_public_safety_errors(data))
+    if data.get("schema_version") != RELEASE_VALIDATION_RUNBOOK_SCHEMA_VERSION:
+        unmet.append(f"schema_version must be {RELEASE_VALIDATION_RUNBOOK_SCHEMA_VERSION}")
+    if data.get("evidence_status") != "runbook":
+        unmet.append("evidence_status must be runbook")
+    claim_boundary = data.get("public_claim_boundary")
+    if not _nonempty_string(claim_boundary) or _placeholder(claim_boundary):
+        unmet.append("public_claim_boundary is required")
+    elif "not" not in str(claim_boundary).lower():
+        unmet.append("public_claim_boundary must state that the runbook is not release-candidate validation evidence")
+
+    required_inputs = data.get("required_inputs")
+    required_input_set = {
+        "release commit sha",
+        "benchmark source sha",
+        "active private pack fingerprint",
+        "exact-head CI URL and conclusion",
+        "pushed commit confirmation",
+        "external release evidence path",
+        "clean working tree",
+    }
+    if not isinstance(required_inputs, list):
+        unmet.append("required_inputs must be a list")
+        required_inputs = []
+    input_set = {str(item) for item in required_inputs if isinstance(item, str)}
+    missing_inputs = sorted(required_input_set - input_set)
+    if missing_inputs:
+        unmet.append("required_inputs missing: " + ", ".join(missing_inputs))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+        unmet.append("required_inputs cannot contain placeholders")
+
+    commands = data.get("required_commands")
+    if not isinstance(commands, list):
+        unmet.append("required_commands must be a list")
+        commands = []
+    command_set = {str(item) for item in commands if isinstance(item, str)}
+    missing_commands = sorted(set(REQUIRED_RELEASE_VALIDATION_COMMANDS) - command_set)
+    if missing_commands:
+        unmet.append("required_commands missing: " + ", ".join(missing_commands))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in commands):
+        unmet.append("required_commands cannot contain placeholders")
+
+    evidence_fields = data.get("required_evidence_fields")
+    required_fields = {
+        "commit_sha",
+        "benchmark_source_sha",
+        "private_pack_fingerprint_sha256",
+        "exact_head_ci_conclusion",
+        "exact_head_ci_url",
+        "pushed_commit",
+        "commands",
+    }
+    if not isinstance(evidence_fields, list):
+        unmet.append("required_evidence_fields must be a list")
+        evidence_fields = []
+    field_set = {str(item) for item in evidence_fields if isinstance(item, str)}
+    missing_fields = sorted(required_fields - field_set)
+    if missing_fields:
+        unmet.append("required_evidence_fields missing: " + ", ".join(missing_fields))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in evidence_fields):
+        unmet.append("required_evidence_fields cannot contain placeholders")
+
+    acceptance_checks = data.get("acceptance_checks")
+    required_acceptance = {
+        "all required commands passed",
+        "container smoke passed on an environment with Docker daemon available",
+        "exact-head CI succeeded for release commit",
+        "release commit pushed to intended public remote",
+        "private pack fingerprint matches validated active pack",
+        "benchmark source sha is an ancestor of release commit",
+        "working tree clean except external release evidence file",
+        "privacy scan output is empty",
+    }
+    if not isinstance(acceptance_checks, list):
+        unmet.append("acceptance_checks must be a list")
+        acceptance_checks = []
+    acceptance_set = {str(item) for item in acceptance_checks if isinstance(item, str)}
+    missing_acceptance = sorted(required_acceptance - acceptance_set)
+    if missing_acceptance:
+        unmet.append("acceptance_checks missing: " + ", ".join(missing_acceptance))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in acceptance_checks):
+        unmet.append("acceptance_checks cannot contain placeholders")
+
+    publication_rules = data.get("publication_rules")
+    required_rules = {
+        "external release evidence is kept outside tracked public Git unless explicitly redacted",
+        "private task bodies are never published",
+        "nonpublic task identifiers are never published",
+        "private routes and seeds are never published",
+        "raw private outputs and captures are never published",
+        "credentials are never published",
+        "local absolute paths are never published",
+        "v1-prep and v1-ready claims are not conflated",
+    }
+    if not isinstance(publication_rules, list):
+        unmet.append("publication_rules must be a list")
+        publication_rules = []
+    rule_set = {str(item) for item in publication_rules if isinstance(item, str)}
+    missing_rules = sorted(required_rules - rule_set)
+    if missing_rules:
+        unmet.append("publication_rules missing: " + ", ".join(missing_rules))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+        unmet.append("publication_rules cannot contain placeholders")
+
+    return {
+        "passed": not unmet,
+        "path": RELEASE_VALIDATION_RUNBOOK_PATH,
+        "unmet": list(dict.fromkeys(unmet)),
+    }
+
+
 def _benchmark_source_sha_from_release_evidence(release_evidence_path: Path | None) -> str | None:
     if release_evidence_path is None:
         return None
@@ -1770,12 +1907,16 @@ def validate_v1_readiness(
         target_sha=target_sha,
         private_pack_fingerprint_sha256=active_private_pack_fingerprint,
     )
+    release_runbook = _validate_release_candidate_runbook()
+    release_unmet = list(release_result["unmet"])
+    if not release_runbook["passed"]:
+        release_unmet.extend(release_runbook["unmet"])
     _add_gate(
         gates,
         "final_release_candidate_validation",
-        bool(release_result["passed"]),
-        [release_result["path"]],
-        release_result["unmet"],
+        bool(release_result["passed"]) and bool(release_runbook["passed"]),
+        [release_result["path"], release_runbook["path"]],
+        release_unmet,
     )
 
     passed_gate_count = sum(1 for gate in gates if gate["passed"])

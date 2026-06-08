@@ -272,6 +272,9 @@ private operation, protected execution, scale, and release-candidate evidence.
 
 - [ ] Run full release-candidate validation.
   Required evidence:
+  - `artifact/v1-release-candidate-validation-runbook.json` remains passing
+    runbook evidence only and is not treated as release-candidate validation
+    evidence;
   - full unit suite passes;
   - public validation with scripted baseline passes;
   - v0 release validation, baseline registry validation, leaderboard
@@ -282,6 +285,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   - `artifact/v1-release-candidate-validation.template.json` is used only as a
     public-safe starting shape, copied outside tracked Git, and replaced with
     real values before strict validation;
+  - the release-candidate runbook names every required input, command, evidence
+    field, acceptance check, and publication rule for collecting the external
+    evidence;
   - generated paper tables and chart artifacts are clean after regeneration;
   - `git diff --check` passes;
   - `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
@@ -883,6 +889,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   Acceptance evidence:
   - structured release evidence exists outside tracked Git history and is passed
     to strict validation with `--release-evidence`;
+  - `artifact/v1-release-candidate-validation-runbook.json` remains
+    procedure-only evidence and is not counted as the external release evidence
+    file;
   - the tracked template
     `artifact/v1-release-candidate-validation.template.json` remains
     template-only and is rejected if passed directly as release evidence;

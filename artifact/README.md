@@ -34,6 +34,9 @@ here.
 - `v1-release-candidate-validation.template.json`: public-safe template for
   external release evidence. It is not release evidence and cannot satisfy
   strict v1 readiness.
+- `v1-release-candidate-validation-runbook.json`: public-safe runbook for
+  collecting final release-candidate validation evidence. It is not release
+  evidence and cannot satisfy strict v1 readiness by itself.
 
 ## Public Validation
 
@@ -180,6 +183,14 @@ shape. Copy it outside tracked Git, replace every placeholder with real
 release-candidate evidence, and keep private task internals out of the public
 artifact packet. The validator rejects the template if it is passed directly as
 release evidence.
+
+Use `artifact/v1-release-candidate-validation-runbook.json` as the public-safe
+procedure checklist for collecting that external release evidence. The
+readiness validator checks that the runbook names required inputs, required
+commands, evidence fields, acceptance checks, and publication rules. A valid
+runbook still does not satisfy the final release-candidate gate; strict
+readiness requires an external evidence file passed with `--release-evidence`
+from a clean working tree.
 
 ## Claim Boundary
 
