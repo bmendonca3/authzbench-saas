@@ -206,5 +206,10 @@ The final report and IEEE scaffold refresh procedure is tracked in
 claim-boundary, table, chart, LaTeX, and publication-rule checks; it is not
 release-candidate paper readiness evidence.
 
+The final release-candidate validation procedure is tracked in
+`artifact/v1-release-candidate-validation-runbook.json`. That file is a
+checklist for collecting external release evidence; it is not release evidence
+and does not make the repository v1/community-ready.
+
 Until then, repository submissions and public runs should be labeled diagnostic
 evidence only.
