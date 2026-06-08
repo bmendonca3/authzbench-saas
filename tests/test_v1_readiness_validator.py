@@ -237,6 +237,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
+                            "reference_scope": "prior_public_checkpoint",
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
                             "ci_run_id": "1",
@@ -312,6 +313,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("current_public_view.total_task_count must equal public_task_count in public view", result["unmet"])
         self.assertIn("current_public_view.required_total_task_count must be 100", result["unmet"])
         self.assertIn(
+            "last_verified_public_readiness.reference_scope must be prior_public_checkpoint",
+            result["unmet"],
+        )
+        self.assertIn(
             "last_verified_public_readiness.commit_sha must be a 40-character lowercase Git SHA",
             result["unmet"],
         )
@@ -356,6 +361,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
+                            "reference_scope": "prior_public_checkpoint",
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
                             "ci_run_id": "2",
@@ -531,6 +537,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
+                            "reference_scope": "prior_public_checkpoint",
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
                             "v1_ready": False,
@@ -930,6 +937,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "maintainer-platform runner image or hosted version",
                         ],
                         "last_verified_public_rehearsal": {
+                            "reference_scope": "prior_public_checkpoint",
                             "execution_scope": "rehearsal",
                             "result": "passed",
                             "commit_sha": "a" * 40,
@@ -986,6 +994,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("blocker is required", result["unmet"])
         self.assertIn("next_action is required", result["unmet"])
         self.assertIn("required_release_inputs must list concrete missing release inputs", result["unmet"])
+        self.assertIn(
+            "last_verified_public_rehearsal.reference_scope must be prior_public_checkpoint",
+            result["unmet"],
+        )
         self.assertIn("last_verified_public_rehearsal.execution_scope must be rehearsal", result["unmet"])
         self.assertIn("last_verified_public_rehearsal.result must be passed", result["unmet"])
         self.assertIn(
@@ -1025,6 +1037,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "maintainer-platform runner image or hosted version",
                         ],
                         "last_verified_public_rehearsal": {
+                            "reference_scope": "prior_public_checkpoint",
                             "execution_scope": "rehearsal",
                             "result": "passed",
                             "commit_sha": "a" * 40,
