@@ -91,6 +91,10 @@ Recent repo-side hardening checkpoints:
   blocker records to declare `reference_scope: prior_public_checkpoint`, so
   historical public CI references cannot be mistaken for release-candidate or
   exact-head private evidence;
+- the external-review embedded-placeholder hardening checkpoint ensures
+  completed or pending review lane fields cannot pass with unresolved text such
+  as `TBD`, `TODO`, `unknown`, `n/a`, or `<review-artifact>` embedded inside
+  otherwise non-empty reviewer questions, artifacts, decisions, or next actions;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
