@@ -1,6 +1,6 @@
 # Project Goal
 
-AuthZBench-SaaS is being built to become a top benchmark for one narrow,
+AuthZBench-SaaS is being built as a focused benchmark for one narrow,
 important question:
 
 > Can an AI agent prove SaaS authorization failures with backend evidence, while
@@ -54,76 +54,23 @@ As of the current `main` checkpoint:
 - Release-grade hosted/containerized private execution: open.
 - Correct claim: stable `v1-prep`, not `v1-ready`.
 
-Recent repo-side hardening checkpoints:
+### Recent Repo-Side Hardening Summary
 
-- PR #2 (`fix/live-bearer-auth-parity`) was closed as superseded, and the
-  Bearer-auth fixture work landed through merged PR #8
-  (`fix/live-bearer-auth-parity-bm`); no local worktree or local branch remains
-  for the superseded branch, and the stale local No-Mistakes gate ref was
-  removed after confirming the worktree was clean;
-- commit `fd461390bd2816ccb8f36d9a3a1979d3ded3ec64` hardened the
-  external-review evidence contract so completed lanes must record concrete
-  bounded questions reviewed and per-decision summaries;
-- exact-head GitHub Actions run `27122244154` passed on that commit;
-- commit `d74bf2af9e3148e7872a337652baf166864e0636` hardened the final
-  release-candidate evidence contract so strict release evidence must record
-  workflow name `Validate AuthZBench-SaaS` alongside exact-head CI run ID, URL,
-  conclusion, and head SHA;
-- exact-head GitHub Actions run `27124203762` passed on that commit;
-- the release-evidence placeholder hardening checkpoint ensures a copied
-  template cannot pass after only changing the schema version: angle bracket
-  placeholders are rejected in release SHA, benchmark source SHA, private-pack
-  fingerprint, and per-command evidence fields;
-- the hosted-smoke placeholder hardening checkpoint ensures a copied
-  release-candidate smoke template cannot pass after only changing the schema
-  version: angle bracket placeholders are rejected in runner/version,
-  private-pack version, isolation model, and command fields, including embedded
-  placeholders such as `runner:<digest>` or `--private-pack <active-pack>`;
-- the private-rotation metadata hardening checkpoint requires declared pack
-  versions, declared SHA-256 fingerprints matching computed pack fingerprints,
-  compatibility policy, retirement triggers, and rerun policy before an active
-  plus shadow/candidate rotation can pass;
-- the paper-readiness evidence hardening checkpoint requires final
-  release-candidate paper evidence to include the exact table, chart, and
-  `latexmk` verification commands plus concrete LaTeX result and verification
-  date, rather than relying on booleans alone;
-- the public blocker evidence refresh checkpoint records the hosted-smoke
-  blocker and private-operation blocker as prior-public-checkpoint evidence
-  tied to GitHub Actions run `27147339042` on merge commit
-  `5fbe63d1c73031814582a2494e2cef44f1981279`, while keeping both gates red
-  because release-candidate private inputs are still absent;
-- the public blocker reference-scope hardening checkpoint requires both public
-  blocker records to declare `reference_scope: prior_public_checkpoint`, so
-  historical public CI references cannot be mistaken for release-candidate or
-  exact-head private evidence;
-- the external-review embedded-placeholder hardening checkpoint ensures
-  completed or pending review lane fields cannot pass with unresolved text such
-  as `TBD`, `TODO`, `unknown`, `n/a`, or `<review-artifact>` embedded inside
-  otherwise non-empty reviewer questions, artifacts, decisions, or next actions;
-- the containerized-submission smoke image checkpoint ensures exact-head CI does
-  not depend on a preloaded `python:3.11-alpine` image: the smoke resolves the
-  runner image identity after pulling the image when local Docker inspection
-  reports it missing;
-- the public blocker evidence current-head refresh ties both structured blocker
-  records to exact-head GitHub Actions run `27151712736` on merge commit
-  `5d76970ecefb0c4959834e4f7acd81e8b51e11d9`, while keeping hosted/private
-  operation gates red because release-candidate private inputs are still absent;
-- the release-candidate validation contract now requires the public-view v1
-  readiness fixture check as a recorded release command, so final release
-  evidence must prove the tracked clean-clone readiness JSON still matches
-  `artifact/expected-output/v1-readiness-public-view.json`;
-- the private-operation runbook now carries validator-enforced public-safe
-  command templates for active/shadow holdout-pack validation,
-  protected-private evidence validation, strict release-evidence validation, and
-  the tracked-private-path privacy scan, while still remaining runbook evidence
-  only;
-- the external-review packet now includes a validator-required public-safe
-  reviewer intake form, so reviewers have a human-facing response shape that
-  maps to the structured summary without exposing private identity or private
-  holdout details;
-- strict v1 readiness still correctly reports `v1_ready: false` because the
-  external-review, private-operation, scale, paper, and release-candidate
-  evidence gates remain open.
+The public repo-side preparation is now mostly complete:
+
+- live HTTP/scorer parity was hardened, including Bearer-token auth parity
+  across fixtures;
+- v1 readiness validators reject copied templates, unresolved placeholders,
+  vague blocker evidence, and incomplete release evidence;
+- public blocker artifacts remain deliberately red unless release-candidate
+  private inputs exist;
+- private-holdout, hosted-submission, external-review, scale, paper, and
+  release-candidate runbooks/templates are present and validator-aware;
+- exact-head CI has been used to confirm the public v1-prep path after
+  hardening changes.
+
+Detailed checkpoint history is preserved in
+[`docs/checkpoints/2026-06-08-v1-readiness-hardening-history.md`](checkpoints/2026-06-08-v1-readiness-hardening-history.md).
 
 ### Completed Public Checkpoint
 
@@ -205,31 +152,15 @@ private operation, protected execution, scale, and release-candidate evidence.
 
 ### External Blocker Handoff
 
-Status: externally blocked after the public repo-side preparation and
-validation hardening work above. The repository now has public-safe runbooks,
-templates, reviewer intake forms, blocker records, and validators for the
-remaining gates, but the goal cannot honestly be completed from the public
-checkout alone.
+Status: externally/maintainer blocked. The public repo now has the runbooks,
+templates, reviewer intake forms, blocker records, and validators needed to
+track the remaining gates, but the goal cannot honestly complete from the
+public checkout alone.
 
-The next unblockers require external or maintainer-only action:
-
-- independent reviewers must return all three review lanes using
-  `docs/reviews/external-review-intake.md`;
-- maintainers must create active plus shadow/candidate private holdout packs in
-  the ignored holdout area and populate private rotation metadata;
-- maintainers must run release-candidate hosted/containerized private smoke
-  against the active private-pack fingerprint;
-- maintainers must generate repeated protected-private no-tools and tool-agent
-  evidence rows tied to that same fingerprint;
-- maintainers must add enough validated public plus protected-private manifests
-  to reach at least 100 tasks;
-- after those upstream gates close, maintainers must refresh paper/report
-  evidence and run strict release-candidate validation with external release
-  evidence.
-
-Until those external/maintainer-only inputs exist, keep this goal in
-`v1-prep`, keep `validate_v1_readiness.py` reporting `v1_ready: false`, and do
-not replace blocker records with passing evidence.
+The remaining unblockers are listed in the checklist below. Until those
+external/maintainer-only inputs exist, keep this goal in `v1-prep`, keep
+`validate_v1_readiness.py` reporting `v1_ready: false`, and do not replace
+blocker records with passing evidence.
 
 - [ ] Convert external interest into real review evidence.
   Required evidence:
