@@ -60,6 +60,14 @@ well-labeled before any release claim is made.
   3 of 21 vulnerable replays with complete 54-task artifacts. They are current
   public-split evidence for a fourth model family, not private-holdout,
   leaderboard-eligible, or v1 release evidence.
+- `kiro-claude-opus-4.6-current-public-54-run1-summary.json` and
+  `kiro-claude-opus-4.6-current-public-54-run2-summary.json`: current repeated
+  54-task public split no-tools Claude Opus 4.6 runs. Both pass 33 tasks, prove
+  14 of 21 vulnerable replays, keep boundary reasoning at zero, fully pass no
+  vulnerable task, report zero control false positives, and retain complete
+  zero-failure task artifacts. They are current public-split evidence for a
+  fifth model family, not private-holdout, leaderboard-eligible, or v1 release
+  evidence.
 - `scripted-baseline-public-49-summary.json`: historical v1-prep 49-task
   deterministic harness sanity-check baseline, now stale for current
   comparison.
@@ -178,9 +186,8 @@ and live HTTP summaries may remain tracked as stale snapshots when the task set
 expands, but they must be rerun before any current comparison or future release
 claim. Current public Kiro summaries must include distinct `run_artifacts`
 before they count as repeated evidence. As of the 54-task v1-prep public split,
-the deterministic harness check and four repeated no-tools families are current.
-The remaining no-tools and live HTTP tool-agent comparison gates remain open
-pending 54-task reruns.
+the deterministic harness check and five repeated no-tools families are current.
+The live HTTP tool-agent comparison gate remains open pending 54-task reruns.
 
 For every model baseline, preserve:
 

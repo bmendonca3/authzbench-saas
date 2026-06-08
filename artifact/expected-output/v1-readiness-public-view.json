@@ -5,13 +5,12 @@
       "evidence": [
         "public_task_count=54",
         "vulnerable_task_count=21",
-        "current_public_model_family_count=4",
+        "current_public_model_family_count=5",
         "has_current_public_tool_agent_baseline=False"
       ],
       "id": "stable_v1_prep_public_evidence",
       "passed": false,
       "unmet": [
-        "fewer than six current public model families are registered",
         "missing current public tool-agent baseline"
       ]
     },
@@ -111,7 +110,8 @@
       "unmet": [
         "evidence_scope must be release_candidate",
         "upstream_review_and_infrastructure_complete must be true",
-        "live upstream review and infrastructure gates must pass"
+        "live upstream review and infrastructure gates must pass",
+        "release-affecting files changed after benchmark_source_sha: README.md, baselines/README.md, baselines/baseline-registry.json, baselines/kiro-claude-opus-4.6-current-public-54-run1-summary.json, baselines/kiro-claude-opus-4.6-current-public-54-run2-summary.json, docs/assets/benchmark-charts/boundary-reasoning.svg, docs/assets/benchmark-charts/chart-data.json, docs/assets/benchmark-charts/current-public-baselines.svg, docs/assets/benchmark-charts/evidence-readiness.svg, docs/assets/benchmark-charts/exploit-proven-success.svg"
       ]
     },
     {

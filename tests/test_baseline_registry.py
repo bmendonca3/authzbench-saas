@@ -20,6 +20,7 @@ CURRENT_QWEN_54_ID = "kiro-qwen3-coder-next-current-public-54"
 CURRENT_HAIKU_54_ID = "kiro-claude-haiku-4-5-current-public-54"
 CURRENT_SONNET_54_ID = "kiro-claude-sonnet-4-6-current-public-54"
 CURRENT_GLM_54_ID = "kiro-glm-5-current-public-54"
+CURRENT_OPUS_54_ID = "kiro-claude-opus-4-6-current-public-54"
 CURRENT_SONNET_ID = "kiro-claude-sonnet-4-6-current-public-46"
 CURRENT_TOOL_AGENT_ID = "kiro-live-tool-agent-sonnet-current-public-49"
 
@@ -53,14 +54,14 @@ def _baseline_by_id(registry: dict, baseline_id: str) -> dict:
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_tracks_four_54_task_families_and_marks_49_task_rows_stale(self) -> None:
+    def test_current_registry_tracks_five_54_task_families_and_marks_49_task_rows_stale(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 28, result)
+        self.assertEqual(result["baseline_count"], 29, result)
         self.assertEqual(result["public_split"]["task_count"], 54, result)
-        self.assertEqual(result["current_public_model_family_count"], 4, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 4, result)
+        self.assertEqual(result["current_public_model_family_count"], 5, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 5, result)
         self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
         self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
@@ -69,8 +70,8 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertIn("current public model families: 4 of 5", result["unmet_v0_requirements"])
-        self.assertIn("repeated model baselines: 4 of 5", result["unmet_v0_requirements"])
+        self.assertNotIn("current public model families: 4 of 5", result["unmet_v0_requirements"])
+        self.assertNotIn("repeated model baselines: 4 of 5", result["unmet_v0_requirements"])
         self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
 
         registry = load_json(REGISTRY)
@@ -97,6 +98,12 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(current_glm["expected_model"], "glm-5")
         self.assertEqual(current_glm["release_suitability"], "current_public_split")
         self.assertFalse(current_glm["requires_rerun_before_current_comparison"])
+        current_opus = _baseline_by_id(registry, CURRENT_OPUS_54_ID)
+        self.assertEqual(current_opus["expected_task_count"], 54)
+        self.assertEqual(current_opus["run_count"], 2)
+        self.assertEqual(current_opus["expected_model"], "claude-opus-4.6")
+        self.assertEqual(current_opus["release_suitability"], "current_public_split")
+        self.assertFalse(current_opus["requires_rerun_before_current_comparison"])
 
     def test_stale_49_task_model_repeats_share_one_benchmark_commit(self) -> None:
         registry = load_json(REGISTRY)
@@ -280,6 +287,45 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(run2["runner_agent_failure_count"], 0)
         self.assertEqual(run2["kiro_command_failure_count"], 0)
         self.assertEqual(run2["model_output_failures"], [])
+
+    def test_current_opus_pair_preserves_promoted_diagnostics_and_metrics(self) -> None:
+        registry = load_json(REGISTRY)
+        entry = _baseline_by_id(registry, CURRENT_OPUS_54_ID)
+        summaries = [load_json(REGISTRY.parent / path) for path in entry["run_artifacts"]]
+
+        self.assertEqual(
+            {summary["run_id"] for summary in summaries},
+            {
+                "20260608T010424615768Z-6ce73f0b",
+                "20260608T011105635536Z-ae586ffd",
+            },
+        )
+        self.assertEqual(
+            {summary["benchmark_commit_sha"] for summary in summaries},
+            {"56fcbde7b54d05f3bc4da3813c5ecffb14320a35"},
+        )
+        self.assertEqual(
+            {summary["benchmark_fingerprint"]["task_set_sha256"] for summary in summaries},
+            {"f8d19cb89d347d1397f85bf978e6b7b232e8a2f1307fc2ac6ba02674e5c23c9f"},
+        )
+        for summary in summaries:
+            self.assertEqual(summary["task_count"], 54)
+            self.assertEqual(summary["model"], "claude-opus-4.6")
+            self.assertEqual(summary["harness_type"], "no-tools-model")
+            self.assertEqual(summary["passed_count"], 33)
+            self.assertEqual(summary["mean_score"], 0.8444)
+            self.assertEqual(summary["exploit_proven_task_count"], 14)
+            self.assertEqual(summary["exploit_proven_success_rate"], 0.6667)
+            self.assertEqual(summary["boundary_reasoning_pass_rate"], 0.0)
+            self.assertEqual(summary["vulnerable_full_pass_count"], 0)
+            self.assertEqual(summary["false_positive_rate"], 0.0)
+            self.assertEqual(summary["invalid_submission_count"], 0)
+            self.assertEqual(summary["scored_submission_finding_total"], 21)
+            self.assertEqual(summary["model_output_failure_count"], 0)
+            self.assertEqual(summary["kiro_command_failure_count"], 0)
+            self.assertEqual(summary["missing_submission_json_count"], 0)
+            self.assertEqual(summary["runner_agent_failure_count"], 0)
+            self.assertEqual(summary["model_output_failures"], [])
 
     def test_future_public_expansion_can_keep_v0_release_snapshot_honest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

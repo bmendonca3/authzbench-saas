@@ -43,7 +43,7 @@ as current-comparable evidence.
 The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
 54-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
 46-task release snapshot. Repeated 54-task Qwen, Claude Haiku 4.5, Claude
-Sonnet 4.6, and GLM-5 no-tools families are current.
+Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families are current.
 The preceding 49-task split has five repeated
 no-tools model-family baselines plus one repeated live HTTP tool-agent family,
 but every one of those rows is stale for current 54-task comparison. The old
@@ -135,12 +135,22 @@ submission; run 2 has complete 54-task artifacts and zero invalid submissions.
 This is current public evidence for a fourth no-tools family, not private
 evidence, a stable cross-model ranking, a leaderboard row, or v1 readiness.
 
+The current 54-task `claude-opus-4.6` no-tools baseline has two runs on the
+active fingerprint. Both pass 33 tasks, keep boundary reasoning at `0.0`, fully
+pass no vulnerable task, and report zero control false positives. Both prove 14
+of 21 vulnerable replays and have 21 scorer-counted findings. Both runs retain
+complete 54-task context, submission, score, transcript, and model-output
+artifacts with zero adapter, command, parser, runner, or invalid-submission
+failures. This is current public evidence for a fifth no-tools family, not
+private evidence, a stable cross-model ranking, a leaderboard row, or v1
+readiness.
+
 The stale 49-task no-tools Kiro baselines have two runs each for
 `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
 `claude-opus-4.6`, all using benchmark commit
 `1eaac973ffe5229dad5796b9a5b144fa3af37a3a`. They remain public-split
 diagnostic evidence for the preceding task fingerprint only. They do not close
-the live 54-task model-family gate, and they are not private-holdout, live HTTP
+the live 54-task tool-agent gate, and they are not private-holdout, live HTTP
 tool-agent, hosted-leaderboard, or v1 release evidence. All five families have
 `boundary_reasoning_pass_rate: 0.0`.
 

@@ -30,9 +30,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["v1_ready"])
         self.assertEqual(result["gate_count"], 11)
         self.assertFalse(gates["stable_v1_prep_public_evidence"]["passed"])
-        self.assertIn(
-            "fewer than six current public model families are registered",
+        self.assertEqual(
             gates["stable_v1_prep_public_evidence"]["unmet"],
+            ["missing current public tool-agent baseline"],
         )
         self.assertTrue(gates["external_review_packet_ready"]["passed"])
         self.assertTrue(gates["submission_governance_spec_defined"]["passed"])

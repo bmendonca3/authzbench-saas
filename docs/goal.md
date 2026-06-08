@@ -43,10 +43,10 @@ As of the current `main` checkpoint:
 
 - Public split: 54 tasks.
 - Current scripted sanity baseline: complete, 54/54.
-- Current 54-task no-tools public model families restored: 4/5
-  (`qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, and
-  `glm-5`).
-- Remaining 54-task no-tools public family: `claude-opus-4.6`.
+- Current 54-task no-tools public model families restored: 5/5
+  (`qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, `glm-5`, and
+  `claude-opus-4.6`).
+- Remaining 54-task no-tools public family: none.
 - Current 54-task live HTTP tool-agent family: not yet restored.
 - External review lanes: open.
 - Active plus shadow/candidate private holdout packs: open.
@@ -57,8 +57,9 @@ As of the current `main` checkpoint:
 
 The next public checkpoint is complete when:
 
-- `glm-5` has two runner-emitted 54-task no-tools summaries;
-- `claude-opus-4.6` has two runner-emitted 54-task no-tools summaries;
+- all five no-tools public model families have two runner-emitted 54-task
+  summaries: `qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`,
+  `glm-5`, and `claude-opus-4.6`;
 - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs with
   one plan/probe artifact per task and full target-request correlation;
 - baseline registry, charts, variance docs, status docs, report, and paper text
@@ -158,11 +159,11 @@ The goal is complete only when all of these are true:
   Current evidence:
   - the 54-task scripted sanity baseline is current and passes 54/54;
   - the repeated 54-task no-tools public families currently restored are
-    `qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, and `glm-5`,
-    each with two runner-emitted summaries, matching active fingerprints,
-    retained task bundles, and public-safe failure diagnostics;
+    `qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, `glm-5`, and
+    `claude-opus-4.6`, each with two runner-emitted summaries, matching active
+    fingerprints, retained task bundles, and public-safe failure diagnostics;
   - `python3 scripts/validate_baseline_registry.py` currently reports
-    `current_public_model_family_count: 4` and
+    `current_public_model_family_count: 5` and
     `has_current_public_tool_agent_baseline: false`;
   - the readiness gate is therefore correctly red even though the historical
     49-task checkpoint above was green.
@@ -534,8 +535,19 @@ The goal is complete only when all of these are true:
     `90e514367231135eff557e08e268971b02f80b5f`, independent Kiro Claude Opus
     artifact and claims audits, full local public validation, and exact-head
     GitHub Actions run `27110222646` verify this subitem.
-  - [ ] `claude-opus-4.6` no-tools family has two runner-emitted 54-task
-    summaries;
+  - [x] `claude-opus-4.6` no-tools family has two runner-emitted 54-task
+    summaries with distinct run IDs, the active fingerprint, complete task
+    artifacts, zero adapter, runner, or invalid-submission failures, and zero
+    control false positives.
+    Evidence: run `20260608T010424615768Z-6ce73f0b` and run
+    `20260608T011105635536Z-ae586ffd` each pass 33 tasks, prove 14 of 21
+    vulnerable replays, have 21 scorer-counted findings, keep boundary
+    reasoning at `0.0`, fully pass zero vulnerable tasks, report zero false
+    positives, and retain 54 submissions, scores, transcripts, contexts, and
+    model-output artifacts. Focused baseline-registry and v0-release-validator
+    tests pass with `current_public_model_family_count: 5`, and
+    `python3 scripts/validate_baseline_registry.py` reports only the missing
+    current public tool-agent baseline as unmet.
   - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs
     with one plan/probe artifact per task and full target-request correlation;
   - registry rows use the live fingerprint and are no longer marked stale;

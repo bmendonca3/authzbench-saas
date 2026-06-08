@@ -128,6 +128,25 @@
       "notes": "Current repeated 54-task public split no-tools GLM-5 baseline through the hardened Kiro adapter. Run 1 preserves one outer runner failure with missing submission/model-output diagnostics; run 2 has complete zero-failure artifacts. Public-split evidence only; not private-holdout, leaderboard-eligible, or v1 release evidence."
     },
     {
+      "id": "kiro-claude-opus-4-6-current-public-54",
+      "kind": "model_baseline",
+      "summary_path": "kiro-claude-opus-4.6-current-public-54-run1-summary.json",
+      "run_artifacts": [
+        "kiro-claude-opus-4.6-current-public-54-run1-summary.json",
+        "kiro-claude-opus-4.6-current-public-54-run2-summary.json"
+      ],
+      "run_count": 2,
+      "expected_task_count": 54,
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-opus-4.6",
+      "expected_harness_type": "no-tools-model",
+      "model_family": "kiro-claude-opus",
+      "release_suitability": "current_public_split",
+      "requires_rerun_before_current_comparison": false,
+      "leaderboard_eligible": false,
+      "notes": "Current repeated 54-task public split no-tools Claude Opus 4.6 baseline through the hardened Kiro adapter. Both runs retain complete zero-failure diagnostics and runner-emitted scorer-finding totals. Public-split evidence only; not private-holdout, leaderboard-eligible, or v1 release evidence."
+    },
+    {
       "id": "scripted-sanity-public-49",
       "summary_path": "scripted-baseline-public-49-summary.json",
       "kind": "harness_check",

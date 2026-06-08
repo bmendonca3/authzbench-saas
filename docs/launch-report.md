@@ -184,7 +184,7 @@ Historical 49-task v1-prep no-tools diagnostic rows exist separately. They do
 not replace the frozen v0.0 snapshot, are stale for the active 54-task split,
 and are not leaderboard eligible.
 
-The active 54-task split now has repeated current no-tools runs for four model
+The active 54-task split now has repeated current no-tools runs for five model
 families. The `qwen3-coder-next` runs pass 32 and 33 tasks, span
 `0.0000-0.1429` exploit-proven success, keep boundary reasoning at `0.0`, and
 retain explicit command/output failure diagnostics. The Claude Haiku 4.5 runs
@@ -197,6 +197,9 @@ have zero adapter, runner, or invalid-submission failures. Sonnet run 1 reports
 one authorized-allow control and run 2 reports one denial control. The GLM-5
 runs pass 33 tasks each, span `0.0952-0.1429` exploit-proven success, report
 zero control false positives, and preserve one outer runner failure in run 1.
+The Claude Opus 4.6 runs pass 33 tasks each, prove 14 of 21 vulnerable replays
+in both runs, keep boundary reasoning at `0.0`, report zero control false
+positives, and retain complete zero-failure task artifacts.
 These are current public-split diagnostics, not part of the frozen v0.0 launch
 evidence and not a stable cross-model comparison.
 
@@ -210,6 +213,8 @@ Tracked current summaries:
 - [kiro-claude-sonnet-4.6-current-public-54-run2-summary.json](../baselines/kiro-claude-sonnet-4.6-current-public-54-run2-summary.json)
 - [kiro-glm-5-current-public-54-run1-summary.json](../baselines/kiro-glm-5-current-public-54-run1-summary.json)
 - [kiro-glm-5-current-public-54-run2-summary.json](../baselines/kiro-glm-5-current-public-54-run2-summary.json)
+- [kiro-claude-opus-4.6-current-public-54-run1-summary.json](../baselines/kiro-claude-opus-4.6-current-public-54-run1-summary.json)
+- [kiro-claude-opus-4.6-current-public-54-run2-summary.json](../baselines/kiro-claude-opus-4.6-current-public-54-run2-summary.json)
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -281,10 +286,10 @@ including secure controls. Panel review classified it as deterministic harness
 evidence, not a v0 tool-agent baseline.
 
 The Kiro snapshots are public-split baselines, not private leaderboard results.
-Qwen, Haiku, Sonnet, and GLM have two frozen v0.0 46-task no-tools runs. Opus
-and DeepSeek remain repeated 44-task public model baseline families. These
-families are useful historical diagnostics, but they are public-only no-tools
-runs, stale against the current 54-task split, and not leaderboard eligible.
+Qwen, Haiku, Sonnet, GLM, and Opus now have repeated current 54-task no-tools
+public runs, while older 46-, 49-, and 44-task rows remain useful historical
+diagnostics only. These families are public-only no-tools runs and are not
+leaderboard eligible.
 
 The frozen v0.0 Kiro live HTTP tool-agent baseline uses `claude-sonnet-4.6` to
 plan per-task HTTP probes against live Docker targets on the 46-task public

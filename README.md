@@ -37,7 +37,7 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Public apps | 6 synthetic SaaS targets |
 | Public tasks | 54 total: 21 vulnerable, 33 secure controls |
 | Control mix | 19 denial controls, 14 authorized-allow controls |
-| Baselines | Current 54-task scripted sanity plus repeated Qwen, Haiku, Sonnet, and GLM no-tools evidence; other 49-task model/tool-agent evidence remains stale pending rerun; v0.0 46-task snapshot preserved |
+| Baselines | Current 54-task scripted sanity plus repeated Qwen, Haiku, Sonnet, GLM, and Opus no-tools evidence; 49-task model/tool-agent evidence remains stale pending tool-agent rerun; v0.0 46-task snapshot preserved |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
@@ -69,6 +69,9 @@ part of the contamination-control design, not a missing file.
 - current repeated 54-task GLM-5 no-tools baseline with runner-emitted finding
   totals, one run preserving an outer runner failure/missing-output diagnostic,
   and one clean 54/54 artifact run; public-split evidence only
+- current repeated 54-task Claude Opus 4.6 no-tools baseline with complete task
+  artifacts, zero adapter, runner, or invalid-submission failures, zero control
+  false positives, and runner-emitted finding totals; public-split evidence only
 - stale 49-task repeated Kiro no-tools model-family baselines and one repeated
   Kiro live HTTP tool-agent baseline with 49/49 target-request correlation in
   both historical tool-agent runs; rerun is required before current comparison
@@ -269,8 +272,8 @@ Important interpretation:
   after the 54-task support-reassignment expansion and cannot support current
   comparison until rerun.
 - The current 54-task split has repeated no-tools Qwen, Claude Haiku 4.5,
-  Claude Sonnet 4.6, and GLM-5 families. The remaining no-tools family and live
-  HTTP tool-agent pair still require 54-task reruns before the stable
+  Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families. The live HTTP
+  tool-agent pair still requires 54-task reruns before the stable
   public-evidence gate can pass.
 - The current boundary-calibration study shows that public tool-agent runs often
   prove vulnerable backend behavior while failing to submit the exact
