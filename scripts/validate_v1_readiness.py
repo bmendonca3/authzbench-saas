@@ -565,6 +565,8 @@ def _validate_private_operation_blocker(
         unmet.append("last_verified_public_readiness.ci_run_id must be a numeric GitHub Actions run id")
     elif readiness_run_id_from_url is not None and readiness.get("ci_run_id") != readiness_run_id_from_url:
         unmet.append("last_verified_public_readiness.ci_run_id must match ci_run_url")
+    if readiness.get("workflow") != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
+        unmet.append(f"last_verified_public_readiness.workflow must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
     if readiness.get("v1_ready") is not False:
         unmet.append("last_verified_public_readiness.v1_ready must be false")
     if not isinstance(readiness.get("passed_gate_count"), int):
@@ -1304,6 +1306,8 @@ def _validate_hosted_execution_evidence(
             unmet.append("last_verified_public_rehearsal.ci_run_id must be a numeric GitHub Actions run id")
         elif rehearsal_run_id_from_url is not None and rehearsal.get("ci_run_id") != rehearsal_run_id_from_url:
             unmet.append("last_verified_public_rehearsal.ci_run_id must match ci_run_url")
+        if rehearsal.get("workflow") != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
+            unmet.append(f"last_verified_public_rehearsal.workflow must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
         unmet.append("hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist")
         return {
             "passed": False,
