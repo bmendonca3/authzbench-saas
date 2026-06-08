@@ -28,6 +28,12 @@ For v1-scale use, maintainers should prepare at least two private packs:
 - one active pack for current scoring
 - one shadow pack for future rotation and drift checks
 
+The ignored `tasks_private/holdout/rotation-metadata.json` file must declare
+each pack's ID, role, safe relative path, concrete version label, and lowercase
+SHA-256 fingerprint. The v1 readiness validator recomputes each pack
+fingerprint from the private manifests and requires every declared fingerprint
+to match before the rotation gate can pass.
+
 Rotate when any of these happen:
 
 - a major release changes public task families or scorer semantics
@@ -64,6 +70,11 @@ declared compatible in a release note. When a pack rotates:
 
 If a scorer bug affects a private pack, mark affected rows as `deprecated` and
 publish a short non-sensitive explanation.
+
+Rotation metadata must also include a concrete compatibility object, concrete
+retirement triggers, and a rerun policy. Current-comparison readiness requires
+rerunning both no-tools and tool-agent baselines, and old rows must be retained
+only as `legacy_snapshot` or `deprecated`.
 
 ## Leakage Response
 
