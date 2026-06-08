@@ -65,6 +65,10 @@ Recent repo-side hardening checkpoints:
   workflow name `Validate AuthZBench-SaaS` alongside exact-head CI run ID, URL,
   conclusion, and head SHA;
 - exact-head GitHub Actions run `27124203762` passed on that commit;
+- the release-evidence placeholder hardening checkpoint ensures a copied
+  template cannot pass after only changing the schema version: angle bracket
+  placeholders are rejected in release SHA, benchmark source SHA, private-pack
+  fingerprint, and per-command evidence fields;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
@@ -310,7 +314,8 @@ private operation, protected execution, scale, and release-candidate evidence.
     field, acceptance check, and publication rule for collecting the external
     evidence;
   - the external evidence records `exit_code: 0` and non-placeholder evidence
-    for every required command;
+    for every required command, and copied template placeholders such as
+    `<log-or-run-id>` are rejected even if the schema version is changed;
   - generated paper tables and chart artifacts are clean after regeneration;
   - `git diff --check` passes;
   - `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
