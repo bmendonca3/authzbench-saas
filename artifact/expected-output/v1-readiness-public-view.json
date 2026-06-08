@@ -110,7 +110,8 @@
     },
     {
       "evidence": [
-        "docs/v1-paper-readiness.json"
+        "docs/v1-paper-readiness.json",
+        "artifact/v1-paper-readiness-runbook.json"
       ],
       "id": "paper_and_artifact_readiness",
       "passed": false,

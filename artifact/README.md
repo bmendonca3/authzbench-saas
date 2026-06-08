@@ -22,6 +22,9 @@ here.
 - `private-holdout-operation-runbook.json`: public-safe runbook for operating
   active plus shadow/candidate private packs. It is not private holdout
   evidence and cannot satisfy strict v1 readiness by itself.
+- `v1-paper-readiness-runbook.json`: public-safe runbook for the final v1
+  report and IEEE scaffold refresh. It is not release-candidate paper
+  readiness evidence and cannot satisfy strict v1 readiness by itself.
 - `submission-runner-smoke.template.json`: public-safe release-candidate
   hosted/containerized smoke evidence template. It is not smoke evidence and
   cannot satisfy strict v1 readiness.
@@ -153,6 +156,15 @@ protected-private pack waves to 102 planned total tasks. It does not contain or
 prove private manifests, and the v1 readiness validator still keeps the
 `v1_task_scale` gate red until actual public plus validated private manifest
 counts reach at least 100.
+
+Use `artifact/v1-paper-readiness-runbook.json` as the public-safe procedure
+checklist for the final report and IEEE scaffold refresh. The readiness
+validator checks that the runbook names the required upstream review and
+infrastructure inputs, refresh steps, commands, acceptance checks, and
+publication rules. A valid runbook still does not satisfy the
+`paper_and_artifact_readiness` gate; that gate requires release-candidate
+evidence in `docs/v1-paper-readiness.json` after the upstream gates are
+complete.
 
 ## Release-Candidate Evidence Template
 

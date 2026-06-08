@@ -201,5 +201,10 @@ Before calling the benchmark v1/community-ready, maintainers need:
 - a public row publication policy that separates accepted, stale, legacy, and
   deprecated rows.
 
+The final report and IEEE scaffold refresh procedure is tracked in
+`artifact/v1-paper-readiness-runbook.json`. That file is a checklist for
+claim-boundary, table, chart, LaTeX, and publication-rule checks; it is not
+release-candidate paper readiness evidence.
+
 Until then, repository submissions and public runs should be labeled diagnostic
 evidence only.

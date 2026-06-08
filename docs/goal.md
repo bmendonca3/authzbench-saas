@@ -823,6 +823,10 @@ private operation, protected execution, scale, and release-candidate evidence.
   - `docs/v1-paper-readiness.json` is the structured source of truth for the
     current paper-preflight benchmark source SHA, CI provenance, chart/table
     regeneration commands, and LaTeX result;
+  - `artifact/v1-paper-readiness-runbook.json` is a public-safe final-refresh
+    procedure only, and the validator checks that it names the upstream inputs,
+    table/chart/LaTeX commands, acceptance checks, and publication rules needed
+    before true paper readiness;
   - the current paper-preflight evidence remains `v1_prep_preflight`, not
     `release_candidate`;
   - final paper readiness remains incomplete until independent external review,
@@ -834,6 +838,8 @@ private operation, protected execution, scale, and release-candidate evidence.
 - [ ] Update the v1-prep technical report and IEEE scaffold after review and
   infrastructure gates change.
   Acceptance evidence:
+  - `artifact/v1-paper-readiness-runbook.json` remains passing runbook evidence
+    only and is not treated as release-candidate paper readiness;
   - structured evidence exists at `docs/v1-paper-readiness.json`;
   - paper distinguishes frozen v0.0, current v1-prep, and true v1 claims;
   - figures and tables label current/stale/legacy evidence clearly;

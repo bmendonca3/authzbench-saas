@@ -16,6 +16,7 @@ from scripts.validate_v1_readiness import (
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
+    PAPER_READINESS_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
     REQUIRED_REVIEW_LANES,
@@ -26,6 +27,7 @@ from scripts.validate_v1_readiness import (
     _validate_hosted_execution_evidence,
     _validate_hosted_execution_runbook,
     _validate_paper_readiness_evidence,
+    _validate_paper_readiness_runbook,
     _validate_private_operation_blocker,
     _validate_private_operation_runbook,
     _validate_private_rotation_metadata,
@@ -54,6 +56,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(gates["repeated_private_tool_agent_evidence"]["passed"])
         self.assertFalse(gates["repeated_private_no_tools_evidence"]["passed"])
         self.assertFalse(gates["paper_and_artifact_readiness"]["passed"])
+        self.assertIn(
+            PAPER_READINESS_RUNBOOK_PATH,
+            gates["paper_and_artifact_readiness"]["evidence"],
+        )
         self.assertFalse(gates["final_release_candidate_validation"]["passed"])
         self.assertIn(
             "independent external review lanes are not complete",
@@ -528,6 +534,66 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("hosted_runner: command must use placeholders and release_candidate scope", result["unmet"])
         self.assertIn("execution_modes must include fully_containerized", result["unmet"])
         self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
+
+    def test_paper_readiness_runbook_is_structured_procedure_evidence(self) -> None:
+        result = _validate_paper_readiness_runbook()
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["path"], PAPER_READINESS_RUNBOOK_PATH)
+        self.assertEqual(result["unmet"], [])
+
+    def test_paper_readiness_runbook_rejects_overclaiming_and_incomplete_steps(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runbook = root / PAPER_READINESS_RUNBOOK_PATH
+            runbook.parent.mkdir(parents=True)
+            runbook.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "wrong",
+                        "evidence_status": "passed",
+                        "public_claim_boundary": "paper readiness evidence",
+                        "required_inputs": ["TBD"],
+                        "refresh_steps": ["regenerate paper tables"],
+                        "required_commands": ["python3 scripts/generate_paper_tables.py", "TBD"],
+                        "acceptance_checks": ["claim boundary reviewed", "TBD"],
+                        "publication_rules": ["TBD"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_paper_readiness_runbook(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "schema_version must be v1-paper-readiness-runbook-v1",
+            result["unmet"],
+        )
+        self.assertIn("evidence_status must be runbook", result["unmet"])
+        self.assertIn(
+            "public_claim_boundary must state that the runbook is not paper readiness evidence",
+            result["unmet"],
+        )
+        self.assertIn("required_inputs cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("required_inputs missing:") for item in result["unmet"])
+        )
+        self.assertTrue(
+            any(item.startswith("refresh_steps missing:") for item in result["unmet"])
+        )
+        self.assertTrue(
+            any(item.startswith("required_commands missing:") for item in result["unmet"])
+        )
+        self.assertIn("required_commands cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("acceptance_checks missing:") for item in result["unmet"])
+        )
+        self.assertIn("acceptance_checks cannot contain placeholders", result["unmet"])
+        self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
+        self.assertTrue(
+            any(item.startswith("publication_rules missing:") for item in result["unmet"])
+        )
 
     def test_hosted_smoke_requires_active_private_pack_fingerprint(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
