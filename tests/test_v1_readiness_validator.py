@@ -41,6 +41,40 @@ from scripts.validate_v1_readiness import (
 
 
 class V1ReadinessValidatorTests(unittest.TestCase):
+    def _seed_git_root(self, root: Path) -> str:
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "config", "user.name", "bmendonca3"], cwd=root, check=True)
+        subprocess.run(["git", "config", "user.email", "bmendonca3@example.com"], cwd=root, check=True)
+        (root / "README.md").write_text("# seed\n", encoding="utf-8")
+        subprocess.run(["git", "add", "README.md"], cwd=root, check=True)
+        subprocess.run(["git", "commit", "-qm", "seed release evidence root"], cwd=root, check=True)
+        return subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        ).stdout.strip()
+
+    def _release_candidate_evidence_payload(self, commit_sha: str) -> dict[str, object]:
+        return {
+            "schema_version": "v1-release-candidate-validation-v1",
+            "commit_sha": commit_sha,
+            "benchmark_source_sha": commit_sha,
+            "private_pack_fingerprint_sha256": "b" * 64,
+            "exact_head_ci_conclusion": "success",
+            "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/123456789",
+            "pushed_commit": True,
+            "commands": {
+                command: {
+                    "passed": True,
+                    "exit_code": 0,
+                    "evidence": "checked in release validation log",
+                }
+                for command in REQUIRED_RELEASE_VALIDATION_COMMANDS
+            },
+        }
+
     def test_current_repo_reports_v1_prep_not_v1_ready(self) -> None:
         result = validate_v1_readiness()
         gates = {gate["id"]: gate for gate in result["gates"]}
@@ -2007,6 +2041,98 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("release validation template is not release-candidate evidence", result["unmet"])
+
+    def test_release_candidate_evidence_can_pass_with_exact_ci_url_and_command_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            evidence = root / "release-evidence.json"
+            evidence.write_text(
+                json.dumps(self._release_candidate_evidence_payload(commit_sha)),
+                encoding="utf-8",
+            )
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["unmet"], [])
+
+    def test_release_candidate_evidence_requires_exact_head_ci_url(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            payload["exact_head_ci_url"] = "https://github.com/bmendonca3/authzbench-saas/actions/runs/not-a-run"
+            evidence = root / "release-evidence.json"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn("exact_head_ci_url must reference an AuthZBench-SaaS Actions run", result["unmet"])
+
+    def test_release_candidate_evidence_requires_command_exit_code_and_evidence(self) -> None:
+        command = REQUIRED_RELEASE_VALIDATION_COMMANDS[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            payload["commands"][command]["exit_code"] = 1
+            payload["commands"][command]["evidence"] = "TBD"
+            evidence = root / "release-evidence.json"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn(f"release validation command must record exit_code 0: {command}", result["unmet"])
+        self.assertIn(
+            f"release validation command must record non-placeholder evidence: {command}",
+            result["unmet"],
+        )
+
+    def test_release_candidate_evidence_rejects_sensitive_or_local_evidence_strings(self) -> None:
+        command = REQUIRED_RELEASE_VALIDATION_COMMANDS[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            payload["commands"][command]["evidence"] = "debug log at /Users/example/private-run.log"
+            payload["release_notes"] = ["raw private output was inspected locally"]
+            evidence = root / "release-evidence.json"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(
+            any("absolute path is not allowed in release-candidate evidence" in item for item in result["unmet"]),
+            result["unmet"],
+        )
+        self.assertTrue(
+            any("sensitive marker is not allowed in release-candidate evidence" in item for item in result["unmet"]),
+            result["unmet"],
+        )
 
     def test_release_candidate_runbook_is_structured_procedure_evidence(self) -> None:
         result = _validate_release_candidate_runbook()

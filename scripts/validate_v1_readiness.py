@@ -719,6 +719,27 @@ def _release_validation_runbook_public_safety_errors(value: Any, path: str = "$"
     return errors
 
 
+def _release_validation_evidence_public_safety_errors(value: Any, path: str = "$") -> list[str]:
+    errors: list[str] = []
+    if isinstance(value, dict):
+        for raw_key, child in value.items():
+            key = str(raw_key)
+            child_path = f"{path}.{key}"
+            if key.lower() in PRIVATE_OPERATION_SENSITIVE_KEYS:
+                errors.append(f"{child_path}: sensitive key is not allowed in release-candidate evidence")
+            errors.extend(_release_validation_evidence_public_safety_errors(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            errors.extend(_release_validation_evidence_public_safety_errors(child, f"{path}[{index}]"))
+    elif isinstance(value, str):
+        lower = value.lower()
+        if any(marker in lower for marker in PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS):
+            errors.append(f"{path}: sensitive marker is not allowed in release-candidate evidence")
+        if PRIVATE_OPERATION_ABSOLUTE_PATH_RE.search(value):
+            errors.append(f"{path}: absolute path is not allowed in release-candidate evidence")
+    return errors
+
+
 def _validate_v1_scale_roadmap(
     root: Path = ROOT,
     *,
@@ -1481,6 +1502,7 @@ def _validate_release_candidate_evidence(
     data = _json_object(evidence_path if evidence_path.is_absolute() else root / evidence_path, unmet)
     if data is None:
         return {"passed": False, "path": str(evidence_path), "unmet": unmet}
+    unmet.extend(_release_validation_evidence_public_safety_errors(data))
     if data.get("template_only") is True or data.get("schema_version") == "v1-release-candidate-validation-template-v1":
         unmet.append("release validation template is not release-candidate evidence")
     expected_sha = target_sha or _current_commit_sha()
@@ -1493,6 +1515,14 @@ def _validate_release_candidate_evidence(
         unmet.extend(_benchmark_source_compatibility_errors(root, str(benchmark_source_sha), str(data["commit_sha"])))
     if data.get("exact_head_ci_conclusion") not in {"success", "passed"}:
         unmet.append("exact_head_ci_conclusion must be success or passed")
+    if not (
+        _nonempty_string(data.get("exact_head_ci_url"))
+        and re.fullmatch(
+            r"https://github\.com/bmendonca3/authzbench-saas/actions/runs/[0-9]+",
+            str(data.get("exact_head_ci_url")),
+        )
+    ):
+        unmet.append("exact_head_ci_url must reference an AuthZBench-SaaS Actions run")
     if private_pack_fingerprint_sha256 is None:
         unmet.append("active private pack fingerprint is required for release-candidate evidence")
     elif data.get("private_pack_fingerprint_sha256") != private_pack_fingerprint_sha256:
@@ -1505,6 +1535,11 @@ def _validate_release_candidate_evidence(
         command_result = commands.get(command)
         if not isinstance(command_result, dict) or command_result.get("passed") is not True:
             unmet.append(f"missing passed release validation command: {command}")
+            continue
+        if command_result.get("exit_code") != 0:
+            unmet.append(f"release validation command must record exit_code 0: {command}")
+        if not _nonempty_string(command_result.get("evidence")) or _placeholder(command_result.get("evidence")):
+            unmet.append(f"release validation command must record non-placeholder evidence: {command}")
     if data.get("pushed_commit") is not True:
         unmet.append("pushed_commit must be true")
     evidence_resolved = {(evidence_path if evidence_path.is_absolute() else root / evidence_path).resolve()}

@@ -280,14 +280,16 @@ private operation, protected execution, scale, and release-candidate evidence.
   - v0 release validation, baseline registry validation, leaderboard
     submission validation, and v1 readiness validation pass;
   - release evidence records commit SHA, benchmark source SHA, active
-    private-pack fingerprint, exact command outcomes, CI run URLs, and
-    privacy-scan results;
+    private-pack fingerprint, exact command outcomes, exact-head CI run URL,
+    and privacy-scan results;
   - `artifact/v1-release-candidate-validation.template.json` is used only as a
     public-safe starting shape, copied outside tracked Git, and replaced with
     real values before strict validation;
   - the release-candidate runbook names every required input, command, evidence
     field, acceptance check, and publication rule for collecting the external
     evidence;
+  - the external evidence records `exit_code: 0` and non-placeholder evidence
+    for every required command;
   - generated paper tables and chart artifacts are clean after regeneration;
   - `git diff --check` passes;
   - `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
@@ -897,7 +899,8 @@ private operation, protected execution, scale, and release-candidate evidence.
     template-only and is rejected if passed directly as release evidence;
   - the structured evidence records the current release commit SHA, the
     benchmark source SHA used for hosted/paper/private-run evidence, every
-    required command above with `passed: true`, exact-head CI conclusion, active
+    required command above with `passed: true`, `exit_code: 0`, and
+    non-placeholder evidence, exact-head CI conclusion and URL, active
     private-pack fingerprint, and pushed commit status;
   - strict `python3 scripts/validate_v1_readiness.py --release-evidence
     <external-json>` passes from a clean working tree.
