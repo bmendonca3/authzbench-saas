@@ -519,7 +519,7 @@ The goal is complete only when all of these are true:
     `c3c3d702d1f8fd6eccfca76ad523da2651ac46aa` are authored as `bmendonca3`,
     pushed to `main` and `v1-task-expansion`, and exact-head GitHub Actions run
     `27103482713` passed.
-  - [ ] `glm-5` has two runner-emitted 54-task base summaries with distinct run
+  - [x] `glm-5` has two runner-emitted 54-task base summaries with distinct run
     IDs, the active fingerprint, and retained task artifacts.
     Evidence: run `20260607T201255153205Z-5de7a354` passes 33 tasks, proves 2
     of 21 vulnerable replays, has 2 scorer-counted findings, reports zero
@@ -529,8 +529,11 @@ The goal is complete only when all of these are true:
     `20260608T002053809050Z-e50a764c` passes 33 tasks, proves 3 of 21 vulnerable
     replays, has 4 scorer-counted findings, reports zero control false
     positives, and has complete 54-task artifacts with zero invalid
-    submissions. Promotion audit, commit/push, and exact-head CI remain
-    required before this subitem may close.
+    submissions. Promotion commit
+    `f069fbd9eada73bcfd3f750a51528af084d2a5fb`, paper-preflight commit
+    `90e514367231135eff557e08e268971b02f80b5f`, independent Kiro Claude Opus
+    artifact and claims audits, full local public validation, and exact-head
+    GitHub Actions run `27110222646` verify this subitem.
   - [ ] `claude-opus-4.6` no-tools family has two runner-emitted 54-task
     summaries;
   - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs
