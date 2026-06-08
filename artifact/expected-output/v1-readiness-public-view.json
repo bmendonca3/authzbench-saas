@@ -57,6 +57,7 @@
     {
       "evidence": [
         "tasks_private/holdout/rotation-metadata.json",
+        "artifact/private-holdout-operation-blocker.json",
         "private_holdout_pack_ids=[]",
         "private_holdout_pack_roles=[]",
         "active_private_pack_id=None",
@@ -66,7 +67,8 @@
       "id": "rotating_private_holdouts_implemented",
       "passed": false,
       "unmet": [
-        "private holdout rotation is intentionally not inspected in public view"
+        "private holdout rotation is intentionally not inspected in public view",
+        "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist"
       ]
     },
     {

@@ -125,6 +125,142 @@ The goal is complete only when all of these are true:
   returns no tracked paths;
 - the release commit is pushed and exact-head CI is green.
 
+### Remaining v1 Release Checklist
+
+Status: open. This is the concise current list of work required before any
+fair `v1`, hosted-leaderboard, or community-ready release claim. The public
+54-task baseline evidence is complete; the remaining work is external review,
+private operation, protected execution, scale, and release-candidate evidence.
+
+- [ ] Convert external interest into real review evidence.
+  Required evidence:
+  - all three review lanes are complete: Application Security,
+    Benchmark/Evals methodology, and AI-agent/tooling;
+  - each lane records reviewer name or collaborator handle, reviewer role/scope,
+    review date, reviewed artifacts, bounded questions, findings or explicit
+    no-finding disposition, decisions, and claim-boundary impact;
+  - accepted or unresolved findings link to concrete follow-up commits, docs,
+    tests, task changes, or other repo artifacts;
+  - `docs/reviews/external-review-summary.json` moves every required lane from
+    `pending` to complete evidence;
+  - `python3 scripts/validate_v1_readiness.py --allow-incomplete` reports
+    `external_review_completed` as passed.
+
+- [ ] Build an executable release-candidate hosted/private submission path.
+  Required evidence:
+  - `artifact/submission-runner-smoke.json` is replaced by a passing
+    `execution_scope: release_candidate` smoke record tied to the active private
+    pack;
+  - the smoke record includes command, commit SHA, runner image or hosted-runner
+    version, private-pack version, active private-pack fingerprint, isolation
+    model, expected submitter private-manifest denial, pass/fail result, and
+    cleanup status;
+  - `benchmark_source_sha` matches the release evidence;
+  - `private_pack_fingerprint_sha256` matches the active pack fingerprint
+    computed from validated private manifests;
+  - public outputs contain only redacted summaries and exclude private task
+    bodies, private routes, private seeds, raw private results, captures,
+    credentials, and local absolute paths.
+  Current blocker evidence:
+  - `artifact/submission-runner-smoke.json` is only structured blocker evidence;
+  - the public CI container rehearsal is valuable but cannot satisfy this gate.
+
+- [ ] Prove protected execution on the intended maintainer platform.
+  Required evidence:
+  - submitter code cannot directly read private manifests or raw private
+    artifacts;
+  - scorer-controlled code can evaluate private tasks;
+  - raw private evidence is written only to ignored or protected locations;
+  - redacted source summaries and candidate rows are generated from protected
+    evidence;
+  - privacy scans confirm no private or raw paths are tracked.
+
+- [ ] Implement rotating private holdout packs.
+  Required evidence:
+  - one active private pack and one shadow or candidate private pack exist in
+    the maintainer-only holdout area;
+  - `tasks_private/holdout/rotation-metadata.json` declares pack IDs, roles,
+    safe relative paths, and exactly one active pack;
+  - each pack validates with the holdout-pack validator and is
+    leaderboard-suitable;
+  - pack IDs, task IDs, paths, and fingerprints are unique where required;
+  - active-pack fingerprint is recorded consistently in release evidence,
+    hosted-smoke evidence, source summaries, and eligible leaderboard rows;
+  - compatibility, retirement triggers, and rerun policy are documented.
+  Current blocker evidence:
+  - `artifact/private-holdout-operation-blocker.json` is public-safe structured
+    blocker evidence only;
+  - rotation metadata validation exists, but public checkout has no active or
+    shadow/candidate packs and must not pretend otherwise.
+
+- [ ] Produce repeated private evidence.
+  Required tool-agent evidence:
+  - at least one private-holdout `tool-agent` candidate row has
+    `leaderboard_eligible: true`, `run_count >= 2`, matching benchmark source
+    SHA, matching active private-pack fingerprint, source summaries,
+    runner-emitted fingerprint/comparability key, target-request coverage, and
+    protected-execution metadata proving private-path denial.
+  Required no-tools evidence:
+  - at least one repeated private-holdout `no-tools-model` row is refreshed for
+    comparison and tied to the same benchmark source SHA, active private-pack
+    version, active private-pack fingerprint, and validated source summaries;
+  - old private rows affected by task, scoring, private-pack, or
+    evidence-contract changes are marked stale, legacy, or deprecated;
+  - baseline registry and variance docs distinguish public diagnostics from
+    private leaderboard candidates.
+
+- [ ] Reach the v1 scale gate.
+  Required evidence:
+  - the benchmark reaches at least 100 validated tasks across public and
+    protected private splits;
+  - counts are recomputed from manifests;
+  - vulnerable/control mix remains meaningful;
+  - denial controls and authorized-allow controls are preserved;
+  - new task families include scorer fixtures or equivalent replay evidence;
+  - task-quality matrix, charts, tables, status docs, and report language are
+    regenerated and clean;
+  - old baselines are not compared as current after task or scoring changes.
+  Candidate expansion families:
+  - file-share revoke and stale-link access;
+  - API-token scope changes and unauthorized export/read;
+  - cross-org audit exports;
+  - invitations, role downgrade, and stale-permission workflows;
+  - additional billing, support, admin/config, and SaaS collaboration flows
+    with denial and authorized-allow controls.
+
+- [ ] Refresh the v1-prep technical report and IEEE scaffold after evidence
+  gates close.
+  Required evidence:
+  - frozen v0.0, current v1-prep, and true v1 claims are clearly separated;
+  - external-review and infrastructure findings are reflected in paper/report
+    language;
+  - generated tables and charts regenerate without diff;
+  - the IEEE scaffold compiles cleanly.
+
+- [ ] Run full release-candidate validation.
+  Required evidence:
+  - full unit suite passes;
+  - public validation with scripted baseline passes;
+  - v0 release validation, baseline registry validation, leaderboard
+    submission validation, and v1 readiness validation pass;
+  - release evidence records commit SHA, benchmark source SHA, active
+    private-pack fingerprint, exact command outcomes, CI run URLs, and
+    privacy-scan results;
+  - generated paper tables and chart artifacts are clean after regeneration;
+  - `git diff --check` passes;
+  - `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
+    returns no tracked paths;
+  - strict `python3 scripts/validate_v1_readiness.py --release-evidence
+    <external-json>` passes without `--allow-incomplete`.
+
+- [ ] Push the final release candidate and verify exact-head CI.
+  Required evidence:
+  - release candidate is committed as `bmendonca3`;
+  - intended public branches are pushed;
+  - exact-head GitHub Actions passes for the release commit;
+  - no docs, paper, registry, expected-output, or generated-artifact drift
+    remains after the CI commit.
+
 ### Automated Readiness Gate
 
 - [x] Add a v1 readiness validator that reports each major v1/community gate as
