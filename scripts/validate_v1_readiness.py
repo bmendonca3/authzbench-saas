@@ -1432,6 +1432,36 @@ def _validate_paper_readiness_evidence(
         unmet.append("upstream_review_and_infrastructure_complete must be true")
     if not upstream_gates_complete:
         unmet.append("live upstream review and infrastructure gates must pass")
+    verification = data.get("verification")
+    if not isinstance(verification, dict):
+        unmet.append("verification must be an object with concrete paper-refresh evidence")
+        verification = {}
+    required_verification_commands = {
+        "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
+        "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
+        "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
+    }
+    for field, expected in required_verification_commands.items():
+        value = verification.get(field)
+        if value != expected:
+            unmet.append(f"verification.{field} must be {expected}")
+    for field in ("latex_result", "verified_on"):
+        value = verification.get(field)
+        if not _nonempty_string(value) or _placeholder(value) or _template_placeholder(value):
+            unmet.append(f"verification.{field} must be a concrete non-placeholder string")
+    verified_on = verification.get("verified_on")
+    if _nonempty_string(verified_on) and not _placeholder(verified_on) and not _template_placeholder(verified_on):
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", str(verified_on)):
+            unmet.append("verification.verified_on must use YYYY-MM-DD")
+            verified_on = None
+    if verified_on is not None:
+        try:
+            verified_date = date.fromisoformat(str(verified_on))
+        except ValueError:
+            unmet.append("verification.verified_on must use YYYY-MM-DD")
+        else:
+            if verified_date > date.today():
+                unmet.append("verification.verified_on cannot be in the future")
     evidence_sha = data.get("benchmark_source_sha")
     if not _sha(evidence_sha):
         unmet.append("benchmark_source_sha must be a 40-character lowercase Git SHA")
