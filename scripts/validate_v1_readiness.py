@@ -1526,6 +1526,10 @@ def _validate_release_candidate_evidence(
         unmet.append("exact_head_ci_conclusion must be success or passed")
     if not _authzbench_actions_run_url(data.get("exact_head_ci_url")):
         unmet.append("exact_head_ci_url must reference an AuthZBench-SaaS Actions run")
+    if not _sha(data.get("exact_head_ci_head_sha")):
+        unmet.append("exact_head_ci_head_sha must be a 40-character lowercase Git SHA")
+    elif data.get("exact_head_ci_head_sha") != data.get("commit_sha"):
+        unmet.append("exact_head_ci_head_sha must match release commit_sha")
     if private_pack_fingerprint_sha256 is None:
         unmet.append("active private pack fingerprint is required for release-candidate evidence")
     elif data.get("private_pack_fingerprint_sha256") != private_pack_fingerprint_sha256:
@@ -1573,6 +1577,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "benchmark source sha",
         "active private pack fingerprint",
         "exact-head CI URL and conclusion",
+        "exact-head CI head SHA",
         "pushed commit confirmation",
         "external release evidence path",
         "clean working tree",
@@ -1604,6 +1609,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "benchmark_source_sha",
         "private_pack_fingerprint_sha256",
         "exact_head_ci_conclusion",
+        "exact_head_ci_head_sha",
         "exact_head_ci_url",
         "pushed_commit",
         "commands",
@@ -1623,6 +1629,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "all required commands passed",
         "container smoke passed on an environment with Docker daemon available",
         "exact-head CI succeeded for release commit",
+        "exact-head CI head SHA matches release commit",
         "release commit pushed to intended public remote",
         "private pack fingerprint matches validated active pack",
         "benchmark source sha is an ancestor of release commit",

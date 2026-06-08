@@ -63,6 +63,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "benchmark_source_sha": commit_sha,
             "private_pack_fingerprint_sha256": "b" * 64,
             "exact_head_ci_conclusion": "success",
+            "exact_head_ci_head_sha": commit_sha,
             "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/123456789",
             "pushed_commit": True,
             "commands": {
@@ -2146,6 +2147,25 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("exact_head_ci_url must reference an AuthZBench-SaaS Actions run", result["unmet"])
+
+    def test_release_candidate_evidence_requires_exact_head_ci_head_sha(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            payload["exact_head_ci_head_sha"] = "c" * 40
+            evidence = root / "release-evidence.json"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn("exact_head_ci_head_sha must match release commit_sha", result["unmet"])
 
     def test_release_candidate_evidence_requires_command_exit_code_and_evidence(self) -> None:
         command = REQUIRED_RELEASE_VALIDATION_COMMANDS[0]
