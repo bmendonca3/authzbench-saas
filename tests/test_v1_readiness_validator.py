@@ -103,8 +103,13 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "evidence_scope": "release_candidate",
             "upstream_review_and_infrastructure_complete": True,
             "verification": {
-                "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
-                "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
+                "paper_tables_command": (
+                    "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared"
+                ),
+                "charts_command": (
+                    "python3 scripts/generate_benchmark_charts.py "
+                    "&& git diff --exit-code -- docs/assets/benchmark-charts"
+                ),
                 "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
                 "latex_result": "exit 0; PDF generated without LaTeX errors.",
                 "verified_on": date.today().isoformat(),
@@ -2307,11 +2312,14 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn(
-            "verification.paper_tables_command must be python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
+            "verification.paper_tables_command must be "
+            "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
             result["unmet"],
         )
         self.assertIn(
-            "verification.charts_command must be python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
+            "verification.charts_command must be "
+            "python3 scripts/generate_benchmark_charts.py "
+            "&& git diff --exit-code -- docs/assets/benchmark-charts",
             result["unmet"],
         )
         self.assertIn(
