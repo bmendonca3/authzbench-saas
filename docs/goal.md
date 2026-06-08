@@ -54,6 +54,16 @@ As of the current `main` checkpoint:
 - Release-grade hosted/containerized private execution: open.
 - Correct claim: stable `v1-prep`, not `v1-ready`.
 
+Recent repo-side hardening checkpoint:
+
+- commit `fd461390bd2816ccb8f36d9a3a1979d3ded3ec64` hardened the
+  external-review evidence contract so completed lanes must record concrete
+  bounded questions reviewed and per-decision summaries;
+- exact-head GitHub Actions run `27122244154` passed on that commit;
+- strict v1 readiness still correctly reports `v1_ready: false` because the
+  external-review, private-operation, scale, paper, and release-candidate
+  evidence gates remain open.
+
 ### Completed Public Checkpoint
 
 The current public checkpoint is complete because:
@@ -391,6 +401,7 @@ private operation, protected execution, scale, and release-candidate evidence.
   - structured review evidence exists in
     `docs/reviews/external-review-summary.json`;
   - reviewer role/scope and review date recorded;
+  - bounded questions reviewed are recorded as concrete non-placeholder strings;
   - artifacts reviewed listed;
   - findings or explicit no-finding disposition recorded;
   - every finding has an accepted, rejected, or unresolved decision;
@@ -404,6 +415,7 @@ private operation, protected execution, scale, and release-candidate evidence.
   - structured review evidence exists in
     `docs/reviews/external-review-summary.json`;
   - reviewer role/scope and review date recorded;
+  - bounded questions reviewed are recorded as concrete non-placeholder strings;
   - split design, scoring semantics, variance framing, stale/current evidence
     separation, and paper claim boundary reviewed;
   - findings or explicit no-finding disposition recorded;
@@ -415,6 +427,7 @@ private operation, protected execution, scale, and release-candidate evidence.
   - structured review evidence exists in
     `docs/reviews/external-review-summary.json`;
   - reviewer role/scope and review date recorded;
+  - bounded questions reviewed are recorded as concrete non-placeholder strings;
   - harness assumptions, tool access, target-request correlation, model/agent
     comparability, and run-bundle evidence reviewed;
   - findings or explicit no-finding disposition recorded;
@@ -426,9 +439,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   - `docs/reviews/external-review-summary.md` contains no placeholder `TBD`
     completion rows for required lanes;
   - `docs/reviews/external-review-summary.json` records all required lanes with
-    review date, reviewer role/scope, reviewed artifacts, disposition, decisions,
-    follow-up artifact for accepted/unresolved findings, and claim-boundary
-    impact;
+    review date, reviewer role/scope, bounded questions reviewed, reviewed
+    artifacts, disposition, decisions, decision summaries, follow-up artifact
+    for accepted/unresolved findings, and claim-boundary impact;
   - the response template has not been counted as review evidence; placeholders
     are replaced by real external review facts;
   - `python3 scripts/validate_v1_readiness.py --allow-incomplete` reports
@@ -493,7 +506,7 @@ private operation, protected execution, scale, and release-candidate evidence.
   Current evidence:
   - `artifact/submission-runner-smoke.json` now exists as structured blocker
     evidence, not release-candidate smoke evidence;
-  - the blocker record cites the latest exact-head public CI rehearsal that
+  - the blocker record cites a prior exact-head public CI rehearsal that
     passed Docker-backed container smoke;
   - the v1 readiness validator accepts the blocker structure but still keeps
     `hosted_or_containerized_submission_execution` red until the blocker record
