@@ -67,10 +67,11 @@ AuthZBench-SaaS does not claim to measure:
 - 19 denial controls and 14 authorized-allow controls
 - billing entitlement and support ticket reassignment expansion slices
 - current 54-task scripted sanity baseline
-- three repeated current 54-task public no-tools model-family baselines: Qwen with
+- four repeated current 54-task public no-tools model-family baselines: Qwen with
   explicit command/output failure diagnostics, and Claude Haiku 4.5 with zero
   adapter, runner, and invalid-submission failures, and Claude Sonnet 4.6 with
-  zero adapter, runner, and invalid-submission failures
+  zero adapter, runner, and invalid-submission failures, and GLM-5 with one
+  retained outer runner failure in run 1 and a clean 54/54 artifact run 2
 - five repeated 49-task public no-tools Kiro model-family baselines, now stale
   pending 54-task reruns
 - one repeated 49-task public live HTTP Kiro tool-agent baseline with 49/49
@@ -110,10 +111,11 @@ mixed with current evidence without a compatibility label.
   evaluation.
 - Five 49-task public no-tools Kiro model-family baselines exist as repeated
   diagnostic evidence, but they are stale for the current 54-task split.
-- Repeated 54-task public no-tools Qwen, Claude Haiku 4.5, and Claude Sonnet 4.6
-  baselines are current. Qwen's command/output failures, Haiku's repeated
-  authorized-allow false report, and Sonnet's two different support-control
-  false reports are part of the reported results; three families
+- Repeated 54-task public no-tools Qwen, Claude Haiku 4.5, Claude Sonnet 4.6,
+  and GLM-5 baselines are current. Qwen's command/output failures, Haiku's
+  repeated authorized-allow false report, Sonnet's two different
+  support-control false reports, and GLM's retained runner failure are part of
+  the reported results; four families
   do not establish stable cross-model comparison.
 - One 49-task public live HTTP Kiro tool-agent baseline exists with 49/49
   target-request correlation in both runs, but it is stale for the current
@@ -126,7 +128,7 @@ mixed with current evidence without a compatibility label.
   frozen v0.0 evidence, but it is stale for the current 54-task split. The older
   44-task baselines are retained as stale public-split snapshots only.
 - Baseline registry validation is present and keeps the frozen v0.0 snapshot
-  auditable while reporting three current 54-task no-tools families and the
+  auditable while reporting four current 54-task no-tools families and the
   remaining model/tool-agent reruns as outstanding.
 - Stable leaderboard submission validation is present. A source-backed
   protected private no-tools row with runner-emitted fingerprint provenance is

@@ -1,6 +1,6 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from three current v1-prep 54-task public
+Status: descriptive two-run analysis from four current v1-prep 54-task public
 no-tools families, the historical 49-task public no-tools and live HTTP tool-agent
 artifacts, and the frozen v0.0 46-task release snapshot. These ranges are
 diagnostic public-split evidence only, not confidence intervals, private holdout
@@ -19,6 +19,7 @@ This file uses only tracked public-safe summaries named by
 | `kiro-qwen3-coder-next-current-public-54` | `no-tools-model` | `qwen3-coder-next` | `kiro-qwen3-coder-next-current-public-54-run1-summary.json`; `kiro-qwen3-coder-next-current-public-54-run2-summary.json` |
 | `kiro-claude-haiku-4-5-current-public-54` | `no-tools-model` | `claude-haiku-4.5` | `kiro-claude-haiku-4.5-current-public-54-run1-summary.json`; `kiro-claude-haiku-4.5-current-public-54-run2-summary.json` |
 | `kiro-claude-sonnet-4-6-current-public-54` | `no-tools-model` | `claude-sonnet-4.6` | `kiro-claude-sonnet-4.6-current-public-54-run1-summary.json`; `kiro-claude-sonnet-4.6-current-public-54-run2-summary.json` |
+| `kiro-glm-5-current-public-54` | `no-tools-model` | `glm-5` | `kiro-glm-5-current-public-54-run1-summary.json`; `kiro-glm-5-current-public-54-run2-summary.json` |
 
 ### Historical v1-prep 49-task public split
 
@@ -50,6 +51,7 @@ This file uses only tracked public-safe summaries named by
 | Qwen no-tools | 0.5981-0.6528 | 0.0000-0.1429 | 0-0 | 0.0000-0.0000 | 0.0000-0.0303 | 0.0000-0.0370 | n/a |
 | Claude Haiku no-tools | 0.6815-0.6954 | 0.1905-0.2381 | 0-0 | 0.0000-0.0000 | 0.0303-0.0303 | 0.0000-0.0000 | n/a |
 | Claude Sonnet no-tools | 0.8204-0.8343 | 0.6667-0.7143 | 0-0 | 0.0000-0.0000 | 0.0303-0.0303 | 0.0000-0.0000 | n/a |
+| GLM no-tools | 0.6389-0.6583 | 0.0952-0.1429 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0185 | n/a |
 
 The two current Qwen runs also preserve adapter diagnostics. Run 1 records
 seven task-level adapter failures: two inner Kiro command failures and five
@@ -77,6 +79,13 @@ falsely reports the secure viewer-status denial control. Each therefore has one
 control false report and `false_positive_rate: 0.0303`, while their
 authorized-allow pass rates differ (`0.9286` and `1.0000`).
 
+The current GLM-5 runs pass 33 tasks each, prove 2 and 3 vulnerable replays,
+and keep zero boundary-reasoning credit and zero vulnerable full passes. Both
+have zero control false reports. Run 1 records one outer runner failure on the
+support multistep reassignment task, leaving submission/model-output artifacts
+absent for that task and producing one invalid submission; run 2 has complete
+54-task artifacts and no invalid submissions.
+
 ### Historical v1-prep 49-task public split
 
 | Baseline family | `mean_score` | `exploit_proven_success_rate` | `vulnerable_full_pass_count` | `boundary_reasoning_pass_rate` | `false_positive_rate` | `invalid_submission_rate` | `target_request_coverage_rate` |
@@ -100,8 +109,8 @@ authorized-allow pass rates differ (`0.9286` and `1.0000`).
 
 ## Interpretation
 
-The current 54-task Qwen, Claude Haiku, and Claude Sonnet pairs establish
-repeated evidence for three no-tools model families on the active fingerprint.
+The current 54-task Qwen, Claude Haiku, Claude Sonnet, and GLM pairs establish
+repeated evidence for four no-tools model families on the active fingerprint.
 The Qwen pair passes
 32-33 of 54 tasks,
 proves 0-3 of 21 vulnerable replays, keeps vulnerable boundary reasoning at
@@ -120,7 +129,7 @@ vulnerable tasks. Both runs have a `0.0303` false-positive and false-report rate
 because each reports the same authorized-allow control as vulnerable; the
 authorized-allow pass rate is `0.9286`. The absence of adapter, runner, and
 invalid-submission failures makes this a cleaner model-output comparison than
-the current Qwen pair, but three families remain insufficient for stable
+the current Qwen pair, but four families remain insufficient for stable
 cross-model conclusions.
 
 The Claude Sonnet pair passes 32 of 54 tasks in both runs, proves 14-15 of 21
@@ -129,6 +138,12 @@ vulnerable tasks. Both runs have one false-reported support control, but the
 control type differs across runs. This pair is a substantially stronger exploit
 replay signal than the current Qwen and Haiku pairs, yet remains public-split
 diagnostic evidence rather than a model ranking.
+
+The GLM pair passes 33 tasks in both runs, proves 2-3 vulnerable replays, and
+reports no secure-control findings. It adds breadth to the current no-tools
+comparison but also carries one run-level adapter/runner caveat: run 1 has one
+invalid vulnerable-task submission from an outer runner failure. The pair
+therefore remains diagnostic evidence rather than a polished ranking row.
 
 Qwen run 1's `vulnerable_safety_pass_rate` is `0.9524` because its outer
 runner failure on one vulnerable task produced an invalid submission with no
@@ -202,7 +217,7 @@ print(len([
 PY
 ```
 
-Expected counts: `3` current 54-task model families, `6` stale 49-task
+Expected counts: `4` current 54-task model families, `6` stale 49-task
 model/agent families, and `5` frozen v0.0 repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,
