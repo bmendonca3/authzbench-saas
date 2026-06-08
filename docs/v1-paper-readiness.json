@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "2f9015f710343714e897d3d88e5a49ddab562f78",
+  "benchmark_source_sha": "f069fbd9eada73bcfd3f750a51528af084d2a5fb",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "v1_prep_preflight",
@@ -10,16 +10,16 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "The paper preflight source is pinned to the verified Sonnet 54-task evidence and review-record checkpoint, which also retains the verified Qwen and Haiku current-family evidence and the earlier finding-telemetry hardening. Exact-head CI run 27103482713 passed on the Sonnet promotion preflight descendant. Exact-head CI for this final provenance descendant remains required. Final paper readiness remains incomplete.",
+    "ci_refresh_note": "The paper preflight source is pinned to the verified GLM-5 54-task evidence promotion, which also retains the verified Qwen, Haiku, and Sonnet current-family evidence and the earlier finding-telemetry hardening. Exact-head CI run 27110116654 reached the public-view readiness fixture and failed because the fixture still described the pre-GLM source pin; this descendant refreshes that source pin and fixture. Exact-head CI for this provenance descendant remains required. Final paper readiness remains incomplete.",
     "prior_exact_head_ci": {
-      "commit_sha": "c3c3d702d1f8fd6eccfca76ad523da2651ac46aa",
-      "conclusion": "success",
-      "run_id": 27103482713,
-      "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27103482713"
+      "commit_sha": "f069fbd9eada73bcfd3f750a51528af084d2a5fb",
+      "conclusion": "failure",
+      "run_id": 27110116654,
+      "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27110116654"
     },
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
-    "verified_on": "2026-06-07"
+    "verified_on": "2026-06-08"
   }
 }

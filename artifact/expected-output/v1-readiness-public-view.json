@@ -111,8 +111,7 @@
       "unmet": [
         "evidence_scope must be release_candidate",
         "upstream_review_and_infrastructure_complete must be true",
-        "live upstream review and infrastructure gates must pass",
-        "release-affecting files changed after benchmark_source_sha: docs/checkpoints/2026-06-07-49-task-v1-prep-checkpoint.md"
+        "live upstream review and infrastructure gates must pass"
       ]
     },
     {
