@@ -204,7 +204,10 @@ Before calling the benchmark v1/community-ready, maintainers need:
 The final report and IEEE scaffold refresh procedure is tracked in
 `artifact/v1-paper-readiness-runbook.json`. That file is a checklist for
 claim-boundary, table, chart, LaTeX, and publication-rule checks; it is not
-release-candidate paper readiness evidence.
+release-candidate paper readiness evidence. Release-candidate paper readiness
+also requires `docs/v1-paper-readiness.json` to record the exact table-refresh,
+chart-refresh, chart-diff, paper-table-diff, and `latexmk` verification
+commands plus a concrete LaTeX result and `YYYY-MM-DD` verification date.
 
 The final release-candidate validation procedure is tracked in
 `artifact/v1-release-candidate-validation-runbook.json`. That file is a
