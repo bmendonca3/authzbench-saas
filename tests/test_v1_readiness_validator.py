@@ -190,6 +190,136 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             result["unmet"],
         )
 
+    def test_hosted_smoke_release_candidate_evidence_can_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-v1",
+                        "execution_scope": "release_candidate",
+                        "result": "passed",
+                        "benchmark_source_sha": "a" * 40,
+                        "runner_image_or_hosted_version": "runner:v1@sha256:example",
+                        "private_pack_version": "active-pack-v1",
+                        "private_pack_fingerprint_sha256": "b" * 64,
+                        "isolation_model": "container-rendered-context-only",
+                        "command": "containerized submission smoke",
+                        "submitter_private_manifest_read_denied": True,
+                        "scorer_controlled_private_eval": True,
+                        "cleanup_completed": True,
+                        "privacy_scan_passed": True,
+                        "public_output_private_artifacts_included": False,
+                        "container_constraints": [
+                            "network=none",
+                            "read_only_rootfs",
+                            "cap_drop=ALL",
+                            "no_new_privileges",
+                            "non_root_user",
+                            "resource_limits",
+                            "rendered_context_mount_only",
+                            "output_file_size_limit",
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(
+                root,
+                benchmark_source_sha="a" * 40,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["unmet"], [])
+
+    def test_hosted_smoke_blocked_evidence_is_structured_but_not_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-blocker-v1",
+                        "evidence_status": "blocked",
+                        "blocked_gate": "hosted_or_containerized_submission_execution",
+                        "blocker": "Needs the active private pack and maintainer-platform release smoke.",
+                        "next_action": "Run the release-candidate smoke on the maintainer platform.",
+                        "required_release_inputs": [
+                            "active private pack path",
+                            "active private pack version",
+                            "active private pack fingerprint",
+                            "maintainer-platform runner image or hosted version",
+                        ],
+                        "last_verified_public_rehearsal": {
+                            "execution_scope": "rehearsal",
+                            "result": "passed",
+                            "commit_sha": "a" * 40,
+                            "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertEqual(
+            result["unmet"],
+            [
+                "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist",
+            ],
+        )
+
+    def test_hosted_smoke_blocked_evidence_requires_specific_release_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-v1",
+                        "evidence_status": "blocked",
+                        "blocked_gate": "wrong-gate",
+                        "blocker": "TBD",
+                        "next_action": "TBD",
+                        "required_release_inputs": ["TBD"],
+                        "last_verified_public_rehearsal": {
+                            "execution_scope": "release_candidate",
+                            "result": "failed",
+                            "commit_sha": "not-a-sha",
+                            "ci_run_url": "https://example.com/run",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("schema_version must be submission-runner-smoke-blocker-v1", result["unmet"])
+        self.assertIn("blocked_gate must be hosted_or_containerized_submission_execution", result["unmet"])
+        self.assertIn("blocker is required", result["unmet"])
+        self.assertIn("next_action is required", result["unmet"])
+        self.assertIn("required_release_inputs must list concrete missing release inputs", result["unmet"])
+        self.assertIn("last_verified_public_rehearsal.execution_scope must be rehearsal", result["unmet"])
+        self.assertIn("last_verified_public_rehearsal.result must be passed", result["unmet"])
+        self.assertIn(
+            "last_verified_public_rehearsal.commit_sha must be a 40-character lowercase Git SHA",
+            result["unmet"],
+        )
+        self.assertIn(
+            "last_verified_public_rehearsal.ci_run_url must reference an AuthZBench-SaaS Actions run",
+            result["unmet"],
+        )
+
     def test_hosted_smoke_rejects_rehearsal_execution_scope(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

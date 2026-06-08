@@ -55,6 +55,7 @@ PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
 ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
 
+HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION = "submission-runner-smoke-blocker-v1"
 VALID_REVIEW_DECISIONS = {"accepted", "rejected", "unresolved"}
 VALID_REVIEW_DISPOSITIONS = {"findings", "no_findings"}
 VALID_REVIEW_STATUSES = {"pending", "complete"}
@@ -605,6 +606,43 @@ def _validate_hosted_execution_evidence(
     data = _json_object(root / HOSTED_EXECUTION_EVIDENCE_PATH, unmet)
     if data is None:
         return {"passed": False, "path": HOSTED_EXECUTION_EVIDENCE_PATH, "unmet": unmet}
+
+    if data.get("evidence_status") == "blocked":
+        if data.get("schema_version") != HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION:
+            unmet.append(f"schema_version must be {HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION}")
+        if data.get("blocked_gate") != "hosted_or_containerized_submission_execution":
+            unmet.append("blocked_gate must be hosted_or_containerized_submission_execution")
+        for field in ("blocker", "next_action"):
+            if not _nonempty_string(data.get(field)) or _placeholder(data.get(field)):
+                unmet.append(f"{field} is required")
+        required_inputs = data.get("required_release_inputs")
+        if (
+            not isinstance(required_inputs, list)
+            or not required_inputs
+            or any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs)
+        ):
+            unmet.append("required_release_inputs must list concrete missing release inputs")
+        rehearsal = data.get("last_verified_public_rehearsal")
+        if not isinstance(rehearsal, dict):
+            unmet.append("last_verified_public_rehearsal is required")
+            rehearsal = {}
+        if rehearsal.get("execution_scope") != "rehearsal":
+            unmet.append("last_verified_public_rehearsal.execution_scope must be rehearsal")
+        if rehearsal.get("result") != "passed":
+            unmet.append("last_verified_public_rehearsal.result must be passed")
+        if not _sha(rehearsal.get("commit_sha")):
+            unmet.append("last_verified_public_rehearsal.commit_sha must be a 40-character lowercase Git SHA")
+        if not (
+            _nonempty_string(rehearsal.get("ci_run_url"))
+            and str(rehearsal.get("ci_run_url")).startswith("https://github.com/bmendonca3/authzbench-saas/actions/runs/")
+        ):
+            unmet.append("last_verified_public_rehearsal.ci_run_url must reference an AuthZBench-SaaS Actions run")
+        unmet.append("hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist")
+        return {
+            "passed": False,
+            "path": HOSTED_EXECUTION_EVIDENCE_PATH,
+            "unmet": list(dict.fromkeys(unmet)),
+        }
 
     expected_sha = benchmark_source_sha or _current_commit_sha()
     unmet.extend(

@@ -51,7 +51,7 @@
       "id": "hosted_or_containerized_submission_execution",
       "passed": false,
       "unmet": [
-        "missing structured evidence: artifact/submission-runner-smoke.json"
+        "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
       ]
     },
     {
