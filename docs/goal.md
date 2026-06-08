@@ -54,12 +54,17 @@ As of the current `main` checkpoint:
 - Release-grade hosted/containerized private execution: open.
 - Correct claim: stable `v1-prep`, not `v1-ready`.
 
-Recent repo-side hardening checkpoint:
+Recent repo-side hardening checkpoints:
 
 - commit `fd461390bd2816ccb8f36d9a3a1979d3ded3ec64` hardened the
   external-review evidence contract so completed lanes must record concrete
   bounded questions reviewed and per-decision summaries;
 - exact-head GitHub Actions run `27122244154` passed on that commit;
+- commit `d74bf2af9e3148e7872a337652baf166864e0636` hardened the final
+  release-candidate evidence contract so strict release evidence must record
+  workflow name `Validate AuthZBench-SaaS` alongside exact-head CI run ID, URL,
+  conclusion, and head SHA;
+- exact-head GitHub Actions run `27124203762` passed on that commit;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
