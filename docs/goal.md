@@ -112,6 +112,11 @@ Recent repo-side hardening checkpoints:
   readiness fixture check as a recorded release command, so final release
   evidence must prove the tracked clean-clone readiness JSON still matches
   `artifact/expected-output/v1-readiness-public-view.json`;
+- the private-operation runbook now carries validator-enforced public-safe
+  command templates for active/shadow holdout-pack validation,
+  protected-private evidence validation, strict release-evidence validation, and
+  the tracked-private-path privacy scan, while still remaining runbook evidence
+  only;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
@@ -268,6 +273,10 @@ private operation, protected execution, scale, and release-candidate evidence.
   - `tasks_private/holdout/rotation-metadata.json` declares pack IDs, roles,
     safe relative paths, concrete version labels, declared fingerprints matching
     computed pack fingerprints, and exactly one active pack;
+  - the private-operation runbook lists the exact public-safe command templates
+    maintainers must adapt in the private checkout for active/shadow pack
+    validation, protected-private evidence validation, strict release-evidence
+    validation, and privacy scanning;
   - each pack validates with the holdout-pack validator and is
     leaderboard-suitable;
   - pack IDs, task IDs, paths, and fingerprints are unique where required;
