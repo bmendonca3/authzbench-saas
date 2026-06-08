@@ -104,6 +104,10 @@ python3 scripts/containerized_submission_smoke.py \
   --execution-scope release_candidate
 ```
 
+If the runner image is not already present locally, the smoke runner pulls it
+before recording `runner_image_or_hosted_version`; use `--image` to point at a
+different pinned runner image.
+
 Use `artifact/submission-runner-smoke.template.json` only as a starting shape
 for that release-candidate record. Replace every placeholder with real
 maintainer-platform or containerized smoke evidence before writing
