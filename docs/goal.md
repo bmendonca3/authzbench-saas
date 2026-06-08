@@ -192,6 +192,16 @@ The goal is complete only when all of these are true:
   - feedback is recorded as findings, no-finding disposition, or advisory notes;
   - accepted findings link to concrete commits, docs, tests, or task changes;
   - interest alone is not treated as completed external review.
+  Current evidence:
+  - `docs/reviews/external-review-packet.md` is ready to send;
+  - `docs/reviews/external-review-summary.md` is the human-readable intake
+    tracker;
+  - `docs/reviews/external-review-summary.json` is now structured pending
+    evidence for all three required lanes, with requested artifacts, review
+    questions, blockers, and next actions;
+  - the v1 readiness validator accepts that structure but still keeps
+    `external_review_completed` red until all lanes move from `pending` to real
+    completed review evidence.
 
 - [ ] Complete the Application Security review lane.
   Acceptance evidence:

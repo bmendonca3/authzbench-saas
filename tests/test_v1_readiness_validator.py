@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
@@ -312,6 +313,177 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("Application security: claim_boundary_impact is required", result["unmet"])
         self.assertIn("Application security: reviewed artifact does not exist: missing.md", result["unmet"])
         self.assertIn("missing structured review lanes: AI-agent/tooling, Benchmark/evals methodology", result["unmet"])
+
+    def test_external_review_pending_lanes_are_structured_but_not_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs" / "reviews").mkdir(parents=True)
+            (root / "docs" / "reviews" / "external-review-packet.md").write_text("# packet\n", encoding="utf-8")
+            evidence = root / "docs" / "reviews" / "external-review-summary.json"
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "review_lanes": [
+                            {
+                                "lane": "Application security",
+                                "review_status": "pending",
+                                "requested_artifacts": ["docs/reviews/external-review-packet.md"],
+                                "requested_questions": ["Are task boundaries realistic?"],
+                                "blocker": "Needs an independent AppSec reviewer.",
+                                "next_action": "Recruit reviewer.",
+                            },
+                            {
+                                "lane": "Benchmark/evals methodology",
+                                "review_status": "pending",
+                                "requested_artifacts": ["docs/reviews/external-review-packet.md"],
+                                "requested_questions": ["Are scoring semantics valid?"],
+                                "blocker": "Needs an independent evals reviewer.",
+                                "next_action": "Recruit reviewer.",
+                            },
+                            {
+                                "lane": "AI-agent/tooling",
+                                "review_status": "pending",
+                                "requested_artifacts": ["docs/reviews/external-review-packet.md"],
+                                "requested_questions": ["Are harness assumptions inspectable?"],
+                                "blocker": "Needs an independent tooling reviewer.",
+                                "next_action": "Recruit reviewer.",
+                            },
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertEqual(
+            result["lanes"],
+            ["AI-agent/tooling", "Application security", "Benchmark/evals methodology"],
+        )
+        self.assertEqual(
+            result["unmet"],
+            [
+                "Application security: independent review is pending",
+                "Benchmark/evals methodology: independent review is pending",
+                "AI-agent/tooling: independent review is pending",
+            ],
+        )
+
+    def test_external_review_pending_lanes_require_real_packet_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "docs" / "reviews" / "external-review-summary.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "review_lanes": [
+                            {
+                                "lane": "Application security",
+                                "review_status": "pending",
+                                "requested_artifacts": ["missing.md"],
+                                "requested_questions": ["TBD"],
+                                "blocker": "TBD",
+                                "next_action": "TBD",
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("Application security: requested artifact does not exist: missing.md", result["unmet"])
+        self.assertIn("Application security: pending review requires requested_questions", result["unmet"])
+        self.assertIn("Application security: pending review requires blocker", result["unmet"])
+        self.assertIn("Application security: pending review requires next_action", result["unmet"])
+        self.assertIn("Application security: independent review is pending", result["unmet"])
+
+    def test_external_review_complete_lanes_can_pass_with_real_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            reviewed_artifact = root / "docs" / "reviews" / "external-review-packet.md"
+            reviewed_artifact.parent.mkdir(parents=True)
+            reviewed_artifact.write_text("# packet\n", encoding="utf-8")
+            follow_up = root / "docs" / "reviews" / "application-security-review-follow-up.md"
+            follow_up.write_text("# follow-up\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "bmendonca3"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "bmendonca3@example.com"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "seed review artifacts"], cwd=root, check=True)
+            evidence = root / "docs" / "reviews" / "external-review-summary.json"
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "review_lanes": [
+                            {
+                                "lane": "Application security",
+                                "review_status": "complete",
+                                "review_date": date.today().isoformat(),
+                                "reviewer_role_scope": "Independent AppSec reviewer for SaaS authorization tasks.",
+                                "claim_boundary_impact": "Review accepted one task-language clarification.",
+                                "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
+                                "disposition": "findings",
+                                "decisions": [
+                                    {
+                                        "decision": "accepted",
+                                        "finding": "Secure-control wording could be clearer.",
+                                        "summary": "Clarify secure-control wording.",
+                                        "claim_boundary_impact": "No score claim change; documentation wording only.",
+                                        "follow_up_artifact": "docs/reviews/application-security-review-follow-up.md",
+                                    }
+                                ],
+                            },
+                            {
+                                "lane": "Benchmark/evals methodology",
+                                "review_status": "complete",
+                                "review_date": date.today().isoformat(),
+                                "reviewer_role_scope": "Independent benchmark methodology reviewer.",
+                                "claim_boundary_impact": "No release-claim changes requested.",
+                                "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
+                                "disposition": "no_findings",
+                                "decisions": [
+                                    {
+                                        "decision": "rejected",
+                                        "finding": "No methodology finding.",
+                                        "summary": "No methodology changes needed.",
+                                        "claim_boundary_impact": "No release-claim change.",
+                                    }
+                                ],
+                            },
+                            {
+                                "lane": "AI-agent/tooling",
+                                "review_status": "complete",
+                                "review_date": date.today().isoformat(),
+                                "reviewer_role_scope": "Independent AI-agent tooling reviewer.",
+                                "claim_boundary_impact": "No harness-claim changes requested.",
+                                "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
+                                "disposition": "no_findings",
+                                "decisions": [
+                                    {
+                                        "decision": "rejected",
+                                        "finding": "No tooling finding.",
+                                        "summary": "No tooling changes needed.",
+                                        "claim_boundary_impact": "No harness-claim change.",
+                                    }
+                                ],
+                            },
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "add review evidence"], cwd=root, check=True)
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["unmet"], [])
 
     def test_external_review_decisions_reject_placeholder_follow_up_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

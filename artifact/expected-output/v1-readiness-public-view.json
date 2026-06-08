@@ -31,7 +31,9 @@
       "passed": false,
       "unmet": [
         "independent external review lanes are not complete",
-        "missing structured evidence: docs/reviews/external-review-summary.json"
+        "Application security: independent review is pending",
+        "Benchmark/evals methodology: independent review is pending",
+        "AI-agent/tooling: independent review is pending"
       ]
     },
     {
