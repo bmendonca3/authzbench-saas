@@ -170,12 +170,29 @@ def validate_smoke_evidence(
 def _image_identity(image: str) -> str:
     completed = subprocess.run(
         ["docker", "image", "inspect", "--format", "{{.Id}}", image],
-        check=True,
+        check=False,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
     )
+    if completed.returncode != 0:
+        subprocess.run(
+            ["docker", "pull", image],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=120,
+        )
+        completed = subprocess.run(
+            ["docker", "image", "inspect", "--format", "{{.Id}}", image],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=DOCKER_CONTROL_TIMEOUT_SECONDS,
+        )
     return f"{image}@{completed.stdout.strip()}"
 
 
