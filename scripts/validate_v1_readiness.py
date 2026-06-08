@@ -16,7 +16,10 @@ sys.path.insert(0, str(ROOT))
 
 from authzbench.core import dump_json, load_json
 from authzbench.validate_manifests import validate_patterns
-from scripts.containerized_submission_smoke import validate_smoke_evidence
+from scripts.containerized_submission_smoke import (
+    REQUIRED_CONTAINER_CONSTRAINTS,
+    validate_smoke_evidence,
+)
 from scripts.validate_baseline_registry import validate_registry
 from scripts.validate_holdout_pack import validate_holdout_pack
 from scripts.validate_leaderboard_submission import _submission_paths, validate_submission
@@ -52,6 +55,7 @@ REQUIRED_REVIEW_PACKET_ARTIFACTS = (
 EXTERNAL_REVIEW_EVIDENCE_PATH = "docs/reviews/external-review-summary.json"
 EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH = "docs/reviews/external-review-response.template.json"
 HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
+HOSTED_EXECUTION_RUNBOOK_PATH = "artifact/hosted-submission-execution-runbook.json"
 HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
@@ -61,6 +65,7 @@ ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
 SCALE_ROADMAP_PATH = "artifact/v1-task-scale-roadmap.json"
 
 HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION = "submission-runner-smoke-blocker-v1"
+HOSTED_EXECUTION_RUNBOOK_SCHEMA_VERSION = "hosted-submission-execution-runbook-v1"
 PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION = "private-holdout-operation-blocker-v1"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 PRIVATE_OPERATION_BLOCKED_GATES = (
@@ -117,6 +122,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HOSTED_EXECUTION_EVIDENCE_PATH,
+    HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
@@ -128,6 +134,7 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
@@ -925,6 +932,124 @@ def _external_review_public_safety_errors(value: Any, path: str = "$") -> list[s
     return errors
 
 
+def _validate_hosted_execution_runbook(root: Path = ROOT) -> dict[str, Any]:
+    unmet: list[str] = []
+    data = _json_object(root / HOSTED_EXECUTION_RUNBOOK_PATH, unmet)
+    if data is None:
+        return {"passed": False, "path": HOSTED_EXECUTION_RUNBOOK_PATH, "unmet": unmet}
+    unmet.extend(_private_operation_public_safety_errors(data))
+    if data.get("schema_version") != HOSTED_EXECUTION_RUNBOOK_SCHEMA_VERSION:
+        unmet.append(f"schema_version must be {HOSTED_EXECUTION_RUNBOOK_SCHEMA_VERSION}")
+    if data.get("evidence_status") != "runbook":
+        unmet.append("evidence_status must be runbook")
+    claim_boundary = data.get("public_claim_boundary")
+    if not _nonempty_string(claim_boundary) or _placeholder(claim_boundary):
+        unmet.append("public_claim_boundary is required")
+    elif "not" not in str(claim_boundary).lower():
+        unmet.append("public_claim_boundary must state that the runbook is not release smoke evidence")
+
+    required_inputs = data.get("required_private_inputs")
+    required_input_set = {
+        "active private pack path",
+        "active private pack version",
+        "active private pack fingerprint",
+        "maintainer runner image or hosted runner version",
+        "benchmark source sha",
+    }
+    if not isinstance(required_inputs, list):
+        unmet.append("required_private_inputs must be a list")
+        required_inputs = []
+    input_set = {str(item) for item in required_inputs if isinstance(item, str)}
+    missing_inputs = sorted(required_input_set - input_set)
+    if missing_inputs:
+        unmet.append("required_private_inputs missing: " + ", ".join(missing_inputs))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+        unmet.append("required_private_inputs cannot contain placeholders")
+
+    modes = data.get("execution_modes")
+    if not isinstance(modes, list) or not modes:
+        unmet.append("execution_modes must be a non-empty list")
+        modes = []
+    mode_names: set[str] = set()
+    required_evidence_fields = {
+        "schema_version",
+        "execution_scope",
+        "result",
+        "benchmark_source_sha",
+        "runner_image_or_hosted_version",
+        "private_pack_version",
+        "private_pack_fingerprint_sha256",
+        "isolation_model",
+        "command",
+        "submitter_private_manifest_read_denied",
+        "scorer_controlled_private_eval",
+        "cleanup_completed",
+        "privacy_scan_passed",
+        "public_output_private_artifacts_included",
+        "container_constraints",
+    }
+    for index, mode in enumerate(modes, start=1):
+        if not isinstance(mode, dict):
+            unmet.append(f"execution_modes[{index}] must be an object")
+            continue
+        name = mode.get("mode")
+        if name not in {"hosted_runner", "fully_containerized"}:
+            unmet.append(f"execution_modes[{index}].mode must be hosted_runner or fully_containerized")
+        else:
+            mode_names.add(str(name))
+        command = mode.get("command")
+        if not _nonempty_string(command) or _placeholder(command):
+            unmet.append(f"{name or f'execution_modes[{index}]'}: command is required")
+        elif "<" not in str(command) or "release_candidate" not in str(command):
+            unmet.append(f"{name}: command must use placeholders and release_candidate scope")
+        isolation = mode.get("isolation_controls")
+        if not isinstance(isolation, list):
+            unmet.append(f"{name}: isolation_controls must be a list")
+            isolation = []
+        isolation_set = {str(item) for item in isolation if isinstance(item, str)}
+        missing_isolation = sorted(set(REQUIRED_CONTAINER_CONSTRAINTS) - isolation_set)
+        if missing_isolation:
+            unmet.append(f"{name}: isolation_controls missing: {', '.join(missing_isolation)}")
+        evidence_fields = mode.get("required_smoke_evidence_fields")
+        if not isinstance(evidence_fields, list):
+            unmet.append(f"{name}: required_smoke_evidence_fields must be a list")
+            evidence_fields = []
+        evidence_set = {str(item) for item in evidence_fields if isinstance(item, str)}
+        missing_fields = sorted(required_evidence_fields - evidence_set)
+        if missing_fields:
+            unmet.append(f"{name}: required_smoke_evidence_fields missing: {', '.join(missing_fields)}")
+
+    if "hosted_runner" not in mode_names:
+        unmet.append("execution_modes must include hosted_runner")
+    if "fully_containerized" not in mode_names:
+        unmet.append("execution_modes must include fully_containerized")
+
+    publication_rules = data.get("publication_rules")
+    required_rules = {
+        "public output is redacted summary only",
+        "nonpublic protected evidence stays in protected storage",
+        "private task bodies are never published",
+        "private task ids are never published",
+        "local absolute paths are never published",
+    }
+    if not isinstance(publication_rules, list):
+        unmet.append("publication_rules must be a list")
+        publication_rules = []
+    rule_set = {str(item) for item in publication_rules if isinstance(item, str)}
+    missing_rules = sorted(required_rules - rule_set)
+    if missing_rules:
+        unmet.append("publication_rules missing: " + ", ".join(missing_rules))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+        unmet.append("publication_rules cannot contain placeholders")
+
+    return {
+        "passed": not unmet,
+        "path": HOSTED_EXECUTION_RUNBOOK_PATH,
+        "execution_modes": sorted(mode_names),
+        "unmet": list(dict.fromkeys(unmet)),
+    }
+
+
 def _validate_hosted_execution_evidence(
     root: Path = ROOT,
     benchmark_source_sha: str | None = None,
@@ -1257,12 +1382,16 @@ def validate_v1_readiness(
         benchmark_source_sha=benchmark_source_sha,
         private_pack_fingerprint_sha256=active_private_pack_fingerprint,
     )
+    hosted_runbook = _validate_hosted_execution_runbook()
+    hosted_unmet = list(hosted_result["unmet"])
+    if not hosted_runbook["passed"]:
+        hosted_unmet.extend(hosted_runbook["unmet"])
     _add_gate(
         gates,
         "hosted_or_containerized_submission_execution",
-        bool(hosted_result["passed"]),
-        [hosted_result["path"]],
-        hosted_result["unmet"],
+        bool(hosted_result["passed"]) and bool(hosted_runbook["passed"]),
+        [hosted_result["path"], hosted_runbook["path"]],
+        hosted_unmet,
     )
 
     _add_gate(

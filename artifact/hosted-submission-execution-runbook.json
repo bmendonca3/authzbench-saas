@@ -1,0 +1,88 @@
+{
+  "schema_version": "hosted-submission-execution-runbook-v1",
+  "evidence_status": "runbook",
+  "public_claim_boundary": "This runbook is not release smoke evidence. It defines the maintainer-platform procedure, but hosted_or_containerized_submission_execution remains incomplete until release-candidate smoke passes against the active private pack.",
+  "required_private_inputs": [
+    "active private pack path",
+    "active private pack version",
+    "active private pack fingerprint",
+    "maintainer runner image or hosted runner version",
+    "benchmark source sha"
+  ],
+  "execution_modes": [
+    {
+      "mode": "hosted_runner",
+      "command": "maintainer-hosted-runner --execution-scope release_candidate --private-pack <active-private-pack-path> --private-pack-version <active-private-pack-version> --private-pack-fingerprint <active-private-pack-fingerprint> --benchmark-source-sha <benchmark-source-sha> --runner-version <hosted-runner-version>",
+      "isolation_controls": [
+        "network=none",
+        "read_only_rootfs",
+        "cap_drop=ALL",
+        "no_new_privileges",
+        "non_root_user",
+        "resource_limits",
+        "rendered_context_mount_only",
+        "output_file_size_limit"
+      ],
+      "required_smoke_evidence_fields": [
+        "schema_version",
+        "execution_scope",
+        "result",
+        "benchmark_source_sha",
+        "runner_image_or_hosted_version",
+        "private_pack_version",
+        "private_pack_fingerprint_sha256",
+        "isolation_model",
+        "command",
+        "submitter_private_manifest_read_denied",
+        "scorer_controlled_private_eval",
+        "cleanup_completed",
+        "privacy_scan_passed",
+        "public_output_private_artifacts_included",
+        "container_constraints"
+      ]
+    },
+    {
+      "mode": "fully_containerized",
+      "command": "python3 scripts/containerized_submission_smoke.py --private-pack <active-private-pack-path> --output artifact/submission-runner-smoke.json --benchmark-source-sha <benchmark-source-sha> --private-pack-version <active-private-pack-version> --execution-scope release_candidate",
+      "isolation_controls": [
+        "network=none",
+        "read_only_rootfs",
+        "cap_drop=ALL",
+        "no_new_privileges",
+        "non_root_user",
+        "resource_limits",
+        "rendered_context_mount_only",
+        "output_file_size_limit"
+      ],
+      "required_smoke_evidence_fields": [
+        "schema_version",
+        "execution_scope",
+        "result",
+        "benchmark_source_sha",
+        "runner_image_or_hosted_version",
+        "private_pack_version",
+        "private_pack_fingerprint_sha256",
+        "isolation_model",
+        "command",
+        "submitter_private_manifest_read_denied",
+        "scorer_controlled_private_eval",
+        "cleanup_completed",
+        "privacy_scan_passed",
+        "public_output_private_artifacts_included",
+        "container_constraints"
+      ]
+    }
+  ],
+  "publication_rules": [
+    "public output is redacted summary only",
+    "nonpublic protected evidence stays in protected storage",
+    "private task bodies are never published",
+    "private task ids are never published",
+    "local absolute paths are never published"
+  ],
+  "release_notes": [
+    "A passing runbook check only proves that the release smoke procedure is specified.",
+    "The hosted execution gate requires artifact/submission-runner-smoke.json with result=passed and execution_scope=release_candidate.",
+    "The private pack fingerprint in smoke evidence must match validated rotation metadata."
+  ]
+}

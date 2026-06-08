@@ -66,6 +66,10 @@ A v1 leaderboard candidate must satisfy all gates below:
 
 ## Hosted Runner Path
 
+The public-safe executable procedure checklist is tracked at
+`artifact/hosted-submission-execution-runbook.json`. It is runbook evidence
+only, not release-candidate smoke evidence.
+
 The hosted path should operate like this:
 
 1. Maintainers freeze the active private pack and runner image.
