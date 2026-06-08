@@ -72,8 +72,10 @@ AuthZBench-SaaS does not claim to measure:
   Sonnet 4.6 with zero adapter, runner, and invalid-submission failures, GLM-5
   with one retained outer runner failure in run 1 and a clean 54/54 artifact run
   2, and Claude Opus 4.6 with complete zero-failure task artifacts
+- one repeated current 54-task public live HTTP Kiro `claude-sonnet-4.6`
+  tool-agent baseline with 54/54 target-request correlation in both runs
 - five repeated 49-task public no-tools Kiro model-family baselines, now stale
-  pending 54-task reruns
+  after 54-task reruns
 - one repeated 49-task public live HTTP Kiro tool-agent baseline with 49/49
   target-request correlation in both historical runs, now stale
 - public-safe boundary-reasoning calibration for the 49-task tool-agent runs
@@ -120,16 +122,24 @@ mixed with current evidence without a compatibility label.
 - One 49-task public live HTTP Kiro tool-agent baseline exists with 49/49
   target-request correlation in both runs, but it is stale for the current
   54-task split.
-- Boundary-reasoning calibration shows that exploit-proven public tool-agent
-  submissions often used alternate keys or runtime identifiers instead of the
-  oracle-compatible boundary vocabulary. The current zero boundary-reasoning
-  credit should not be retroactively relaxed under `score-policy-v1`.
+- One current 54-task public live HTTP Kiro `claude-sonnet-4.6` tool-agent
+  baseline exists with 54/54 target-request correlation in both runs, zero
+  planner/parser failures, zero invalid submissions, and zero secure-control
+  false reports. It is public-split diagnostic evidence only, not private
+  holdout, hosted leaderboard, or v1 release evidence.
+- Boundary-reasoning calibration on the historical 49-task public tool-agent
+  pair shows that exploit-proven submissions often used alternate keys or
+  runtime identifiers instead of the oracle-compatible boundary vocabulary. The
+  current 54-task live tool-agent pair repeats the high-exploit-proof,
+  zero-boundary-credit pattern, but it has not had a separate calibration study.
+  The zero boundary-reasoning credit should not be retroactively relaxed under
+  `score-policy-v1`.
 - The repeated 46-task public live HTTP tool-agent baseline remains auditable as
   frozen v0.0 evidence, but it is stale for the current 54-task split. The older
   44-task baselines are retained as stale public-split snapshots only.
 - Baseline registry validation is present and keeps the frozen v0.0 snapshot
-  auditable while reporting five current 54-task no-tools families and the live
-  HTTP tool-agent rerun as outstanding.
+  auditable while reporting five current 54-task no-tools families and one
+  current 54-task live HTTP tool-agent family for the active public split.
 - Stable leaderboard submission validation is present. A source-backed
   protected private no-tools row with runner-emitted fingerprint provenance is
   eligible as release-candidate schema evidence. An older reconstructed

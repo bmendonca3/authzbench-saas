@@ -318,6 +318,15 @@ tasks, had zero control false reports, and had boundary reasoning pass rate
 `0.0`. It is useful historical public-split tool-agent evidence, but it is not
 current 54-task, private-holdout, or hosted leaderboard evidence.
 
+The current 54-task Kiro live HTTP tool-agent baseline also uses
+`claude-sonnet-4.6` against live local targets. Both current runs produced 54/54
+model-tool plan artifacts, 54/54 tool-probe artifacts, 54/54 target-request
+correlation, zero planner failures, zero parser failures, zero invalid
+submissions, and zero control false reports. Each run passed 33 of 54 tasks,
+replay-proved 15 of 21 vulnerable tasks, and had boundary reasoning pass rate
+`0.0`. It restores the active public live HTTP tool-agent evidence bar, but it
+is still not private-holdout, hosted leaderboard, or v1 release evidence.
+
 The frozen v0.0 46-task rows remain the release snapshot: Qwen, Haiku, Sonnet,
 and GLM have two 46-task no-tools runs, plus the repeated 46-task live HTTP
 tool-agent runs. The stale 44-task Opus no-tools runs proved 12 of 18
@@ -335,10 +344,11 @@ exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks, reports `v0_baseline_ready: false` for the live 54-task
+consistency checks, reports `v0_baseline_ready: true` for the live 54-task
 public baseline bar, and reports `v0_release_snapshot_ready: true` for the
-frozen v0.0 46-task release snapshot. That is a public-split baseline credibility
-claim, not a current v1, hosted-leaderboard, or community-scale benchmark claim.
+frozen v0.0 46-task release snapshot. That is a public-split baseline
+credibility claim, not a current v1, hosted-leaderboard, or community-scale
+benchmark claim.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

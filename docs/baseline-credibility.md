@@ -40,10 +40,11 @@ as current-comparable evidence.
 
 ## v0 Baseline Bar
 
-The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
+The baseline sub-gate currently reports `v0_baseline_ready: true` for the live
 54-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
 46-task release snapshot. Repeated 54-task Qwen, Claude Haiku 4.5, Claude
-Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families are current.
+Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families are current, and the
+repeated 54-task `claude-sonnet-4.6` live HTTP tool-agent family is current.
 The preceding 49-task split has five repeated
 no-tools model-family baselines plus one repeated live HTTP tool-agent family,
 but every one of those rows is stale for current 54-task comparison. The old
@@ -84,7 +85,7 @@ public split. It is not model capability evidence and is stale for current
 The current scripted baseline is a 54-task deterministic harness sanity check.
 It proves the expanded v1-prep public split, scorer, and scripted oracle path
 agree. It is not model capability evidence, a leaderboard row, private-holdout
-evidence, or a substitute for current model or tool-agent reruns.
+evidence, or a substitute for current model or tool-agent baselines.
 
 The current 54-task `qwen3-coder-next` no-tools baseline has two runs on the
 active fingerprint. They pass 32 and 33 tasks, prove 0 and 3 of 21 vulnerable
@@ -99,8 +100,7 @@ the 60-second inner model-call timeout and 75-second outer per-task timeout.
 Run 1's `0.9524` vulnerable safety rate is caused by an invalid submission from
 an outer runner failure, not an unsafe action. This is current public-split
 evidence for one model family, not private evidence, a stable cross-model
-comparison, a leaderboard row, or a substitute for the remaining 54-task
-no-tools and tool-agent reruns.
+comparison, or a leaderboard row.
 
 The current 54-task `claude-haiku-4.5` no-tools baseline also has two runs on
 the active fingerprint. Both pass 32 tasks, prove 4 and 5 of 21 vulnerable
@@ -145,13 +145,23 @@ failures. This is current public evidence for a fifth no-tools family, not
 private evidence, a stable cross-model ranking, a leaderboard row, or v1
 readiness.
 
+The current 54-task `claude-sonnet-4.6` live HTTP Kiro tool-agent baseline has
+two runs on the active fingerprint. Both pass 33 tasks, prove 15 of 21
+vulnerable replays, keep boundary reasoning at `0.0`, fully pass no vulnerable
+task, and report zero secure-control false positives. Both runs write one
+model-tool plan artifact and one tool-probe artifact per task, correlate
+target-side requests for all 54 tasks, and report zero planner failures, zero
+parser failures, zero invalid submissions, and zero fallback probes. This is
+current public live HTTP evidence, not private evidence, hosted-leaderboard
+evidence, a stable cross-model ranking, or v1 readiness.
+
 The stale 49-task no-tools Kiro baselines have two runs each for
 `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
 `claude-opus-4.6`, all using benchmark commit
 `1eaac973ffe5229dad5796b9a5b144fa3af37a3a`. They remain public-split
-diagnostic evidence for the preceding task fingerprint only. They do not close
-the live 54-task tool-agent gate, and they are not private-holdout, live HTTP
-tool-agent, hosted-leaderboard, or v1 release evidence. All five families have
+diagnostic evidence for the preceding task fingerprint only. They are not
+current 54-task, private-holdout, live HTTP tool-agent, hosted-leaderboard, or
+v1 release evidence. All five families have
 `boundary_reasoning_pass_rate: 0.0`.
 
 The stale 49-task `claude-sonnet-4.6` live HTTP Kiro tool-agent baseline has
@@ -162,9 +172,9 @@ target-side requests for all 49 tasks, and report zero planner failures and zero
 parser failures. Run 1 executed 124 probes and run 2 executed 126 probes; both
 proved 15 of 20 vulnerable replays, produced zero secure-control false reports,
 and still fully passed zero vulnerable tasks because vulnerable boundary
-reasoning remained `0.0`. This evidence closed the public tool-agent rerun gate
-for the preceding 49-task fingerprint only. It does not close the live 54-task
-tool-agent gate and is not private-holdout, hosted-leaderboard, or v1 release
+reasoning remained `0.0`. This evidence closed the public tool-agent evidence gate
+for the preceding 49-task fingerprint only. It is stale after the 54-task
+expansion and is not private-holdout, hosted-leaderboard, or v1 release
 evidence.
 
 The v0.0 `qwen3-coder-next` no-tools Kiro baseline has two 46-task public runs.
@@ -234,8 +244,8 @@ The registry uses `requires_rerun_before_current_comparison` to mark stale rows.
 That field means the row cannot support live 54-task comparison. It does not
 mean the frozen v0.0 release snapshot itself needs to be rerun.
 
-The next baseline milestone is to complete the remaining current 54-task
-no-tools and live HTTP tool-agent reruns while keeping the frozen v0.0 release
-snapshot separate from current-public evidence. Any later v1 task or scoring
-change must make those rows stale again until rerun. Public baselines must be
-paired with protected private-holdout operation before leaderboard claims.
+The current public baseline milestone is restored for the 54-task fingerprint:
+five no-tools model families and one live HTTP tool-agent family are repeated
+and current. Any later v1 task or scoring change must make those rows stale
+again until rerun. Public baselines must be paired with protected
+private-holdout operation before leaderboard claims.

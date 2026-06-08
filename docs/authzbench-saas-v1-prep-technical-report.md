@@ -14,8 +14,9 @@ The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
 46-task release baselines and 49-task v1-prep model/tool-agent baselines are
 stale for current 54-task comparison. Repeated 54-task Qwen, Claude Haiku 4.5,
 Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families are now
-current, but they do not provide live HTTP tool-agent, private-holdout, or
-leaderboard evidence required for stable comparison.
+current, and the repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent family
+is current. These rows remain public-split diagnostic evidence only; they do
+not provide private-holdout, hosted-leaderboard, or v1 release evidence.
 
 ## Current Public Split
 
@@ -51,8 +52,7 @@ twelve task-level adapter failures, including inner Kiro command failures and
 outputs without a usable submission object. Those failures become valid
 empty-findings fallbacks that remain in the scored denominator; the first run
 also has two outer runner failures that become invalid submissions. The pair is
-public-split evidence only and does not close the live HTTP tool-agent rerun
-gate.
+public-split evidence only.
 
 Two current 54-task `claude-haiku-4.5` no-tools runs provide a second repeated
 model family. Both pass 32 tasks, prove 4 and 5 of 21 vulnerable replays, keep
@@ -92,21 +92,34 @@ adapter, command, parser, runner, or invalid-submission failures. This closes
 the current no-tools rerun gate while remaining public-split diagnostic
 evidence rather than private-holdout, leaderboard, or v1-release evidence.
 
+Two current 54-task `claude-sonnet-4.6` live HTTP tool-agent runs provide
+repeated diagnostic evidence for the current live-target harness. Both pass 33
+tasks, prove 15 of 21 vulnerable replays, keep boundary reasoning at `0.0000`,
+fully pass no vulnerable task, and report zero secure-control false positives.
+Both runs retain 54 model-tool plan artifacts, 54 tool-probe artifacts, 54/54
+target-request correlation, zero planner failures, zero planner parse errors,
+zero invalid submissions, and zero fallback probes. This closes the current
+public live HTTP rerun gate while remaining public-split diagnostic evidence
+rather than private-holdout, hosted-leaderboard, or v1-release evidence.
+
 The preceding 49-task public split has repeated diagnostic Kiro baselines: five
 no-tools model families and one live HTTP `claude-sonnet-4.6` tool-agent family.
 The tool-agent pair preserves one model-plan artifact and one tool-probe artifact
 per task, correlates target-side requests for all 49 tasks in both runs, and
 reports zero planner or parser failures. The 54-task expansion makes these rows
-stale; Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6
-no-tools families have been rerun, while the live HTTP tool-agent pair remains
-pending.
+stale; Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, Claude Opus 4.6
+no-tools families, and the live HTTP tool-agent family have been rerun on the
+active fingerprint.
 
-A completed boundary-reasoning calibration study audits the current public
-tool-agent pair. The study finds that exploit-proven vulnerable submissions
-often describe the right authorization concept in prose or alternate keys, but
-do not preserve the oracle-compatible boundary vocabulary required by
-`score-policy-v1`. The current zero boundary-reasoning result is therefore a
-valid score-contract result, not a reason to retroactively relax scoring.
+A completed boundary-reasoning calibration study audits the historical 49-task
+public tool-agent pair. The study finds that exploit-proven vulnerable
+submissions often describe the right authorization concept in prose or alternate
+keys, but do not preserve the oracle-compatible boundary vocabulary required by
+`score-policy-v1`. The current 54-task tool-agent pair repeats the same
+high-exploit-proof, zero-boundary-credit pattern, but the calibration study
+itself remains scoped to the 49-task checkpoint. The zero boundary-reasoning
+result is therefore a valid score-contract result, not a reason to
+retroactively relax scoring.
 
 The current registry separates:
 
@@ -136,11 +149,11 @@ when describing current `main`.
 
 ## Next Work
 
-Before a v1 release, complete the remaining 54-task no-tools and live HTTP
-tool-agent reruns, expand task volume, implement rotating private holdouts,
+Before a v1 release, expand task volume, implement rotating private holdouts,
 complete independent external review, build hosted or fully containerized
-submission infrastructure, and keep chart/table captions explicit about current
-versus stale evidence. The v1/community submission governance is now defined in
+submission infrastructure, collect repeated private no-tools and tool-agent
+evidence, and keep chart/table captions explicit about current versus stale
+evidence. The v1/community submission governance is now defined in
 `docs/v1-community-submission-governance.md`, but the hosted/containerized
 runner and real external reviews are not yet complete. After any v1 task or
 scoring change, rerun current public no-tools and tool-agent baselines before

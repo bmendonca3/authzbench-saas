@@ -37,7 +37,7 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Public apps | 6 synthetic SaaS targets |
 | Public tasks | 54 total: 21 vulnerable, 33 secure controls |
 | Control mix | 19 denial controls, 14 authorized-allow controls |
-| Baselines | Current 54-task scripted sanity plus repeated Qwen, Haiku, Sonnet, GLM, and Opus no-tools evidence; 49-task model/tool-agent evidence remains stale pending tool-agent rerun; v0.0 46-task snapshot preserved |
+| Baselines | Current 54-task scripted sanity plus repeated Qwen, Haiku, Sonnet, GLM, Opus no-tools evidence and repeated live HTTP Sonnet tool-agent evidence; 49-task model/tool-agent evidence remains stale; v0.0 46-task snapshot preserved |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
@@ -72,9 +72,13 @@ part of the contamination-control design, not a missing file.
 - current repeated 54-task Claude Opus 4.6 no-tools baseline with complete task
   artifacts, zero adapter, runner, or invalid-submission failures, zero control
   false positives, and runner-emitted finding totals; public-split evidence only
+- current repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+  one plan/probe artifact per task, 54/54 target-request correlation in both
+  runs, zero planner or parser failures, and zero secure-control false reports;
+  public-split evidence only
 - stale 49-task repeated Kiro no-tools model-family baselines and one repeated
   Kiro live HTTP tool-agent baseline with 49/49 target-request correlation in
-  both historical tool-agent runs; rerun is required before current comparison
+  both historical tool-agent runs; not current comparison evidence
 - protected private-holdout summaries published only as redacted aggregate
   evidence
 - leaderboard-submission schema, source-summary validation, benchmark
@@ -272,12 +276,17 @@ Important interpretation:
   after the 54-task support-reassignment expansion and cannot support current
   comparison until rerun.
 - The current 54-task split has repeated no-tools Qwen, Claude Haiku 4.5,
-  Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families. The live HTTP
-  tool-agent pair still requires 54-task reruns before the stable
-  public-evidence gate can pass.
-- The current boundary-calibration study shows that public tool-agent runs often
-  prove vulnerable backend behavior while failing to submit the exact
-  oracle-compatible boundary vocabulary required for full vulnerable-task credit.
+  Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families, plus a repeated live
+  HTTP Claude Sonnet 4.6 tool-agent family with 54/54 target-request
+  correlation in both runs. This closes the stable v1-prep public-evidence
+  gate only; private holdouts, hosted execution, external review, and v1-scale
+  claims remain open.
+- The boundary-calibration study covers the historical 49-task public
+  tool-agent pair and shows that public tool-agent runs often prove vulnerable
+  backend behavior while failing to submit the exact oracle-compatible boundary
+  vocabulary required for full vulnerable-task credit. The current 54-task
+  live tool-agent pair repeats the same exploit-proof versus boundary-credit
+  pattern, but it is not a new calibration study.
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and

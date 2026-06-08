@@ -47,7 +47,8 @@ As of the current `main` checkpoint:
   (`qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, `glm-5`, and
   `claude-opus-4.6`).
 - Remaining 54-task no-tools public family: none.
-- Current 54-task live HTTP tool-agent family: not yet restored.
+- Current 54-task live HTTP tool-agent family: restored with two public
+  `claude-sonnet-4.6` runs and 54/54 target-request correlation in both runs.
 - External review lanes: open.
 - Active plus shadow/candidate private holdout packs: open.
 - Release-grade hosted/containerized private execution: open.
@@ -154,7 +155,7 @@ The goal is complete only when all of these are true:
     was unavailable locally, while exact-head CI covered the Docker-backed public
     validation path.
 
-- [ ] Restore stable public model/tool-agent evidence for the active 54-task
+- [x] Restore stable public model/tool-agent evidence for the active 54-task
   fingerprint.
   Current evidence:
   - the 54-task scripted sanity baseline is current and passes 54/54;
@@ -162,14 +163,21 @@ The goal is complete only when all of these are true:
     `qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, `glm-5`, and
     `claude-opus-4.6`, each with two runner-emitted summaries, matching active
     fingerprints, retained task bundles, and public-safe failure diagnostics;
+  - the repeated 54-task live HTTP `claude-sonnet-4.6` tool-agent family has
+    two runner-emitted summaries, one model-tool plan artifact and one
+    tool-probe artifact per task, 54/54 target-request correlation in both
+    runs, zero planner failures, zero planner parse errors, zero invalid
+    submissions, and zero secure-control false reports;
   - `python3 scripts/validate_baseline_registry.py` currently reports
-    `current_public_model_family_count: 5` and
-    `has_current_public_tool_agent_baseline: false`;
-  - the readiness gate is therefore correctly red even though the historical
-    49-task checkpoint above was green.
-  Completion is tracked by `Refresh model evidence after the 54-task
-  promotion` below; do not mark this item complete until its repeated model and
-  live HTTP acceptance evidence is satisfied.
+    `current_public_model_family_count: 6`,
+    `has_current_public_tool_agent_baseline: true`, `v0_baseline_ready: true`,
+    and no unmet baseline requirements;
+  - `python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view`
+    reports the stable v1-prep public-evidence gate as passed while the true v1
+    gates remain red.
+  This item closes only the active public v1-prep evidence gate. It does not
+  close external review, private holdout, hosted/containerized execution,
+  private repeated evidence, task-scale, paper, or release-candidate gates.
 
 ### External Review Gate
 
@@ -444,7 +452,7 @@ The goal is complete only when all of these are true:
     `origin/main` and `origin/v1-task-expansion`, and exact-head GitHub Actions
     run `27089985522` passed.
 
-- [ ] Refresh model evidence after the 54-task promotion.
+- [x] Refresh model evidence after the 54-task promotion.
   Acceptance evidence:
   - [x] Finding-total telemetry is unambiguous and aligned across public and
     protected runners.
@@ -545,15 +553,37 @@ The goal is complete only when all of these are true:
     reasoning at `0.0`, fully pass zero vulnerable tasks, report zero false
     positives, and retain 54 submissions, scores, transcripts, contexts, and
     model-output artifacts. Focused baseline-registry and v0-release-validator
-    tests pass with `current_public_model_family_count: 5`, and
-    `python3 scripts/validate_baseline_registry.py` reports only the missing
-    current public tool-agent baseline as unmet.
-  - the live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task runs
-    with one plan/probe artifact per task and full target-request correlation;
-  - registry rows use the live fingerprint and are no longer marked stale;
-  - variance, calibration, charts, status, report, and paper wording are
-    refreshed from the 54-task artifacts;
-  - no 49-task result is presented as a current comparison.
+    tests passed at the Opus-only checkpoint with all five no-tools families
+    present, so the live HTTP tool-agent pair was the only then-open
+    public-evidence item.
+  - [x] The live HTTP `claude-sonnet-4.6` tool-agent family has two 54-task
+    runs with one plan/probe artifact per task and full target-request
+    correlation.
+    Evidence: run `20260608T013814005961Z-9c4b9351` and run
+    `20260608T014504973620Z-1a19b7fb` each pass 33 tasks, prove 15 of 21
+    vulnerable replays, keep boundary reasoning at `0.0`, fully pass zero
+    vulnerable tasks, report zero secure-control false positives, submit 20
+    findings, retain 54 model-tool plan artifacts, retain 54 tool-probe
+    artifacts, correlate target requests for 54/54 tasks, and report zero
+    planner failures, zero planner parse errors, zero invalid submissions, and
+    zero fallback probes. Run 1 executes 123 tool probes; run 2 executes 126.
+  - [x] Registry rows use the live fingerprint and are no longer marked stale.
+    Evidence: `python3 scripts/validate_baseline_registry.py` reports
+    `baseline_count: 30`, `current_public_model_family_count: 6`,
+    `repeated_model_baseline_count: 6`,
+    `has_current_public_tool_agent_baseline: true`,
+    `v0_baseline_ready: true`, `v0_release_snapshot_ready: true`, and no unmet
+    requirements or warnings.
+  - [x] Variance, charts, status, report, and paper wording are refreshed from
+    the 54-task artifacts.
+    Evidence: tracked docs and generated artifacts now describe the current
+    54-task public evidence as five no-tools families plus one live HTTP
+    tool-agent family; generated charts and paper/shared tables are regenerated
+    from the registry.
+  - [x] No 49-task result is presented as a current comparison.
+    Evidence: the 49-task rows remain labeled historical/stale, while the
+    current public tool-agent row is `current_public_split` with
+    `requires_rerun_before_current_comparison: false`.
 
 - [ ] Expand task families without weakening v0.0 claim boundaries.
   Candidate areas:

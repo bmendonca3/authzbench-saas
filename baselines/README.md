@@ -68,6 +68,15 @@ well-labeled before any release claim is made.
   zero-failure task artifacts. They are current public-split evidence for a
   fifth model family, not private-holdout, leaderboard-eligible, or v1 release
   evidence.
+- `kiro-live-tool-agent-sonnet-current-public-54-run1-summary.json` and
+  `kiro-live-tool-agent-sonnet-current-public-54-run2-summary.json`: current
+  repeated 54-task public split live HTTP tool-agent runs using
+  `claude-sonnet-4.6` through the Kiro adapter. Both write one model-tool plan
+  artifact and one tool-probe artifact per task, correlate target-side requests
+  for all 54 tasks, report zero planner failures, zero parser failures, zero
+  invalid submissions, and zero secure-control false reports. They are current
+  public-split evidence for the live HTTP tool-agent family, not private-holdout,
+  leaderboard-eligible, hosted, or v1 release evidence.
 - `scripted-baseline-public-49-summary.json`: historical v1-prep 49-task
   deterministic harness sanity-check baseline, now stale for current
   comparison.
