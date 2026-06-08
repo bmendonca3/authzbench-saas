@@ -4,7 +4,9 @@ Prerequisites:
 
 - Python 3.10 or newer
 - Git
-- Docker and Docker Compose for live HTTP targets or container smoke checks
+- Docker and Docker Compose for live HTTP targets or container smoke checks;
+  container smoke also needs registry access if its runner image is not already
+  present locally
 
 Install from the repository root:
 
