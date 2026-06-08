@@ -51,11 +51,46 @@ REQUIRED_REVIEW_PACKET_ARTIFACTS = (
 
 EXTERNAL_REVIEW_EVIDENCE_PATH = "docs/reviews/external-review-summary.json"
 HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
+PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
 ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
 
 HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION = "submission-runner-smoke-blocker-v1"
+PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION = "private-holdout-operation-blocker-v1"
+PRIVATE_OPERATION_BLOCKED_GATES = (
+    "rotating_private_holdouts_implemented",
+    "repeated_private_tool_agent_evidence",
+    "repeated_private_no_tools_evidence",
+    "v1_task_scale",
+)
+PRIVATE_OPERATION_SENSITIVE_KEYS = {
+    "capture",
+    "captures",
+    "credential",
+    "credentials",
+    "debug_output",
+    "oracle",
+    "private_route",
+    "private_seed",
+    "raw_output",
+    "raw_outputs",
+    "raw_result",
+    "raw_results",
+    "route",
+    "seed",
+    "task_id",
+    "task_ids",
+}
+PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS = (
+    "tasks_private/holdout",
+    "docs/reviews/panel-logs",
+    "raw private",
+    "raw output",
+    "private route",
+    "private seed",
+)
+PRIVATE_OPERATION_ABSOLUTE_PATH_RE = re.compile(r"(^|[\s:])/(Users|home|private/var|var/folders|tmp)(/|$)")
 VALID_REVIEW_DECISIONS = {"accepted", "rejected", "unresolved"}
 VALID_REVIEW_DISPOSITIONS = {"findings", "no_findings"}
 VALID_REVIEW_STATUSES = {"pending", "complete"}
@@ -63,11 +98,13 @@ VALID_REVIEW_STATUSES = {"pending", "complete"}
 POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
     HOSTED_EXECUTION_EVIDENCE_PATH,
+    PRIVATE_OPERATION_BLOCKER_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
+    PRIVATE_OPERATION_BLOCKER_PATH,
     "docs/goal.md",
 }
 
@@ -384,6 +421,111 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         "active_pack_fingerprint_sha256": active_pack_fingerprint_sha256,
         "unmet": unmet,
     }
+
+
+def _concrete_string_list(data: dict[str, Any], field: str, unmet: list[str]) -> list[str]:
+    value = data.get(field)
+    if (
+        not isinstance(value, list)
+        or not value
+        or any(not _nonempty_string(item) or _placeholder(item) for item in value)
+    ):
+        unmet.append(f"{field} must list concrete non-placeholder values")
+        return []
+    return [str(item).strip() for item in value]
+
+
+def _validate_private_operation_blocker(
+    root: Path = ROOT,
+    *,
+    expected_public_task_count: int | None = None,
+) -> dict[str, Any]:
+    unmet: list[str] = []
+    data = _json_object(root / PRIVATE_OPERATION_BLOCKER_PATH, unmet)
+    if data is None:
+        return {"passed": False, "path": PRIVATE_OPERATION_BLOCKER_PATH, "unmet": unmet}
+    unmet.extend(_private_operation_public_safety_errors(data))
+
+    if data.get("schema_version") != PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION:
+        unmet.append(f"schema_version must be {PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION}")
+    if data.get("evidence_status") != "blocked":
+        unmet.append("evidence_status must be blocked")
+
+    blocked_gates = _concrete_string_list(data, "blocked_gates", unmet)
+    missing_gates = [gate for gate in PRIVATE_OPERATION_BLOCKED_GATES if gate not in blocked_gates]
+    if missing_gates:
+        unmet.append(f"blocked_gates must include: {', '.join(missing_gates)}")
+
+    for field in ("blocker", "public_claim_boundary"):
+        if not _nonempty_string(data.get(field)) or _placeholder(data.get(field)):
+            unmet.append(f"{field} is required")
+    _concrete_string_list(data, "next_actions", unmet)
+    _concrete_string_list(data, "required_private_inputs", unmet)
+
+    current_public_view = data.get("current_public_view")
+    if not isinstance(current_public_view, dict):
+        unmet.append("current_public_view is required")
+        current_public_view = {}
+    else:
+        public_task_count = current_public_view.get("public_task_count")
+        if expected_public_task_count is not None and public_task_count != expected_public_task_count:
+            unmet.append(
+                f"current_public_view.public_task_count must match current public count {expected_public_task_count}"
+            )
+        if current_public_view.get("validated_private_holdout_task_count") != 0:
+            unmet.append("current_public_view.validated_private_holdout_task_count must be 0")
+        if current_public_view.get("total_task_count") != public_task_count:
+            unmet.append("current_public_view.total_task_count must equal public_task_count in public view")
+        if current_public_view.get("required_total_task_count") != 100:
+            unmet.append("current_public_view.required_total_task_count must be 100")
+
+    readiness = data.get("last_verified_public_readiness")
+    if not isinstance(readiness, dict):
+        unmet.append("last_verified_public_readiness is required")
+        readiness = {}
+    if not _sha(readiness.get("commit_sha")):
+        unmet.append("last_verified_public_readiness.commit_sha must be a 40-character lowercase Git SHA")
+    if not (
+        _nonempty_string(readiness.get("ci_run_url"))
+        and str(readiness.get("ci_run_url")).startswith("https://github.com/bmendonca3/authzbench-saas/actions/runs/")
+    ):
+        unmet.append("last_verified_public_readiness.ci_run_url must reference an AuthZBench-SaaS Actions run")
+    if readiness.get("v1_ready") is not False:
+        unmet.append("last_verified_public_readiness.v1_ready must be false")
+    if not isinstance(readiness.get("passed_gate_count"), int):
+        unmet.append("last_verified_public_readiness.passed_gate_count must be an integer")
+    if not isinstance(readiness.get("unmet_gate_count"), int):
+        unmet.append("last_verified_public_readiness.unmet_gate_count must be an integer")
+
+    unmet.append(
+        "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist"
+    )
+    return {
+        "passed": False,
+        "path": PRIVATE_OPERATION_BLOCKER_PATH,
+        "unmet": list(dict.fromkeys(unmet)),
+    }
+
+
+def _private_operation_public_safety_errors(value: Any, path: str = "$") -> list[str]:
+    errors: list[str] = []
+    if isinstance(value, dict):
+        for raw_key, child in value.items():
+            key = str(raw_key)
+            child_path = f"{path}.{key}"
+            if key.lower() in PRIVATE_OPERATION_SENSITIVE_KEYS:
+                errors.append(f"{child_path}: sensitive key is not allowed in public blocker evidence")
+            errors.extend(_private_operation_public_safety_errors(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            errors.extend(_private_operation_public_safety_errors(child, f"{path}[{index}]"))
+    elif isinstance(value, str):
+        lower = value.lower()
+        if any(marker in lower for marker in PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS):
+            errors.append(f"{path}: sensitive path marker is not allowed in public blocker evidence")
+        if PRIVATE_OPERATION_ABSOLUTE_PATH_RE.search(value):
+            errors.append(f"{path}: absolute path is not allowed in public blocker evidence")
+    return errors
 
 
 def _source_summaries_have_private_denial(
@@ -821,6 +963,9 @@ def validate_v1_readiness(
     public_task_count = int(manifest_result["manifest_count"])
     vulnerable_task_count = int(manifest_result["vulnerable_count"])
     if public_view:
+        private_operation_blocker = _validate_private_operation_blocker(
+            expected_public_task_count=public_task_count,
+        )
         rotation_result = {
             "passed": False,
             "pack_ids": [],
@@ -828,10 +973,14 @@ def validate_v1_readiness(
             "validated_private_task_count": 0,
             "active_pack_id": None,
             "active_pack_fingerprint_sha256": None,
-            "unmet": ["private holdout rotation is intentionally not inspected in public view"],
+            "unmet": [
+                "private holdout rotation is intentionally not inspected in public view",
+                *private_operation_blocker["unmet"],
+            ],
         }
     else:
         rotation_result = _validate_private_rotation_metadata()
+        private_operation_blocker = None
     validated_private_holdout_task_count = int(rotation_result["validated_private_task_count"])
     active_private_pack_fingerprint = rotation_result.get("active_pack_fingerprint_sha256")
     if not isinstance(active_private_pack_fingerprint, str):
@@ -944,6 +1093,11 @@ def validate_v1_readiness(
         bool(rotation_result["passed"]),
         [
             ROTATION_METADATA_PATH,
+            *(
+                [private_operation_blocker["path"]]
+                if isinstance(private_operation_blocker, dict)
+                else []
+            ),
             f"private_holdout_pack_ids={rotation_result['pack_ids']}",
             f"private_holdout_pack_roles={rotation_result['roles']}",
             f"active_private_pack_id={rotation_result['active_pack_id']}",

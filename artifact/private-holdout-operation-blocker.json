@@ -1,0 +1,42 @@
+{
+  "schema_version": "private-holdout-operation-blocker-v1",
+  "evidence_status": "blocked",
+  "public_claim_boundary": "This file is structured blocker evidence only. It does not publish private holdout manifests and does not claim v1 private operation.",
+  "blocked_gates": [
+    "rotating_private_holdouts_implemented",
+    "repeated_private_tool_agent_evidence",
+    "repeated_private_no_tools_evidence",
+    "v1_task_scale"
+  ],
+  "blocker": "v1/community readiness requires maintainer-only active and shadow/candidate private packs, active-pack fingerprinting, repeated private tool-agent and no-tools rows, and at least 100 validated total tasks. Those private inputs are intentionally absent from the public checkout.",
+  "next_actions": [
+    "stage one active private pack and one shadow or candidate private pack under the ignored maintainer-only holdout root",
+    "validate each pack with the holdout-pack validator and rotation metadata validation",
+    "compute the active pack fingerprint from canonical private manifests",
+    "run repeated private no-tools and tool-agent baselines under protected execution",
+    "publish only redacted source summaries and eligible leaderboard rows tied to the active pack fingerprint",
+    "expand public and protected private task count to at least 100 validated tasks before v1/community release"
+  ],
+  "required_private_inputs": [
+    "active private pack",
+    "shadow or candidate private pack",
+    "rotation metadata",
+    "active private pack fingerprint",
+    "release-candidate private no-tools source summaries and leaderboard row",
+    "release-candidate private tool-agent source summaries and leaderboard row with target-request coverage",
+    "validated total task count of at least 100"
+  ],
+  "current_public_view": {
+    "public_task_count": 54,
+    "validated_private_holdout_task_count": 0,
+    "total_task_count": 54,
+    "required_total_task_count": 100
+  },
+  "last_verified_public_readiness": {
+    "commit_sha": "fe01da0bd363e696d8bd22eeeb9879719e8db2c5",
+    "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27116339779",
+    "v1_ready": false,
+    "passed_gate_count": 3,
+    "unmet_gate_count": 8
+  }
+}

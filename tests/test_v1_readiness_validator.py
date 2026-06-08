@@ -16,6 +16,7 @@ from scripts.validate_v1_readiness import (
     _validate_external_review_evidence,
     _validate_hosted_execution_evidence,
     _validate_paper_readiness_evidence,
+    _validate_private_operation_blocker,
     _validate_private_rotation_metadata,
     _working_tree_clean,
     validate_v1_readiness,
@@ -91,11 +92,171 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         gates = {gate["id"]: gate for gate in result["gates"]}
         rotation_gate = gates["rotating_private_holdouts_implemented"]
         self.assertFalse(rotation_gate["passed"])
-        self.assertEqual(
+        self.assertIn(
+            "private holdout rotation is intentionally not inspected in public view",
             rotation_gate["unmet"],
-            ["private holdout rotation is intentionally not inspected in public view"],
         )
+        self.assertIn(
+            "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist",
+            rotation_gate["unmet"],
+        )
+        self.assertIn("artifact/private-holdout-operation-blocker.json", rotation_gate["evidence"])
         self.assertIn("validated_private_holdout_task_count=0", rotation_gate["evidence"])
+
+    def test_private_operation_blocker_is_structured_but_not_complete(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "private-holdout-operation-blocker.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "private-holdout-operation-blocker-v1",
+                        "evidence_status": "blocked",
+                        "public_claim_boundary": "Structured blocker evidence only; not v1 private operation.",
+                        "blocked_gates": [
+                            "rotating_private_holdouts_implemented",
+                            "repeated_private_tool_agent_evidence",
+                            "repeated_private_no_tools_evidence",
+                            "v1_task_scale",
+                        ],
+                        "blocker": "Needs active and shadow private packs plus repeated private rows.",
+                        "next_actions": ["Stage private packs under the maintainer-only holdout root."],
+                        "required_private_inputs": ["active private pack", "shadow private pack"],
+                        "current_public_view": {
+                            "public_task_count": 54,
+                            "validated_private_holdout_task_count": 0,
+                            "total_task_count": 54,
+                            "required_total_task_count": 100,
+                        },
+                        "last_verified_public_readiness": {
+                            "commit_sha": "a" * 40,
+                            "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
+                            "v1_ready": False,
+                            "passed_gate_count": 3,
+                            "unmet_gate_count": 8,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+
+        self.assertFalse(result["passed"])
+        self.assertEqual(
+            result["unmet"],
+            [
+                "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist",
+            ],
+        )
+
+    def test_private_operation_blocker_requires_concrete_public_safe_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "private-holdout-operation-blocker.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "wrong",
+                        "evidence_status": "passed",
+                        "public_claim_boundary": "TBD",
+                        "blocked_gates": ["rotating_private_holdouts_implemented"],
+                        "blocker": "TBD",
+                        "next_actions": ["TBD"],
+                        "required_private_inputs": ["TBD"],
+                        "current_public_view": {
+                            "public_task_count": 49,
+                            "validated_private_holdout_task_count": 1,
+                            "total_task_count": 50,
+                            "required_total_task_count": 99,
+                        },
+                        "last_verified_public_readiness": {
+                            "commit_sha": "not-a-sha",
+                            "ci_run_url": "https://example.com/run",
+                            "v1_ready": True,
+                            "passed_gate_count": "3",
+                            "unmet_gate_count": "8",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("schema_version must be private-holdout-operation-blocker-v1", result["unmet"])
+        self.assertIn("evidence_status must be blocked", result["unmet"])
+        self.assertIn(
+            "blocked_gates must include: repeated_private_tool_agent_evidence, repeated_private_no_tools_evidence, v1_task_scale",
+            result["unmet"],
+        )
+        self.assertIn("blocker is required", result["unmet"])
+        self.assertIn("public_claim_boundary is required", result["unmet"])
+        self.assertIn("next_actions must list concrete non-placeholder values", result["unmet"])
+        self.assertIn("required_private_inputs must list concrete non-placeholder values", result["unmet"])
+        self.assertIn("current_public_view.public_task_count must match current public count 54", result["unmet"])
+        self.assertIn("current_public_view.validated_private_holdout_task_count must be 0", result["unmet"])
+        self.assertIn("current_public_view.total_task_count must equal public_task_count in public view", result["unmet"])
+        self.assertIn("current_public_view.required_total_task_count must be 100", result["unmet"])
+        self.assertIn(
+            "last_verified_public_readiness.commit_sha must be a 40-character lowercase Git SHA",
+            result["unmet"],
+        )
+        self.assertIn(
+            "last_verified_public_readiness.ci_run_url must reference an AuthZBench-SaaS Actions run",
+            result["unmet"],
+        )
+        self.assertIn("last_verified_public_readiness.v1_ready must be false", result["unmet"])
+
+    def test_private_operation_blocker_rejects_sensitive_public_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "private-holdout-operation-blocker.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "private-holdout-operation-blocker-v1",
+                        "evidence_status": "blocked",
+                        "public_claim_boundary": "Structured blocker evidence only; not v1 private operation.",
+                        "blocked_gates": [
+                            "rotating_private_holdouts_implemented",
+                            "repeated_private_tool_agent_evidence",
+                            "repeated_private_no_tools_evidence",
+                            "v1_task_scale",
+                        ],
+                        "blocker": "Needs active and shadow private packs plus repeated private rows.",
+                        "next_actions": ["Stage private packs without publishing private internals."],
+                        "required_private_inputs": ["active private pack", "shadow private pack"],
+                        "current_public_view": {
+                            "public_task_count": 54,
+                            "validated_private_holdout_task_count": 0,
+                            "total_task_count": 54,
+                            "required_total_task_count": 100,
+                        },
+                        "last_verified_public_readiness": {
+                            "commit_sha": "a" * 40,
+                            "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
+                            "v1_ready": False,
+                            "passed_gate_count": 3,
+                            "unmet_gate_count": 8,
+                        },
+                        "task_id": "private-task-001",
+                        "debug_note": "raw output stored under /Users/example/tasks_private/holdout/active",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("sensitive key is not allowed" in item for item in result["unmet"]), result)
+        self.assertTrue(any("sensitive path marker is not allowed" in item for item in result["unmet"]), result)
+        self.assertTrue(any("absolute path is not allowed" in item for item in result["unmet"]), result)
 
     def test_expected_output_fixture_mismatch_fails_even_when_incomplete_is_allowed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

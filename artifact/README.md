@@ -86,6 +86,20 @@ what remains missing; it is not a passing hosted/containerized submission smoke
 and the v1 readiness validator keeps the release gate red until it is replaced
 by passed `execution_scope: release_candidate` evidence.
 
+## Private Operation Blocker
+
+The tracked `artifact/private-holdout-operation-blocker.json` file is
+public-safe blocker evidence for the private-operation cluster. It documents the
+remaining need for active and shadow/candidate private packs, active-pack
+fingerprinting, repeated private tool-agent and no-tools rows, and at least 100
+validated total tasks.
+
+This file intentionally does not contain private manifests, private task IDs,
+private routes, private seeds, raw private outputs, captures, credentials, or
+local absolute paths. It cannot satisfy the private-holdout, private-evidence,
+or scale gates; it only makes the current blocker explicit and reproducible in
+the public readiness fixture.
+
 ## Claim Boundary
 
 This artifact packet supports public reproduction of the inspectable public
