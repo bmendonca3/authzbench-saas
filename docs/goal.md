@@ -73,6 +73,10 @@ Recent repo-side hardening checkpoints:
   release-candidate smoke template cannot pass after only changing the schema
   version: angle bracket placeholders are rejected in runner/version,
   private-pack version, isolation model, and command fields;
+- the private-rotation metadata hardening checkpoint requires declared pack
+  versions, declared SHA-256 fingerprints matching computed pack fingerprints,
+  compatibility policy, retirement triggers, and rerun policy before an active
+  plus shadow/candidate rotation can pass;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
@@ -225,13 +229,15 @@ private operation, protected execution, scale, and release-candidate evidence.
     public-safe starting shape and every placeholder is replaced in the ignored
     maintainer-only rotation metadata file before validation;
   - `tasks_private/holdout/rotation-metadata.json` declares pack IDs, roles,
-    safe relative paths, and exactly one active pack;
+    safe relative paths, concrete version labels, declared fingerprints matching
+    computed pack fingerprints, and exactly one active pack;
   - each pack validates with the holdout-pack validator and is
     leaderboard-suitable;
   - pack IDs, task IDs, paths, and fingerprints are unique where required;
   - active-pack fingerprint is recorded consistently in release evidence,
     hosted-smoke evidence, source summaries, and eligible leaderboard rows;
-  - compatibility, retirement triggers, and rerun policy are documented.
+  - compatibility, retirement triggers, and rerun policy are documented and
+    validator-enforced.
   Current blocker evidence:
   - `artifact/private-holdout-operation-blocker.json` is public-safe structured
     blocker evidence only;
@@ -559,10 +565,12 @@ private operation, protected execution, scale, and release-candidate evidence.
   - active and shadow/candidate labels are documented without exposing task
     bodies publicly;
   - each pack has manifest validation evidence;
-  - the active pack fingerprint is computed from canonical private manifest
-    content plus manifest paths and is recorded in release, hosted-smoke, source
+  - declared pack fingerprints match fingerprints computed from canonical
+    private manifest content plus manifest paths;
+  - the active pack fingerprint is recorded in release, hosted-smoke, source
     summary, and eligible leaderboard evidence;
-  - compatibility, retirement trigger, and rerun policy are documented.
+  - compatibility, retirement trigger, and rerun policy are documented and
+    validator-enforced.
 
 - [x] Add validation for private-pack rotation metadata.
   Acceptance evidence:
