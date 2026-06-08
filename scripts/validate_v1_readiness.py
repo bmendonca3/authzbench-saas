@@ -603,6 +603,8 @@ def _validate_private_operation_blocker(
     if not isinstance(readiness, dict):
         unmet.append("last_verified_public_readiness is required")
         readiness = {}
+    if readiness.get("reference_scope") != "prior_public_checkpoint":
+        unmet.append("last_verified_public_readiness.reference_scope must be prior_public_checkpoint")
     if not _sha(readiness.get("commit_sha")):
         unmet.append("last_verified_public_readiness.commit_sha must be a 40-character lowercase Git SHA")
     readiness_run_id_from_url = _authzbench_actions_run_id_from_url(readiness.get("ci_run_url"))
@@ -1340,6 +1342,8 @@ def _validate_hosted_execution_evidence(
         if not isinstance(rehearsal, dict):
             unmet.append("last_verified_public_rehearsal is required")
             rehearsal = {}
+        if rehearsal.get("reference_scope") != "prior_public_checkpoint":
+            unmet.append("last_verified_public_rehearsal.reference_scope must be prior_public_checkpoint")
         if rehearsal.get("execution_scope") != "rehearsal":
             unmet.append("last_verified_public_rehearsal.execution_scope must be rehearsal")
         if rehearsal.get("result") != "passed":
