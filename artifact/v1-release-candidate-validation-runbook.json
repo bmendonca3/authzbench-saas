@@ -25,6 +25,7 @@
     "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs"
   ],
   "required_evidence_fields": [
+    "schema_version",
     "commit_sha",
     "benchmark_source_sha",
     "private_pack_fingerprint_sha256",
