@@ -291,8 +291,8 @@ private operation, protected execution, scale, and release-candidate evidence.
     submission validation, and v1 readiness validation pass;
   - release evidence records schema version, commit SHA, benchmark source SHA,
     active private-pack fingerprint, exact command outcomes, exact-head CI run
-    URL, exact-head CI head SHA matching the release commit, and privacy-scan
-    results;
+    ID, exact-head CI run URL, exact-head CI head SHA matching the release
+    commit, and privacy-scan results;
   - `artifact/v1-release-candidate-validation.template.json` is used only as a
     public-safe starting shape, copied outside tracked Git, and replaced with
     real values before strict validation;

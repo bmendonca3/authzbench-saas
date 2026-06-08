@@ -6,6 +6,7 @@
   "benchmark_source_sha": "<ancestor-benchmark-source-sha>",
   "private_pack_fingerprint_sha256": "<active-private-pack-fingerprint-sha256>",
   "exact_head_ci_conclusion": "<success-or-passed>",
+  "exact_head_ci_run_id": "<github-actions-run-id>",
   "exact_head_ci_head_sha": "<release-commit-sha-from-actions-run>",
   "exact_head_ci_url": "<github-actions-run-url>",
   "pushed_commit": "<true-after-push>",
