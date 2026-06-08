@@ -219,6 +219,16 @@ def _template_placeholder(value: Any) -> bool:
     return re.search(r"<[^<>]+>", value.strip()) is not None
 
 
+def _unresolved_placeholder(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    return _placeholder(text) or _template_placeholder(text) or re.search(
+        r"(?i)(^|[^A-Za-z0-9_])(tbd|todo|pending|unknown|n/a)([^A-Za-z0-9_]|$)",
+        text,
+    ) is not None
+
+
 def _safe_existing_relative_path(root: Path, value: str) -> bool:
     path = Path(value)
     if path.is_absolute() or ".." in path.parts:
@@ -1079,7 +1089,7 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
                 unmet.append(f"{name}: pending review requires requested_artifacts")
                 requested_artifacts = []
             for artifact in requested_artifacts:
-                if _placeholder(artifact):
+                if _unresolved_placeholder(artifact):
                     unmet.append(f"{name}: requested_artifacts cannot contain placeholders")
                     continue
                 artifact_path = Path(str(artifact))
@@ -1092,12 +1102,12 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
             if (
                 not isinstance(requested_questions, list)
                 or not requested_questions
-                or any(not _nonempty_string(item) or _placeholder(item) for item in requested_questions)
+                or any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in requested_questions)
             ):
                 unmet.append(f"{name}: pending review requires requested_questions")
-            if not _nonempty_string(lane.get("blocker")) or _placeholder(lane.get("blocker")):
+            if not _nonempty_string(lane.get("blocker")) or _unresolved_placeholder(lane.get("blocker")):
                 unmet.append(f"{name}: pending review requires blocker")
-            if not _nonempty_string(lane.get("next_action")) or _placeholder(lane.get("next_action")):
+            if not _nonempty_string(lane.get("next_action")) or _unresolved_placeholder(lane.get("next_action")):
                 unmet.append(f"{name}: pending review requires next_action")
             unmet.append(f"{name}: independent review is pending")
             continue
@@ -1108,15 +1118,15 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
         else:
             if review_date > date.today():
                 unmet.append(f"{name}: review_date cannot be in the future")
-        if not _nonempty_string(lane.get("reviewer_role_scope")) or _placeholder(lane.get("reviewer_role_scope")):
+        if not _nonempty_string(lane.get("reviewer_role_scope")) or _unresolved_placeholder(lane.get("reviewer_role_scope")):
             unmet.append(f"{name}: reviewer_role_scope is required")
-        if not _nonempty_string(lane.get("claim_boundary_impact")) or _placeholder(lane.get("claim_boundary_impact")):
+        if not _nonempty_string(lane.get("claim_boundary_impact")) or _unresolved_placeholder(lane.get("claim_boundary_impact")):
             unmet.append(f"{name}: claim_boundary_impact is required")
         questions_reviewed = lane.get("questions_reviewed")
         if (
             not isinstance(questions_reviewed, list)
             or not questions_reviewed
-            or any(not _nonempty_string(item) or _placeholder(item) for item in questions_reviewed)
+            or any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in questions_reviewed)
         ):
             unmet.append(f"{name}: questions_reviewed must list concrete bounded questions")
         artifacts = lane.get("artifacts_reviewed")
@@ -1124,7 +1134,7 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
             unmet.append(f"{name}: artifacts_reviewed must be a non-empty string list")
             artifacts = []
         for artifact in artifacts:
-            if _placeholder(artifact):
+            if _unresolved_placeholder(artifact):
                 unmet.append(f"{name}: artifacts_reviewed cannot contain placeholders")
                 continue
             artifact_path = Path(str(artifact))
@@ -1148,11 +1158,11 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
             if not isinstance(decision, dict):
                 unmet.append(f"{name}: decisions[{decision_index}] must be an object")
                 continue
-            if not _nonempty_string(decision.get("finding")) or _placeholder(decision.get("finding")):
+            if not _nonempty_string(decision.get("finding")) or _unresolved_placeholder(decision.get("finding")):
                 unmet.append(f"{name}: decisions[{decision_index}].finding is required")
             if decision.get("decision") not in VALID_REVIEW_DECISIONS:
                 unmet.append(f"{name}: decisions[{decision_index}].decision must be accepted, rejected, or unresolved")
-            if not _nonempty_string(decision.get("summary")) or _placeholder(decision.get("summary")):
+            if not _nonempty_string(decision.get("summary")) or _unresolved_placeholder(decision.get("summary")):
                 unmet.append(f"{name}: decisions[{decision_index}].summary is required")
             if decision.get("decision") in {"accepted", "unresolved"} and not _valid_follow_up_ref(
                 root,
@@ -1161,7 +1171,7 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
                 unmet.append(
                     f"{name}: accepted or unresolved decisions require a real follow_up_artifact path or existing commit"
                 )
-            if not _nonempty_string(decision.get("claim_boundary_impact")) or _placeholder(
+            if not _nonempty_string(decision.get("claim_boundary_impact")) or _unresolved_placeholder(
                 decision.get("claim_boundary_impact")
             ):
                 unmet.append(f"{name}: decisions[{decision_index}].claim_boundary_impact is required")
