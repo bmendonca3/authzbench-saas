@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "f069fbd9eada73bcfd3f750a51528af084d2a5fb",
+  "benchmark_source_sha": "29c65c6237ca4f3d61f682f5127f8d8285429d11",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "v1_prep_preflight",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "The paper preflight source is pinned to the verified GLM-5 54-task evidence promotion, which also retains the verified Qwen, Haiku, and Sonnet current-family evidence and the earlier finding-telemetry hardening. Exact-head CI run 27110116654 reached the public-view readiness fixture and failed because the fixture still described the pre-GLM source pin; this descendant refreshes that source pin and fixture. Exact-head CI for this provenance descendant remains required. Final paper readiness remains incomplete.",
+    "ci_refresh_note": "The paper preflight source is pinned to the verified GLM-5 54-task evidence promotion and privacy-safe review summary, which also retain the verified Qwen, Haiku, and Sonnet current-family evidence and the earlier finding-telemetry hardening. Exact-head CI run 27110116654 reached the public-view readiness fixture and failed because the fixture still described the pre-GLM source pin; this descendant refreshes that source pin and fixture. Exact-head CI for this provenance descendant remains required. Final paper readiness remains incomplete.",
     "prior_exact_head_ci": {
       "commit_sha": "f069fbd9eada73bcfd3f750a51528af084d2a5fb",
       "conclusion": "failure",
