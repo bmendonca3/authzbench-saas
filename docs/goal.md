@@ -54,9 +54,9 @@ As of the current `main` checkpoint:
 - Release-grade hosted/containerized private execution: open.
 - Correct claim: stable `v1-prep`, not `v1-ready`.
 
-### Next Immediate Checkpoint
+### Completed Public Checkpoint
 
-The next public checkpoint is complete when:
+The current public checkpoint is complete because:
 
 - all five no-tools public model families have two runner-emitted 54-task
   summaries: `qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`,
@@ -189,6 +189,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   Required evidence:
   - one active private pack and one shadow or candidate private pack exist in
     the maintainer-only holdout area;
+  - `artifact/private-holdout-rotation-metadata.template.json` is used only as a
+    public-safe starting shape and every placeholder is replaced in the ignored
+    maintainer-only rotation metadata file before validation;
   - `tasks_private/holdout/rotation-metadata.json` declares pack IDs, roles,
     safe relative paths, and exactly one active pack;
   - each pack validates with the holdout-pack validator and is
@@ -200,6 +203,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   Current blocker evidence:
   - `artifact/private-holdout-operation-blocker.json` is public-safe structured
     blocker evidence only;
+  - `artifact/private-holdout-rotation-metadata.template.json` defines the
+    required active plus shadow/candidate metadata shape and is rejected by the
+    validator if copied unchanged as evidence;
   - rotation metadata validation exists, but public checkout has no active or
     shadow/candidate packs and must not pretend otherwise.
 
@@ -482,6 +488,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   Acceptance evidence:
   - structured rotation metadata exists at
     `tasks_private/holdout/rotation-metadata.json`;
+  - the tracked rotation metadata template has not been counted as private
+    holdout evidence; placeholders are replaced by real maintainer-only pack
+    facts;
   - pack directories are versioned by role and pack label;
   - active and shadow/candidate labels are documented without exposing task
     bodies publicly;

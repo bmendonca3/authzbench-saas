@@ -54,6 +54,7 @@ EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH = "docs/reviews/external-review-response.
 HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
 HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
+PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
 ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
@@ -116,6 +117,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     HOSTED_EXECUTION_EVIDENCE_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
+    PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
 }
@@ -125,6 +127,7 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
+    PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     "docs/goal.md",
 }
@@ -326,6 +329,8 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
             "active_pack_fingerprint_sha256": None,
             "unmet": unmet,
         }
+    if data.get("template_only") is True or data.get("schema_version") == "private-holdout-rotation-metadata-template-v1":
+        unmet.append("private holdout rotation metadata template is not private holdout evidence")
 
     packs = data.get("packs")
     if not isinstance(packs, list) or not packs:

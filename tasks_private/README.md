@@ -14,6 +14,13 @@ The public repository should contain:
 - optional schema documentation or redacted templates
 - no private task JSON
 
+Use `artifact/private-holdout-rotation-metadata.template.json` as the public
+starting shape for maintainer-only rotation metadata. Copy it to the ignored
+`tasks_private/holdout/rotation-metadata.json` path only in a private checkout,
+replace every placeholder with real active plus shadow/candidate pack metadata,
+and run strict v1 readiness validation there. The unchanged template is not
+private holdout evidence.
+
 Before serious public leaderboard claims, maintain a separate private holdout
 pack with 20-30 private tasks, with 24 preferred for balanced coverage, as
 described in `docs/holdout-and-contamination.md`.

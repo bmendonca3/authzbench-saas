@@ -13,6 +13,7 @@ from scripts.containerized_submission_smoke import REQUIRED_CONTAINER_CONSTRAINT
 from scripts.validate_v1_readiness import (
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
+    PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
     REQUIRED_REVIEW_LANES,
@@ -1171,6 +1172,41 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn("active-pack: private pack manifests do not validate", result["unmet"])
         self.assertIn("rotation metadata must declare one shadow or candidate private pack", result["unmet"])
+
+    def test_rotation_metadata_template_lists_active_and_shadow_shape(self) -> None:
+        template = json.loads(Path(PRIVATE_ROTATION_METADATA_TEMPLATE_PATH).read_text(encoding="utf-8"))
+
+        self.assertTrue(template["template_only"])
+        roles = {pack["role"] for pack in template["packs"]}
+        self.assertIn("active", roles)
+        self.assertIn("<shadow-or-candidate>", roles)
+        for pack in template["packs"]:
+            self.assertIn("id", pack)
+            self.assertIn("path", pack)
+            self.assertIn("version", pack)
+            self.assertIn("fingerprint_sha256", pack)
+            self.assertTrue(str(pack["path"]).startswith("tasks_private/holdout/"))
+        self.assertIn("compatibility", template)
+        self.assertIn("retirement_triggers", template)
+        self.assertIn("rerun_policy", template)
+
+    def test_rotation_metadata_template_is_not_private_holdout_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            metadata = root / "tasks_private" / "holdout" / "rotation-metadata.json"
+            metadata.parent.mkdir(parents=True)
+            metadata.write_text(
+                Path(PRIVATE_ROTATION_METADATA_TEMPLATE_PATH).read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+
+            result = _validate_private_rotation_metadata(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "private holdout rotation metadata template is not private holdout evidence",
+            result["unmet"],
+        )
 
     def test_rotation_metadata_rejects_duplicate_pack_paths(self) -> None:
         manifest = {
