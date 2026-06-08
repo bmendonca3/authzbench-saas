@@ -118,6 +118,7 @@ REQUIRED_RELEASE_VALIDATION_COMMANDS = (
     "python3 scripts/validate_public.py --include-scripted-baseline",
     "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
     "python3 scripts/validate_v0_release.py",
+    "python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json",
     "python3 scripts/validate_baseline_registry.py",
     "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary",
     "python3 scripts/generate_paper_tables.py",
