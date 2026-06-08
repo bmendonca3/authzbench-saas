@@ -69,6 +69,10 @@ Recent repo-side hardening checkpoints:
   template cannot pass after only changing the schema version: angle bracket
   placeholders are rejected in release SHA, benchmark source SHA, private-pack
   fingerprint, and per-command evidence fields;
+- the hosted-smoke placeholder hardening checkpoint ensures a copied
+  release-candidate smoke template cannot pass after only changing the schema
+  version: angle bracket placeholders are rejected in runner/version,
+  private-pack version, isolation model, and command fields;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
@@ -513,7 +517,8 @@ private operation, protected execution, scale, and release-candidate evidence.
     private manifest reads by submitter code, pass/fail result, and cleanup;
   - the tracked smoke template has not been counted as hosted execution
     evidence; placeholders are replaced by real maintainer-platform or
-    containerized release-candidate facts;
+    containerized release-candidate facts, and copied angle bracket placeholders
+    are rejected even if the schema version is changed;
   - smoke evidence `benchmark_source_sha` matches the benchmark source SHA in
     the external release evidence;
   - smoke evidence `private_pack_fingerprint_sha256` matches the active private

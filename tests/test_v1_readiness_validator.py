@@ -838,6 +838,55 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(result["passed"])
         self.assertEqual(result["unmet"], [])
 
+    def test_hosted_smoke_rejects_template_placeholders_after_schema_change(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-v1",
+                        "execution_scope": "release_candidate",
+                        "result": "passed",
+                        "benchmark_source_sha": "a" * 40,
+                        "runner_image_or_hosted_version": "<maintainer-runner-image-digest-or-hosted-runner-version>",
+                        "private_pack_version": "<active-private-pack-version-from-rotation-metadata>",
+                        "private_pack_fingerprint_sha256": "b" * 64,
+                        "isolation_model": "<hosted-or-containerized-private-evaluation-isolation-model>",
+                        "command": "<release-candidate smoke command or hosted-runner invocation>",
+                        "submitter_private_manifest_read_denied": True,
+                        "scorer_controlled_private_eval": True,
+                        "cleanup_completed": True,
+                        "privacy_scan_passed": True,
+                        "public_output_private_artifacts_included": False,
+                        "container_constraints": [
+                            "network=none",
+                            "read_only_rootfs",
+                            "cap_drop=ALL",
+                            "no_new_privileges",
+                            "non_root_user",
+                            "resource_limits",
+                            "rendered_context_mount_only",
+                            "output_file_size_limit",
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(
+                root,
+                benchmark_source_sha="a" * 40,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn("runner_image_or_hosted_version must not be a template placeholder", result["unmet"])
+        self.assertIn("private_pack_version must not be a template placeholder", result["unmet"])
+        self.assertIn("isolation_model must not be a template placeholder", result["unmet"])
+        self.assertIn("command must not be a template placeholder", result["unmet"])
+
     def test_hosted_smoke_blocked_evidence_is_structured_but_not_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
