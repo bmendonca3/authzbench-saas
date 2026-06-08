@@ -1,6 +1,6 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from four current v1-prep 54-task public
+Status: descriptive two-run analysis from five current v1-prep 54-task public
 no-tools families, the historical 49-task public no-tools and live HTTP tool-agent
 artifacts, and the frozen v0.0 46-task release snapshot. These ranges are
 diagnostic public-split evidence only, not confidence intervals, private holdout
@@ -20,6 +20,7 @@ This file uses only tracked public-safe summaries named by
 | `kiro-claude-haiku-4-5-current-public-54` | `no-tools-model` | `claude-haiku-4.5` | `kiro-claude-haiku-4.5-current-public-54-run1-summary.json`; `kiro-claude-haiku-4.5-current-public-54-run2-summary.json` |
 | `kiro-claude-sonnet-4-6-current-public-54` | `no-tools-model` | `claude-sonnet-4.6` | `kiro-claude-sonnet-4.6-current-public-54-run1-summary.json`; `kiro-claude-sonnet-4.6-current-public-54-run2-summary.json` |
 | `kiro-glm-5-current-public-54` | `no-tools-model` | `glm-5` | `kiro-glm-5-current-public-54-run1-summary.json`; `kiro-glm-5-current-public-54-run2-summary.json` |
+| `kiro-claude-opus-4-6-current-public-54` | `no-tools-model` | `claude-opus-4.6` | `kiro-claude-opus-4.6-current-public-54-run1-summary.json`; `kiro-claude-opus-4.6-current-public-54-run2-summary.json` |
 
 ### Historical v1-prep 49-task public split
 
@@ -52,6 +53,7 @@ This file uses only tracked public-safe summaries named by
 | Claude Haiku no-tools | 0.6815-0.6954 | 0.1905-0.2381 | 0-0 | 0.0000-0.0000 | 0.0303-0.0303 | 0.0000-0.0000 | n/a |
 | Claude Sonnet no-tools | 0.8204-0.8343 | 0.6667-0.7143 | 0-0 | 0.0000-0.0000 | 0.0303-0.0303 | 0.0000-0.0000 | n/a |
 | GLM no-tools | 0.6389-0.6583 | 0.0952-0.1429 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0185 | n/a |
+| Claude Opus no-tools | 0.8444-0.8444 | 0.6667-0.6667 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0000 | n/a |
 
 The two current Qwen runs also preserve adapter diagnostics. Run 1 records
 seven task-level adapter failures: two inner Kiro command failures and five
@@ -109,8 +111,9 @@ absent for that task and producing one invalid submission; run 2 has complete
 
 ## Interpretation
 
-The current 54-task Qwen, Claude Haiku, Claude Sonnet, and GLM pairs establish
-repeated evidence for four no-tools model families on the active fingerprint.
+The current 54-task Qwen, Claude Haiku, Claude Sonnet, GLM, and Claude Opus
+pairs establish repeated evidence for five no-tools model families on the
+active fingerprint.
 The Qwen pair passes
 32-33 of 54 tasks,
 proves 0-3 of 21 vulnerable replays, keeps vulnerable boundary reasoning at
@@ -129,8 +132,8 @@ vulnerable tasks. Both runs have a `0.0303` false-positive and false-report rate
 because each reports the same authorized-allow control as vulnerable; the
 authorized-allow pass rate is `0.9286`. The absence of adapter, runner, and
 invalid-submission failures makes this a cleaner model-output comparison than
-the current Qwen pair, but four families remain insufficient for stable
-cross-model conclusions.
+the current Qwen pair, but these public-only families remain insufficient for
+private-holdout or leaderboard conclusions.
 
 The Claude Sonnet pair passes 32 of 54 tasks in both runs, proves 14-15 of 21
 vulnerable replays, keeps boundary reasoning at `0.0000`, and fully passes zero
@@ -144,6 +147,14 @@ reports no secure-control findings. It adds breadth to the current no-tools
 comparison but also carries one run-level adapter/runner caveat: run 1 has one
 invalid vulnerable-task submission from an outer runner failure. The pair
 therefore remains diagnostic evidence rather than a polished ranking row.
+
+The Claude Opus pair passes 33 tasks in both runs, proves 14 of 21 vulnerable
+replays, keeps boundary reasoning at `0.0000`, fully passes zero vulnerable
+tasks, and reports no secure-control findings. Both runs have complete
+submission, score, transcript, context, and model-output artifacts with zero
+adapter, runner, command, parse, or invalid-submission failures. This closes
+the current 54-task no-tools family rerun gate while still leaving the live HTTP
+tool-agent rerun and private/hosted evidence gates open.
 
 Qwen run 1's `vulnerable_safety_pass_rate` is `0.9524` because its outer
 runner failure on one vulnerable task produced an invalid submission with no
@@ -180,9 +191,9 @@ full passes because boundary reasoning remains at `0.0000`.
 ## Reproduction Notes
 
 The table was recomputed by reading `baselines/baseline-registry.json`,
-selecting the current 54-task Qwen row, the stale 49-task model and tool-agent
-baselines, and the five non-scripted entries in the `v0.0` release snapshot,
-then loading each entry's `run_artifacts` from `baselines/`.
+selecting the five current 54-task no-tools model rows, the stale 49-task model
+and tool-agent baselines, and the five non-scripted entries in the `v0.0`
+release snapshot, then loading each entry's `run_artifacts` from `baselines/`.
 
 Useful checks:
 
@@ -217,7 +228,7 @@ print(len([
 PY
 ```
 
-Expected counts: `4` current 54-task model families, `6` stale 49-task
+Expected counts: `5` current 54-task model families, `6` stale 49-task
 model/agent families, and `5` frozen v0.0 repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,

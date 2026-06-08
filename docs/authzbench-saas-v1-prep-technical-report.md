@@ -13,9 +13,9 @@ community-scale benchmark.
 The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
 46-task release baselines and 49-task v1-prep model/tool-agent baselines are
 stale for current 54-task comparison. Repeated 54-task Qwen, Claude Haiku 4.5,
-Claude Sonnet 4.6, and GLM-5 no-tools families are now current, but they do not
-provide the full model-family or tool-agent coverage required for stable
-comparison.
+Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families are now
+current, but they do not provide live HTTP tool-agent, private-holdout, or
+leaderboard evidence required for stable comparison.
 
 ## Current Public Split
 
@@ -51,8 +51,8 @@ twelve task-level adapter failures, including inner Kiro command failures and
 outputs without a usable submission object. Those failures become valid
 empty-findings fallbacks that remain in the scored denominator; the first run
 also has two outer runner failures that become invalid submissions. The pair is
-public-split evidence only and does not close the remaining no-tools or live
-HTTP tool-agent rerun gates.
+public-split evidence only and does not close the live HTTP tool-agent rerun
+gate.
 
 Two current 54-task `claude-haiku-4.5` no-tools runs provide a second repeated
 model family. Both pass 32 tasks, prove 4 and 5 of 21 vulnerable replays, keep
@@ -84,13 +84,22 @@ diagnostics; run 2 has complete 54-task artifacts and zero invalid submissions.
 This broadens current no-tools evidence, but remains public-split diagnostic
 evidence rather than a stable ranking.
 
+Two current 54-task `claude-opus-4.6` no-tools runs provide a fifth repeated
+model family. Both pass 33 tasks, prove 14 of 21 vulnerable replays, keep
+boundary reasoning at `0.0000`, fully pass no vulnerable task, and report zero
+control false positives. Both retain complete 54-task artifacts with zero
+adapter, command, parser, runner, or invalid-submission failures. This closes
+the current no-tools rerun gate while remaining public-split diagnostic
+evidence rather than private-holdout, leaderboard, or v1-release evidence.
+
 The preceding 49-task public split has repeated diagnostic Kiro baselines: five
 no-tools model families and one live HTTP `claude-sonnet-4.6` tool-agent family.
 The tool-agent pair preserves one model-plan artifact and one tool-probe artifact
 per task, correlates target-side requests for all 49 tasks in both runs, and
 reports zero planner or parser failures. The 54-task expansion makes these rows
-stale; only the Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, and GLM-5 no-tools
-families have been rerun so far.
+stale; Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6
+no-tools families have been rerun, while the live HTTP tool-agent pair remains
+pending.
 
 A completed boundary-reasoning calibration study audits the current public
 tool-agent pair. The study finds that exploit-proven vulnerable submissions

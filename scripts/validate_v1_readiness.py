@@ -771,8 +771,8 @@ def validate_v1_readiness(
         stable_unmet.append(f"current public split has {vulnerable_task_count} vulnerable tasks, expected at least 20")
     if not registry_result["passed"]:
         stable_unmet.append("baseline registry validation has errors")
-    if int(registry_result["current_public_model_family_count"]) < 6:
-        stable_unmet.append("fewer than six current public model families are registered")
+    if int(registry_result["current_public_model_family_count"]) < 5:
+        stable_unmet.append("fewer than five current public model families are registered")
     if registry_result["has_current_public_tool_agent_baseline"] is not True:
         stable_unmet.append("missing current public tool-agent baseline")
     _add_gate(

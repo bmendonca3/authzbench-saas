@@ -104,6 +104,13 @@ artifacts; run 2 has complete 54-task artifacts and zero invalid submissions.
 These runs broaden the current no-tools evidence surface, but remain
 public-split diagnostic evidence rather than a stable ranking.
 
+Two Claude Opus 4.6 no-tools runs provide a fifth current family. Both pass 33
+tasks, prove 14 of 21 vulnerable replays, retain zero boundary-reasoning credit
+and zero vulnerable full passes, report no control false positives, and preserve
+complete 54-task artifacts with zero adapter, runner, or invalid-submission
+failures. This closes the current no-tools rerun gate while remaining
+public-split diagnostic evidence.
+
 For the preceding 49-task v1-prep public split, repeated live HTTP tool-agent
 runs sharpen this observation. The tool-agent proved vulnerable backend
 behavior for 15 of 20 vulnerable public tasks in each run and preserves
@@ -115,9 +122,9 @@ interpret the result as a structured boundary-vocabulary failure under the
 current scoring contract, not as evidence that exploit replay was absent. The
 support-reassignment expansion raises the live public split to 54 tasks; those
 49-task model and tool-agent rows are now stale. The Qwen3 Coder Next, Claude
-Haiku 4.5, Claude Sonnet 4.6, and GLM-5 no-tools families have been rerun on
-the 54-task split, while the remaining Claude Opus 4.6 no-tools family and live
-HTTP tool-agent pair remain pending.
+Haiku 4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families have
+been rerun on the 54-task split, while the live HTTP tool-agent pair remains
+pending.
 
 \begin{table*}[t]
 \centering
@@ -203,8 +210,9 @@ validation path.
 The \releaseversion{} public split is small, synthetic, and inspectable. The
 baseline table is frozen v0.0 diagnostic public-split evidence, not a final
 ordering of model quality. The current 54-task Qwen, Claude Haiku 4.5, Claude
-Sonnet 4.6, and GLM-5 pairs cover only four no-tools families and are
-insufficient for a stable current model comparison.
+Sonnet 4.6, GLM-5, and Claude Opus 4.6 pairs cover five no-tools families, but
+they remain public-only evidence and are insufficient for private-holdout or
+leaderboard comparison.
 Governance for
 future v1/community submission states, run bundles, private-pack rotation, and
 hosted or containerized evaluation is specified in the repository, but hosted

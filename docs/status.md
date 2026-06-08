@@ -27,11 +27,12 @@ Current main / v1-prep split:
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current 54-task deterministic scripted sanity baseline
-- four current repeated 54-task no-tools model-family baselines: Qwen with
-  model-output failure diagnostics, and Claude Haiku 4.5 with complete
-  zero-failure task artifacts, and Claude Sonnet 4.6 with complete zero-failure
-  task artifacts and runner-emitted finding totals, and GLM-5 with retained
-  runner-failure diagnostics in one run and a clean retry run
+- five current repeated 54-task no-tools model-family baselines: Qwen with
+  model-output failure diagnostics, Claude Haiku 4.5 with complete zero-failure
+  task artifacts, Claude Sonnet 4.6 with complete zero-failure task artifacts
+  and runner-emitted finding totals, GLM-5 with retained runner-failure
+  diagnostics in one run and a clean retry run, and Claude Opus 4.6 with
+  complete zero-failure task artifacts
 - five repeated 49-task no-tools Kiro model-family baselines, now stale
 - one repeated 49-task live HTTP Kiro tool-agent baseline, now stale
 
@@ -49,12 +50,13 @@ baseline registry as historical evidence.
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current deterministic scripted harness check
-- four current repeated 54-task no-tools Kiro model baselines:
+- five current repeated 54-task no-tools Kiro model baselines:
   `qwen3-coder-next`, with explicit model-output failure diagnostics, and
   `claude-haiku-4.5`, with zero adapter, runner, and invalid-submission failures;
   and `claude-sonnet-4.6`, with zero adapter, runner, and invalid-submission
   failures; and `glm-5`, with one retained outer runner failure in run 1 and
-  complete zero-failure artifacts in run 2; public-split evidence only
+  complete zero-failure artifacts in run 2; and `claude-opus-4.6`, with
+  complete zero-failure artifacts in both runs; public-split evidence only
 - five stale 49-task no-tools Kiro model-family baselines
 - one stale 49-task live HTTP Kiro tool-agent baseline with 49/49 target-request
   correlation in both historical runs
@@ -79,6 +81,7 @@ baseline registry as historical evidence.
 - repeated current 54-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated current 54-task no-tools Kiro `claude-sonnet-4.6` model baseline
 - repeated current 54-task no-tools Kiro `glm-5` model baseline
+- repeated current 54-task no-tools Kiro `claude-opus-4.6` model baseline
 - repeated stale 49-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated stale 49-task no-tools Kiro `claude-sonnet-4.6` model baseline
 - repeated stale 49-task no-tools Kiro `qwen3-coder-next` model baseline
@@ -142,7 +145,8 @@ python3 scripts/validate_public.py --include-scripted-baseline --include-contain
 The frozen v0.0 release snapshot remains baseline-ready. The five repeated
 no-tools model families plus one repeated live HTTP tool-agent family for the
 49-task public split are now stale after the 54-task expansion. The live
-public-split model/tool-agent baseline bar is open until reruns complete. Strict
+public-split no-tools model bar has been restored for five families; the live
+HTTP tool-agent baseline bar remains open until reruns complete. Strict
 `python3 scripts/validate_v0_release.py` should be rerun in a maintainer
 checkout before future tags because release evidence and CI references are
 time-sensitive.
