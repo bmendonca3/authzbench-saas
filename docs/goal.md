@@ -80,8 +80,10 @@ that a reviewer can inspect without relying on maintainer memory.
 Use this framing for the upcoming external platform discussion:
 
 - What we have: a released v0.0 SaaS authorization benchmark, a stable
-  54-task v1-prep public split, deterministic scoring, current no-tools
-  public baselines in progress, and clear public/private claim boundaries.
+  54-task v1-prep public split, deterministic scoring, complete current
+  54-task public no-tools baselines for five model families, repeated current
+  live HTTP tool-agent public evidence, and clear public/private claim
+  boundaries.
 - What we want feedback on: benchmark framing, hosted submission workflow,
   leaderboard eligibility, run-bundle evidence, private holdout rotation, and
   how hosted evaluation infrastructure could support secure SaaS-authz evaluation.
