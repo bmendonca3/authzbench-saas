@@ -34,9 +34,9 @@
   },
   "last_verified_public_readiness": {
     "reference_scope": "prior_public_checkpoint",
-    "commit_sha": "5fbe63d1c73031814582a2494e2cef44f1981279",
-    "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27147339042",
-    "ci_run_id": "27147339042",
+    "commit_sha": "5d76970ecefb0c4959834e4f7acd81e8b51e11d9",
+    "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27151712736",
+    "ci_run_id": "27151712736",
     "workflow": "Validate AuthZBench-SaaS",
     "v1_ready": false,
     "passed_gate_count": 3,
