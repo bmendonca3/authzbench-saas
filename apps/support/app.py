@@ -315,9 +315,23 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(encoded)
 
+    def _actor_name(self, state: dict[str, Any]) -> str | None:
+        actor = self.headers.get("x-authzbench-actor")
+        if actor:
+            return actor
+        authorization = self.headers.get("authorization") or ""
+        prefix = "Bearer "
+        if not authorization.startswith(prefix):
+            return None
+        token = authorization[len(prefix):].strip()
+        for actor_name, actor_data in state["actors"].items():
+            if actor_data["token"] == token:
+                return actor_name
+        return None
+
     def _log_and_send(self, method: str, response: dict[str, Any]) -> None:
         seed = self.headers.get("x-authzbench-seed") or "dev"
-        actor = self.headers.get("x-authzbench-actor")
+        actor = self._actor_name(self._state())
         log_request(
             "support",
             seed=seed,
@@ -333,8 +347,9 @@ class Handler(BaseHTTPRequestHandler):
         self._send(response)
 
     def _handle_and_send(self, method: str, body: dict[str, Any] | None = None) -> None:
-        actor = self.headers.get("x-authzbench-actor")
-        response = handle(self._state(), method, self.path, actor, body)
+        state = self._state()
+        actor = self._actor_name(state)
+        response = handle(state, method, self.path, actor, body)
         self._log_and_send(method, response)
 
     def _read_json_body(self) -> dict[str, Any] | None:
