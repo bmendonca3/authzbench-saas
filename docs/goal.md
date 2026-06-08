@@ -81,6 +81,11 @@ Recent repo-side hardening checkpoints:
   release-candidate paper evidence to include the exact table, chart, and
   `latexmk` verification commands plus concrete LaTeX result and verification
   date, rather than relying on booleans alone;
+- the public blocker evidence refresh checkpoint records the hosted-smoke
+  blocker and private-operation blocker as prior-public-checkpoint evidence
+  tied to GitHub Actions run `27147339042` on merge commit
+  `5fbe63d1c73031814582a2494e2cef44f1981279`, while keeping both gates red
+  because release-candidate private inputs are still absent;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
