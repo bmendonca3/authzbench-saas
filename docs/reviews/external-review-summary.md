@@ -15,7 +15,8 @@ When a reviewer returns a lane, use
 `docs/reviews/external-review-response.template.json` only as a starting shape
 for the completed response. Replace every placeholder with real reviewer
 evidence before updating `external-review-summary.json`; the validator rejects
-the unchanged template.
+the unchanged template and unresolved placeholder text embedded inside otherwise
+non-empty pending or completed lane fields.
 
 Current blocker: the repository can prepare and validate the review packet, but
 it cannot honestly mark review complete without independent AppSec,
@@ -86,7 +87,10 @@ review date, reviewer role/scope, bounded questions reviewed, artifacts
 reviewed, findings or explicit no-finding disposition, and
 accepted/rejected/unresolved decisions. Packet-ready and structured
 pending-review evidence are useful, but neither is external review. The
-response template is also not review evidence.
+response template is also not review evidence. Pending and completed lane
+fields must use concrete wording; unresolved markers such as `TBD`, `TODO`,
+`pending`, `unknown`, `n/a`, and `<placeholder>` are rejected even when embedded
+inside longer strings.
 
 ## Finding Log Template
 

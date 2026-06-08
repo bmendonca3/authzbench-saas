@@ -103,6 +103,7 @@
   "public_safety_rules": [
     "Do not include private reviewer identity unless permission is granted.",
     "Do not include private holdout manifests, task IDs, private routes, private seeds, raw private outputs, captures, credentials, or local absolute paths.",
+    "Replace embedded unresolved markers such as TBD, TODO, pending, unknown, n/a, and angle-bracket placeholders with concrete review facts.",
     "Accepted and unresolved decisions must point to a tracked follow-up artifact or existing commit SHA."
   ]
 }
