@@ -30,15 +30,19 @@ Evidence already in place:
 
 - 6 synthetic SaaS apps
 - frozen v0.0 release snapshot with 46 public tasks
-- current v1-prep public split with 49 public tasks
+- current v1-prep public split with 54 public tasks
 - a maintainer-only private holdout pack with count-level redacted evidence
 - deterministic backend replay scoring
 - target-side request logging for live HTTP runs
 - five repeated frozen v0.0 public model/agent baseline families
 - one repeated frozen v0.0 public live HTTP tool-agent family
-- one current 49-task scripted harness sanity baseline
-- five repeated current 49-task public no-tools model-family baselines
-- one repeated current 49-task public live HTTP tool-agent baseline
+- one current 54-task scripted harness sanity baseline
+- five repeated current 54-task public no-tools model-family baselines
+- one repeated current 54-task public live HTTP tool-agent baseline
+- five repeated historical 49-task public no-tools model-family baselines,
+  now stale for current comparison
+- one repeated historical 49-task public live HTTP tool-agent baseline, now
+  stale for current comparison
 - protected private-holdout aggregate evidence
 - one source-backed private no-tools leaderboard-candidate row with
   runner-emitted fingerprint provenance
@@ -147,8 +151,9 @@ Next improvements:
 - [ ] Add repeated private tool-agent evidence.
 - [ ] Add at least one third-party or independently operated agent run.
 - [x] Add statistical variance analysis for repeated baselines.
-- [x] Add boundary-reasoning calibration for the current public tool-agent
-      evidence.
+- [x] Add boundary-reasoning calibration for the historical 49-task public
+      tool-agent evidence and carry the interpretation forward only as
+      claim-boundary guidance for the current 54-task pair.
 - [ ] Re-run key baselines after any task/scoring change before comparing
       scores.
 

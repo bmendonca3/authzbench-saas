@@ -196,7 +196,8 @@ expands, but they must be rerun before any current comparison or future release
 claim. Current public Kiro summaries must include distinct `run_artifacts`
 before they count as repeated evidence. As of the 54-task v1-prep public split,
 the deterministic harness check and five repeated no-tools families are current.
-The live HTTP tool-agent comparison gate remains open pending 54-task reruns.
+The live HTTP tool-agent comparison gate is closed: the current 54-task public
+split now includes repeated live HTTP tool-agent reruns.
 
 For every model baseline, preserve:
 
