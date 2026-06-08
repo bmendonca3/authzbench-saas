@@ -58,9 +58,11 @@ PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-met
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
 ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
+SCALE_ROADMAP_PATH = "artifact/v1-task-scale-roadmap.json"
 
 HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION = "submission-runner-smoke-blocker-v1"
 PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION = "private-holdout-operation-blocker-v1"
+SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 PRIVATE_OPERATION_BLOCKED_GATES = (
     "rotating_private_holdouts_implemented",
     "repeated_private_tool_agent_evidence",
@@ -120,6 +122,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
+    SCALE_ROADMAP_PATH,
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
@@ -129,6 +132,7 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PRIVATE_OPERATION_BLOCKER_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
+    SCALE_ROADMAP_PATH,
     "docs/goal.md",
 }
 
@@ -552,6 +556,138 @@ def _private_operation_public_safety_errors(value: Any, path: str = "$") -> list
         if PRIVATE_OPERATION_ABSOLUTE_PATH_RE.search(value):
             errors.append(f"{path}: absolute path is not allowed in public blocker evidence")
     return errors
+
+
+def _validate_v1_scale_roadmap(
+    root: Path = ROOT,
+    *,
+    public_task_count: int,
+    validated_private_holdout_task_count: int,
+) -> dict[str, Any]:
+    unmet: list[str] = []
+    data = _json_object(root / SCALE_ROADMAP_PATH, unmet)
+    current_total = public_task_count + validated_private_holdout_task_count
+    if data is None:
+        return {
+            "passed": False,
+            "path": SCALE_ROADMAP_PATH,
+            "planned_additional_task_count": 0,
+            "planned_total_task_count": current_total,
+            "unmet": unmet,
+        }
+    unmet.extend(_private_operation_public_safety_errors(data))
+    if data.get("schema_version") != SCALE_ROADMAP_SCHEMA_VERSION:
+        unmet.append(f"schema_version must be {SCALE_ROADMAP_SCHEMA_VERSION}")
+    if data.get("evidence_status") != "planning":
+        unmet.append("evidence_status must be planning")
+    if not _nonempty_string(data.get("public_claim_boundary")) or _placeholder(
+        data.get("public_claim_boundary")
+    ):
+        unmet.append("public_claim_boundary is required")
+    elif "not" not in str(data.get("public_claim_boundary")).lower():
+        unmet.append("public_claim_boundary must state that the roadmap is not task-scale evidence")
+    if data.get("current_public_task_count") != public_task_count:
+        unmet.append(f"current_public_task_count must match current public count {public_task_count}")
+    if data.get("current_validated_private_holdout_task_count") != validated_private_holdout_task_count:
+        unmet.append(
+            "current_validated_private_holdout_task_count must match validated private holdout task count"
+        )
+    if data.get("required_total_task_count") != 100:
+        unmet.append("required_total_task_count must be 100")
+    expected_additional = max(0, 100 - current_total)
+    if data.get("minimum_additional_tasks_required") != expected_additional:
+        unmet.append(
+            f"minimum_additional_tasks_required must be {expected_additional} for the current task counts"
+        )
+
+    acceptance = data.get("acceptance_criteria")
+    required_acceptance = {
+        "manifest validation",
+        "scorer fixtures or replay evidence",
+        "denial controls",
+        "authorized-allow controls",
+        "stale-baseline marking",
+        "chart and table regeneration",
+    }
+    if not isinstance(acceptance, list):
+        unmet.append("acceptance_criteria must be a list")
+        acceptance = []
+    acceptance_set = {str(item) for item in acceptance if isinstance(item, str)}
+    missing_acceptance = sorted(required_acceptance - acceptance_set)
+    if missing_acceptance:
+        unmet.append("acceptance_criteria missing: " + ", ".join(missing_acceptance))
+
+    waves = data.get("planned_waves")
+    if not isinstance(waves, list) or not waves:
+        unmet.append("planned_waves must be a non-empty list")
+        waves = []
+    planned_additional = 0
+    splits: set[str] = set()
+    seen_wave_ids: set[str] = set()
+    for index, wave in enumerate(waves, start=1):
+        if not isinstance(wave, dict):
+            unmet.append(f"planned_waves[{index}] must be an object")
+            continue
+        wave_id = wave.get("id")
+        if not _nonempty_string(wave_id) or _placeholder(wave_id):
+            unmet.append(f"planned_waves[{index}].id must be a concrete string")
+            wave_id = f"<missing-{index}>"
+        if str(wave_id) in seen_wave_ids:
+            unmet.append(f"duplicate planned wave id: {wave_id}")
+        seen_wave_ids.add(str(wave_id))
+        split = wave.get("split")
+        if split not in {
+            "public",
+            "private-holdout-active",
+            "private-holdout-shadow",
+            "private-holdout-candidate",
+        }:
+            unmet.append(
+                f"{wave_id}: split must be public, private-holdout-active, "
+                "private-holdout-shadow, or private-holdout-candidate"
+            )
+        else:
+            splits.add(str(split))
+        if wave.get("status") not in {"planned", "design", "blocked-on-private-pack"}:
+            unmet.append(f"{wave_id}: status must be planned, design, or blocked-on-private-pack")
+        planned_task_count = wave.get("planned_task_count")
+        if not isinstance(planned_task_count, int) or planned_task_count <= 0:
+            unmet.append(f"{wave_id}: planned_task_count must be a positive integer")
+            planned_task_count = 0
+        planned_additional += planned_task_count
+        families = wave.get("families")
+        if (
+            not isinstance(families, list)
+            or not families
+            or any(not _nonempty_string(item) or _placeholder(item) for item in families)
+        ):
+            unmet.append(f"{wave_id}: families must list concrete public-safe workflow families")
+        controls = wave.get("control_requirements")
+        if not isinstance(controls, dict):
+            unmet.append(f"{wave_id}: control_requirements must be an object")
+            controls = {}
+        if controls.get("denial_controls") is not True:
+            unmet.append(f"{wave_id}: denial_controls must be true")
+        if controls.get("authorized_allow_controls") is not True:
+            unmet.append(f"{wave_id}: authorized_allow_controls must be true")
+        if controls.get("scorer_fixtures_or_replay_evidence") is not True:
+            unmet.append(f"{wave_id}: scorer_fixtures_or_replay_evidence must be true")
+
+    if "private-holdout-active" not in splits:
+        unmet.append("planned_waves must include a private-holdout-active wave")
+    if not {"private-holdout-shadow", "private-holdout-candidate"} & splits:
+        unmet.append("planned_waves must include a private-holdout-shadow or private-holdout-candidate wave")
+    planned_total = current_total + planned_additional
+    if planned_total < 100:
+        unmet.append(f"planned total task count is {planned_total}, expected at least 100")
+
+    return {
+        "passed": not unmet,
+        "path": SCALE_ROADMAP_PATH,
+        "planned_additional_task_count": planned_additional,
+        "planned_total_task_count": planned_total,
+        "unmet": list(dict.fromkeys(unmet)),
+    }
 
 
 def _source_summaries_have_private_denial(
@@ -1188,17 +1324,28 @@ def validate_v1_readiness(
     )
 
     total_task_count = public_task_count + validated_private_holdout_task_count
+    scale_roadmap = _validate_v1_scale_roadmap(
+        public_task_count=public_task_count,
+        validated_private_holdout_task_count=validated_private_holdout_task_count,
+    )
     scale_unmet: list[str] = []
     if total_task_count < 100:
-        scale_unmet.append(f"total public plus private holdout tasks is {total_task_count}, expected at least 100")
+        scale_unmet.append(
+            f"total public plus private holdout tasks is {total_task_count}, expected at least 100"
+        )
+    if not scale_roadmap["passed"]:
+        scale_unmet.extend(scale_roadmap["unmet"])
     _add_gate(
         gates,
         "v1_task_scale",
         not scale_unmet,
         [
+            scale_roadmap["path"],
             f"public_task_count={public_task_count}",
             f"validated_private_holdout_task_count={validated_private_holdout_task_count}",
             f"total_task_count={total_task_count}",
+            f"planned_additional_task_count={scale_roadmap['planned_additional_task_count']}",
+            f"planned_total_task_count={scale_roadmap['planned_total_task_count']}",
         ],
         scale_unmet,
     )

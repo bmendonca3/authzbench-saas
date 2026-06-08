@@ -93,9 +93,12 @@
     },
     {
       "evidence": [
+        "artifact/v1-task-scale-roadmap.json",
         "public_task_count=54",
         "validated_private_holdout_task_count=0",
-        "total_task_count=54"
+        "total_task_count=54",
+        "planned_additional_task_count=48",
+        "planned_total_task_count=102"
       ],
       "id": "v1_task_scale",
       "passed": false,

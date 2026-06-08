@@ -229,6 +229,8 @@ private operation, protected execution, scale, and release-candidate evidence.
   Required evidence:
   - the benchmark reaches at least 100 validated tasks across public and
     protected private splits;
+  - `artifact/v1-task-scale-roadmap.json` is treated only as public-safe
+    planning evidence and not counted as validated task-scale evidence;
   - counts are recomputed from manifests;
   - vulnerable/control mix remains meaningful;
   - denial controls and authorized-allow controls are preserved;
@@ -243,6 +245,11 @@ private operation, protected execution, scale, and release-candidate evidence.
   - invitations, role downgrade, and stale-permission workflows;
   - additional billing, support, admin/config, and SaaS collaboration flows
     with denial and authorized-allow controls.
+  Current planning evidence:
+  - `artifact/v1-task-scale-roadmap.json` maps the current 54 public tasks plus
+    planned active and shadow protected-private waves to more than 100 total
+    tasks, but the `v1_task_scale` gate remains open until those planned tasks
+    exist as validated manifests.
 
 - [ ] Refresh the v1-prep technical report and IEEE scaffold after evidence
   gates close.
@@ -573,6 +580,7 @@ private operation, protected execution, scale, and release-candidate evidence.
 - [ ] Reach at least 100 tasks across public and protected private splits.
   Acceptance evidence:
   - task counts are recomputed from manifests;
+  - the tracked scale roadmap has not been counted as manifest evidence;
   - vulnerable/control mix remains meaningful;
   - denial controls and authorized-allow controls are preserved;
   - task-quality matrix is regenerated and clean;
