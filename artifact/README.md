@@ -12,6 +12,10 @@ here.
 - `expected-output/`: public-safe expected outputs for stable validation
   signals, including the deterministic public view of v1 readiness.
 - `run-bundle.md`: guidance for packaging and checking submitted run evidence.
+- `hosted-submission-execution-runbook.json`: public-safe runbook for the
+  maintainer-hosted or fully containerized release-candidate smoke path. It is
+  not hosted execution evidence and cannot satisfy strict v1 readiness by
+  itself.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1 readiness.
@@ -96,6 +100,14 @@ for that release-candidate record. Replace every placeholder with real
 maintainer-platform or containerized smoke evidence before writing
 `artifact/submission-runner-smoke.json`. The validator rejects the template if
 it is copied unchanged.
+
+Use `artifact/hosted-submission-execution-runbook.json` as the public-safe
+procedure checklist for that release-candidate smoke. The readiness validator
+checks that the runbook defines hosted and fully containerized modes, required
+private inputs, isolation controls, required smoke fields, and publication
+rules. A valid runbook still does not satisfy the hosted-execution gate; only
+passed `execution_scope: release_candidate` evidence tied to the active private
+pack can do that.
 
 The tracked `artifact/submission-runner-smoke.json` file is allowed to contain a
 public-safe blocker record while the active private pack and maintainer-platform

@@ -12,6 +12,7 @@ from unittest.mock import patch
 from scripts.containerized_submission_smoke import REQUIRED_CONTAINER_CONSTRAINTS
 from scripts.validate_v1_readiness import (
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
@@ -22,6 +23,7 @@ from scripts.validate_v1_readiness import (
     _source_summaries_have_private_denial,
     _validate_external_review_evidence,
     _validate_hosted_execution_evidence,
+    _validate_hosted_execution_runbook,
     _validate_paper_readiness_evidence,
     _validate_private_operation_blocker,
     _validate_private_rotation_metadata,
@@ -409,6 +411,71 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("active private pack fingerprint is required for hosted smoke evidence", result["unmet"])
         self.assertIn("schema_version must be submission-runner-smoke-v1", result["unmet"])
         self.assertIn("container_constraints are incomplete", result["unmet"])
+
+    def test_hosted_execution_runbook_is_structured_procedure_evidence(self) -> None:
+        result = _validate_hosted_execution_runbook()
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["path"], HOSTED_EXECUTION_RUNBOOK_PATH)
+        self.assertEqual(result["execution_modes"], ["fully_containerized", "hosted_runner"])
+        self.assertEqual(result["unmet"], [])
+
+    def test_hosted_execution_gate_includes_runbook_but_stays_blocked(self) -> None:
+        result = validate_v1_readiness(public_view=True)
+        gates = {gate["id"]: gate for gate in result["gates"]}
+        hosted_gate = gates["hosted_or_containerized_submission_execution"]
+
+        self.assertFalse(hosted_gate["passed"])
+        self.assertIn("artifact/submission-runner-smoke.json", hosted_gate["evidence"])
+        self.assertIn(HOSTED_EXECUTION_RUNBOOK_PATH, hosted_gate["evidence"])
+        self.assertEqual(
+            hosted_gate["unmet"],
+            ["hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"],
+        )
+
+    def test_hosted_execution_runbook_rejects_overclaiming_and_incomplete_controls(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runbook = root / "artifact" / "hosted-submission-execution-runbook.json"
+            runbook.parent.mkdir(parents=True)
+            runbook.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "wrong",
+                        "evidence_status": "passed",
+                        "public_claim_boundary": "release smoke evidence",
+                        "required_private_inputs": ["TBD"],
+                        "execution_modes": [
+                            {
+                                "mode": "hosted_runner",
+                                "command": "run hosted smoke",
+                                "isolation_controls": ["network=none"],
+                                "required_smoke_evidence_fields": ["result"],
+                            }
+                        ],
+                        "publication_rules": ["TBD"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_runbook(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("schema_version must be hosted-submission-execution-runbook-v1", result["unmet"])
+        self.assertIn("evidence_status must be runbook", result["unmet"])
+        self.assertIn(
+            "public_claim_boundary must state that the runbook is not release smoke evidence",
+            result["unmet"],
+        )
+        self.assertIn(
+            "required_private_inputs missing: active private pack fingerprint, active private pack path, active private pack version, benchmark source sha, maintainer runner image or hosted runner version",
+            result["unmet"],
+        )
+        self.assertIn("required_private_inputs cannot contain placeholders", result["unmet"])
+        self.assertIn("hosted_runner: command must use placeholders and release_candidate scope", result["unmet"])
+        self.assertIn("execution_modes must include fully_containerized", result["unmet"])
+        self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
 
     def test_hosted_smoke_requires_active_private_pack_fingerprint(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -46,7 +46,8 @@
     },
     {
       "evidence": [
-        "artifact/submission-runner-smoke.json"
+        "artifact/submission-runner-smoke.json",
+        "artifact/hosted-submission-execution-runbook.json"
       ],
       "id": "hosted_or_containerized_submission_execution",
       "passed": false,
