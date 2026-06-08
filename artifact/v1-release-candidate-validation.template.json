@@ -8,6 +8,7 @@
   "exact_head_ci_conclusion": "<success-or-passed>",
   "exact_head_ci_run_id": "<github-actions-run-id>",
   "exact_head_ci_head_sha": "<release-commit-sha-from-actions-run>",
+  "exact_head_ci_workflow_name": "<github-actions-workflow-name>",
   "exact_head_ci_url": "<github-actions-run-url>",
   "pushed_commit": "<true-after-push>",
   "commands": {

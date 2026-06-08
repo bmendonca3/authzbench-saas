@@ -18,6 +18,7 @@ from scripts.validate_v1_readiness import (
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_RUNBOOK_PATH,
     RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND,
+    RELEASE_VALIDATION_CI_WORKFLOW_NAME,
     RELEASE_VALIDATION_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
@@ -66,6 +67,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "exact_head_ci_conclusion": "success",
             "exact_head_ci_run_id": "123456789",
             "exact_head_ci_head_sha": commit_sha,
+            "exact_head_ci_workflow_name": RELEASE_VALIDATION_CI_WORKFLOW_NAME,
             "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/123456789",
             "pushed_commit": True,
             "commands": {
@@ -2320,6 +2322,28 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("exact_head_ci_head_sha must match release commit_sha", result["unmet"])
+
+    def test_release_candidate_evidence_requires_exact_head_ci_workflow_name(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            payload["exact_head_ci_workflow_name"] = "Ad hoc validation"
+            evidence = root / "release-evidence.json"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            f"exact_head_ci_workflow_name must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}",
+            result["unmet"],
+        )
 
     def test_release_candidate_evidence_requires_command_exit_code_and_evidence(self) -> None:
         command = REQUIRED_RELEASE_VALIDATION_COMMANDS[0]

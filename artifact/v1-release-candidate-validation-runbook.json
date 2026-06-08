@@ -9,6 +9,7 @@
     "exact-head CI URL and conclusion",
     "exact-head CI run ID",
     "exact-head CI head SHA",
+    "exact-head CI workflow name",
     "pushed commit confirmation",
     "external release evidence path",
     "clean working tree"
@@ -33,6 +34,7 @@
     "exact_head_ci_conclusion",
     "exact_head_ci_run_id",
     "exact_head_ci_head_sha",
+    "exact_head_ci_workflow_name",
     "exact_head_ci_url",
     "pushed_commit",
     "commands"
@@ -43,6 +45,7 @@
     "exact-head CI succeeded for release commit",
     "exact-head CI run ID matches exact-head CI URL",
     "exact-head CI head SHA matches release commit",
+    "exact-head CI workflow name is Validate AuthZBench-SaaS",
     "release commit pushed to intended public remote",
     "private pack fingerprint matches validated active pack",
     "benchmark source sha is an ancestor of release commit",
