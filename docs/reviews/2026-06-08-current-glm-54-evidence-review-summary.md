@@ -1,7 +1,7 @@
 # Current 54-Task GLM Evidence Review Summary
 
-Status: promotion review in progress. This is internal review evidence, not one
-of the three required external v1 review lanes.
+Status: promotion gate complete. This is internal review evidence, not one of
+the three required external v1 review lanes.
 
 ## Scope
 
@@ -93,11 +93,16 @@ clean retry with complete artifacts.
 - Local container smoke was not rerun because the Docker Desktop daemon is
   unavailable in the local environment.
 
+## Remote Verification
+
+Promotion commit `f069fbd9eada73bcfd3f750a51528af084d2a5fb` and
+paper-preflight commit `90e514367231135eff557e08e268971b02f80b5f` are authored
+as `bmendonca3` and pushed to `main` and `v1-task-expansion`. Exact-head GitHub
+Actions run `27110222646` passed on the paper-preflight commit after the
+public-view readiness fixture and paper source pin were refreshed.
+
 ## Completion Gate
 
-Do not mark this GLM promotion review complete until the independent Kiro Opus
-audits return clean verdicts or all valid findings are fixed, local verification
-passes, the promotion and paper-preflight commits are pushed, and exact-head CI
-passes on the resulting head. As of this review snapshot, independent audits
-and local verification are complete; push, exact-head CI, and the follow-up
-paper-source-pin preflight remain open.
+Complete for the current 54-task GLM-5 public-split promotion. This does not
+close the external-review, current tool-agent, private-holdout, Opus 54-task
+rerun, or v1 release gates.
