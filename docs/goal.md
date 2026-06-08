@@ -95,6 +95,10 @@ Recent repo-side hardening checkpoints:
   completed or pending review lane fields cannot pass with unresolved text such
   as `TBD`, `TODO`, `unknown`, `n/a`, or `<review-artifact>` embedded inside
   otherwise non-empty reviewer questions, artifacts, decisions, or next actions;
+- the containerized-submission smoke image checkpoint ensures exact-head CI does
+  not depend on a preloaded `python:3.11-alpine` image: the smoke resolves the
+  runner image identity after pulling the image when local Docker inspection
+  reports it missing;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.

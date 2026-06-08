@@ -111,6 +111,10 @@ python3 scripts/containerized_submission_smoke.py \
   --execution-scope release_candidate
 ```
 
+The smoke entrypoint records `runner_image_or_hosted_version` from Docker image
+inspection. If that inspection reports the image missing, it pulls the image
+and inspects again; use `--image` for a non-default pinned runner image.
+
 Public CI runs the same isolation mechanism with an ephemeral rehearsal pack.
 That rehearsal verifies container constraints, rendered-context-only mounting,
 private-manifest read denial, scorer-controlled evaluation, cleanup, and

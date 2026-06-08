@@ -11,6 +11,7 @@ from unittest.mock import patch
 from authzbench.core import load_json
 from scripts.containerized_submission_smoke import (
     MAX_OUTPUT_FILE_BYTES,
+    _image_identity,
     _private_pack_fingerprint,
     _select_control_task,
     _sensitive_findings,
@@ -163,6 +164,32 @@ class ContainerizedSubmissionSmokeTests(unittest.TestCase):
         self.assertIn("private_pack_version must not be a template placeholder", errors)
         self.assertIn("isolation_model must not be a template placeholder", errors)
         self.assertIn("command must not be a template placeholder", errors)
+
+    def test_image_identity_pulls_when_image_is_not_local(self) -> None:
+        calls: list[list[str]] = []
+
+        def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            calls.append(command)
+            if command[:3] == ["docker", "image", "inspect"] and len(calls) == 1:
+                return subprocess.CompletedProcess(command, 1, "", "not found")
+            if command[:2] == ["docker", "pull"]:
+                return subprocess.CompletedProcess(command, 0, "pulled\n", "")
+            if command[:3] == ["docker", "image", "inspect"]:
+                return subprocess.CompletedProcess(command, 0, "sha256:pulled-image\n", "")
+            raise AssertionError(f"unexpected command: {command}")
+
+        with patch("scripts.containerized_submission_smoke.subprocess.run", side_effect=fake_run):
+            identity = _image_identity("python:3.11-alpine")
+
+        self.assertEqual(identity, "python:3.11-alpine@sha256:pulled-image")
+        self.assertEqual(
+            [command[:3] for command in calls],
+            [
+                ["docker", "image", "inspect"],
+                ["docker", "pull", "python:3.11-alpine"],
+                ["docker", "image", "inspect"],
+            ],
+        )
 
     def test_timeout_force_removes_named_container_and_emits_failed_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
