@@ -35,6 +35,7 @@ Use public-safe artifacts only:
 - `docs/boundary-reasoning-calibration-study.md`
 - `docs/v1-community-submission-governance.md`
 - `docs/authzbench-saas-v1-prep-technical-report.md`
+- `docs/reviews/external-review-intake.md`
 - `baselines/baseline-registry.json`
 - public-safe baseline summaries under `baselines/`
 - generated charts under `docs/assets/benchmark-charts/`
