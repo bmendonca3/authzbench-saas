@@ -93,6 +93,24 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         evidence.write_text(json.dumps(payload), encoding="utf-8")
         return evidence
 
+    def _paper_readiness_payload(self, benchmark_source_sha: str) -> dict[str, object]:
+        return {
+            "benchmark_source_sha": benchmark_source_sha,
+            "claim_boundary_reviewed": True,
+            "generated_paper_tables_clean": True,
+            "charts_current_stale_legacy_labeled": True,
+            "latexmk_main_tex_passed": True,
+            "evidence_scope": "release_candidate",
+            "upstream_review_and_infrastructure_complete": True,
+            "verification": {
+                "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
+                "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
+                "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
+                "latex_result": "exit 0; PDF generated without LaTeX errors.",
+                "verified_on": date.today().isoformat(),
+            },
+        }
+
     def test_current_repo_reports_v1_prep_not_v1_ready(self) -> None:
         result = validate_v1_readiness()
         gates = {gate["id"]: gate for gate in result["gates"]}
@@ -2139,20 +2157,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             ).stdout.strip()
             evidence = root / "docs" / "v1-paper-readiness.json"
             evidence.parent.mkdir(parents=True)
-            evidence.write_text(
-                json.dumps(
-                    {
-                        "benchmark_source_sha": source_sha,
-                        "claim_boundary_reviewed": True,
-                        "generated_paper_tables_clean": True,
-                        "charts_current_stale_legacy_labeled": True,
-                        "latexmk_main_tex_passed": True,
-                        "evidence_scope": "release_candidate",
-                        "upstream_review_and_infrastructure_complete": True,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            evidence.write_text(json.dumps(self._paper_readiness_payload(source_sha)), encoding="utf-8")
             fixture = root / "artifact" / "expected-output" / "v1-readiness-public-view.json"
             fixture.parent.mkdir(parents=True)
             fixture.write_text("{}\n", encoding="utf-8")
@@ -2225,20 +2230,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 text=True,
                 stdout=subprocess.PIPE,
             ).stdout.strip()
-            evidence.write_text(
-                json.dumps(
-                    {
-                        "benchmark_source_sha": source_sha,
-                        "claim_boundary_reviewed": True,
-                        "generated_paper_tables_clean": True,
-                        "charts_current_stale_legacy_labeled": True,
-                        "latexmk_main_tex_passed": True,
-                        "evidence_scope": "release_candidate",
-                        "upstream_review_and_infrastructure_complete": True,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            evidence.write_text(json.dumps(self._paper_readiness_payload(source_sha)), encoding="utf-8")
             paper = root / "paper" / "ieee-sp" / "main.tex"
             paper.parent.mkdir(parents=True)
             paper.write_text("changed after source\n", encoding="utf-8")
@@ -2287,25 +2279,63 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             root = Path(tmp)
             evidence = root / "docs" / "v1-paper-readiness.json"
             evidence.parent.mkdir(parents=True)
-            evidence.write_text(
-                json.dumps(
-                    {
-                        "benchmark_source_sha": "tbd",
-                        "claim_boundary_reviewed": True,
-                        "generated_paper_tables_clean": True,
-                        "charts_current_stale_legacy_labeled": True,
-                        "latexmk_main_tex_passed": True,
-                        "evidence_scope": "release_candidate",
-                        "upstream_review_and_infrastructure_complete": True,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            payload = self._paper_readiness_payload("a" * 40)
+            payload["benchmark_source_sha"] = "tbd"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
 
             result = _validate_paper_readiness_evidence(root)
 
         self.assertFalse(result["passed"])
         self.assertIn("benchmark_source_sha must be a 40-character lowercase Git SHA", result["unmet"])
+
+    def test_paper_readiness_requires_concrete_verification_block(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            payload = self._paper_readiness_payload("a" * 40)
+            payload["verification"] = {
+                "paper_tables_command": "TBD",
+                "charts_command": "TBD",
+                "latex_command": "TBD",
+                "latex_result": "<latex-result>",
+                "verified_on": "not-a-date",
+            }
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_paper_readiness_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "verification.paper_tables_command must be python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
+            result["unmet"],
+        )
+        self.assertIn(
+            "verification.charts_command must be python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
+            result["unmet"],
+        )
+        self.assertIn(
+            "verification.latex_command must be latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
+            result["unmet"],
+        )
+        self.assertIn("verification.latex_result must be a concrete non-placeholder string", result["unmet"])
+        self.assertIn("verification.verified_on must use YYYY-MM-DD", result["unmet"])
+
+    def test_paper_readiness_rejects_compact_verified_on_date(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "docs" / "v1-paper-readiness.json"
+            evidence.parent.mkdir(parents=True)
+            payload = self._paper_readiness_payload("a" * 40)
+            verification = payload["verification"]
+            assert isinstance(verification, dict)
+            verification["verified_on"] = "20260608"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_paper_readiness_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("verification.verified_on must use YYYY-MM-DD", result["unmet"])
 
     def test_paper_readiness_rejects_self_referential_release_sha(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2337,20 +2367,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             ).stdout.strip()
             evidence = root / "docs" / "v1-paper-readiness.json"
             evidence.parent.mkdir(parents=True)
-            evidence.write_text(
-                json.dumps(
-                    {
-                        "benchmark_source_sha": release_sha,
-                        "claim_boundary_reviewed": True,
-                        "generated_paper_tables_clean": True,
-                        "charts_current_stale_legacy_labeled": True,
-                        "latexmk_main_tex_passed": True,
-                        "evidence_scope": "release_candidate",
-                        "upstream_review_and_infrastructure_complete": True,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            evidence.write_text(json.dumps(self._paper_readiness_payload(release_sha)), encoding="utf-8")
 
             result = _validate_paper_readiness_evidence(root, release_sha=release_sha)
 
@@ -2365,20 +2382,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             root = Path(tmp)
             evidence = root / "docs" / "v1-paper-readiness.json"
             evidence.parent.mkdir(parents=True)
-            evidence.write_text(
-                json.dumps(
-                    {
-                        "benchmark_source_sha": "a" * 40,
-                        "claim_boundary_reviewed": True,
-                        "generated_paper_tables_clean": True,
-                        "charts_current_stale_legacy_labeled": True,
-                        "latexmk_main_tex_passed": True,
-                        "evidence_scope": "release_candidate",
-                        "upstream_review_and_infrastructure_complete": True,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            evidence.write_text(json.dumps(self._paper_readiness_payload("a" * 40)), encoding="utf-8")
 
             result = _validate_paper_readiness_evidence(root, benchmark_source_sha="b" * 40)
 
@@ -2390,20 +2394,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             root = Path(tmp)
             evidence = root / "docs" / "v1-paper-readiness.json"
             evidence.parent.mkdir(parents=True)
-            evidence.write_text(
-                json.dumps(
-                    {
-                        "benchmark_source_sha": "a" * 40,
-                        "claim_boundary_reviewed": True,
-                        "generated_paper_tables_clean": True,
-                        "charts_current_stale_legacy_labeled": True,
-                        "latexmk_main_tex_passed": True,
-                        "evidence_scope": "release_candidate",
-                        "upstream_review_and_infrastructure_complete": True,
-                    }
-                ),
-                encoding="utf-8",
-            )
+            evidence.write_text(json.dumps(self._paper_readiness_payload("a" * 40)), encoding="utf-8")
 
             result = _validate_paper_readiness_evidence(root)
 
