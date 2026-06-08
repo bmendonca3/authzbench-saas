@@ -18,6 +18,9 @@ here.
 - `submission-runner-smoke.template.json`: public-safe release-candidate
   hosted/containerized smoke evidence template. It is not smoke evidence and
   cannot satisfy strict v1 readiness.
+- `v1-task-scale-roadmap.json`: public-safe planning roadmap for the path from
+  54 public tasks to at least 100 total public plus protected-private tasks. It
+  is not task-scale evidence and cannot satisfy strict v1 readiness by itself.
 - `v1-release-candidate-validation.template.json`: public-safe template for
   external release evidence. It is not release evidence and cannot satisfy
   strict v1 readiness.
@@ -121,6 +124,13 @@ starting shape for the ignored maintainer-only file
 real active and shadow/candidate pack metadata, then validate in the private
 checkout. The v1 readiness validator rejects the template if it is copied
 unchanged into the private rotation metadata path.
+
+Use `artifact/v1-task-scale-roadmap.json` as count-level planning evidence for
+the v1 scale path. It currently maps the 54 public tasks plus two 24-task
+protected-private pack waves to 102 planned total tasks. It does not contain or
+prove private manifests, and the v1 readiness validator still keeps the
+`v1_task_scale` gate red until actual public plus validated private manifest
+counts reach at least 100.
 
 ## Release-Candidate Evidence Template
 

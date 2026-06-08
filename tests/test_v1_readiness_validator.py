@@ -26,6 +26,7 @@ from scripts.validate_v1_readiness import (
     _validate_private_operation_blocker,
     _validate_private_rotation_metadata,
     _validate_release_candidate_evidence,
+    _validate_v1_scale_roadmap,
     _working_tree_clean,
     validate_v1_readiness,
 )
@@ -48,7 +49,6 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(gates["rotating_private_holdouts_implemented"]["passed"])
         self.assertFalse(gates["repeated_private_tool_agent_evidence"]["passed"])
         self.assertFalse(gates["repeated_private_no_tools_evidence"]["passed"])
-        self.assertFalse(gates["v1_task_scale"]["passed"])
         self.assertFalse(gates["paper_and_artifact_readiness"]["passed"])
         self.assertFalse(gates["final_release_candidate_validation"]["passed"])
         self.assertIn(
@@ -62,6 +62,13 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn(
             "no repeated eligible private-holdout no-tools model leaderboard row exists",
             gates["repeated_private_no_tools_evidence"]["unmet"],
+        )
+        self.assertFalse(gates["v1_task_scale"]["passed"])
+        self.assertIn("artifact/v1-task-scale-roadmap.json", gates["v1_task_scale"]["evidence"])
+        self.assertIn("planned_total_task_count=102", gates["v1_task_scale"]["evidence"])
+        self.assertIn(
+            "total public plus private holdout tasks is 54, expected at least 100",
+            gates["v1_task_scale"]["unmet"],
         )
 
     def test_strict_cli_fails_until_v1_is_really_ready(self) -> None:
@@ -218,6 +225,87 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             result["unmet"],
         )
         self.assertIn("last_verified_public_readiness.v1_ready must be false", result["unmet"])
+
+    def test_v1_scale_roadmap_is_structured_planning_evidence(self) -> None:
+        result = _validate_v1_scale_roadmap(
+            public_task_count=54,
+            validated_private_holdout_task_count=0,
+        )
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["path"], "artifact/v1-task-scale-roadmap.json")
+        self.assertEqual(result["planned_additional_task_count"], 48)
+        self.assertEqual(result["planned_total_task_count"], 102)
+        self.assertEqual(result["unmet"], [])
+
+    def test_v1_scale_roadmap_rejects_overclaiming_and_under_target_plan(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            roadmap = root / "artifact" / "v1-task-scale-roadmap.json"
+            roadmap.parent.mkdir(parents=True)
+            roadmap.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "wrong",
+                        "evidence_status": "complete",
+                        "public_claim_boundary": "v1 scale complete",
+                        "current_public_task_count": 54,
+                        "current_validated_private_holdout_task_count": 1,
+                        "required_total_task_count": 99,
+                        "minimum_additional_tasks_required": 1,
+                        "acceptance_criteria": ["manifest validation"],
+                        "planned_waves": [
+                            {
+                                "id": "active-wave",
+                                "split": "private-holdout-active",
+                                "status": "planned",
+                                "planned_task_count": 10,
+                                "families": ["billing entitlement misuse"],
+                                "control_requirements": {
+                                    "denial_controls": True,
+                                    "authorized_allow_controls": False,
+                                    "scorer_fixtures_or_replay_evidence": True,
+                                },
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_v1_scale_roadmap(
+                root,
+                public_task_count=54,
+                validated_private_holdout_task_count=0,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn("schema_version must be v1-task-scale-roadmap-v1", result["unmet"])
+        self.assertIn("evidence_status must be planning", result["unmet"])
+        self.assertIn(
+            "public_claim_boundary must state that the roadmap is not task-scale evidence",
+            result["unmet"],
+        )
+        self.assertIn(
+            "current_validated_private_holdout_task_count must match validated private holdout task count",
+            result["unmet"],
+        )
+        self.assertIn("required_total_task_count must be 100", result["unmet"])
+        self.assertIn(
+            "minimum_additional_tasks_required must be 46 for the current task counts",
+            result["unmet"],
+        )
+        self.assertIn(
+            "acceptance_criteria missing: authorized-allow controls, chart and table regeneration, "
+            "denial controls, scorer fixtures or replay evidence, stale-baseline marking",
+            result["unmet"],
+        )
+        self.assertIn("active-wave: authorized_allow_controls must be true", result["unmet"])
+        self.assertIn(
+            "planned_waves must include a private-holdout-shadow or private-holdout-candidate wave",
+            result["unmet"],
+        )
+        self.assertIn("planned total task count is 64, expected at least 100", result["unmet"])
 
     def test_private_operation_blocker_rejects_sensitive_public_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

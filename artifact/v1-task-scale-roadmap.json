@@ -1,0 +1,62 @@
+{
+  "schema_version": "v1-task-scale-roadmap-v1",
+  "evidence_status": "planning",
+  "public_claim_boundary": "This roadmap is not task-scale evidence. It defines the public-safe path to at least 100 validated tasks, but the v1_task_scale gate remains incomplete until real manifests validate.",
+  "current_public_task_count": 54,
+  "current_validated_private_holdout_task_count": 0,
+  "required_total_task_count": 100,
+  "minimum_additional_tasks_required": 46,
+  "planned_waves": [
+    {
+      "id": "active-private-holdout-v1-pack",
+      "split": "private-holdout-active",
+      "status": "blocked-on-private-pack",
+      "planned_task_count": 24,
+      "families": [
+        "billing entitlement misuse",
+        "support ticket reassignment",
+        "file share revocation and stale-link access",
+        "api token scope export",
+        "audit export cross-organization access",
+        "invitation and role downgrade stale permissions"
+      ],
+      "control_requirements": {
+        "denial_controls": true,
+        "authorized_allow_controls": true,
+        "scorer_fixtures_or_replay_evidence": true
+      }
+    },
+    {
+      "id": "shadow-private-holdout-v1-pack",
+      "split": "private-holdout-shadow",
+      "status": "blocked-on-private-pack",
+      "planned_task_count": 24,
+      "families": [
+        "billing entitlement misuse variants",
+        "support invitation and reassignment variants",
+        "file sharing downgrade variants",
+        "api token scope-change variants",
+        "audit settings and export variants",
+        "admin configuration and ownership variants"
+      ],
+      "control_requirements": {
+        "denial_controls": true,
+        "authorized_allow_controls": true,
+        "scorer_fixtures_or_replay_evidence": true
+      }
+    }
+  ],
+  "acceptance_criteria": [
+    "manifest validation",
+    "scorer fixtures or replay evidence",
+    "denial controls",
+    "authorized-allow controls",
+    "stale-baseline marking",
+    "chart and table regeneration"
+  ],
+  "release_notes": [
+    "Do not count this roadmap as a private holdout pack or repeated private evidence.",
+    "Do not compare old public baselines as current after any task or scoring change.",
+    "Publish only count-level planning details until private packs are validated in maintainer-only checkout."
+  ]
+}
