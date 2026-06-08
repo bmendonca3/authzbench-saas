@@ -195,9 +195,10 @@ runbook still does not satisfy the final release-candidate gate; strict
 readiness requires an external evidence file passed with `--release-evidence`
 from a clean working tree. That external evidence must include an AuthZBench-SaaS
 release-evidence schema version, exact-head GitHub Actions URL, numeric run ID
-matching that URL, the run's `headSha` matching the release commit, and
-non-placeholder evidence plus exit code `0` for every required command. The
-tracked private/raw path scan must record evidence exactly as `empty output`.
+matching that URL, workflow name `Validate AuthZBench-SaaS`, the run's
+`headSha` matching the release commit, and non-placeholder evidence plus exit
+code `0` for every required command. The tracked private/raw path scan must
+record evidence exactly as `empty output`.
 
 ## Claim Boundary
 

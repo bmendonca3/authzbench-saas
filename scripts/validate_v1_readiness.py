@@ -74,6 +74,7 @@ PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION = "private-holdout-operation-runbook-v1
 PAPER_READINESS_RUNBOOK_SCHEMA_VERSION = "v1-paper-readiness-runbook-v1"
 RELEASE_VALIDATION_RUNBOOK_SCHEMA_VERSION = "v1-release-candidate-validation-runbook-v1"
 RELEASE_VALIDATION_SCHEMA_VERSION = "v1-release-candidate-validation-v1"
+RELEASE_VALIDATION_CI_WORKFLOW_NAME = "Validate AuthZBench-SaaS"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND = (
     "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs"
@@ -1553,6 +1554,8 @@ def _validate_release_candidate_evidence(
         unmet.extend(_benchmark_source_compatibility_errors(root, str(benchmark_source_sha), str(data["commit_sha"])))
     if data.get("exact_head_ci_conclusion") not in {"success", "passed"}:
         unmet.append("exact_head_ci_conclusion must be success or passed")
+    if data.get("exact_head_ci_workflow_name") != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
+        unmet.append(f"exact_head_ci_workflow_name must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
     exact_head_ci_run_id_from_url = _authzbench_actions_run_id_from_url(data.get("exact_head_ci_url"))
     if exact_head_ci_run_id_from_url is None:
         unmet.append("exact_head_ci_url must reference an AuthZBench-SaaS Actions run")
@@ -1615,6 +1618,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "exact-head CI URL and conclusion",
         "exact-head CI run ID",
         "exact-head CI head SHA",
+        "exact-head CI workflow name",
         "pushed commit confirmation",
         "external release evidence path",
         "clean working tree",
@@ -1649,6 +1653,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "exact_head_ci_conclusion",
         "exact_head_ci_run_id",
         "exact_head_ci_head_sha",
+        "exact_head_ci_workflow_name",
         "exact_head_ci_url",
         "pushed_commit",
         "commands",
@@ -1670,6 +1675,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "exact-head CI succeeded for release commit",
         "exact-head CI run ID matches exact-head CI URL",
         "exact-head CI head SHA matches release commit",
+        "exact-head CI workflow name is Validate AuthZBench-SaaS",
         "release commit pushed to intended public remote",
         "private pack fingerprint matches validated active pack",
         "benchmark source sha is an ancestor of release commit",
