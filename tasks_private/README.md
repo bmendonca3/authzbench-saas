@@ -21,6 +21,11 @@ replace every placeholder with real active plus shadow/candidate pack metadata,
 and run strict v1 readiness validation there. The unchanged template is not
 private holdout evidence.
 
+Use `artifact/private-holdout-operation-runbook.json` as the public-safe
+operation checklist for active plus shadow/candidate private packs. The runbook
+does not prove private-holdout readiness; it only records the required private
+inputs, validation steps, acceptance checks, and publication rules.
+
 Before serious public leaderboard claims, maintain a separate private holdout
 pack with 20-30 private tasks, with 24 preferred for balanced coverage, as
 described in `docs/holdout-and-contamination.md`.

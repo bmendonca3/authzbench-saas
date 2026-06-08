@@ -194,6 +194,8 @@ private operation, protected execution, scale, and release-candidate evidence.
   Required evidence:
   - one active private pack and one shadow or candidate private pack exist in
     the maintainer-only holdout area;
+  - `artifact/private-holdout-operation-runbook.json` remains public-safe
+    runbook evidence only and is not counted as private-holdout evidence;
   - `artifact/private-holdout-rotation-metadata.template.json` is used only as a
     public-safe starting shape and every placeholder is replaced in the ignored
     maintainer-only rotation metadata file before validation;
@@ -208,6 +210,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   Current blocker evidence:
   - `artifact/private-holdout-operation-blocker.json` is public-safe structured
     blocker evidence only;
+  - `artifact/private-holdout-operation-runbook.json` defines required private
+    inputs, operation steps, rotation metadata fields, acceptance checks, and
+    publication rules but does not satisfy the gate;
   - `artifact/private-holdout-rotation-metadata.template.json` defines the
     required active plus shadow/candidate metadata shape and is rejected by the
     validator if copied unchanged as evidence;
@@ -502,6 +507,8 @@ private operation, protected execution, scale, and release-candidate evidence.
   Acceptance evidence:
   - structured rotation metadata exists at
     `tasks_private/holdout/rotation-metadata.json`;
+  - the tracked private-holdout operation runbook has not been counted as
+    private holdout evidence;
   - the tracked rotation metadata template has not been counted as private
     holdout evidence; placeholders are replaced by real maintainer-only pack
     facts;

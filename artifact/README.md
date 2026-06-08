@@ -19,6 +19,9 @@ here.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1 readiness.
+- `private-holdout-operation-runbook.json`: public-safe runbook for operating
+  active plus shadow/candidate private packs. It is not private holdout
+  evidence and cannot satisfy strict v1 readiness by itself.
 - `submission-runner-smoke.template.json`: public-safe release-candidate
   hosted/containerized smoke evidence template. It is not smoke evidence and
   cannot satisfy strict v1 readiness.
@@ -136,6 +139,13 @@ starting shape for the ignored maintainer-only file
 real active and shadow/candidate pack metadata, then validate in the private
 checkout. The v1 readiness validator rejects the template if it is copied
 unchanged into the private rotation metadata path.
+
+Use `artifact/private-holdout-operation-runbook.json` as the public-safe
+procedure checklist for private-pack operation. The readiness validator checks
+that the runbook names required private inputs, operation steps, rotation
+metadata fields, acceptance checks, and publication rules. A valid runbook still
+does not satisfy the rotating-private-holdout gate; only validated active plus
+shadow/candidate packs with real ignored rotation metadata can do that.
 
 Use `artifact/v1-task-scale-roadmap.json` as count-level planning evidence for
 the v1 scale path. It currently maps the 54 public tasks plus two 24-task

@@ -58,6 +58,7 @@ HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
 HOSTED_EXECUTION_RUNBOOK_PATH = "artifact/hosted-submission-execution-runbook.json"
 HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
+PRIVATE_OPERATION_RUNBOOK_PATH = "artifact/private-holdout-operation-runbook.json"
 PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
@@ -67,6 +68,7 @@ SCALE_ROADMAP_PATH = "artifact/v1-task-scale-roadmap.json"
 HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION = "submission-runner-smoke-blocker-v1"
 HOSTED_EXECUTION_RUNBOOK_SCHEMA_VERSION = "hosted-submission-execution-runbook-v1"
 PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION = "private-holdout-operation-blocker-v1"
+PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION = "private-holdout-operation-runbook-v1"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 PRIVATE_OPERATION_BLOCKED_GATES = (
     "rotating_private_holdouts_implemented",
@@ -125,6 +127,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
+    PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
@@ -137,6 +140,7 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
+    PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     SCALE_ROADMAP_PATH,
@@ -540,6 +544,131 @@ def _validate_private_operation_blocker(
     return {
         "passed": False,
         "path": PRIVATE_OPERATION_BLOCKER_PATH,
+        "unmet": list(dict.fromkeys(unmet)),
+    }
+
+
+def _validate_private_operation_runbook(root: Path = ROOT) -> dict[str, Any]:
+    unmet: list[str] = []
+    data = _json_object(root / PRIVATE_OPERATION_RUNBOOK_PATH, unmet)
+    if data is None:
+        return {"passed": False, "path": PRIVATE_OPERATION_RUNBOOK_PATH, "unmet": unmet}
+    unmet.extend(_private_operation_public_safety_errors(data))
+
+    if data.get("schema_version") != PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION:
+        unmet.append(f"schema_version must be {PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION}")
+    if data.get("evidence_status") != "runbook":
+        unmet.append("evidence_status must be runbook")
+    claim_boundary = data.get("public_claim_boundary")
+    if not _nonempty_string(claim_boundary) or _placeholder(claim_boundary):
+        unmet.append("public_claim_boundary is required")
+    elif "not" not in str(claim_boundary).lower():
+        unmet.append("public_claim_boundary must state that the runbook is not private holdout evidence")
+
+    required_inputs = data.get("required_private_inputs")
+    required_input_set = {
+        "active holdout pack",
+        "shadow or candidate holdout pack",
+        "rotation metadata",
+        "active pack fingerprint",
+        "maintainer-only evidence root",
+        "repeated private no-tools row",
+        "repeated private tool-agent row",
+    }
+    if not isinstance(required_inputs, list):
+        unmet.append("required_private_inputs must be a list")
+        required_inputs = []
+    input_set = {str(item) for item in required_inputs if isinstance(item, str)}
+    missing_inputs = sorted(required_input_set - input_set)
+    if missing_inputs:
+        unmet.append("required_private_inputs missing: " + ", ".join(missing_inputs))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+        unmet.append("required_private_inputs cannot contain placeholders")
+
+    operation_steps = data.get("operation_steps")
+    required_steps = {
+        "stage active pack under ignored maintainer holdout root",
+        "stage shadow or candidate pack under ignored maintainer holdout root",
+        "run holdout-pack validation on each declared pack",
+        "write rotation metadata in ignored maintainer holdout root",
+        "compute active pack fingerprint from validated manifests",
+        "tie source summaries and leaderboard rows to active fingerprint",
+        "rerun no-tools and tool-agent baselines after scoring or pack changes",
+        "mark old rows stale or legacy after rotation",
+        "run privacy scan before publishing redacted summaries",
+    }
+    if not isinstance(operation_steps, list):
+        unmet.append("operation_steps must be a list")
+        operation_steps = []
+    step_set = {str(item) for item in operation_steps if isinstance(item, str)}
+    missing_steps = sorted(required_steps - step_set)
+    if missing_steps:
+        unmet.append("operation_steps missing: " + ", ".join(missing_steps))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in operation_steps):
+        unmet.append("operation_steps cannot contain placeholders")
+
+    metadata_fields = data.get("required_rotation_metadata_fields")
+    required_metadata_fields = {
+        "schema_version",
+        "packs",
+        "id",
+        "role",
+        "path",
+        "version",
+        "fingerprint_sha256",
+        "compatibility",
+        "retirement_triggers",
+        "rerun_policy",
+    }
+    if not isinstance(metadata_fields, list):
+        unmet.append("required_rotation_metadata_fields must be a list")
+        metadata_fields = []
+    metadata_field_set = {str(item) for item in metadata_fields if isinstance(item, str)}
+    missing_metadata_fields = sorted(required_metadata_fields - metadata_field_set)
+    if missing_metadata_fields:
+        unmet.append("required_rotation_metadata_fields missing: " + ", ".join(missing_metadata_fields))
+
+    acceptance_checks = data.get("acceptance_checks")
+    required_acceptance = {
+        "exactly one active pack",
+        "at least one shadow or candidate pack",
+        "unique pack identifiers",
+        "unique pack paths",
+        "unique task identifiers across packs",
+        "leaderboard suitable pack validation",
+        "matching active pack fingerprint",
+        "old row stale policy documented",
+        "public redaction scan passed",
+    }
+    if not isinstance(acceptance_checks, list):
+        unmet.append("acceptance_checks must be a list")
+        acceptance_checks = []
+    acceptance_set = {str(item) for item in acceptance_checks if isinstance(item, str)}
+    missing_acceptance = sorted(required_acceptance - acceptance_set)
+    if missing_acceptance:
+        unmet.append("acceptance_checks missing: " + ", ".join(missing_acceptance))
+
+    publication_rules = data.get("publication_rules")
+    required_rules = {
+        "public output is count-level or redacted summary only",
+        "nonpublic protected evidence stays in protected storage",
+        "private task bodies are never published",
+        "nonpublic task identifiers are never published",
+        "local absolute paths are never published",
+    }
+    if not isinstance(publication_rules, list):
+        unmet.append("publication_rules must be a list")
+        publication_rules = []
+    rule_set = {str(item) for item in publication_rules if isinstance(item, str)}
+    missing_rules = sorted(required_rules - rule_set)
+    if missing_rules:
+        unmet.append("publication_rules missing: " + ", ".join(missing_rules))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+        unmet.append("publication_rules cannot contain placeholders")
+
+    return {
+        "passed": not unmet,
+        "path": PRIVATE_OPERATION_RUNBOOK_PATH,
         "unmet": list(dict.fromkeys(unmet)),
     }
 
@@ -1284,6 +1413,7 @@ def validate_v1_readiness(
     else:
         rotation_result = _validate_private_rotation_metadata()
         private_operation_blocker = None
+    private_operation_runbook = _validate_private_operation_runbook()
     validated_private_holdout_task_count = int(rotation_result["validated_private_task_count"])
     active_private_pack_fingerprint = rotation_result.get("active_pack_fingerprint_sha256")
     if not isinstance(active_private_pack_fingerprint, str):
@@ -1394,10 +1524,13 @@ def validate_v1_readiness(
         hosted_unmet,
     )
 
+    rotation_unmet = list(rotation_result["unmet"])
+    if not private_operation_runbook["passed"]:
+        rotation_unmet.extend(private_operation_runbook["unmet"])
     _add_gate(
         gates,
         "rotating_private_holdouts_implemented",
-        bool(rotation_result["passed"]),
+        bool(rotation_result["passed"]) and bool(private_operation_runbook["passed"]),
         [
             ROTATION_METADATA_PATH,
             *(
@@ -1405,13 +1538,14 @@ def validate_v1_readiness(
                 if isinstance(private_operation_blocker, dict)
                 else []
             ),
+            private_operation_runbook["path"],
             f"private_holdout_pack_ids={rotation_result['pack_ids']}",
             f"private_holdout_pack_roles={rotation_result['roles']}",
             f"active_private_pack_id={rotation_result['active_pack_id']}",
             f"active_private_pack_fingerprint_sha256={rotation_result['active_pack_fingerprint_sha256']}",
             f"validated_private_holdout_task_count={validated_private_holdout_task_count}",
         ],
-        rotation_result["unmet"],
+        rotation_unmet,
     )
 
     eligible_private_tool_rows = _eligible_private_rows(

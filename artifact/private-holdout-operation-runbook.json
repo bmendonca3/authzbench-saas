@@ -1,0 +1,60 @@
+{
+  "schema_version": "private-holdout-operation-runbook-v1",
+  "evidence_status": "runbook",
+  "public_claim_boundary": "This runbook is not private holdout evidence. It defines the maintainer-only operation procedure, but rotating_private_holdouts_implemented remains incomplete until validated active and shadow or candidate packs exist with real rotation metadata.",
+  "required_private_inputs": [
+    "active holdout pack",
+    "shadow or candidate holdout pack",
+    "rotation metadata",
+    "active pack fingerprint",
+    "maintainer-only evidence root",
+    "repeated private no-tools row",
+    "repeated private tool-agent row"
+  ],
+  "operation_steps": [
+    "stage active pack under ignored maintainer holdout root",
+    "stage shadow or candidate pack under ignored maintainer holdout root",
+    "run holdout-pack validation on each declared pack",
+    "write rotation metadata in ignored maintainer holdout root",
+    "compute active pack fingerprint from validated manifests",
+    "tie source summaries and leaderboard rows to active fingerprint",
+    "rerun no-tools and tool-agent baselines after scoring or pack changes",
+    "mark old rows stale or legacy after rotation",
+    "run privacy scan before publishing redacted summaries"
+  ],
+  "required_rotation_metadata_fields": [
+    "schema_version",
+    "packs",
+    "id",
+    "role",
+    "path",
+    "version",
+    "fingerprint_sha256",
+    "compatibility",
+    "retirement_triggers",
+    "rerun_policy"
+  ],
+  "acceptance_checks": [
+    "exactly one active pack",
+    "at least one shadow or candidate pack",
+    "unique pack identifiers",
+    "unique pack paths",
+    "unique task identifiers across packs",
+    "leaderboard suitable pack validation",
+    "matching active pack fingerprint",
+    "old row stale policy documented",
+    "public redaction scan passed"
+  ],
+  "publication_rules": [
+    "public output is count-level or redacted summary only",
+    "nonpublic protected evidence stays in protected storage",
+    "private task bodies are never published",
+    "nonpublic task identifiers are never published",
+    "local absolute paths are never published"
+  ],
+  "release_notes": [
+    "A passing runbook check only proves that the private holdout operation procedure is specified.",
+    "The rotation gate requires real maintainer-only rotation metadata with active and shadow or candidate packs.",
+    "The repeated private evidence gates require eligible private leaderboard rows tied to the active pack fingerprint."
+  ]
+}

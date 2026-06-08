@@ -59,6 +59,7 @@
       "evidence": [
         "tasks_private/holdout/rotation-metadata.json",
         "artifact/private-holdout-operation-blocker.json",
+        "artifact/private-holdout-operation-runbook.json",
         "private_holdout_pack_ids=[]",
         "private_holdout_pack_roles=[]",
         "active_private_pack_id=None",
