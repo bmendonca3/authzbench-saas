@@ -18,8 +18,11 @@ Use `artifact/private-holdout-rotation-metadata.template.json` as the public
 starting shape for maintainer-only rotation metadata. Copy it to the ignored
 `tasks_private/holdout/rotation-metadata.json` path only in a private checkout,
 replace every placeholder with real active plus shadow/candidate pack metadata,
-and run strict v1 readiness validation there. The unchanged template is not
-private holdout evidence.
+and run strict v1 readiness validation there. Populated metadata must include
+concrete pack versions, declared lowercase SHA-256 fingerprints matching each
+computed pack fingerprint, concrete compatibility and retirement policy, and a
+rerun policy requiring no-tools and tool-agent baseline reruns before current
+comparison. The unchanged template is not private holdout evidence.
 
 Use `artifact/private-holdout-operation-runbook.json` as the public-safe
 operation checklist for active plus shadow/candidate private packs. The runbook

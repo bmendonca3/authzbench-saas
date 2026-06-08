@@ -149,7 +149,11 @@ starting shape for the ignored maintainer-only file
 `tasks_private/holdout/rotation-metadata.json`. Replace every placeholder with
 real active and shadow/candidate pack metadata, then validate in the private
 checkout. The v1 readiness validator rejects the template if it is copied
-unchanged into the private rotation metadata path.
+unchanged into the private rotation metadata path. The populated metadata must
+declare concrete pack versions, lowercase SHA-256 fingerprints that match each
+computed pack fingerprint, a concrete compatibility policy, non-placeholder
+retirement triggers, and a rerun policy that requires both no-tools and
+tool-agent baselines before current comparison.
 
 Use `artifact/private-holdout-operation-runbook.json` as the public-safe
 procedure checklist for private-pack operation. The readiness validator checks
