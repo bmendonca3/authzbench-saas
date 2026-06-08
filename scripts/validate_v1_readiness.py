@@ -724,6 +724,27 @@ def _validate_private_operation_runbook(root: Path = ROOT) -> dict[str, Any]:
     if missing_metadata_fields:
         unmet.append("required_rotation_metadata_fields missing: " + ", ".join(missing_metadata_fields))
 
+    command_templates = data.get("command_templates")
+    required_command_snippets = {
+        "python3 scripts/validate_holdout_pack.py",
+        "--public-task 'tasks/*/*.json'",
+        "--comparison-private-task",
+        "python3 scripts/validate_protected_private_evidence.py",
+        "--require-host-isolation",
+        "--no-require-tool-agent",
+        "python3 scripts/validate_v1_readiness.py --release-evidence",
+        RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND,
+    }
+    if not isinstance(command_templates, list):
+        unmet.append("command_templates must be a list")
+        command_templates = []
+    command_text = "\n".join(str(item) for item in command_templates if isinstance(item, str))
+    for snippet in sorted(required_command_snippets):
+        if snippet not in command_text:
+            unmet.append(f"command_templates missing snippet: {snippet}")
+    if any(not _nonempty_string(item) for item in command_templates):
+        unmet.append("command_templates cannot contain empty values")
+
     acceptance_checks = data.get("acceptance_checks")
     required_acceptance = {
         "exactly one active pack",
@@ -782,6 +803,8 @@ def _private_operation_public_safety_errors(value: Any, path: str = "$") -> list
         for index, child in enumerate(value):
             errors.extend(_private_operation_public_safety_errors(child, f"{path}[{index}]"))
     elif isinstance(value, str):
+        if value == RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND:
+            return errors
         lower = value.lower()
         if any(marker in lower for marker in PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS):
             errors.append(f"{path}: sensitive path marker is not allowed in public blocker evidence")
