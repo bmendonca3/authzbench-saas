@@ -36,6 +36,14 @@
     "retirement_triggers",
     "rerun_policy"
   ],
+  "command_templates": [
+    "python3 scripts/validate_holdout_pack.py --task '<active-pack-glob>' --public-task 'tasks/*/*.json' --comparison-private-task '<shadow-or-candidate-pack-glob>'",
+    "python3 scripts/validate_holdout_pack.py --task '<shadow-or-candidate-pack-glob>' --public-task 'tasks/*/*.json' --comparison-private-task '<active-pack-glob>'",
+    "python3 scripts/validate_protected_private_evidence.py --summary '<redacted-private-tool-agent-summary-glob>' --min-run-count 2 --require-host-isolation",
+    "python3 scripts/validate_protected_private_evidence.py --summary '<redacted-private-no-tools-summary-glob>' --min-run-count 2 --no-require-tool-agent --require-host-isolation",
+    "python3 scripts/validate_v1_readiness.py --release-evidence '<release-evidence-json>'",
+    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs"
+  ],
   "acceptance_checks": [
     "exactly one active pack",
     "at least one shadow or candidate pack",
