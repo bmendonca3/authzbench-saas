@@ -94,4 +94,7 @@ Reviewer identity may remain private unless the reviewer grants permission.
 Use `docs/reviews/external-review-response.template.json` as the response shape,
 then replace every placeholder with real review evidence before updating
 `docs/reviews/external-review-summary.json`. The template is not evidence and
-cannot satisfy the external-review gate unchanged.
+cannot satisfy the external-review gate unchanged. The validator also rejects
+embedded unresolved markers such as `TBD`, `TODO`, `pending`, `unknown`, `n/a`,
+and `<placeholder>` in pending or completed review questions, artifacts,
+decisions, blockers, next actions, and claim-boundary notes.
