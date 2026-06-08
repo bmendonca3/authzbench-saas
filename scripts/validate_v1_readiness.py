@@ -1035,6 +1035,13 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
             unmet.append(f"{name}: reviewer_role_scope is required")
         if not _nonempty_string(lane.get("claim_boundary_impact")) or _placeholder(lane.get("claim_boundary_impact")):
             unmet.append(f"{name}: claim_boundary_impact is required")
+        questions_reviewed = lane.get("questions_reviewed")
+        if (
+            not isinstance(questions_reviewed, list)
+            or not questions_reviewed
+            or any(not _nonempty_string(item) or _placeholder(item) for item in questions_reviewed)
+        ):
+            unmet.append(f"{name}: questions_reviewed must list concrete bounded questions")
         artifacts = lane.get("artifacts_reviewed")
         if not isinstance(artifacts, list) or not artifacts or any(not _nonempty_string(item) for item in artifacts):
             unmet.append(f"{name}: artifacts_reviewed must be a non-empty string list")
@@ -1068,6 +1075,8 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
                 unmet.append(f"{name}: decisions[{decision_index}].finding is required")
             if decision.get("decision") not in VALID_REVIEW_DECISIONS:
                 unmet.append(f"{name}: decisions[{decision_index}].decision must be accepted, rejected, or unresolved")
+            if not _nonempty_string(decision.get("summary")) or _placeholder(decision.get("summary")):
+                unmet.append(f"{name}: decisions[{decision_index}].summary is required")
             if decision.get("decision") in {"accepted", "unresolved"} and not _valid_follow_up_ref(
                 root,
                 decision.get("follow_up_artifact"),
@@ -1780,7 +1789,7 @@ def validate_v1_readiness(
         "external_review_completed",
         not review_unmet,
         [
-            "docs/reviews/external-review-summary.md must record real review dates, reviewed artifacts, findings or no-finding dispositions, and decisions",
+            "docs/reviews/external-review-summary.md must record real review dates, bounded questions reviewed, reviewed artifacts, findings or no-finding dispositions, and decisions",
             EXTERNAL_REVIEW_EVIDENCE_PATH,
         ],
         review_unmet,
