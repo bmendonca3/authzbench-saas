@@ -240,7 +240,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         },
                         "last_verified_public_readiness": {
                             "commit_sha": "not-a-sha",
-                            "ci_run_url": "https://example.com/run",
+                            "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/not-a-run",
                             "v1_ready": True,
                             "passed_gate_count": "3",
                             "unmet_gate_count": "8",
@@ -822,7 +822,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "execution_scope": "release_candidate",
                             "result": "failed",
                             "commit_sha": "not-a-sha",
-                            "ci_run_url": "https://example.com/run",
+                            "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/not-a-run",
                         },
                     }
                 ),

@@ -185,6 +185,12 @@ def _sha(value: Any) -> bool:
     return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value) is not None
 
 
+def _authzbench_actions_run_url(value: Any) -> bool:
+    return isinstance(value, str) and (
+        re.fullmatch(r"https://github\.com/bmendonca3/authzbench-saas/actions/runs/[0-9]+", value) is not None
+    )
+
+
 def _placeholder(value: Any) -> bool:
     return isinstance(value, str) and value.strip().lower() in {"tbd", "todo", "pending", "unknown", "n/a"}
 
@@ -534,10 +540,7 @@ def _validate_private_operation_blocker(
         readiness = {}
     if not _sha(readiness.get("commit_sha")):
         unmet.append("last_verified_public_readiness.commit_sha must be a 40-character lowercase Git SHA")
-    if not (
-        _nonempty_string(readiness.get("ci_run_url"))
-        and str(readiness.get("ci_run_url")).startswith("https://github.com/bmendonca3/authzbench-saas/actions/runs/")
-    ):
+    if not _authzbench_actions_run_url(readiness.get("ci_run_url")):
         unmet.append("last_verified_public_readiness.ci_run_url must reference an AuthZBench-SaaS Actions run")
     if readiness.get("v1_ready") is not False:
         unmet.append("last_verified_public_readiness.v1_ready must be false")
@@ -1271,10 +1274,7 @@ def _validate_hosted_execution_evidence(
             unmet.append("last_verified_public_rehearsal.result must be passed")
         if not _sha(rehearsal.get("commit_sha")):
             unmet.append("last_verified_public_rehearsal.commit_sha must be a 40-character lowercase Git SHA")
-        if not (
-            _nonempty_string(rehearsal.get("ci_run_url"))
-            and str(rehearsal.get("ci_run_url")).startswith("https://github.com/bmendonca3/authzbench-saas/actions/runs/")
-        ):
+        if not _authzbench_actions_run_url(rehearsal.get("ci_run_url")):
             unmet.append("last_verified_public_rehearsal.ci_run_url must reference an AuthZBench-SaaS Actions run")
         unmet.append("hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist")
         return {
@@ -1524,13 +1524,7 @@ def _validate_release_candidate_evidence(
         unmet.extend(_benchmark_source_compatibility_errors(root, str(benchmark_source_sha), str(data["commit_sha"])))
     if data.get("exact_head_ci_conclusion") not in {"success", "passed"}:
         unmet.append("exact_head_ci_conclusion must be success or passed")
-    if not (
-        _nonempty_string(data.get("exact_head_ci_url"))
-        and re.fullmatch(
-            r"https://github\.com/bmendonca3/authzbench-saas/actions/runs/[0-9]+",
-            str(data.get("exact_head_ci_url")),
-        )
-    ):
+    if not _authzbench_actions_run_url(data.get("exact_head_ci_url")):
         unmet.append("exact_head_ci_url must reference an AuthZBench-SaaS Actions run")
     if private_pack_fingerprint_sha256 is None:
         unmet.append("active private pack fingerprint is required for release-candidate evidence")
