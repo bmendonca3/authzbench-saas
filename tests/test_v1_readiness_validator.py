@@ -84,6 +84,15 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         commands[RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND]["evidence"] = "empty output"
         return payload
 
+    def _write_release_candidate_evidence(
+        self,
+        root: Path,
+        payload: dict[str, object],
+    ) -> Path:
+        evidence = root / "release-evidence.json"
+        evidence.write_text(json.dumps(payload), encoding="utf-8")
+        return evidence
+
     def test_current_repo_reports_v1_prep_not_v1_ready(self) -> None:
         result = validate_v1_readiness()
         gates = {gate["id"]: gate for gate in result["gates"]}
@@ -1819,6 +1828,36 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
             (root / "untracked-task.json").write_text("{}\n", encoding="utf-8")
             self.assertFalse(_working_tree_clean(root, {evidence.resolve()}))
+
+    def test_release_candidate_evidence_rejects_template_placeholders_after_schema_change(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            commands = payload["commands"]
+            assert isinstance(commands, dict)
+            payload["benchmark_source_sha"] = "<ancestor-benchmark-source-sha>"
+            payload["private_pack_fingerprint_sha256"] = "<active-private-pack-fingerprint-sha256>"
+            commands["python3 -m unittest discover -s tests"]["evidence"] = "<log-or-run-id>"
+            evidence = self._write_release_candidate_evidence(root, payload)
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn("benchmark_source_sha must not be a template placeholder", result["unmet"])
+        self.assertIn(
+            "private_pack_fingerprint_sha256 must not be a template placeholder",
+            result["unmet"],
+        )
+        self.assertIn(
+            "release validation command must record non-placeholder evidence: python3 -m unittest discover -s tests",
+            result["unmet"],
+        )
 
     def _source_and_release_with_changed_path(self, changed_path: str) -> list[str]:
         with tempfile.TemporaryDirectory() as tmp:

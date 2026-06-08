@@ -213,6 +213,13 @@ def _placeholder(value: Any) -> bool:
     return isinstance(value, str) and value.strip().lower() in {"tbd", "todo", "pending", "unknown", "n/a"}
 
 
+def _template_placeholder(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    return len(text) >= 3 and text.startswith("<") and text.endswith(">")
+
+
 def _safe_existing_relative_path(root: Path, value: str) -> bool:
     path = Path(value)
     if path.is_absolute() or ".." in path.parts:
@@ -1549,9 +1556,13 @@ def _validate_release_candidate_evidence(
     if data.get("schema_version") != RELEASE_VALIDATION_SCHEMA_VERSION:
         unmet.append(f"schema_version must be {RELEASE_VALIDATION_SCHEMA_VERSION}")
     expected_sha = target_sha or _current_commit_sha()
+    if _template_placeholder(data.get("commit_sha")):
+        unmet.append("release validation commit_sha must not be a template placeholder")
     if data.get("commit_sha") != expected_sha:
         unmet.append("release validation commit_sha must match target release SHA")
     benchmark_source_sha = data.get("benchmark_source_sha")
+    if _template_placeholder(benchmark_source_sha):
+        unmet.append("benchmark_source_sha must not be a template placeholder")
     if not _sha(benchmark_source_sha):
         unmet.append("benchmark_source_sha must be a 40-character lowercase Git SHA")
     elif _sha(data.get("commit_sha")):
@@ -1573,6 +1584,8 @@ def _validate_release_candidate_evidence(
         unmet.append("exact_head_ci_head_sha must match release commit_sha")
     if private_pack_fingerprint_sha256 is None:
         unmet.append("active private pack fingerprint is required for release-candidate evidence")
+    elif _template_placeholder(data.get("private_pack_fingerprint_sha256")):
+        unmet.append("private_pack_fingerprint_sha256 must not be a template placeholder")
     elif data.get("private_pack_fingerprint_sha256") != private_pack_fingerprint_sha256:
         unmet.append("private_pack_fingerprint_sha256 must match the active private pack fingerprint")
     commands = data.get("commands")
@@ -1586,7 +1599,11 @@ def _validate_release_candidate_evidence(
             continue
         if command_result.get("exit_code") != 0:
             unmet.append(f"release validation command must record exit_code 0: {command}")
-        if not _nonempty_string(command_result.get("evidence")) or _placeholder(command_result.get("evidence")):
+        if (
+            not _nonempty_string(command_result.get("evidence"))
+            or _placeholder(command_result.get("evidence"))
+            or _template_placeholder(command_result.get("evidence"))
+        ):
             unmet.append(f"release validation command must record non-placeholder evidence: {command}")
         elif command == RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND and command_result["evidence"].strip() != "empty output":
             unmet.append(f"privacy scan command must record evidence exactly 'empty output': {command}")
