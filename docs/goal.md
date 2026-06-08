@@ -304,7 +304,8 @@ private operation, protected execution, scale, and release-candidate evidence.
   - generated paper tables and chart artifacts are clean after regeneration;
   - `git diff --check` passes;
   - `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
-    returns no tracked paths;
+    returns no tracked paths and release evidence records this as exactly
+    `empty output`;
   - strict `python3 scripts/validate_v1_readiness.py --release-evidence
     <external-json>` passes without `--allow-incomplete`.
 

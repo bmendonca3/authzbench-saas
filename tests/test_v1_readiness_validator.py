@@ -17,6 +17,7 @@ from scripts.validate_v1_readiness import (
     PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_RUNBOOK_PATH,
+    RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND,
     RELEASE_VALIDATION_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
@@ -57,7 +58,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         ).stdout.strip()
 
     def _release_candidate_evidence_payload(self, commit_sha: str) -> dict[str, object]:
-        return {
+        payload: dict[str, object] = {
             "schema_version": "v1-release-candidate-validation-v1",
             "commit_sha": commit_sha,
             "benchmark_source_sha": commit_sha,
@@ -76,6 +77,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 for command in REQUIRED_RELEASE_VALIDATION_COMMANDS
             },
         }
+        commands = payload["commands"]
+        assert isinstance(commands, dict)
+        commands[RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND]["evidence"] = "empty output"
+        return payload
 
     def test_current_repo_reports_v1_prep_not_v1_ready(self) -> None:
         result = validate_v1_readiness()
@@ -2248,6 +2253,29 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn(f"release validation command must record exit_code 0: {command}", result["unmet"])
         self.assertIn(
             f"release validation command must record non-placeholder evidence: {command}",
+            result["unmet"],
+        )
+
+    def test_release_candidate_evidence_requires_empty_privacy_scan_output(self) -> None:
+        command = RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            payload["commands"][command]["evidence"] = "printed tracked paths"
+            evidence = root / "release-evidence.json"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            f"privacy scan command must record evidence exactly 'empty output': {command}",
             result["unmet"],
         )
 
