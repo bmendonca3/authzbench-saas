@@ -24,6 +24,12 @@ it cannot honestly mark review complete without independent AppSec,
 benchmark/evals, and AI-agent/tooling reviewers returning findings or explicit
 no-finding dispositions.
 
+This is an external blocker, not a missing public-repo checklist item. The
+public repo has the packet, intake form, response template, pending structured
+summary, and validator checks. The gate moves only when independent reviewers
+return real review evidence and maintainers copy public-safe summaries into
+`docs/reviews/external-review-summary.json`.
+
 ## Review Lanes
 
 | Lane | Reviewer status | Requested evidence | Acceptance criteria | Next action |
