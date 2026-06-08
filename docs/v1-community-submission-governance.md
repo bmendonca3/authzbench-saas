@@ -121,6 +121,10 @@ scope is `rehearsal`, not `release_candidate`.
 
 Private packs follow `docs/holdout-rotation-protocol.md`.
 
+The public-safe operation checklist is tracked at
+`artifact/private-holdout-operation-runbook.json`. It is runbook evidence only,
+not private holdout evidence.
+
 For community operation, each release must declare:
 
 - active private-pack version;

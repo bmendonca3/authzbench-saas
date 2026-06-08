@@ -14,6 +14,7 @@ from scripts.validate_v1_readiness import (
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
+    PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
@@ -26,6 +27,7 @@ from scripts.validate_v1_readiness import (
     _validate_hosted_execution_runbook,
     _validate_paper_readiness_evidence,
     _validate_private_operation_blocker,
+    _validate_private_operation_runbook,
     _validate_private_rotation_metadata,
     _validate_release_candidate_evidence,
     _validate_v1_scale_roadmap,
@@ -118,6 +120,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             rotation_gate["unmet"],
         )
         self.assertIn("artifact/private-holdout-operation-blocker.json", rotation_gate["evidence"])
+        self.assertIn(PRIVATE_OPERATION_RUNBOOK_PATH, rotation_gate["evidence"])
         self.assertIn("validated_private_holdout_task_count=0", rotation_gate["evidence"])
 
     def test_private_operation_blocker_is_structured_but_not_complete(self) -> None:
@@ -227,6 +230,55 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             result["unmet"],
         )
         self.assertIn("last_verified_public_readiness.v1_ready must be false", result["unmet"])
+
+    def test_private_operation_runbook_is_structured_procedure_evidence(self) -> None:
+        result = _validate_private_operation_runbook()
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["path"], PRIVATE_OPERATION_RUNBOOK_PATH)
+        self.assertEqual(result["unmet"], [])
+
+    def test_private_operation_runbook_rejects_overclaiming_and_incomplete_steps(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runbook = root / "artifact" / "private-holdout-operation-runbook.json"
+            runbook.parent.mkdir(parents=True)
+            runbook.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "wrong",
+                        "evidence_status": "passed",
+                        "public_claim_boundary": "private holdout evidence",
+                        "required_private_inputs": ["TBD"],
+                        "operation_steps": ["stage active pack under ignored maintainer holdout root"],
+                        "required_rotation_metadata_fields": ["packs"],
+                        "acceptance_checks": ["exactly one active pack"],
+                        "publication_rules": ["TBD"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_private_operation_runbook(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("schema_version must be private-holdout-operation-runbook-v1", result["unmet"])
+        self.assertIn("evidence_status must be runbook", result["unmet"])
+        self.assertIn(
+            "public_claim_boundary must state that the runbook is not private holdout evidence",
+            result["unmet"],
+        )
+        self.assertIn(
+            "required_private_inputs missing: active holdout pack, active pack fingerprint, maintainer-only evidence root, repeated private no-tools row, repeated private tool-agent row, rotation metadata, shadow or candidate holdout pack",
+            result["unmet"],
+        )
+        self.assertIn("required_private_inputs cannot contain placeholders", result["unmet"])
+        self.assertTrue(any(item.startswith("operation_steps missing:") for item in result["unmet"]))
+        self.assertTrue(
+            any(item.startswith("required_rotation_metadata_fields missing:") for item in result["unmet"])
+        )
+        self.assertTrue(any(item.startswith("acceptance_checks missing:") for item in result["unmet"]))
+        self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
 
     def test_v1_scale_roadmap_is_structured_planning_evidence(self) -> None:
         result = _validate_v1_scale_roadmap(
