@@ -107,8 +107,7 @@ def _sensitive_findings(value: Any, path: str = "$") -> list[str]:
 def _template_placeholder(value: Any) -> bool:
     if not isinstance(value, str):
         return False
-    text = value.strip()
-    return len(text) >= 3 and text.startswith("<") and text.endswith(">")
+    return re.search(r"<[^<>]+>", value.strip()) is not None
 
 
 def validate_smoke_evidence(
@@ -420,7 +419,7 @@ def run_smoke(
         "isolation_model": "docker-bind-rendered-context-only",
         "command": (
             "python3 scripts/containerized_submission_smoke.py "
-            "--private-pack <protected> --output <public-safe-evidence>"
+            "--private-pack REDACTED_PROTECTED_PACK --output PUBLIC_SAFE_EVIDENCE"
         ),
         "submitter_private_manifest_read_denied": private_manifest_read_denied,
         "scorer_controlled_private_eval": True,
