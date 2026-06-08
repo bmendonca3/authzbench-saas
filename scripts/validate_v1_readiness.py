@@ -50,6 +50,7 @@ REQUIRED_REVIEW_PACKET_ARTIFACTS = (
 )
 
 EXTERNAL_REVIEW_EVIDENCE_PATH = "docs/reviews/external-review-summary.json"
+EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH = "docs/reviews/external-review-response.template.json"
 HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
@@ -110,6 +111,7 @@ VALID_REVIEW_STATUSES = {"pending", "complete"}
 
 POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
+    EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HOSTED_EXECUTION_EVIDENCE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
@@ -118,6 +120,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
+    EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     "docs/goal.md",
@@ -641,6 +644,9 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
     data = _json_object(root / EXTERNAL_REVIEW_EVIDENCE_PATH, unmet)
     if data is None:
         return {"passed": False, "lanes": [], "unmet": unmet}
+    if data.get("template_only") is True or data.get("schema_version") == "external-review-response-template-v1":
+        unmet.append("external review response template is not external review evidence")
+    unmet.extend(_external_review_public_safety_errors(data))
 
     lanes = data.get("review_lanes")
     if not isinstance(lanes, list):
@@ -752,6 +758,27 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
     if missing_lanes:
         unmet.append(f"missing structured review lanes: {', '.join(missing_lanes)}")
     return {"passed": not unmet, "lanes": sorted(lanes_by_name), "unmet": unmet}
+
+
+def _external_review_public_safety_errors(value: Any, path: str = "$") -> list[str]:
+    errors: list[str] = []
+    if isinstance(value, dict):
+        for raw_key, child in value.items():
+            key = str(raw_key)
+            child_path = f"{path}.{key}"
+            if key.lower() in PRIVATE_OPERATION_SENSITIVE_KEYS:
+                errors.append(f"{child_path}: sensitive key is not allowed in public external review evidence")
+            errors.extend(_external_review_public_safety_errors(child, child_path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            errors.extend(_external_review_public_safety_errors(child, f"{path}[{index}]"))
+    elif isinstance(value, str):
+        lower = value.lower()
+        if any(marker in lower for marker in PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS):
+            errors.append(f"{path}: sensitive path marker is not allowed in public external review evidence")
+        if PRIVATE_OPERATION_ABSOLUTE_PATH_RE.search(value):
+            errors.append(f"{path}: absolute path is not allowed in public external review evidence")
+    return errors
 
 
 def _validate_hosted_execution_evidence(
