@@ -22,10 +22,11 @@ repo. Summaries should preserve the useful findings without exposing private
 metadata.
 
 For external v1/community readiness review, use
-`external-review-response.template.json` only as a starting shape for real
-reviewer responses. The template is public-safe scaffolding, not review
-evidence, and the v1 readiness validator rejects it if it is copied unchanged
-into `external-review-summary.json`.
+`external-review-intake.md` as the human-facing response form and
+`external-review-response.template.json` only as the machine-shape starting
+point for real reviewer responses. The template is public-safe scaffolding, not
+review evidence, and the v1 readiness validator rejects it if it is copied
+unchanged into `external-review-summary.json`.
 The same validator also rejects unresolved placeholders embedded in pending or
 completed review fields, including `TBD`, `TODO`, `pending`, `unknown`, `n/a`,
 and angle-bracket placeholders, and scans completed external-review evidence
