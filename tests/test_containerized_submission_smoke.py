@@ -129,6 +129,41 @@ class ContainerizedSubmissionSmokeTests(unittest.TestCase):
         )
         self.assertEqual(_sensitive_findings("url=https://example.com/path/"), [])
 
+    def test_public_evidence_rejects_embedded_template_placeholders(self) -> None:
+        evidence = {
+            "schema_version": "submission-runner-smoke-v1",
+            "execution_scope": "release_candidate",
+            "result": "passed",
+            "benchmark_source_sha": "a" * 40,
+            "runner_image_or_hosted_version": "runner:<digest>",
+            "private_pack_version": "active-<version>",
+            "private_pack_fingerprint_sha256": "b" * 64,
+            "isolation_model": "container-<isolation>",
+            "command": "run --private-pack <active-pack>",
+            "submitter_private_manifest_read_denied": True,
+            "scorer_controlled_private_eval": True,
+            "cleanup_completed": True,
+            "privacy_scan_passed": True,
+            "public_output_private_artifacts_included": False,
+            "container_constraints": [
+                "network=none",
+                "read_only_rootfs",
+                "cap_drop=ALL",
+                "no_new_privileges",
+                "non_root_user",
+                "resource_limits",
+                "rendered_context_mount_only",
+                "output_file_size_limit",
+            ],
+        }
+
+        errors = validate_smoke_evidence(evidence)
+
+        self.assertIn("runner_image_or_hosted_version must not be a template placeholder", errors)
+        self.assertIn("private_pack_version must not be a template placeholder", errors)
+        self.assertIn("isolation_model must not be a template placeholder", errors)
+        self.assertIn("command must not be a template placeholder", errors)
+
     def test_timeout_force_removes_named_container_and_emits_failed_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
