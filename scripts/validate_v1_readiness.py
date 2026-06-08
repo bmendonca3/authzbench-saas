@@ -91,6 +91,19 @@ PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS = (
     "private seed",
 )
 PRIVATE_OPERATION_ABSOLUTE_PATH_RE = re.compile(r"(^|[\s:])/(Users|home|private/var|var/folders|tmp)(/|$)")
+RELEASE_VALIDATION_TEMPLATE_PATH = "artifact/v1-release-candidate-validation.template.json"
+REQUIRED_RELEASE_VALIDATION_COMMANDS = (
+    "python3 -m unittest discover -s tests",
+    "python3 scripts/validate_public.py --include-scripted-baseline",
+    "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
+    "python3 scripts/validate_v0_release.py",
+    "python3 scripts/validate_baseline_registry.py",
+    "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary",
+    "python3 scripts/generate_paper_tables.py",
+    "git diff --exit-code -- paper/shared",
+    "git diff --check",
+    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs",
+)
 VALID_REVIEW_DECISIONS = {"accepted", "rejected", "unresolved"}
 VALID_REVIEW_DISPOSITIONS = {"findings", "no_findings"}
 VALID_REVIEW_STATUSES = {"pending", "complete"}
@@ -100,11 +113,13 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     HOSTED_EXECUTION_EVIDENCE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
+    RELEASE_VALIDATION_TEMPLATE_PATH,
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
     PRIVATE_OPERATION_BLOCKER_PATH,
+    RELEASE_VALIDATION_TEMPLATE_PATH,
     "docs/goal.md",
 }
 
@@ -893,6 +908,8 @@ def _validate_release_candidate_evidence(
     data = _json_object(evidence_path if evidence_path.is_absolute() else root / evidence_path, unmet)
     if data is None:
         return {"passed": False, "path": str(evidence_path), "unmet": unmet}
+    if data.get("template_only") is True or data.get("schema_version") == "v1-release-candidate-validation-template-v1":
+        unmet.append("release validation template is not release-candidate evidence")
     expected_sha = target_sha or _current_commit_sha()
     if data.get("commit_sha") != expected_sha:
         unmet.append("release validation commit_sha must match target release SHA")
@@ -907,23 +924,11 @@ def _validate_release_candidate_evidence(
         unmet.append("active private pack fingerprint is required for release-candidate evidence")
     elif data.get("private_pack_fingerprint_sha256") != private_pack_fingerprint_sha256:
         unmet.append("private_pack_fingerprint_sha256 must match the active private pack fingerprint")
-    required_commands = (
-        "python3 -m unittest discover -s tests",
-        "python3 scripts/validate_public.py --include-scripted-baseline",
-        "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke",
-        "python3 scripts/validate_v0_release.py",
-        "python3 scripts/validate_baseline_registry.py",
-        "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary",
-        "python3 scripts/generate_paper_tables.py",
-        "git diff --exit-code -- paper/shared",
-        "git diff --check",
-        "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs",
-    )
     commands = data.get("commands")
     if not isinstance(commands, dict):
         unmet.append("commands must be an object keyed by required command")
         commands = {}
-    for command in required_commands:
+    for command in REQUIRED_RELEASE_VALIDATION_COMMANDS:
         command_result = commands.get(command)
         if not isinstance(command_result, dict) or command_result.get("passed") is not True:
             unmet.append(f"missing passed release validation command: {command}")

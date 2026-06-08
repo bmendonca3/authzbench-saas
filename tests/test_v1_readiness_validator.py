@@ -10,6 +10,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.validate_v1_readiness import (
+    RELEASE_VALIDATION_TEMPLATE_PATH,
+    REQUIRED_RELEASE_VALIDATION_COMMANDS,
     _benchmark_source_compatibility_errors,
     _private_pack_fingerprint,
     _source_summaries_have_private_denial,
@@ -18,6 +20,7 @@ from scripts.validate_v1_readiness import (
     _validate_paper_readiness_evidence,
     _validate_private_operation_blocker,
     _validate_private_rotation_metadata,
+    _validate_release_candidate_evidence,
     _working_tree_clean,
     validate_v1_readiness,
 )
@@ -1538,6 +1541,28 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("live upstream review and infrastructure gates must pass", result["unmet"])
+
+    def test_release_candidate_template_lists_every_required_command(self) -> None:
+        template = json.loads((Path(RELEASE_VALIDATION_TEMPLATE_PATH)).read_text(encoding="utf-8"))
+
+        self.assertTrue(template["template_only"])
+        self.assertEqual(
+            set(template["commands"]),
+            set(REQUIRED_RELEASE_VALIDATION_COMMANDS),
+        )
+        for command in REQUIRED_RELEASE_VALIDATION_COMMANDS:
+            self.assertIn("passed", template["commands"][command])
+            self.assertNotEqual(template["commands"][command]["passed"], True)
+
+    def test_release_candidate_template_is_not_release_evidence(self) -> None:
+        result = _validate_release_candidate_evidence(
+            evidence_path=Path(RELEASE_VALIDATION_TEMPLATE_PATH),
+            target_sha="a" * 40,
+            private_pack_fingerprint_sha256="b" * 64,
+        )
+
+        self.assertFalse(result["passed"])
+        self.assertIn("release validation template is not release-candidate evidence", result["unmet"])
 
     def test_private_pack_fingerprint_changes_when_manifest_content_changes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
