@@ -925,8 +925,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   - the structured evidence records the current release commit SHA, the
     benchmark source SHA used for hosted/paper/private-run evidence, every
     required command above with `passed: true`, `exit_code: 0`, and
-    non-placeholder evidence, exact-head CI conclusion and URL, active
-    private-pack fingerprint, and pushed commit status;
+    non-placeholder evidence, exact-head CI conclusion, URL, numeric run ID,
+    workflow name `Validate AuthZBench-SaaS`, head SHA matching the release
+    commit, active private-pack fingerprint, and pushed commit status;
   - strict `python3 scripts/validate_v1_readiness.py --release-evidence
     <external-json>` passes from a clean working tree.
 
