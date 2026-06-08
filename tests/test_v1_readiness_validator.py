@@ -1758,6 +1758,129 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             result["unmet"],
         )
 
+    def test_rotation_metadata_requires_declared_fingerprints_and_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            holdout = root / "tasks_private" / "holdout"
+            for pack_name, task_id in (("active-pack", "private-active"), ("candidate-pack", "private-candidate")):
+                pack = holdout / pack_name / "billing"
+                pack.mkdir(parents=True)
+                (pack / "task.json").write_text(json.dumps({"id": task_id}), encoding="utf-8")
+            metadata = holdout / "rotation-metadata.json"
+            metadata.write_text(
+                json.dumps(
+                    {
+                        "packs": [
+                            {
+                                "id": "active-pack",
+                                "role": "active",
+                                "path": "tasks_private/holdout/active-pack",
+                                "version": "<active-pack-version>",
+                                "fingerprint_sha256": "0" * 64,
+                            },
+                            {
+                                "id": "candidate-pack",
+                                "role": "candidate",
+                                "path": "tasks_private/holdout/<candidate-pack>",
+                                "version": "candidate-v1",
+                                "fingerprint_sha256": "<candidate-fingerprint>",
+                            },
+                        ],
+                        "compatibility": {
+                            "compatible_with_active_pack": "<boolean>",
+                            "comparison_rule": "<comparison-rule>",
+                            "old_rows_policy": "TBD",
+                        },
+                        "retirement_triggers": ["TBD"],
+                        "rerun_policy": {
+                            "rerun_no_tools_baselines": False,
+                            "rerun_tool_agent_baselines": False,
+                            "keep_old_rows_as": "current",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            valid_result = {
+                "passed": True,
+                "leaderboard_suitable": True,
+                "manifest_count": 1,
+            }
+
+            with patch("scripts.validate_v1_readiness.validate_holdout_pack", return_value=valid_result):
+                result = _validate_private_rotation_metadata(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("active-pack: version must be a concrete non-placeholder string", result["unmet"])
+        self.assertIn("active-pack: fingerprint_sha256 must match computed pack fingerprint", result["unmet"])
+        self.assertIn("candidate-pack: path must be a non-empty string", result["unmet"])
+        self.assertIn("candidate-pack: fingerprint_sha256 must be a lowercase SHA-256 digest", result["unmet"])
+        self.assertIn("compatibility.compatible_with_active_pack must be boolean", result["unmet"])
+        self.assertIn("compatibility.comparison_rule must be a concrete non-placeholder string", result["unmet"])
+        self.assertIn("compatibility.old_rows_policy must be a concrete non-placeholder string", result["unmet"])
+        self.assertIn("retirement_triggers must list concrete non-placeholder triggers", result["unmet"])
+        self.assertIn("rerun_policy.rerun_no_tools_baselines must be true", result["unmet"])
+        self.assertIn("rerun_policy.rerun_tool_agent_baselines must be true", result["unmet"])
+        self.assertIn("rerun_policy.keep_old_rows_as must be legacy_snapshot or deprecated", result["unmet"])
+
+    def test_rotation_metadata_can_pass_with_declared_fingerprints_and_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            holdout = root / "tasks_private" / "holdout"
+            for pack_name, task_id in (("active-pack", "private-active"), ("candidate-pack", "private-candidate")):
+                pack = holdout / pack_name / "billing"
+                pack.mkdir(parents=True)
+                (pack / "task.json").write_text(json.dumps({"id": task_id}), encoding="utf-8")
+            active_fingerprint = _private_pack_fingerprint(holdout / "active-pack")
+            candidate_fingerprint = _private_pack_fingerprint(holdout / "candidate-pack")
+            metadata = holdout / "rotation-metadata.json"
+            metadata.write_text(
+                json.dumps(
+                    {
+                        "packs": [
+                            {
+                                "id": "active-pack",
+                                "role": "active",
+                                "path": "tasks_private/holdout/active-pack",
+                                "version": "active-v1",
+                                "fingerprint_sha256": active_fingerprint,
+                            },
+                            {
+                                "id": "candidate-pack",
+                                "role": "candidate",
+                                "path": "tasks_private/holdout/candidate-pack",
+                                "version": "candidate-v1",
+                                "fingerprint_sha256": candidate_fingerprint,
+                            },
+                        ],
+                        "compatibility": {
+                            "compatible_with_active_pack": False,
+                            "comparison_rule": "Do not compare candidate rows with active rows until promoted.",
+                            "old_rows_policy": "Mark old rows stale or legacy before new comparisons.",
+                        },
+                        "retirement_triggers": ["private task leakage suspected"],
+                        "rerun_policy": {
+                            "rerun_no_tools_baselines": True,
+                            "rerun_tool_agent_baselines": True,
+                            "keep_old_rows_as": "legacy_snapshot",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            valid_result = {
+                "passed": True,
+                "leaderboard_suitable": True,
+                "manifest_count": 1,
+            }
+
+            with patch("scripts.validate_v1_readiness.validate_holdout_pack", return_value=valid_result):
+                result = _validate_private_rotation_metadata(root)
+
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["unmet"], [])
+        self.assertEqual(result["active_pack_fingerprint_sha256"], active_fingerprint)
+
     def test_rotation_metadata_rejects_duplicate_pack_paths(self) -> None:
         manifest = {
             "id": "private_task_one",

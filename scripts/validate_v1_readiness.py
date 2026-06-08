@@ -216,8 +216,7 @@ def _placeholder(value: Any) -> bool:
 def _template_placeholder(value: Any) -> bool:
     if not isinstance(value, str):
         return False
-    text = value.strip()
-    return len(text) >= 3 and text.startswith("<") and text.endswith(">")
+    return re.search(r"<[^<>]+>", value.strip()) is not None
 
 
 def _safe_existing_relative_path(root: Path, value: str) -> bool:
@@ -407,7 +406,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         pack_id = pack.get("id")
         role = pack.get("role")
         raw_path = pack.get("path")
-        if not _nonempty_string(pack_id):
+        if not _nonempty_string(pack_id) or _template_placeholder(pack_id):
             unmet.append(f"packs[{index}].id must be a non-empty string")
             pack_id = f"<missing-{index}>"
         if pack_id in seen_ids:
@@ -415,7 +414,16 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         seen_ids.add(str(pack_id))
         if role not in {"active", "shadow", "candidate"}:
             unmet.append(f"{pack_id}: role must be active, shadow, or candidate")
-        if not _nonempty_string(raw_path):
+        version = pack.get("version")
+        if not _nonempty_string(version) or _placeholder(version) or _template_placeholder(version):
+            unmet.append(f"{pack_id}: version must be a concrete non-placeholder string")
+        declared_fingerprint = pack.get("fingerprint_sha256")
+        if (
+            not isinstance(declared_fingerprint, str)
+            or re.fullmatch(r"[0-9a-f]{64}", declared_fingerprint) is None
+        ):
+            unmet.append(f"{pack_id}: fingerprint_sha256 must be a lowercase SHA-256 digest")
+        if not _nonempty_string(raw_path) or _template_placeholder(raw_path):
             unmet.append(f"{pack_id}: path must be a non-empty string")
             continue
         path = Path(str(raw_path))
@@ -478,6 +486,9 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
             seen_task_ids.add(str(task_id))
             pack_task_ids.add(str(task_id))
         pack_fingerprint = _private_pack_fingerprint(pack_path)
+        if isinstance(declared_fingerprint, str) and re.fullmatch(r"[0-9a-f]{64}", declared_fingerprint):
+            if declared_fingerprint != pack_fingerprint:
+                unmet.append(f"{pack_id}: fingerprint_sha256 must match computed pack fingerprint")
         if role == "active":
             active_pack_id = str(pack_id)
             active_pack_fingerprint_sha256 = pack_fingerprint
@@ -491,6 +502,35 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         unmet.append("rotation metadata must declare one shadow or candidate private pack")
     if len([role for role in roles if role == "active"]) != 1:
         unmet.append("rotation metadata must declare exactly one active private pack")
+
+    compatibility = data.get("compatibility")
+    if not isinstance(compatibility, dict):
+        unmet.append("compatibility must be an object")
+        compatibility = {}
+    if not isinstance(compatibility.get("compatible_with_active_pack"), bool):
+        unmet.append("compatibility.compatible_with_active_pack must be boolean")
+    for field in ("comparison_rule", "old_rows_policy"):
+        value = compatibility.get(field)
+        if not _nonempty_string(value) or _placeholder(value) or _template_placeholder(value):
+            unmet.append(f"compatibility.{field} must be a concrete non-placeholder string")
+
+    retirement_triggers = data.get("retirement_triggers")
+    if (
+        not isinstance(retirement_triggers, list)
+        or not retirement_triggers
+        or any(not _nonempty_string(item) or _placeholder(item) or _template_placeholder(item) for item in retirement_triggers)
+    ):
+        unmet.append("retirement_triggers must list concrete non-placeholder triggers")
+
+    rerun_policy = data.get("rerun_policy")
+    if not isinstance(rerun_policy, dict):
+        unmet.append("rerun_policy must be an object")
+        rerun_policy = {}
+    for field in ("rerun_no_tools_baselines", "rerun_tool_agent_baselines"):
+        if rerun_policy.get(field) is not True:
+            unmet.append(f"rerun_policy.{field} must be true")
+    if rerun_policy.get("keep_old_rows_as") not in {"legacy_snapshot", "deprecated"}:
+        unmet.append("rerun_policy.keep_old_rows_as must be legacy_snapshot or deprecated")
 
     return {
         "passed": not unmet,
