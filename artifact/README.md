@@ -211,8 +211,16 @@ from a clean working tree. That external evidence must include an AuthZBench-Saa
 release-evidence schema version, exact-head GitHub Actions URL, numeric run ID
 matching that URL, workflow name `Validate AuthZBench-SaaS`, the run's
 `headSha` matching the release commit, and non-placeholder evidence plus exit
-code `0` for every required command. The tracked private/raw path scan must
-record evidence exactly as `empty output`.
+code `0` for every required command. Required commands include the public-view
+v1 readiness fixture check:
+
+```bash
+python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view \
+  --expected-output artifact/expected-output/v1-readiness-public-view.json
+```
+
+The tracked private/raw path scan must record evidence exactly as
+`empty output`.
 
 ## Claim Boundary
 

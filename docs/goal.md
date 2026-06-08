@@ -346,6 +346,10 @@ private operation, protected execution, scale, and release-candidate evidence.
   - public validation with scripted baseline passes;
   - v0 release validation, baseline registry validation, leaderboard
     submission validation, and v1 readiness validation pass;
+  - release evidence records the public-view v1 readiness fixture command
+    `python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view
+    --expected-output artifact/expected-output/v1-readiness-public-view.json`
+    with `passed: true`, `exit_code: 0`, and non-placeholder evidence;
   - release evidence records schema version, commit SHA, benchmark source SHA,
     active private-pack fingerprint, exact command outcomes, exact-head CI run
     ID, exact-head CI run URL, exact-head CI workflow name
