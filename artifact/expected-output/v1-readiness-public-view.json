@@ -119,7 +119,7 @@
         "evidence_scope must be release_candidate",
         "upstream_review_and_infrastructure_complete must be true",
         "live upstream review and infrastructure gates must pass",
-        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, artifact/README.md, artifact/submission-runner-smoke.json, baselines/README.md, baselines/baseline-registry.json, baselines/kiro-claude-opus-4.6-current-public-54-run1-summary.json, baselines/kiro-claude-opus-4.6-current-public-54-run2-summary.json, baselines/kiro-live-tool-agent-sonnet-current-public-54-run1-summary.json, baselines/kiro-live-tool-agent-sonnet-current-public-54-run2-summary.json"
+        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/support/app.py, artifact/README.md, artifact/submission-runner-smoke.json, baselines/README.md, baselines/baseline-registry.json"
       ]
     },
     {

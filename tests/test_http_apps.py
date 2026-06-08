@@ -854,6 +854,42 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(invalid_status, 400)
         self.assertEqual(invalid_body["error"], "invalid_json")
 
+    def test_bearer_token_auth_matches_actor_header_across_apps(self) -> None:
+        # The in-process scorer (authzbench.core._request_actor) resolves an actor
+        # from an "Authorization: Bearer <token>" header for every app. The live
+        # HTTP fixtures must do the same so a live tool-agent that authenticates
+        # the natural SaaS way is not silently treated as anonymous.
+        cases = [
+            (
+                project_mgmt,
+                "/api/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+                "beta_member",
+            ),
+            (billing, "/api/orgs/{ATLAS_ORG_ID}/settings/plan", "atlas_member"),
+            (support, "/api/tickets/{ORBIT_TICKET_ID}", "acme_agent"),
+            (file_sharing, "/api/files/{APEX_PRIVATE_FILE_ID}", "northstar_viewer"),
+        ]
+        for module, path_template, actor in cases:
+            with self.subTest(app=module.__name__):
+                server, base_url = _serve(module.Handler)
+                self.addCleanup(server.server_close)
+                self.addCleanup(server.shutdown)
+                refs = module.public_refs(module.Handler.state)
+                token = module.public_actors(module.Handler.state)[actor]["token"]
+                url = f"{base_url}{path_template.format(**refs)}"
+
+                header_status, header_body = _request(url, actor)
+                self.assertEqual(header_status, 200)
+
+                bearer_status, bearer_body = _request_with_headers(
+                    url, {"Authorization": f"Bearer {token}"}
+                )
+                # Bearer auth must produce the same authenticated result as the
+                # x-authzbench-actor header, not an anonymous 401.
+                self.assertEqual(bearer_status, header_status)
+                self.assertEqual(bearer_body, header_body)
+                self.assertEqual(bearer_body["viewer"], actor)
+
 
 if __name__ == "__main__":
     unittest.main()

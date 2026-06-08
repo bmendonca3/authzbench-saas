@@ -266,10 +266,25 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(encoded)
 
+    def _actor_name(self, state: dict[str, Any]) -> str | None:
+        actor = self.headers.get("x-authzbench-actor")
+        if actor:
+            return actor
+        authorization = self.headers.get("authorization") or ""
+        prefix = "Bearer "
+        if not authorization.startswith(prefix):
+            return None
+        token = authorization[len(prefix):].strip()
+        for actor_name, actor_data in state["actors"].items():
+            if actor_data["token"] == token:
+                return actor_name
+        return None
+
     def _handle_and_send(self, method: str, body: dict[str, Any] | None = None) -> None:
         seed = self.headers.get("x-authzbench-seed") or "dev"
-        actor = self.headers.get("x-authzbench-actor")
-        response = handle(self._state(), method, self.path, actor, body)
+        state = self._state()
+        actor = self._actor_name(state)
+        response = handle(state, method, self.path, actor, body)
         log_request(
             "billing",
             seed=seed,
