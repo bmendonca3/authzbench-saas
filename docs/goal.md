@@ -117,6 +117,10 @@ Recent repo-side hardening checkpoints:
   protected-private evidence validation, strict release-evidence validation, and
   the tracked-private-path privacy scan, while still remaining runbook evidence
   only;
+- the external-review packet now includes a validator-required public-safe
+  reviewer intake form, so reviewers have a human-facing response shape that
+  maps to the structured summary without exposing private identity or private
+  holdout details;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
@@ -209,6 +213,10 @@ private operation, protected execution, scale, and release-candidate evidence.
     reviewer grants permission;
   - accepted or unresolved findings link to concrete follow-up commits, docs,
     tests, task changes, or other repo artifacts;
+  - `docs/reviews/external-review-intake.md` is sent with the packet so
+    reviewers return role/scope, date, artifacts, bounded questions,
+    disposition, findings or no-finding record, decisions, claim impact, and
+    follow-up artifacts in the expected shape;
   - `docs/reviews/external-review-response.template.json` is used only as a
     public-safe starting shape and every placeholder is replaced before review
     evidence is recorded;
