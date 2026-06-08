@@ -56,6 +56,11 @@ As of the current `main` checkpoint:
 
 Recent repo-side hardening checkpoints:
 
+- PR #2 (`fix/live-bearer-auth-parity`) was closed as superseded, and the
+  Bearer-auth fixture work landed through merged PR #8
+  (`fix/live-bearer-auth-parity-bm`); no local worktree or local branch remains
+  for the superseded branch, and the stale local No-Mistakes gate ref was
+  removed after confirming the worktree was clean;
 - commit `fd461390bd2816ccb8f36d9a3a1979d3ded3ec64` hardened the
   external-review evidence contract so completed lanes must record concrete
   bounded questions reviewed and per-decision summaries;
