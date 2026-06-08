@@ -9,6 +9,12 @@
       "review_date": "<YYYY-MM-DD>",
       "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
       "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
+      "questions_reviewed": [
+        "Do the public tasks exercise recognizable SaaS authorization boundaries rather than synthetic-only quirks?",
+        "Are vulnerable tasks paired with controls that would catch over-reporting?",
+        "Which task family is weakest, most ambiguous, or easiest to game?",
+        "Would any public task teach an unsafe real-world exploit pattern beyond normal authorization-testing knowledge?"
+      ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
         "docs/task-quality-matrix.md",
@@ -34,6 +40,12 @@
       "review_date": "<YYYY-MM-DD>",
       "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
       "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
+      "questions_reviewed": [
+        "Does the evidence support the stated claim boundary?",
+        "Are public-split diagnostics separated from private-holdout leaderboard claims?",
+        "Are repeated-run ranges presented as descriptive evidence rather than statistical certainty?",
+        "Are stale 44-task, frozen 46-task, historical 49-task, and current 54-task baselines separated clearly?"
+      ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
         "docs/methodology.md",
@@ -61,6 +73,12 @@
       "review_date": "<YYYY-MM-DD>",
       "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
       "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
+      "questions_reviewed": [
+        "Are no-tools model baselines and live HTTP tool-agent baselines compared only where comparison is fair?",
+        "Is target-request correlation useful and bounded correctly?",
+        "Are model labels, harness type, tool access, timeouts, benchmark fingerprint, and run provenance sufficient?",
+        "What artifact would make agent comparability easier to inspect?"
+      ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
         "docs/agent-evaluator-kit.md",

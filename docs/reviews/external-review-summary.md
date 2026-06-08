@@ -82,10 +82,11 @@ no-finding dispositions.
 ## Completion Gate
 
 Do not mark the external-review goal complete until each lane records a real
-review date, reviewer role/scope, artifacts reviewed, findings or explicit
-no-finding disposition, and accepted/rejected/unresolved decisions. Packet-ready
-and structured pending-review evidence are useful, but neither is external
-review. The response template is also not review evidence.
+review date, reviewer role/scope, bounded questions reviewed, artifacts
+reviewed, findings or explicit no-finding disposition, and
+accepted/rejected/unresolved decisions. Packet-ready and structured
+pending-review evidence are useful, but neither is external review. The
+response template is also not review evidence.
 
 ## Finding Log Template
 

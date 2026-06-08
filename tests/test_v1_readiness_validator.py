@@ -1073,6 +1073,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             self.assertIn("review_date", lane)
             self.assertIn("reviewer_role_scope", lane)
             self.assertIn("claim_boundary_impact", lane)
+            self.assertIn("questions_reviewed", lane)
             self.assertIn("artifacts_reviewed", lane)
             self.assertIn("disposition", lane)
             self.assertIn("decisions", lane)
@@ -1163,6 +1164,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                                 "review_date": date.today().isoformat(),
                                 "reviewer_role_scope": "Independent AppSec reviewer for SaaS authorization tasks.",
                                 "claim_boundary_impact": "Review accepted one task-language clarification.",
+                                "questions_reviewed": ["Are public SaaS authorization boundaries realistic?"],
                                 "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
                                 "disposition": "findings",
                                 "decisions": [
@@ -1181,6 +1183,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                                 "review_date": date.today().isoformat(),
                                 "reviewer_role_scope": "Independent benchmark methodology reviewer.",
                                 "claim_boundary_impact": "No release-claim changes requested.",
+                                "questions_reviewed": ["Does the evidence support the stated claim boundary?"],
                                 "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
                                 "disposition": "no_findings",
                                 "decisions": [
@@ -1198,6 +1201,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                                 "review_date": date.today().isoformat(),
                                 "reviewer_role_scope": "Independent AI-agent tooling reviewer.",
                                 "claim_boundary_impact": "No harness-claim changes requested.",
+                                "questions_reviewed": ["Are harness assumptions inspectable for agent comparability?"],
                                 "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
                                 "disposition": "no_findings",
                                 "decisions": [
@@ -1221,6 +1225,68 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertTrue(result["passed"])
         self.assertEqual(result["unmet"], [])
+
+    def test_external_review_complete_lanes_require_questions_and_decision_summaries(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# artifact\n", encoding="utf-8")
+            evidence = root / "docs" / "reviews" / "external-review-summary.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "review_lanes": [
+                            {
+                                "lane": "Application security",
+                                "review_date": date.today().isoformat(),
+                                "reviewer_role_scope": "External appsec reviewer",
+                                "claim_boundary_impact": "Narrowed one task-realism claim.",
+                                "questions_reviewed": ["TBD"],
+                                "artifacts_reviewed": ["README.md"],
+                                "disposition": "findings",
+                                "decisions": [
+                                    {
+                                        "finding": "Clarify one control.",
+                                        "decision": "rejected",
+                                        "summary": "TBD",
+                                        "claim_boundary_impact": "No claim change.",
+                                    }
+                                ],
+                            },
+                            {
+                                "lane": "Benchmark/evals methodology",
+                                "review_date": date.today().isoformat(),
+                                "reviewer_role_scope": "External evals reviewer",
+                                "claim_boundary_impact": "No claim-boundary changes.",
+                                "questions_reviewed": ["Are stale baselines separated clearly?"],
+                                "artifacts_reviewed": ["README.md"],
+                                "disposition": "no_findings",
+                                "decisions": [],
+                            },
+                            {
+                                "lane": "AI-agent/tooling",
+                                "review_date": date.today().isoformat(),
+                                "reviewer_role_scope": "External agent tooling reviewer",
+                                "claim_boundary_impact": "No claim-boundary changes.",
+                                "questions_reviewed": ["Is agent comparability inspectable?"],
+                                "artifacts_reviewed": ["README.md"],
+                                "disposition": "no_findings",
+                                "decisions": [],
+                            },
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "Application security: questions_reviewed must list concrete bounded questions",
+            result["unmet"],
+        )
+        self.assertIn("Application security: decisions[1].summary is required", result["unmet"])
 
     def test_external_review_decisions_reject_placeholder_follow_up_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

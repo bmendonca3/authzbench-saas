@@ -83,6 +83,7 @@ Each lane is complete only when the public summary records:
 
 - reviewer role and scope;
 - review date;
+- bounded questions reviewed;
 - artifacts reviewed;
 - findings or explicit no-finding disposition;
 - accepted, rejected, or unresolved decision for each finding;

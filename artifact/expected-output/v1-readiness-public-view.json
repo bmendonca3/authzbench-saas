@@ -24,7 +24,7 @@
     },
     {
       "evidence": [
-        "docs/reviews/external-review-summary.md must record real review dates, reviewed artifacts, findings or no-finding dispositions, and decisions",
+        "docs/reviews/external-review-summary.md must record real review dates, bounded questions reviewed, reviewed artifacts, findings or no-finding dispositions, and decisions",
         "docs/reviews/external-review-summary.json"
       ],
       "id": "external_review_completed",
