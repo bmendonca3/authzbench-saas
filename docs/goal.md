@@ -86,6 +86,10 @@ Recent repo-side hardening checkpoints:
   tied to GitHub Actions run `27147339042` on merge commit
   `5fbe63d1c73031814582a2494e2cef44f1981279`, while keeping both gates red
   because release-candidate private inputs are still absent;
+- the public blocker reference-scope hardening checkpoint requires both public
+  blocker records to declare `reference_scope: prior_public_checkpoint`, so
+  historical public CI references cannot be mistaken for release-candidate or
+  exact-head private evidence;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
@@ -547,8 +551,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   Current evidence:
   - `artifact/submission-runner-smoke.json` now exists as structured blocker
     evidence, not release-candidate smoke evidence;
-  - the blocker record cites a prior exact-head public CI rehearsal that
-    passed Docker-backed container smoke;
+  - the blocker record marks the prior public CI rehearsal as
+    `reference_scope: prior_public_checkpoint` and cites the exact-head
+    Docker-backed container-smoke run;
   - the v1 readiness validator accepts the blocker structure but still keeps
     `hosted_or_containerized_submission_execution` red until the blocker record
     is replaced by `execution_scope: release_candidate` smoke evidence tied to
