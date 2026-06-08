@@ -119,7 +119,7 @@
         "evidence_scope must be release_candidate",
         "upstream_review_and_infrastructure_complete must be true",
         "live upstream review and infrastructure gates must pass",
-        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/support/app.py, artifact/README.md, artifact/submission-runner-smoke.json, baselines/README.md, baselines/baseline-registry.json"
+        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/support/app.py, artifact/README.md, artifact/install.md, artifact/submission-runner-smoke.json, baselines/README.md"
       ]
     },
     {
