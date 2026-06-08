@@ -47,6 +47,7 @@ REQUIRED_REVIEW_PACKET_ARTIFACTS = (
     "docs/boundary-reasoning-calibration-study.md",
     "docs/v1-community-submission-governance.md",
     "docs/authzbench-saas-v1-prep-technical-report.md",
+    "docs/reviews/external-review-intake.md",
     "baselines/baseline-registry.json",
     "baselines",
     "docs/assets/benchmark-charts",
