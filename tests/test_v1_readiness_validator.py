@@ -1248,9 +1248,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                                 "lane": "Application security",
                                 "review_status": "pending",
                                 "requested_artifacts": ["missing.md"],
-                                "requested_questions": ["TBD"],
-                                "blocker": "TBD",
-                                "next_action": "TBD",
+                                "requested_questions": ["Question TBD after reviewer confirms scope."],
+                                "blocker": "Reviewer unknown until outreach completes.",
+                                "next_action": "TODO recruit reviewer.",
                             }
                         ]
                     }
@@ -1313,7 +1313,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             {
                                 "lane": "Application security",
                                 "review_date": "2026-06-07",
-                                "reviewer_role_scope": "External appsec reviewer",
+                                "reviewer_role_scope": "External appsec reviewer pending final scope note.",
                                 "claim_boundary_impact": "Reviewer confirmed claim boundary.",
                                 "artifacts_reviewed": ["README.md"],
                                 "disposition": "findings",
@@ -1446,16 +1446,16 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             {
                                 "lane": "Application security",
                                 "review_date": date.today().isoformat(),
-                                "reviewer_role_scope": "External appsec reviewer",
+                                "reviewer_role_scope": "External appsec reviewer pending final scope note.",
                                 "claim_boundary_impact": "Narrowed one task-realism claim.",
-                                "questions_reviewed": ["TBD"],
+                                "questions_reviewed": ["Does the reviewer still need TBD follow-up?"],
                                 "artifacts_reviewed": ["README.md"],
                                 "disposition": "findings",
                                 "decisions": [
                                     {
                                         "finding": "Clarify one control.",
                                         "decision": "rejected",
-                                        "summary": "TBD",
+                                        "summary": "Decision summary TODO after reviewer callback.",
                                         "claim_boundary_impact": "No claim change.",
                                     }
                                 ],
@@ -1489,6 +1489,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             result = _validate_external_review_evidence(root)
 
         self.assertFalse(result["passed"])
+        self.assertIn("Application security: reviewer_role_scope is required", result["unmet"])
         self.assertIn(
             "Application security: questions_reviewed must list concrete bounded questions",
             result["unmet"],

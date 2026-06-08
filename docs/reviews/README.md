@@ -26,5 +26,8 @@ For external v1/community readiness review, use
 reviewer responses. The template is public-safe scaffolding, not review
 evidence, and the v1 readiness validator rejects it if it is copied unchanged
 into `external-review-summary.json`.
-The same validator also scans completed external-review evidence for sensitive
-private-path markers, sensitive private-evidence keys, and local absolute paths.
+The same validator also rejects unresolved placeholders embedded in pending or
+completed review fields, including `TBD`, `TODO`, `pending`, `unknown`, `n/a`,
+and angle-bracket placeholders, and scans completed external-review evidence
+for sensitive private-path markers, sensitive private-evidence keys, and local
+absolute paths.
