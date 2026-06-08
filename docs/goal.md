@@ -208,8 +208,10 @@ private operation, protected execution, scale, and release-candidate evidence.
     credentials, and local absolute paths.
   Current blocker evidence:
   - `artifact/submission-runner-smoke.json` is only structured blocker evidence;
-  - its public rehearsal reference includes an AuthZBench-SaaS Actions URL and
-    matching numeric run ID, plus workflow name `Validate AuthZBench-SaaS`;
+  - its public rehearsal reference is marked
+    `reference_scope: prior_public_checkpoint` and includes an AuthZBench-SaaS
+    Actions URL and matching numeric run ID, plus workflow name `Validate
+    AuthZBench-SaaS`;
   - `artifact/hosted-submission-execution-runbook.json` defines the
     maintainer-hosted and fully containerized smoke procedure but does not
     satisfy the gate;
@@ -250,8 +252,10 @@ private operation, protected execution, scale, and release-candidate evidence.
   Current blocker evidence:
   - `artifact/private-holdout-operation-blocker.json` is public-safe structured
     blocker evidence only;
-  - its public readiness reference includes an AuthZBench-SaaS Actions URL and
-    matching numeric run ID, plus workflow name `Validate AuthZBench-SaaS`;
+  - its public readiness reference is marked
+    `reference_scope: prior_public_checkpoint` and includes an AuthZBench-SaaS
+    Actions URL and matching numeric run ID, plus workflow name `Validate
+    AuthZBench-SaaS`;
   - `artifact/private-holdout-operation-runbook.json` defines required private
     inputs, operation steps, rotation metadata fields, acceptance checks, and
     publication rules but does not satisfy the gate;
