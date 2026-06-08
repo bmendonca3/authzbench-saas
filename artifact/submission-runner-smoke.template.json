@@ -1,0 +1,34 @@
+{
+  "schema_version": "submission-runner-smoke-template-v1",
+  "template_only": true,
+  "claim_boundary": "Copy this template to artifact/submission-runner-smoke.json only after replacing every placeholder with real release-candidate hosted or containerized submission-smoke evidence. This template is not smoke evidence and must not make validate_v1_readiness.py pass.",
+  "execution_scope": "release_candidate",
+  "result": "<passed-after-smoke>",
+  "benchmark_source_sha": "<release-benchmark-source-sha>",
+  "runner_image_or_hosted_version": "<maintainer-runner-image-digest-or-hosted-runner-version>",
+  "private_pack_version": "<active-private-pack-version-from-rotation-metadata>",
+  "private_pack_fingerprint_sha256": "<active-private-pack-fingerprint-sha256>",
+  "isolation_model": "<hosted-or-containerized-private-evaluation-isolation-model>",
+  "command": "<release-candidate smoke command or hosted-runner invocation>",
+  "submitter_private_manifest_read_denied": "<true-after-denial-probe>",
+  "scorer_controlled_private_eval": "<true-after-scorer-control-proof>",
+  "cleanup_completed": "<true-after-run-cleanup>",
+  "privacy_scan_passed": "<true-after-public-output-privacy-scan>",
+  "public_output_private_artifacts_included": "<false-after-redaction-check>",
+  "container_constraints": [
+    "network=none",
+    "read_only_rootfs",
+    "cap_drop=ALL",
+    "no_new_privileges",
+    "non_root_user",
+    "resource_limits",
+    "rendered_context_mount_only",
+    "output_file_size_limit"
+  ],
+  "release_notes": [
+    "Use only with the active private pack declared in rotation metadata.",
+    "The private_pack_fingerprint_sha256 must match the active pack fingerprint.",
+    "The benchmark_source_sha must match the release-candidate benchmark source SHA.",
+    "Do not include private manifests, task IDs, private routes, private seeds, raw outputs, captures, credentials, or local absolute paths."
+  ]
+}

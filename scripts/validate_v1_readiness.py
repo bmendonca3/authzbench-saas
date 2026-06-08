@@ -52,6 +52,7 @@ REQUIRED_REVIEW_PACKET_ARTIFACTS = (
 EXTERNAL_REVIEW_EVIDENCE_PATH = "docs/reviews/external-review-summary.json"
 EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH = "docs/reviews/external-review-response.template.json"
 HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
+HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
@@ -113,6 +114,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HOSTED_EXECUTION_EVIDENCE_PATH,
+    HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
@@ -121,6 +123,7 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     "docs/goal.md",
@@ -790,6 +793,8 @@ def _validate_hosted_execution_evidence(
     data = _json_object(root / HOSTED_EXECUTION_EVIDENCE_PATH, unmet)
     if data is None:
         return {"passed": False, "path": HOSTED_EXECUTION_EVIDENCE_PATH, "unmet": unmet}
+    if data.get("template_only") is True or data.get("schema_version") == "submission-runner-smoke-template-v1":
+        unmet.append("submission-runner smoke template is not release-candidate hosted execution evidence")
 
     if data.get("evidence_status") == "blocked":
         if data.get("schema_version") != HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION:
