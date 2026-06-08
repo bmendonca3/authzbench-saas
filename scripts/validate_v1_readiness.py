@@ -1438,7 +1438,10 @@ def _validate_paper_readiness_evidence(
         verification = {}
     required_verification_commands = {
         "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
-        "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
+        "charts_command": (
+            "python3 scripts/generate_benchmark_charts.py "
+            "&& git diff --exit-code -- docs/assets/benchmark-charts"
+        ),
         "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     }
     for field, expected in required_verification_commands.items():
