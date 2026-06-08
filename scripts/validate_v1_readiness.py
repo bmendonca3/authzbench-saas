@@ -557,8 +557,13 @@ def _validate_private_operation_blocker(
         readiness = {}
     if not _sha(readiness.get("commit_sha")):
         unmet.append("last_verified_public_readiness.commit_sha must be a 40-character lowercase Git SHA")
-    if not _authzbench_actions_run_url(readiness.get("ci_run_url")):
+    readiness_run_id_from_url = _authzbench_actions_run_id_from_url(readiness.get("ci_run_url"))
+    if readiness_run_id_from_url is None:
         unmet.append("last_verified_public_readiness.ci_run_url must reference an AuthZBench-SaaS Actions run")
+    if not _authzbench_actions_run_id(readiness.get("ci_run_id")):
+        unmet.append("last_verified_public_readiness.ci_run_id must be a numeric GitHub Actions run id")
+    elif readiness_run_id_from_url is not None and readiness.get("ci_run_id") != readiness_run_id_from_url:
+        unmet.append("last_verified_public_readiness.ci_run_id must match ci_run_url")
     if readiness.get("v1_ready") is not False:
         unmet.append("last_verified_public_readiness.v1_ready must be false")
     if not isinstance(readiness.get("passed_gate_count"), int):
@@ -1291,8 +1296,13 @@ def _validate_hosted_execution_evidence(
             unmet.append("last_verified_public_rehearsal.result must be passed")
         if not _sha(rehearsal.get("commit_sha")):
             unmet.append("last_verified_public_rehearsal.commit_sha must be a 40-character lowercase Git SHA")
-        if not _authzbench_actions_run_url(rehearsal.get("ci_run_url")):
+        rehearsal_run_id_from_url = _authzbench_actions_run_id_from_url(rehearsal.get("ci_run_url"))
+        if rehearsal_run_id_from_url is None:
             unmet.append("last_verified_public_rehearsal.ci_run_url must reference an AuthZBench-SaaS Actions run")
+        if not _authzbench_actions_run_id(rehearsal.get("ci_run_id")):
+            unmet.append("last_verified_public_rehearsal.ci_run_id must be a numeric GitHub Actions run id")
+        elif rehearsal_run_id_from_url is not None and rehearsal.get("ci_run_id") != rehearsal_run_id_from_url:
+            unmet.append("last_verified_public_rehearsal.ci_run_id must match ci_run_url")
         unmet.append("hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist")
         return {
             "passed": False,

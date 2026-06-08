@@ -205,6 +205,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "last_verified_public_readiness": {
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
+                            "ci_run_id": "1",
                             "v1_ready": False,
                             "passed_gate_count": 3,
                             "unmet_gate_count": 8,
@@ -282,7 +283,55 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "last_verified_public_readiness.ci_run_url must reference an AuthZBench-SaaS Actions run",
             result["unmet"],
         )
+        self.assertIn(
+            "last_verified_public_readiness.ci_run_id must be a numeric GitHub Actions run id",
+            result["unmet"],
+        )
         self.assertIn("last_verified_public_readiness.v1_ready must be false", result["unmet"])
+
+    def test_private_operation_blocker_requires_matching_ci_run_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "private-holdout-operation-blocker.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "private-holdout-operation-blocker-v1",
+                        "evidence_status": "blocked",
+                        "public_claim_boundary": "Structured blocker evidence only; not v1 private operation.",
+                        "blocked_gates": [
+                            "rotating_private_holdouts_implemented",
+                            "repeated_private_tool_agent_evidence",
+                            "repeated_private_no_tools_evidence",
+                            "v1_task_scale",
+                        ],
+                        "blocker": "Needs active and shadow private packs plus repeated private rows.",
+                        "next_actions": ["Stage private packs under the maintainer-only holdout root."],
+                        "required_private_inputs": ["active private pack", "shadow private pack"],
+                        "current_public_view": {
+                            "public_task_count": 54,
+                            "validated_private_holdout_task_count": 0,
+                            "total_task_count": 54,
+                            "required_total_task_count": 100,
+                        },
+                        "last_verified_public_readiness": {
+                            "commit_sha": "a" * 40,
+                            "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
+                            "ci_run_id": "2",
+                            "v1_ready": False,
+                            "passed_gate_count": 3,
+                            "unmet_gate_count": 8,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("last_verified_public_readiness.ci_run_id must match ci_run_url", result["unmet"])
 
     def test_private_operation_runbook_is_structured_procedure_evidence(self) -> None:
         result = _validate_private_operation_runbook()
@@ -795,6 +844,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "result": "passed",
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
+                            "ci_run_id": "1",
                         },
                     }
                 ),
@@ -854,6 +904,46 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "last_verified_public_rehearsal.ci_run_url must reference an AuthZBench-SaaS Actions run",
             result["unmet"],
         )
+        self.assertIn(
+            "last_verified_public_rehearsal.ci_run_id must be a numeric GitHub Actions run id",
+            result["unmet"],
+        )
+
+    def test_hosted_smoke_blocked_evidence_requires_matching_ci_run_id(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-blocker-v1",
+                        "evidence_status": "blocked",
+                        "blocked_gate": "hosted_or_containerized_submission_execution",
+                        "blocker": "Needs the active private pack and maintainer-platform release smoke.",
+                        "next_action": "Run the release-candidate smoke on the maintainer platform.",
+                        "required_release_inputs": [
+                            "active private pack path",
+                            "active private pack version",
+                            "active private pack fingerprint",
+                            "maintainer-platform runner image or hosted version",
+                        ],
+                        "last_verified_public_rehearsal": {
+                            "execution_scope": "rehearsal",
+                            "result": "passed",
+                            "commit_sha": "a" * 40,
+                            "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
+                            "ci_run_id": "2",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("last_verified_public_rehearsal.ci_run_id must match ci_run_url", result["unmet"])
 
     def test_hosted_smoke_rejects_rehearsal_execution_scope(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
