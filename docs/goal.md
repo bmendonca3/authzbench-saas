@@ -103,6 +103,10 @@ Recent repo-side hardening checkpoints:
   records to exact-head GitHub Actions run `27151712736` on merge commit
   `5d76970ecefb0c4959834e4f7acd81e8b51e11d9`, while keeping hosted/private
   operation gates red because release-candidate private inputs are still absent;
+- the release-candidate validation contract now requires the public-view v1
+  readiness fixture check as a recorded release command, so final release
+  evidence must prove the tracked clean-clone readiness JSON still matches
+  `artifact/expected-output/v1-readiness-public-view.json`;
 - strict v1 readiness still correctly reports `v1_ready: false` because the
   external-review, private-operation, scale, paper, and release-candidate
   evidence gates remain open.
