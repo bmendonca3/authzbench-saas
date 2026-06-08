@@ -1,0 +1,69 @@
+{
+  "schema_version": "external-review-summary-v1",
+  "claim_boundary": "No independent external review is claimed until every lane has review_status complete with a real review date, artifacts reviewed, disposition, decisions, and claim-boundary impact.",
+  "review_lanes": [
+    {
+      "lane": "Application security",
+      "review_status": "pending",
+      "requested_artifacts": [
+        "docs/reviews/external-review-packet.md",
+        "docs/task-quality-matrix.md",
+        "docs/task-quality-rubric.md",
+        "docs/evidence-and-claims.md",
+        "docs/benchmark-card.md",
+        "docs/authzbench-saas-v1-prep-technical-report.md"
+      ],
+      "requested_questions": [
+        "Do the public tasks exercise recognizable SaaS authorization boundaries rather than synthetic-only quirks?",
+        "Are vulnerable tasks paired with controls that would catch over-reporting?",
+        "Which task family is weakest, most ambiguous, or easiest to game?",
+        "Would any public task teach an unsafe real-world exploit pattern beyond normal authorization-testing knowledge?"
+      ],
+      "blocker": "Needs an independent application-security reviewer to return findings or an explicit no-finding disposition.",
+      "next_action": "Recruit an AppSec reviewer for task realism, authorization-boundary quality, and false-positive control quality."
+    },
+    {
+      "lane": "Benchmark/evals methodology",
+      "review_status": "pending",
+      "requested_artifacts": [
+        "docs/reviews/external-review-packet.md",
+        "docs/methodology.md",
+        "docs/score-policy.md",
+        "docs/result-schema.md",
+        "docs/leaderboard-schema.md",
+        "docs/baseline-credibility.md",
+        "docs/baseline-variance-analysis.md",
+        "baselines/baseline-registry.json"
+      ],
+      "requested_questions": [
+        "Does the evidence support the stated claim boundary?",
+        "Are public-split diagnostics separated from private-holdout leaderboard claims?",
+        "Are repeated-run ranges presented as descriptive evidence rather than statistical certainty?",
+        "Are stale 44-task, frozen 46-task, historical 49-task, and current 54-task baselines separated clearly?"
+      ],
+      "blocker": "Needs an independent benchmark/evals reviewer to return findings or an explicit no-finding disposition.",
+      "next_action": "Recruit an evals reviewer for split design, scoring validity, variance framing, and release claim limits."
+    },
+    {
+      "lane": "AI-agent/tooling",
+      "review_status": "pending",
+      "requested_artifacts": [
+        "docs/reviews/external-review-packet.md",
+        "docs/agent-evaluator-kit.md",
+        "docs/leaderboard-schema.md",
+        "docs/boundary-reasoning-calibration-study.md",
+        "docs/v1-community-submission-governance.md",
+        "artifact/run-bundle.md",
+        "baselines/baseline-registry.json"
+      ],
+      "requested_questions": [
+        "Are no-tools model baselines and live HTTP tool-agent baselines compared only where comparison is fair?",
+        "Is target-request correlation useful and bounded correctly?",
+        "Are model labels, harness type, tool access, timeouts, benchmark fingerprint, and run provenance sufficient?",
+        "What artifact would make agent comparability easier to inspect?"
+      ],
+      "blocker": "Needs an independent AI-agent/tooling reviewer to return findings or an explicit no-finding disposition.",
+      "next_action": "Recruit an AI-agent/tooling reviewer for harness assumptions, tool access, target-request correlation, and run-bundle evidence."
+    }
+  ]
+}

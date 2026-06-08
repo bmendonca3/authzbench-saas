@@ -57,6 +57,7 @@ ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
 
 VALID_REVIEW_DECISIONS = {"accepted", "rejected", "unresolved"}
 VALID_REVIEW_DISPOSITIONS = {"findings", "no_findings"}
+VALID_REVIEW_STATUSES = {"pending", "complete"}
 
 POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
@@ -497,6 +498,42 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
             unmet.append(f"review_lanes[{index}].lane must be one of the required review lanes")
             continue
         lanes_by_name[str(name)] = lane
+        review_status = lane.get("review_status", "complete")
+        if review_status not in VALID_REVIEW_STATUSES:
+            unmet.append(f"{name}: review_status must be pending or complete")
+            continue
+        if review_status == "pending":
+            requested_artifacts = lane.get("requested_artifacts")
+            if (
+                not isinstance(requested_artifacts, list)
+                or not requested_artifacts
+                or any(not _nonempty_string(item) for item in requested_artifacts)
+            ):
+                unmet.append(f"{name}: pending review requires requested_artifacts")
+                requested_artifacts = []
+            for artifact in requested_artifacts:
+                if _placeholder(artifact):
+                    unmet.append(f"{name}: requested_artifacts cannot contain placeholders")
+                    continue
+                artifact_path = Path(str(artifact))
+                if artifact_path.is_absolute() or ".." in artifact_path.parts:
+                    unmet.append(f"{name}: requested_artifacts entries must be safe relative paths")
+                    continue
+                if not (root / artifact_path).exists():
+                    unmet.append(f"{name}: requested artifact does not exist: {artifact}")
+            requested_questions = lane.get("requested_questions")
+            if (
+                not isinstance(requested_questions, list)
+                or not requested_questions
+                or any(not _nonempty_string(item) or _placeholder(item) for item in requested_questions)
+            ):
+                unmet.append(f"{name}: pending review requires requested_questions")
+            if not _nonempty_string(lane.get("blocker")) or _placeholder(lane.get("blocker")):
+                unmet.append(f"{name}: pending review requires blocker")
+            if not _nonempty_string(lane.get("next_action")) or _placeholder(lane.get("next_action")):
+                unmet.append(f"{name}: pending review requires next_action")
+            unmet.append(f"{name}: independent review is pending")
+            continue
         try:
             review_date = date.fromisoformat(str(lane.get("review_date", "")))
         except ValueError:
