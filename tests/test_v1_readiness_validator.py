@@ -2109,6 +2109,25 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn("release validation template is not release-candidate evidence", result["unmet"])
 
+    def test_release_candidate_evidence_requires_release_schema_version(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            commit_sha = self._seed_git_root(root)
+            payload = self._release_candidate_evidence_payload(commit_sha)
+            payload["schema_version"] = "wrong"
+            evidence = root / "release-evidence.json"
+            evidence.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_release_candidate_evidence(
+                root,
+                evidence_path=evidence,
+                target_sha=commit_sha,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertIn("schema_version must be v1-release-candidate-validation-v1", result["unmet"])
+
     def test_release_candidate_evidence_can_pass_with_exact_ci_url_and_command_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

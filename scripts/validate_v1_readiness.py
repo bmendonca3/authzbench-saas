@@ -73,6 +73,7 @@ PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION = "private-holdout-operation-blocker-v1
 PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION = "private-holdout-operation-runbook-v1"
 PAPER_READINESS_RUNBOOK_SCHEMA_VERSION = "v1-paper-readiness-runbook-v1"
 RELEASE_VALIDATION_RUNBOOK_SCHEMA_VERSION = "v1-release-candidate-validation-runbook-v1"
+RELEASE_VALIDATION_SCHEMA_VERSION = "v1-release-candidate-validation-v1"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 PRIVATE_OPERATION_BLOCKED_GATES = (
     "rotating_private_holdouts_implemented",
@@ -1514,6 +1515,8 @@ def _validate_release_candidate_evidence(
     unmet.extend(_release_validation_evidence_public_safety_errors(data))
     if data.get("template_only") is True or data.get("schema_version") == "v1-release-candidate-validation-template-v1":
         unmet.append("release validation template is not release-candidate evidence")
+    if data.get("schema_version") != RELEASE_VALIDATION_SCHEMA_VERSION:
+        unmet.append(f"schema_version must be {RELEASE_VALIDATION_SCHEMA_VERSION}")
     expected_sha = target_sha or _current_commit_sha()
     if data.get("commit_sha") != expected_sha:
         unmet.append("release validation commit_sha must match target release SHA")
@@ -1605,6 +1608,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
 
     evidence_fields = data.get("required_evidence_fields")
     required_fields = {
+        "schema_version",
         "commit_sha",
         "benchmark_source_sha",
         "private_pack_fingerprint_sha256",

@@ -191,8 +191,9 @@ commands, evidence fields, acceptance checks, and publication rules. A valid
 runbook still does not satisfy the final release-candidate gate; strict
 readiness requires an external evidence file passed with `--release-evidence`
 from a clean working tree. That external evidence must include an AuthZBench-SaaS
-exact-head GitHub Actions URL, the run's `headSha` matching the release commit,
-and non-placeholder evidence plus exit code `0` for every required command.
+release-evidence schema version, exact-head GitHub Actions URL, the run's
+`headSha` matching the release commit, and non-placeholder evidence plus exit
+code `0` for every required command.
 
 ## Claim Boundary
 
