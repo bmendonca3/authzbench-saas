@@ -11,6 +11,11 @@ The machine-readable pending-review tracker lives in
 `docs/reviews/external-review-summary.json`; it records the three required
 lanes, requested artifacts, reviewer questions, blockers, and next actions, but
 keeps `review_status` as `pending` for every lane.
+When a reviewer returns a lane, use
+`docs/reviews/external-review-response.template.json` only as a starting shape
+for the completed response. Replace every placeholder with real reviewer
+evidence before updating `external-review-summary.json`; the validator rejects
+the unchanged template.
 
 Current blocker: the repository can prepare and validate the review packet, but
 it cannot honestly mark review complete without independent AppSec,
@@ -80,7 +85,7 @@ Do not mark the external-review goal complete until each lane records a real
 review date, reviewer role/scope, artifacts reviewed, findings or explicit
 no-finding disposition, and accepted/rejected/unresolved decisions. Packet-ready
 and structured pending-review evidence are useful, but neither is external
-review.
+review. The response template is also not review evidence.
 
 ## Finding Log Template
 

@@ -10,8 +10,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.validate_v1_readiness import (
+    EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     REQUIRED_RELEASE_VALIDATION_COMMANDS,
+    REQUIRED_REVIEW_LANES,
     _benchmark_source_compatibility_errors,
     _private_pack_fingerprint,
     _source_summaries_have_private_denial,
@@ -695,6 +697,85 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("Application security: pending review requires blocker", result["unmet"])
         self.assertIn("Application security: pending review requires next_action", result["unmet"])
         self.assertIn("Application security: independent review is pending", result["unmet"])
+
+    def test_external_review_response_template_lists_every_required_lane(self) -> None:
+        template = json.loads(Path(EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH).read_text(encoding="utf-8"))
+
+        self.assertTrue(template["template_only"])
+        self.assertEqual(
+            {lane["lane"] for lane in template["review_lanes"]},
+            set(REQUIRED_REVIEW_LANES),
+        )
+        for lane in template["review_lanes"]:
+            self.assertEqual(lane["review_status"], "complete")
+            self.assertIn("review_date", lane)
+            self.assertIn("reviewer_role_scope", lane)
+            self.assertIn("claim_boundary_impact", lane)
+            self.assertIn("artifacts_reviewed", lane)
+            self.assertIn("disposition", lane)
+            self.assertIn("decisions", lane)
+
+    def test_external_review_response_template_is_not_review_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            summary = root / "docs" / "reviews" / "external-review-summary.json"
+            summary.parent.mkdir(parents=True)
+            summary.write_text(
+                Path(EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH).read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("external review response template is not external review evidence", result["unmet"])
+
+    def test_external_review_public_evidence_rejects_sensitive_markers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# artifact\n", encoding="utf-8")
+            evidence = root / "docs" / "reviews" / "external-review-summary.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "review_lanes": [
+                            {
+                                "lane": "Application security",
+                                "review_date": "2026-06-07",
+                                "reviewer_role_scope": "External appsec reviewer",
+                                "claim_boundary_impact": "Reviewer confirmed claim boundary.",
+                                "artifacts_reviewed": ["README.md"],
+                                "disposition": "findings",
+                                "decisions": [
+                                    {
+                                        "finding": "Reviewer cited raw private output in notes.",
+                                        "decision": "rejected",
+                                        "claim_boundary_impact": "Private detail must stay out of public evidence.",
+                                        "task_id": "private-task-id",
+                                    }
+                                ],
+                            }
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(
+            any("sensitive key is not allowed in public external review evidence" in error for error in result["unmet"]),
+            result["unmet"],
+        )
+        self.assertTrue(
+            any(
+                "sensitive path marker is not allowed in public external review evidence" in error
+                for error in result["unmet"]
+            ),
+            result["unmet"],
+        )
 
     def test_external_review_complete_lanes_can_pass_with_real_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

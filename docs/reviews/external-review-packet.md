@@ -90,3 +90,7 @@ Each lane is complete only when the public summary records:
 - claim-boundary impact, if any.
 
 Reviewer identity may remain private unless the reviewer grants permission.
+Use `docs/reviews/external-review-response.template.json` as the response shape,
+then replace every placeholder with real review evidence before updating
+`docs/reviews/external-review-summary.json`. The template is not evidence and
+cannot satisfy the external-review gate unchanged.

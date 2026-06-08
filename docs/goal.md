@@ -136,11 +136,15 @@ private operation, protected execution, scale, and release-candidate evidence.
   Required evidence:
   - all three review lanes are complete: Application Security,
     Benchmark/Evals methodology, and AI-agent/tooling;
-  - each lane records reviewer name or collaborator handle, reviewer role/scope,
-    review date, reviewed artifacts, bounded questions, findings or explicit
-    no-finding disposition, decisions, and claim-boundary impact;
+  - each lane records reviewer role/scope, review date, reviewed artifacts,
+    bounded questions, findings or explicit no-finding disposition, decisions,
+    and claim-boundary impact; reviewer identity is recorded only when the
+    reviewer grants permission;
   - accepted or unresolved findings link to concrete follow-up commits, docs,
     tests, task changes, or other repo artifacts;
+  - `docs/reviews/external-review-response.template.json` is used only as a
+    public-safe starting shape and every placeholder is replaced before review
+    evidence is recorded;
   - `docs/reviews/external-review-summary.json` moves every required lane from
     `pending` to complete evidence;
   - `python3 scripts/validate_v1_readiness.py --allow-incomplete` reports
@@ -338,6 +342,9 @@ private operation, protected execution, scale, and release-candidate evidence.
   - `docs/reviews/external-review-summary.json` is now structured pending
     evidence for all three required lanes, with requested artifacts, review
     questions, blockers, and next actions;
+  - `docs/reviews/external-review-response.template.json` defines the required
+    completed-review response shape and is rejected by the validator if copied
+    unchanged as evidence;
   - the v1 readiness validator accepts that structure but still keeps
     `external_review_completed` red until all lanes move from `pending` to real
     completed review evidence.
@@ -385,6 +392,8 @@ private operation, protected execution, scale, and release-candidate evidence.
     review date, reviewer role/scope, reviewed artifacts, disposition, decisions,
     follow-up artifact for accepted/unresolved findings, and claim-boundary
     impact;
+  - the response template has not been counted as review evidence; placeholders
+    are replaced by real external review facts;
   - `python3 scripts/validate_v1_readiness.py --allow-incomplete` reports
     `external_review_completed` as passed.
 

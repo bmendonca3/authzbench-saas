@@ -20,3 +20,11 @@ exists. The section should have:
 Raw model, CLI, account, and local-system logs should stay out of the public
 repo. Summaries should preserve the useful findings without exposing private
 metadata.
+
+For external v1/community readiness review, use
+`external-review-response.template.json` only as a starting shape for real
+reviewer responses. The template is public-safe scaffolding, not review
+evidence, and the v1 readiness validator rejects it if it is copied unchanged
+into `external-review-summary.json`.
+The same validator also scans completed external-review evidence for sensitive
+private-path markers, sensitive private-evidence keys, and local absolute paths.

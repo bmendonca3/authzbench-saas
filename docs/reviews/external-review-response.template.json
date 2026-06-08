@@ -1,0 +1,90 @@
+{
+  "schema_version": "external-review-response-template-v1",
+  "template_only": true,
+  "claim_boundary": "Copy this template to docs/reviews/external-review-summary.json only after replacing every placeholder with real independent review evidence. This template is not review evidence and must not make validate_v1_readiness.py pass.",
+  "review_lanes": [
+    {
+      "lane": "Application security",
+      "review_status": "complete",
+      "review_date": "<YYYY-MM-DD>",
+      "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
+      "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
+      "artifacts_reviewed": [
+        "docs/reviews/external-review-packet.md",
+        "docs/task-quality-matrix.md",
+        "docs/task-quality-rubric.md",
+        "docs/evidence-and-claims.md",
+        "docs/benchmark-card.md",
+        "docs/authzbench-saas-v1-prep-technical-report.md"
+      ],
+      "disposition": "<findings-or-no_findings>",
+      "decisions": [
+        {
+          "finding": "<concrete reviewer finding or explicit no-finding record>",
+          "decision": "<accepted-rejected-or-unresolved>",
+          "summary": "<short public-safe summary of the disposition>",
+          "claim_boundary_impact": "<claim, scoring, task, artifact, governance, or paper impact>",
+          "follow_up_artifact": "<required for accepted or unresolved decisions: tracked file path or existing commit SHA>"
+        }
+      ]
+    },
+    {
+      "lane": "Benchmark/evals methodology",
+      "review_status": "complete",
+      "review_date": "<YYYY-MM-DD>",
+      "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
+      "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
+      "artifacts_reviewed": [
+        "docs/reviews/external-review-packet.md",
+        "docs/methodology.md",
+        "docs/score-policy.md",
+        "docs/result-schema.md",
+        "docs/leaderboard-schema.md",
+        "docs/baseline-credibility.md",
+        "docs/baseline-variance-analysis.md",
+        "baselines/baseline-registry.json"
+      ],
+      "disposition": "<findings-or-no_findings>",
+      "decisions": [
+        {
+          "finding": "<concrete reviewer finding or explicit no-finding record>",
+          "decision": "<accepted-rejected-or-unresolved>",
+          "summary": "<short public-safe summary of the disposition>",
+          "claim_boundary_impact": "<claim, scoring, split, variance, artifact, governance, or paper impact>",
+          "follow_up_artifact": "<required for accepted or unresolved decisions: tracked file path or existing commit SHA>"
+        }
+      ]
+    },
+    {
+      "lane": "AI-agent/tooling",
+      "review_status": "complete",
+      "review_date": "<YYYY-MM-DD>",
+      "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
+      "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
+      "artifacts_reviewed": [
+        "docs/reviews/external-review-packet.md",
+        "docs/agent-evaluator-kit.md",
+        "docs/leaderboard-schema.md",
+        "docs/boundary-reasoning-calibration-study.md",
+        "docs/v1-community-submission-governance.md",
+        "artifact/run-bundle.md",
+        "baselines/baseline-registry.json"
+      ],
+      "disposition": "<findings-or-no_findings>",
+      "decisions": [
+        {
+          "finding": "<concrete reviewer finding or explicit no-finding record>",
+          "decision": "<accepted-rejected-or-unresolved>",
+          "summary": "<short public-safe summary of the disposition>",
+          "claim_boundary_impact": "<claim, harness, comparability, artifact, governance, or paper impact>",
+          "follow_up_artifact": "<required for accepted or unresolved decisions: tracked file path or existing commit SHA>"
+        }
+      ]
+    }
+  ],
+  "public_safety_rules": [
+    "Do not include private reviewer identity unless permission is granted.",
+    "Do not include private holdout manifests, task IDs, private routes, private seeds, raw private outputs, captures, credentials, or local absolute paths.",
+    "Accepted and unresolved decisions must point to a tracked follow-up artifact or existing commit SHA."
+  ]
+}
