@@ -164,9 +164,13 @@ tool-agent baselines before current comparison.
 Use `artifact/private-holdout-operation-runbook.json` as the public-safe
 procedure checklist for private-pack operation. The readiness validator checks
 that the runbook names required private inputs, operation steps, rotation
-metadata fields, acceptance checks, and publication rules. A valid runbook still
-does not satisfy the rotating-private-holdout gate; only validated active plus
-shadow/candidate packs with real ignored rotation metadata can do that.
+metadata fields, command templates, acceptance checks, and publication rules.
+The command templates are intentionally public-safe placeholders for the
+maintainer checkout: they name the validators and required evidence surfaces
+without exposing private manifests, pack IDs, routes, seeds, raw outputs, or
+local paths. A valid runbook still does not satisfy the rotating-private-holdout
+gate; only validated active plus shadow/candidate packs with real ignored
+rotation metadata can do that.
 
 Use `artifact/v1-task-scale-roadmap.json` as count-level planning evidence for
 the v1 scale path. It currently maps the 54 public tasks plus two 24-task

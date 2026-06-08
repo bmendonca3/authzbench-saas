@@ -426,6 +426,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(
             any(item.startswith("required_rotation_metadata_fields missing:") for item in result["unmet"])
         )
+        self.assertIn("command_templates must be a list", result["unmet"])
+        self.assertTrue(any(item.startswith("command_templates missing snippet:") for item in result["unmet"]))
         self.assertTrue(any(item.startswith("acceptance_checks missing:") for item in result["unmet"]))
         self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
 
