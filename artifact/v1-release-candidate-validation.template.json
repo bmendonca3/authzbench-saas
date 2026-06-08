@@ -66,6 +66,7 @@
   "release_notes": [
     "Use a clean working tree except for the external release evidence file passed with --release-evidence.",
     "The benchmark_source_sha must be an ancestor of commit_sha.",
+    "The exact_head_ci_run_id must match exact_head_ci_url, exact_head_ci_head_sha must match commit_sha, and exact_head_ci_workflow_name must be Validate AuthZBench-SaaS.",
     "The private_pack_fingerprint_sha256 must match the active pack fingerprint from validated rotation metadata.",
     "Do not include private task bodies, task IDs, routes, seeds, raw outputs, captures, credentials, or local absolute paths."
   ]
