@@ -1,0 +1,45 @@
+{
+  "schema_version": "private-holdout-rotation-metadata-template-v1",
+  "template_only": true,
+  "claim_boundary": "Copy this template to tasks_private/holdout/rotation-metadata.json inside the ignored maintainer-only holdout area only after replacing every placeholder with real private-pack metadata. This template is not private holdout evidence and must not make validate_v1_readiness.py pass.",
+  "packs": [
+    {
+      "id": "<active-pack-id>",
+      "role": "active",
+      "path": "tasks_private/holdout/<active-pack-id>",
+      "version": "<active-pack-version-label>",
+      "fingerprint_sha256": "<computed-active-pack-fingerprint>",
+      "status": "current scoring pack"
+    },
+    {
+      "id": "<shadow-or-candidate-pack-id>",
+      "role": "<shadow-or-candidate>",
+      "path": "tasks_private/holdout/<shadow-or-candidate-pack-id>",
+      "version": "<shadow-or-candidate-version-label>",
+      "fingerprint_sha256": "<computed-shadow-or-candidate-pack-fingerprint>",
+      "status": "future rotation or drift-check pack"
+    }
+  ],
+  "compatibility": {
+    "compatible_with_active_pack": "<true-only-if-scores-can-be-compared-or-merged>",
+    "comparison_rule": "<do-not-merge-by-default-unless-declared-compatible-in-release-notes>",
+    "old_rows_policy": "<mark-old-pack-rows-legacy_snapshot-or-deprecated-after-rotation>"
+  },
+  "retirement_triggers": [
+    "private task leakage suspected",
+    "scorer or oracle defect affects pack validity",
+    "major public task or score-policy change",
+    "external review identifies material task-quality issue",
+    "active pack ages past the documented rotation cadence"
+  ],
+  "rerun_policy": {
+    "rerun_no_tools_baselines": "<true-before-current-comparison>",
+    "rerun_tool_agent_baselines": "<true-before-current-comparison>",
+    "keep_old_rows_as": "<legacy_snapshot-or-deprecated>"
+  },
+  "public_safety_rules": [
+    "Do not commit this file after it is populated with real private pack metadata.",
+    "Do not include private task bodies, task IDs, routes, seeds, oracle strings, raw outputs, captures, credentials, or local absolute paths.",
+    "The public repository should contain only this template and redacted count-level summaries."
+  ]
+}

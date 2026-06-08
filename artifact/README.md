@@ -12,6 +12,9 @@ here.
 - `expected-output/`: public-safe expected outputs for stable validation
   signals, including the deterministic public view of v1 readiness.
 - `run-bundle.md`: guidance for packaging and checking submitted run evidence.
+- `private-holdout-rotation-metadata.template.json`: public-safe template for
+  maintainer-only private-pack rotation metadata. It is not private holdout
+  evidence and cannot satisfy strict v1 readiness.
 - `submission-runner-smoke.template.json`: public-safe release-candidate
   hosted/containerized smoke evidence template. It is not smoke evidence and
   cannot satisfy strict v1 readiness.
@@ -111,6 +114,13 @@ private routes, private seeds, raw private outputs, captures, credentials, or
 local absolute paths. It cannot satisfy the private-holdout, private-evidence,
 or scale gates; it only makes the current blocker explicit and reproducible in
 the public readiness fixture.
+
+Use `artifact/private-holdout-rotation-metadata.template.json` only as a
+starting shape for the ignored maintainer-only file
+`tasks_private/holdout/rotation-metadata.json`. Replace every placeholder with
+real active and shadow/candidate pack metadata, then validate in the private
+checkout. The v1 readiness validator rejects the template if it is copied
+unchanged into the private rotation metadata path.
 
 ## Release-Candidate Evidence Template
 
