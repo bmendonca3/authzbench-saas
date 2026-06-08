@@ -1,0 +1,69 @@
+{
+  "schema_version": "v1-release-candidate-validation-template-v1",
+  "template_only": true,
+  "claim_boundary": "Copy this template outside tracked Git and replace every placeholder with release-candidate evidence. This template is not release evidence and must not make validate_v1_readiness.py pass.",
+  "commit_sha": "<release-commit-sha>",
+  "benchmark_source_sha": "<ancestor-benchmark-source-sha>",
+  "private_pack_fingerprint_sha256": "<active-private-pack-fingerprint-sha256>",
+  "exact_head_ci_conclusion": "<success-or-passed>",
+  "exact_head_ci_url": "<github-actions-run-url>",
+  "pushed_commit": "<true-after-push>",
+  "commands": {
+    "python3 -m unittest discover -s tests": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "python3 scripts/validate_public.py --include-scripted-baseline": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "python3 scripts/validate_v0_release.py": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "python3 scripts/validate_baseline_registry.py": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "python3 scripts/generate_paper_tables.py": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "git diff --exit-code -- paper/shared": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "git diff --check": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "<log-or-run-id>"
+    },
+    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs": {
+      "passed": "<true-after-command-passes>",
+      "exit_code": "<exit-code>",
+      "evidence": "empty output"
+    }
+  },
+  "release_notes": [
+    "Use a clean working tree except for the external release evidence file passed with --release-evidence.",
+    "The benchmark_source_sha must be an ancestor of commit_sha.",
+    "The private_pack_fingerprint_sha256 must match the active pack fingerprint from validated rotation metadata.",
+    "Do not include private task bodies, task IDs, routes, seeds, raw outputs, captures, credentials, or local absolute paths."
+  ]
+}

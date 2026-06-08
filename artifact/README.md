@@ -12,6 +12,9 @@ here.
 - `expected-output/`: public-safe expected outputs for stable validation
   signals, including the deterministic public view of v1 readiness.
 - `run-bundle.md`: guidance for packaging and checking submitted run evidence.
+- `v1-release-candidate-validation.template.json`: public-safe template for
+  external release evidence. It is not release evidence and cannot satisfy
+  strict v1 readiness.
 
 ## Public Validation
 
@@ -99,6 +102,21 @@ private routes, private seeds, raw private outputs, captures, credentials, or
 local absolute paths. It cannot satisfy the private-holdout, private-evidence,
 or scale gates; it only makes the current blocker explicit and reproducible in
 the public readiness fixture.
+
+## Release-Candidate Evidence Template
+
+Strict v1 readiness requires release evidence supplied with:
+
+```bash
+python3 scripts/validate_v1_readiness.py \
+  --release-evidence <external-json>
+```
+
+Use `artifact/v1-release-candidate-validation.template.json` only as a starting
+shape. Copy it outside tracked Git, replace every placeholder with real
+release-candidate evidence, and keep private task internals out of the public
+artifact packet. The validator rejects the template if it is passed directly as
+release evidence.
 
 ## Claim Boundary
 
