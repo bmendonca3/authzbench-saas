@@ -104,6 +104,13 @@ def _sensitive_findings(value: Any, path: str = "$") -> list[str]:
     return findings
 
 
+def _template_placeholder(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    return len(text) >= 3 and text.startswith("<") and text.endswith(">")
+
+
 def validate_smoke_evidence(
     evidence: dict[str, Any],
     *,
@@ -142,6 +149,8 @@ def validate_smoke_evidence(
     ):
         if not isinstance(evidence.get(field), str) or not evidence[field].strip():
             errors.append(f"{field} is required")
+        elif _template_placeholder(evidence.get(field)):
+            errors.append(f"{field} must not be a template placeholder")
     for field in (
         "submitter_private_manifest_read_denied",
         "scorer_controlled_private_eval",
