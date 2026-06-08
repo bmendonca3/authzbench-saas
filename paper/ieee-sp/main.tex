@@ -96,6 +96,14 @@ viewer-status denial control. Each therefore has a 0.0303 false-positive and
 false-report rate. These runs provide a stronger exploit-replay signal, but
 remain public-split diagnostic evidence rather than a stable ranking.
 
+Two GLM-5 no-tools runs provide a fourth current family. Both pass 33 tasks,
+prove 2 and 3 of 21 vulnerable replays, retain zero boundary-reasoning credit
+and zero vulnerable full passes, and report no control false positives. Run 1
+preserves one outer runner failure with missing submission and model-output
+artifacts; run 2 has complete 54-task artifacts and zero invalid submissions.
+These runs broaden the current no-tools evidence surface, but remain
+public-split diagnostic evidence rather than a stable ranking.
+
 For the preceding 49-task v1-prep public split, repeated live HTTP tool-agent
 runs sharpen this observation. The tool-agent proved vulnerable backend
 behavior for 15 of 20 vulnerable public tasks in each run and preserves
@@ -106,9 +114,10 @@ oracle-compatible actor, role, tenant, object, or scope labels. We therefore
 interpret the result as a structured boundary-vocabulary failure under the
 current scoring contract, not as evidence that exploit replay was absent. The
 support-reassignment expansion raises the live public split to 54 tasks; those
-49-task model and tool-agent rows are now stale. The Qwen no-tools family has
-been rerun, while the remaining no-tools families and live HTTP tool-agent pair
-remain pending.
+49-task model and tool-agent rows are now stale. The Qwen3 Coder Next, Claude
+Haiku 4.5, Claude Sonnet 4.6, and GLM-5 no-tools families have been rerun on
+the 54-task split, while the remaining Claude Opus 4.6 no-tools family and live
+HTTP tool-agent pair remain pending.
 
 \begin{table*}[t]
 \centering
@@ -193,9 +202,9 @@ validation path.
 
 The \releaseversion{} public split is small, synthetic, and inspectable. The
 baseline table is frozen v0.0 diagnostic public-split evidence, not a final
-ordering of model quality. The current 54-task Qwen, Claude Haiku 4.5, and
-Claude Sonnet 4.6 pairs cover only three no-tools families and are insufficient
-for a stable current model comparison.
+ordering of model quality. The current 54-task Qwen, Claude Haiku 4.5, Claude
+Sonnet 4.6, and GLM-5 pairs cover only four no-tools families and are
+insufficient for a stable current model comparison.
 Governance for
 future v1/community submission states, run bundles, private-pack rotation, and
 hosted or containerized evaluation is specified in the repository, but hosted

@@ -27,10 +27,11 @@ Current main / v1-prep split:
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current 54-task deterministic scripted sanity baseline
-- three current repeated 54-task no-tools model-family baselines: Qwen with
+- four current repeated 54-task no-tools model-family baselines: Qwen with
   model-output failure diagnostics, and Claude Haiku 4.5 with complete
   zero-failure task artifacts, and Claude Sonnet 4.6 with complete zero-failure
-  task artifacts and runner-emitted finding totals
+  task artifacts and runner-emitted finding totals, and GLM-5 with retained
+  runner-failure diagnostics in one run and a clean retry run
 - five repeated 49-task no-tools Kiro model-family baselines, now stale
 - one repeated 49-task live HTTP Kiro tool-agent baseline, now stale
 
@@ -48,11 +49,12 @@ baseline registry as historical evidence.
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current deterministic scripted harness check
-- three current repeated 54-task no-tools Kiro model baselines:
+- four current repeated 54-task no-tools Kiro model baselines:
   `qwen3-coder-next`, with explicit model-output failure diagnostics, and
   `claude-haiku-4.5`, with zero adapter, runner, and invalid-submission failures;
   and `claude-sonnet-4.6`, with zero adapter, runner, and invalid-submission
-  failures; public-split evidence only
+  failures; and `glm-5`, with one retained outer runner failure in run 1 and
+  complete zero-failure artifacts in run 2; public-split evidence only
 - five stale 49-task no-tools Kiro model-family baselines
 - one stale 49-task live HTTP Kiro tool-agent baseline with 49/49 target-request
   correlation in both historical runs
@@ -76,6 +78,7 @@ baseline registry as historical evidence.
 - repeated current 54-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated current 54-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated current 54-task no-tools Kiro `claude-sonnet-4.6` model baseline
+- repeated current 54-task no-tools Kiro `glm-5` model baseline
 - repeated stale 49-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated stale 49-task no-tools Kiro `claude-sonnet-4.6` model baseline
 - repeated stale 49-task no-tools Kiro `qwen3-coder-next` model baseline
@@ -187,6 +190,8 @@ evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence.
 | Kiro `claude-haiku-4.5` no-tools current 54-task run 2 | 54 | 32 | 0.2381 | 0.0 | 0.0303 | 0.9286 |
 | Kiro `claude-sonnet-4.6` no-tools current 54-task run 1 | 54 | 32 | 0.7143 | 0.0 | 0.0303 | 0.9286 |
 | Kiro `claude-sonnet-4.6` no-tools current 54-task run 2 | 54 | 32 | 0.6667 | 0.0 | 0.0303 | 1.0 |
+| Kiro `glm-5` no-tools current 54-task run 1 | 54 | 33 | 0.0952 | 0.0 | 0.0 | 1.0 |
+| Kiro `glm-5` no-tools current 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools stale 49-task run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 | 1.0 |
@@ -252,6 +257,16 @@ denial control as vulnerable while preserving `authorized_allow_pass_rate:
 1.0`. Both therefore have `false_positive_rate` and
 `control_false_report_rate` of `0.0303`. This is current public diagnostic
 evidence for a third no-tools family, not a stable cross-model ranking.
+
+The current GLM-5 pair passes 33 tasks in both runs, proves 2 and 3 of 21
+vulnerable replays, keeps boundary reasoning at `0.0`, and fully passes no
+vulnerable task. Both runs have zero control false reports and
+`authorized_allow_pass_rate: 1.0`. Run 1 preserves one outer runner failure on
+`sup_multistep_agent_status_then_admin_reassignment`, producing one invalid
+submission and missing submission/model-output artifacts for that task; run 2
+has complete 54-task artifacts and zero invalid submissions. This is current
+public diagnostic evidence for a fourth no-tools family, not a stable
+cross-model ranking.
 
 The v0.0 Qwen repeat is useful because it shows variance, not because it is
 a strong model result. Run 2 found one replay-proven vulnerable task but still

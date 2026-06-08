@@ -40,8 +40,8 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             result,
         )
         self.assertEqual(gates["baseline_credibility"]["unmet"], [], result)
-        self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 3, result)
-        self.assertEqual(gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"], 3, result)
+        self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 4, result)
+        self.assertEqual(gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"], 4, result)
         self.assertEqual(gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"], 2, result)
         self.assertEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],

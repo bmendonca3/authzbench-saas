@@ -13,8 +13,9 @@ community-scale benchmark.
 The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
 46-task release baselines and 49-task v1-prep model/tool-agent baselines are
 stale for current 54-task comparison. Repeated 54-task Qwen, Claude Haiku 4.5,
-and Claude Sonnet 4.6 no-tools families are now current, but they do not provide
-the full model-family or tool-agent coverage required for stable comparison.
+Claude Sonnet 4.6, and GLM-5 no-tools families are now current, but they do not
+provide the full model-family or tool-agent coverage required for stable
+comparison.
 
 ## Current Public Split
 
@@ -74,13 +75,22 @@ vulnerable. Each has `false_positive_rate: 0.0303` and
 are `0.9286` and `1.0`. This is stronger public exploit-replay evidence, not a
 stable ranking.
 
+Two current 54-task `glm-5` no-tools runs provide a fourth repeated model
+family. Both pass 33 tasks, prove 2 and 3 of 21 vulnerable replays, keep
+boundary reasoning at `0.0000`, fully pass no vulnerable task, and report zero
+control false positives. Run 1 preserves one outer runner failure on the
+support multistep reassignment task with missing submission/model-output
+diagnostics; run 2 has complete 54-task artifacts and zero invalid submissions.
+This broadens current no-tools evidence, but remains public-split diagnostic
+evidence rather than a stable ranking.
+
 The preceding 49-task public split has repeated diagnostic Kiro baselines: five
 no-tools model families and one live HTTP `claude-sonnet-4.6` tool-agent family.
 The tool-agent pair preserves one model-plan artifact and one tool-probe artifact
 per task, correlates target-side requests for all 49 tasks in both runs, and
 reports zero planner or parser failures. The 54-task expansion makes these rows
-stale; only the Qwen, Claude Haiku 4.5, and Claude Sonnet 4.6 no-tools families
-have been rerun so far.
+stale; only the Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, and GLM-5 no-tools
+families have been rerun so far.
 
 A completed boundary-reasoning calibration study audits the current public
 tool-agent pair. The study finds that exploit-proven vulnerable submissions

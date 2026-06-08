@@ -42,8 +42,8 @@ as current-comparable evidence.
 
 The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
 54-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
-46-task release snapshot. Repeated 54-task Qwen, Claude Haiku 4.5, and Claude
-Sonnet 4.6 no-tools families are current.
+46-task release snapshot. Repeated 54-task Qwen, Claude Haiku 4.5, Claude
+Sonnet 4.6, and GLM-5 no-tools families are current.
 The preceding 49-task split has five repeated
 no-tools model-family baselines plus one repeated live HTTP tool-agent family,
 but every one of those rows is stale for current 54-task comparison. The old
@@ -124,6 +124,16 @@ control false report and `false_positive_rate: 0.0303`; their authorized-allow
 pass rates are `0.9286` and `1.0`. This is current public evidence for a third
 no-tools family, not private evidence, a stable cross-model ranking, a
 leaderboard row, or v1 readiness.
+
+The current 54-task `glm-5` no-tools baseline has two runs on the active
+fingerprint. Both pass 33 tasks, keep boundary reasoning at `0.0`, fully pass
+no vulnerable task, and report zero control false positives. They prove 2 and 3
+of 21 vulnerable replays and have 2 and 4 scorer-counted findings. Run 1
+preserves one outer runner failure on the support multistep reassignment task,
+leaving submission/model-output artifacts absent and producing one invalid
+submission; run 2 has complete 54-task artifacts and zero invalid submissions.
+This is current public evidence for a fourth no-tools family, not private
+evidence, a stable cross-model ranking, a leaderboard row, or v1 readiness.
 
 The stale 49-task no-tools Kiro baselines have two runs each for
 `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and

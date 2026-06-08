@@ -43,9 +43,10 @@ As of the current `main` checkpoint:
 
 - Public split: 54 tasks.
 - Current scripted sanity baseline: complete, 54/54.
-- Current 54-task no-tools public model families restored: 3/5
-  (`qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`).
-- Remaining 54-task no-tools public families: `glm-5` and `claude-opus-4.6`.
+- Current 54-task no-tools public model families restored: 4/5
+  (`qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, and
+  `glm-5`).
+- Remaining 54-task no-tools public family: `claude-opus-4.6`.
 - Current 54-task live HTTP tool-agent family: not yet restored.
 - External review lanes: open.
 - Active plus shadow/candidate private holdout packs: open.
