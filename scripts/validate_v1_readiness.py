@@ -192,6 +192,19 @@ def _authzbench_actions_run_url(value: Any) -> bool:
     )
 
 
+def _authzbench_actions_run_id(value: Any) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9]+", value) is not None
+
+
+def _authzbench_actions_run_id_from_url(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    match = re.fullmatch(r"https://github\.com/bmendonca3/authzbench-saas/actions/runs/([0-9]+)", value)
+    if match is None:
+        return None
+    return match.group(1)
+
+
 def _placeholder(value: Any) -> bool:
     return isinstance(value, str) and value.strip().lower() in {"tbd", "todo", "pending", "unknown", "n/a"}
 
@@ -1527,8 +1540,13 @@ def _validate_release_candidate_evidence(
         unmet.extend(_benchmark_source_compatibility_errors(root, str(benchmark_source_sha), str(data["commit_sha"])))
     if data.get("exact_head_ci_conclusion") not in {"success", "passed"}:
         unmet.append("exact_head_ci_conclusion must be success or passed")
-    if not _authzbench_actions_run_url(data.get("exact_head_ci_url")):
+    exact_head_ci_run_id_from_url = _authzbench_actions_run_id_from_url(data.get("exact_head_ci_url"))
+    if exact_head_ci_run_id_from_url is None:
         unmet.append("exact_head_ci_url must reference an AuthZBench-SaaS Actions run")
+    if not _authzbench_actions_run_id(data.get("exact_head_ci_run_id")):
+        unmet.append("exact_head_ci_run_id must be a numeric GitHub Actions run id")
+    elif exact_head_ci_run_id_from_url is not None and data.get("exact_head_ci_run_id") != exact_head_ci_run_id_from_url:
+        unmet.append("exact_head_ci_run_id must match exact_head_ci_url")
     if not _sha(data.get("exact_head_ci_head_sha")):
         unmet.append("exact_head_ci_head_sha must be a 40-character lowercase Git SHA")
     elif data.get("exact_head_ci_head_sha") != data.get("commit_sha"):
@@ -1580,6 +1598,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "benchmark source sha",
         "active private pack fingerprint",
         "exact-head CI URL and conclusion",
+        "exact-head CI run ID",
         "exact-head CI head SHA",
         "pushed commit confirmation",
         "external release evidence path",
@@ -1613,6 +1632,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "benchmark_source_sha",
         "private_pack_fingerprint_sha256",
         "exact_head_ci_conclusion",
+        "exact_head_ci_run_id",
         "exact_head_ci_head_sha",
         "exact_head_ci_url",
         "pushed_commit",
@@ -1633,6 +1653,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
         "all required commands passed",
         "container smoke passed on an environment with Docker daemon available",
         "exact-head CI succeeded for release commit",
+        "exact-head CI run ID matches exact-head CI URL",
         "exact-head CI head SHA matches release commit",
         "release commit pushed to intended public remote",
         "private pack fingerprint matches validated active pack",
