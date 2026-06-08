@@ -203,6 +203,34 @@ fair `v1`, hosted-leaderboard, or community-ready release claim. The public
 54-task baseline evidence is complete; the remaining work is external review,
 private operation, protected execution, scale, and release-candidate evidence.
 
+### External Blocker Handoff
+
+Status: externally blocked after the public repo-side preparation and
+validation hardening work above. The repository now has public-safe runbooks,
+templates, reviewer intake forms, blocker records, and validators for the
+remaining gates, but the goal cannot honestly be completed from the public
+checkout alone.
+
+The next unblockers require external or maintainer-only action:
+
+- independent reviewers must return all three review lanes using
+  `docs/reviews/external-review-intake.md`;
+- maintainers must create active plus shadow/candidate private holdout packs in
+  the ignored holdout area and populate private rotation metadata;
+- maintainers must run release-candidate hosted/containerized private smoke
+  against the active private-pack fingerprint;
+- maintainers must generate repeated protected-private no-tools and tool-agent
+  evidence rows tied to that same fingerprint;
+- maintainers must add enough validated public plus protected-private manifests
+  to reach at least 100 tasks;
+- after those upstream gates close, maintainers must refresh paper/report
+  evidence and run strict release-candidate validation with external release
+  evidence.
+
+Until those external/maintainer-only inputs exist, keep this goal in
+`v1-prep`, keep `validate_v1_readiness.py` reporting `v1_ready: false`, and do
+not replace blocker records with passing evidence.
+
 - [ ] Convert external interest into real review evidence.
   Required evidence:
   - all three review lanes are complete: Application Security,
