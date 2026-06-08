@@ -79,6 +79,13 @@ python3 scripts/containerized_submission_smoke.py \
   --execution-scope release_candidate
 ```
 
+The tracked `artifact/submission-runner-smoke.json` file is allowed to contain a
+public-safe blocker record while the active private pack and maintainer-platform
+release smoke are not available. That blocker record is structured evidence for
+what remains missing; it is not a passing hosted/containerized submission smoke
+and the v1 readiness validator keeps the release gate red until it is replaced
+by passed `execution_scope: release_candidate` evidence.
+
 ## Claim Boundary
 
 This artifact packet supports public reproduction of the inspectable public

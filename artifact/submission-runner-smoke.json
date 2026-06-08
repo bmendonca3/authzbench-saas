@@ -1,0 +1,24 @@
+{
+  "schema_version": "submission-runner-smoke-blocker-v1",
+  "evidence_status": "blocked",
+  "blocked_gate": "hosted_or_containerized_submission_execution",
+  "claim_boundary": "This file is structured blocker evidence only. It is not release-candidate hosted or containerized submission-smoke evidence.",
+  "blocker": "Release-candidate hosted/containerized submission smoke requires an active private holdout pack, the active pack fingerprint, and execution on the intended maintainer platform. Those inputs are intentionally absent from the public checkout.",
+  "next_action": "After active and shadow private packs are staged, rerun scripts/containerized_submission_smoke.py against the active pack on the maintainer platform with execution_scope release_candidate and replace this blocker record with passed smoke evidence.",
+  "required_release_inputs": [
+    "active private holdout pack path under the ignored maintainer-only holdout root",
+    "active private holdout pack version label from rotation metadata",
+    "active private holdout pack fingerprint computed from canonical private manifests",
+    "maintainer-platform runner image digest or hosted-runner version",
+    "release-candidate benchmark source SHA",
+    "privacy scan proving public output excludes private manifests, routes, seeds, raw run data, captured traffic, auth material, and local absolute paths"
+  ],
+  "last_verified_public_rehearsal": {
+    "execution_scope": "rehearsal",
+    "result": "passed",
+    "commit_sha": "d0588a5c116ae7bf2189716b3aa0c1bd26dcb925",
+    "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27115852904",
+    "workflow": "Validate AuthZBench-SaaS / Public validation",
+    "command": "python scripts/validate_public.py --include-scripted-baseline --include-container-smoke"
+  }
+}
