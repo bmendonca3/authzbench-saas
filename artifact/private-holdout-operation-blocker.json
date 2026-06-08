@@ -36,6 +36,7 @@
     "commit_sha": "fe01da0bd363e696d8bd22eeeb9879719e8db2c5",
     "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27116339779",
     "ci_run_id": "27116339779",
+    "workflow": "Validate AuthZBench-SaaS",
     "v1_ready": false,
     "passed_gate_count": 3,
     "unmet_gate_count": 8

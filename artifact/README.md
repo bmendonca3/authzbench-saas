@@ -125,7 +125,8 @@ what remains missing; it is not a passing hosted/containerized submission smoke
 and the v1 readiness validator keeps the release gate red until it is replaced
 by passed `execution_scope: release_candidate` evidence. Its public rehearsal
 reference must include an AuthZBench-SaaS Actions URL and matching numeric run
-ID so the cited CI evidence is directly inspectable.
+ID, plus workflow name `Validate AuthZBench-SaaS`, so the cited CI evidence is
+directly inspectable.
 
 ## Private Operation Blocker
 
@@ -140,7 +141,8 @@ private routes, private seeds, raw private outputs, captures, credentials, or
 local absolute paths. It cannot satisfy the private-holdout, private-evidence,
 or scale gates; it only makes the current blocker explicit and reproducible in
 the public readiness fixture. Its public readiness reference must include an
-AuthZBench-SaaS Actions URL and matching numeric run ID.
+AuthZBench-SaaS Actions URL and matching numeric run ID, plus workflow name
+`Validate AuthZBench-SaaS`.
 
 Use `artifact/private-holdout-rotation-metadata.template.json` only as a
 starting shape for the ignored maintainer-only file

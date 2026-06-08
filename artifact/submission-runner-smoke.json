@@ -19,7 +19,7 @@
     "commit_sha": "d0588a5c116ae7bf2189716b3aa0c1bd26dcb925",
     "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27115852904",
     "ci_run_id": "27115852904",
-    "workflow": "Validate AuthZBench-SaaS / Public validation",
+    "workflow": "Validate AuthZBench-SaaS",
     "command": "python scripts/validate_public.py --include-scripted-baseline --include-container-smoke"
   }
 }

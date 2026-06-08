@@ -208,6 +208,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
                             "ci_run_id": "1",
+                            "workflow": RELEASE_VALIDATION_CI_WORKFLOW_NAME,
                             "v1_ready": False,
                             "passed_gate_count": 3,
                             "unmet_gate_count": 8,
@@ -251,6 +252,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "last_verified_public_readiness": {
                             "commit_sha": "not-a-sha",
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/not-a-run",
+                            "workflow": "TBD",
                             "v1_ready": True,
                             "passed_gate_count": "3",
                             "unmet_gate_count": "8",
@@ -289,6 +291,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "last_verified_public_readiness.ci_run_id must be a numeric GitHub Actions run id",
             result["unmet"],
         )
+        self.assertIn(
+            f"last_verified_public_readiness.workflow must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}",
+            result["unmet"],
+        )
         self.assertIn("last_verified_public_readiness.v1_ready must be false", result["unmet"])
 
     def test_private_operation_blocker_requires_matching_ci_run_id(self) -> None:
@@ -321,6 +327,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
                             "ci_run_id": "2",
+                            "workflow": RELEASE_VALIDATION_CI_WORKFLOW_NAME,
                             "v1_ready": False,
                             "passed_gate_count": 3,
                             "unmet_gate_count": 8,
@@ -847,6 +854,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
                             "ci_run_id": "1",
+                            "workflow": RELEASE_VALIDATION_CI_WORKFLOW_NAME,
                         },
                     }
                 ),
@@ -882,6 +890,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "result": "failed",
                             "commit_sha": "not-a-sha",
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/not-a-run",
+                            "workflow": "TBD",
                         },
                     }
                 ),
@@ -910,6 +919,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "last_verified_public_rehearsal.ci_run_id must be a numeric GitHub Actions run id",
             result["unmet"],
         )
+        self.assertIn(
+            f"last_verified_public_rehearsal.workflow must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}",
+            result["unmet"],
+        )
 
     def test_hosted_smoke_blocked_evidence_requires_matching_ci_run_id(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -936,6 +949,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             "commit_sha": "a" * 40,
                             "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/1",
                             "ci_run_id": "2",
+                            "workflow": RELEASE_VALIDATION_CI_WORKFLOW_NAME,
                         },
                     }
                 ),
