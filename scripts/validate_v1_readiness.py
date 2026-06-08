@@ -61,6 +61,7 @@ PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.jso
 PRIVATE_OPERATION_RUNBOOK_PATH = "artifact/private-holdout-operation-runbook.json"
 PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
+PAPER_READINESS_RUNBOOK_PATH = "artifact/v1-paper-readiness-runbook.json"
 RELEASE_VALIDATION_EVIDENCE_PATH = "artifact/v1-release-candidate-validation.json"
 ROTATION_METADATA_PATH = "tasks_private/holdout/rotation-metadata.json"
 SCALE_ROADMAP_PATH = "artifact/v1-task-scale-roadmap.json"
@@ -69,6 +70,7 @@ HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION = "submission-runner-smoke-blocker-v1"
 HOSTED_EXECUTION_RUNBOOK_SCHEMA_VERSION = "hosted-submission-execution-runbook-v1"
 PRIVATE_OPERATION_BLOCKER_SCHEMA_VERSION = "private-holdout-operation-blocker-v1"
 PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION = "private-holdout-operation-runbook-v1"
+PAPER_READINESS_RUNBOOK_SCHEMA_VERSION = "v1-paper-readiness-runbook-v1"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 PRIVATE_OPERATION_BLOCKED_GATES = (
     "rotating_private_holdouts_implemented",
@@ -130,6 +132,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
+    PAPER_READINESS_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     SCALE_ROADMAP_PATH,
 }
@@ -142,6 +145,7 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PRIVATE_OPERATION_BLOCKER_PATH,
     PRIVATE_OPERATION_RUNBOOK_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
+    PAPER_READINESS_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     SCALE_ROADMAP_PATH,
     "docs/goal.md",
@@ -1321,6 +1325,127 @@ def _validate_paper_readiness_evidence(
     return {"passed": not unmet, "path": PAPER_READINESS_EVIDENCE_PATH, "unmet": unmet}
 
 
+def _validate_paper_readiness_runbook(root: Path = ROOT) -> dict[str, Any]:
+    unmet: list[str] = []
+    data = _json_object(root / PAPER_READINESS_RUNBOOK_PATH, unmet)
+    if data is None:
+        return {"passed": False, "path": PAPER_READINESS_RUNBOOK_PATH, "unmet": unmet}
+    unmet.extend(_private_operation_public_safety_errors(data))
+    if data.get("schema_version") != PAPER_READINESS_RUNBOOK_SCHEMA_VERSION:
+        unmet.append(f"schema_version must be {PAPER_READINESS_RUNBOOK_SCHEMA_VERSION}")
+    if data.get("evidence_status") != "runbook":
+        unmet.append("evidence_status must be runbook")
+    claim_boundary = data.get("public_claim_boundary")
+    if not _nonempty_string(claim_boundary) or _placeholder(claim_boundary):
+        unmet.append("public_claim_boundary is required")
+    elif "not" not in str(claim_boundary).lower():
+        unmet.append("public_claim_boundary must state that the runbook is not paper readiness evidence")
+
+    required_inputs = data.get("required_inputs")
+    required_input_set = {
+        "completed external review lanes",
+        "passed hosted or containerized release-candidate smoke",
+        "validated active private pack fingerprint",
+        "eligible repeated private no-tools row",
+        "eligible repeated private tool-agent row",
+        "validated 100 task scale evidence",
+        "release benchmark source sha",
+    }
+    if not isinstance(required_inputs, list):
+        unmet.append("required_inputs must be a list")
+        required_inputs = []
+    input_set = {str(item) for item in required_inputs if isinstance(item, str)}
+    missing_inputs = sorted(required_input_set - input_set)
+    if missing_inputs:
+        unmet.append("required_inputs missing: " + ", ".join(missing_inputs))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+        unmet.append("required_inputs cannot contain placeholders")
+
+    refresh_steps = data.get("refresh_steps")
+    required_steps = {
+        "separate frozen v0.0 evidence from current v1-prep evidence",
+        "state true v1 claims only after release gates pass",
+        "incorporate accepted external review findings",
+        "incorporate hosted and protected execution findings",
+        "regenerate paper tables",
+        "regenerate benchmark charts",
+        "verify current stale and legacy labels",
+        "compile IEEE scaffold",
+        "update structured paper readiness evidence",
+    }
+    if not isinstance(refresh_steps, list):
+        unmet.append("refresh_steps must be a list")
+        refresh_steps = []
+    step_set = {str(item) for item in refresh_steps if isinstance(item, str)}
+    missing_steps = sorted(required_steps - step_set)
+    if missing_steps:
+        unmet.append("refresh_steps missing: " + ", ".join(missing_steps))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in refresh_steps):
+        unmet.append("refresh_steps cannot contain placeholders")
+
+    commands = data.get("required_commands")
+    required_commands = {
+        "python3 scripts/generate_paper_tables.py",
+        "git diff --exit-code -- paper/shared",
+        "python3 scripts/generate_benchmark_charts.py",
+        "git diff --exit-code -- docs/assets/benchmark-charts",
+        "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
+    }
+    if not isinstance(commands, list):
+        unmet.append("required_commands must be a list")
+        commands = []
+    command_set = {str(item) for item in commands if isinstance(item, str)}
+    missing_commands = sorted(required_commands - command_set)
+    if missing_commands:
+        unmet.append("required_commands missing: " + ", ".join(missing_commands))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in commands):
+        unmet.append("required_commands cannot contain placeholders")
+
+    acceptance_checks = data.get("acceptance_checks")
+    required_acceptance = {
+        "claim boundary reviewed",
+        "generated paper tables clean",
+        "charts current stale legacy labeled",
+        "IEEE scaffold compiled",
+        "benchmark source sha matches release evidence",
+        "upstream review and infrastructure complete",
+        "no release-affecting post-source drift",
+    }
+    if not isinstance(acceptance_checks, list):
+        unmet.append("acceptance_checks must be a list")
+        acceptance_checks = []
+    acceptance_set = {str(item) for item in acceptance_checks if isinstance(item, str)}
+    missing_acceptance = sorted(required_acceptance - acceptance_set)
+    if missing_acceptance:
+        unmet.append("acceptance_checks missing: " + ", ".join(missing_acceptance))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in acceptance_checks):
+        unmet.append("acceptance_checks cannot contain placeholders")
+
+    publication_rules = data.get("publication_rules")
+    required_rules = {
+        "public paper text contains redacted or aggregate private evidence only",
+        "private task bodies are never published",
+        "nonpublic task identifiers are never published",
+        "local absolute paths are never published",
+        "v1-prep and v1-ready claims are not conflated",
+    }
+    if not isinstance(publication_rules, list):
+        unmet.append("publication_rules must be a list")
+        publication_rules = []
+    rule_set = {str(item) for item in publication_rules if isinstance(item, str)}
+    missing_rules = sorted(required_rules - rule_set)
+    if missing_rules:
+        unmet.append("publication_rules missing: " + ", ".join(missing_rules))
+    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+        unmet.append("publication_rules cannot contain placeholders")
+
+    return {
+        "passed": not unmet,
+        "path": PAPER_READINESS_RUNBOOK_PATH,
+        "unmet": list(dict.fromkeys(unmet)),
+    }
+
+
 def _validate_release_candidate_evidence(
     root: Path = ROOT,
     *,
@@ -1628,12 +1753,16 @@ def validate_v1_readiness(
             and bool(rotation_result["passed"])
         ),
     )
+    paper_runbook = _validate_paper_readiness_runbook()
+    paper_unmet = list(paper_result["unmet"])
+    if not paper_runbook["passed"]:
+        paper_unmet.extend(paper_runbook["unmet"])
     _add_gate(
         gates,
         "paper_and_artifact_readiness",
-        bool(paper_result["passed"]),
-        [paper_result["path"]],
-        paper_result["unmet"],
+        bool(paper_result["passed"]) and bool(paper_runbook["passed"]),
+        [paper_result["path"], paper_runbook["path"]],
+        paper_unmet,
     )
 
     release_result = _validate_release_candidate_evidence(

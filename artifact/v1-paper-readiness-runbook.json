@@ -1,0 +1,53 @@
+{
+  "schema_version": "v1-paper-readiness-runbook-v1",
+  "evidence_status": "runbook",
+  "public_claim_boundary": "This runbook is not release-candidate paper readiness evidence. It defines the final report and IEEE scaffold refresh procedure, but paper_and_artifact_readiness remains incomplete until upstream review and infrastructure gates pass and docs/v1-paper-readiness.json is refreshed with release-candidate evidence.",
+  "required_inputs": [
+    "completed external review lanes",
+    "passed hosted or containerized release-candidate smoke",
+    "validated active private pack fingerprint",
+    "eligible repeated private no-tools row",
+    "eligible repeated private tool-agent row",
+    "validated 100 task scale evidence",
+    "release benchmark source sha"
+  ],
+  "refresh_steps": [
+    "separate frozen v0.0 evidence from current v1-prep evidence",
+    "state true v1 claims only after release gates pass",
+    "incorporate accepted external review findings",
+    "incorporate hosted and protected execution findings",
+    "regenerate paper tables",
+    "regenerate benchmark charts",
+    "verify current stale and legacy labels",
+    "compile IEEE scaffold",
+    "update structured paper readiness evidence"
+  ],
+  "required_commands": [
+    "python3 scripts/generate_paper_tables.py",
+    "git diff --exit-code -- paper/shared",
+    "python3 scripts/generate_benchmark_charts.py",
+    "git diff --exit-code -- docs/assets/benchmark-charts",
+    "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex"
+  ],
+  "acceptance_checks": [
+    "claim boundary reviewed",
+    "generated paper tables clean",
+    "charts current stale legacy labeled",
+    "IEEE scaffold compiled",
+    "benchmark source sha matches release evidence",
+    "upstream review and infrastructure complete",
+    "no release-affecting post-source drift"
+  ],
+  "publication_rules": [
+    "public paper text contains redacted or aggregate private evidence only",
+    "private task bodies are never published",
+    "nonpublic task identifiers are never published",
+    "local absolute paths are never published",
+    "v1-prep and v1-ready claims are not conflated"
+  ],
+  "release_notes": [
+    "A passing runbook check only proves that the final paper refresh procedure is specified.",
+    "The paper gate requires docs/v1-paper-readiness.json with evidence_scope=release_candidate.",
+    "The paper gate also requires live upstream review and infrastructure gates to pass."
+  ]
+}
