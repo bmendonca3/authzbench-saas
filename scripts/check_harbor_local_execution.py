@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -19,6 +21,25 @@ SCHEMA_VERSION = "harbor-local-execution-preflight-v1"
 DEFAULT_TASK = "tasks/project_mgmt/pm_same_tenant_read_control.json"
 
 
+def _harbor_command_is_runnable(harbor_command: str) -> bool:
+    parts = shlex.split(harbor_command)
+    if not parts:
+        return False
+    if shutil.which(parts[0]) is None:
+        return False
+    try:
+        subprocess.run(
+            [*parts, "--version"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return True
+
+
 def check_harbor_local_execution(
     *,
     task_patterns: list[str] | None = None,
@@ -30,8 +51,8 @@ def check_harbor_local_execution(
     """Check whether a verified generated skeleton is ready for a future Harbor run.
 
     This preflight intentionally does not invoke `harbor run`; it only records
-    whether the CLI is discoverable and whether our generated public skeleton
-    passes local structural/redaction validation.
+    whether the CLI/package command is runnable and whether our generated public
+    skeleton passes local structural/redaction validation.
     """
     task_patterns = task_patterns or [DEFAULT_TASK]
     with tempfile.TemporaryDirectory(prefix="authzbench-harbor-preflight-") as tmp:
@@ -44,30 +65,33 @@ def check_harbor_local_execution(
         )
         skeleton_result = validate_harbor_dataset_skeleton(output_dir)
 
-    harbor_path = shutil.which(harbor_command) if discover_harbor_cli else None
-    harbor_cli_found = harbor_path is not None
+    effective_harbor_command = harbor_command
+    harbor_cli_found = _harbor_command_is_runnable(harbor_command) if discover_harbor_cli else False
+    if not harbor_cli_found and discover_harbor_cli and harbor_command == "harbor" and _harbor_command_is_runnable("uvx harbor"):
+        effective_harbor_command = "uvx harbor"
+        harbor_cli_found = True
     blocked_until: list[str] = []
     if not harbor_cli_found:
         blocked_until.append("Harbor CLI/package is not installed or not on PATH")
     if not skeleton_result["passed"]:
         blocked_until.append("generated public Harbor skeleton does not validate")
 
-    ready_for_local_run = harbor_cli_found and skeleton_result["passed"]
-    if require_harbor and not harbor_cli_found:
-        ready_for_local_run = False
+    ready_for_local_run = False
+    if harbor_cli_found and skeleton_result["passed"]:
+        blocked_until.append("real Harbor execution has not been run by this preflight")
 
     return {
         "schema_version": SCHEMA_VERSION,
         "evidence_status": "local_preflight_only",
         "public_claim_boundary": "This preflight is not Harbor execution evidence, not parity evidence, and not v1 readiness. It does not run Harbor.",
-        "harbor_command": harbor_command,
+        "harbor_command": effective_harbor_command,
         "harbor_cli_found": harbor_cli_found,
         "generated_skeleton_validated": skeleton_result["passed"],
         "harness_lane": harness_lane,
         "task_count": manifest["task_count"],
         "ready_for_local_harbor_run": ready_for_local_run,
         "harbor_execution_verified": False,
-        "local_run_template": "harbor run -p <generated-harbor-dataset-path> -a <agent> -m <model>",
+        "local_run_template": f"cd <generated-harbor-dataset-path> && {effective_harbor_command} run -c run_authzbench_saas.yaml --yes",
         "blocked_until": blocked_until,
         "skeleton_errors": skeleton_result["errors"],
     }

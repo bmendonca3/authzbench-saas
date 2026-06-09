@@ -13,10 +13,12 @@ SCHEMA_VERSION = "harbor-dataset-skeleton-v1"
 ALLOWED_ABSOLUTE_PREFIXES = (
     "/api/",
     "/logs/artifacts/",
+    "/logs/verifier/",
+    "/tests/",
     "/tasks/",
     "/work-items/",
 )
-ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts", "/usr/bin/env"}
+ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts", "/logs/verifier", "/usr/bin/env"}
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 DISALLOWED_TEXT = (
     "calendar." + "google.com",
@@ -106,7 +108,7 @@ def _text_values(value: Any) -> list[str]:
     return []
 
 
-def _public_safety_errors(value: Any, *, label: str) -> list[str]:
+def _public_safety_errors(value: Any, *, label: str, allowed_absolute_prefixes: tuple[str, ...] = ()) -> list[str]:
     errors: list[str] = []
     for text in _text_values(value):
         lower = text.lower()
@@ -117,7 +119,8 @@ def _public_safety_errors(value: Any, *, label: str) -> list[str]:
             if marker in lower:
                 errors.append(f"{label}: private detail marker is not allowed: {marker}")
         for match in ABSOLUTE_PATH_RE.findall(text):
-            if match not in ALLOWED_ABSOLUTE_PATHS and not any(match.startswith(prefix) for prefix in ALLOWED_ABSOLUTE_PREFIXES):
+            allowed_prefixes = ALLOWED_ABSOLUTE_PREFIXES + allowed_absolute_prefixes
+            if match not in ALLOWED_ABSOLUTE_PATHS and not any(match.startswith(prefix) for prefix in allowed_prefixes):
                 errors.append(f"{label}: local absolute path is not allowed: {match}")
     return errors
 
@@ -203,20 +206,24 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         run_config_rel = run_config_path.relative_to(dataset_dir).as_posix()
         run_config = run_config_path.read_text(encoding="utf-8")
         for snippet in (
-            "datasets:",
-            "  - path: .",
+            "job_name: authzbench-public-skeleton-smoke",
+            "tasks:",
             "agents:",
             "  - name: oracle",
             "environment:",
             "  type: docker",
-            "orchestrator:",
-            "  type: local",
             "/logs/artifacts",
             "not evidence that Harbor execution has been verified",
         ):
             if snippet not in run_config:
                 errors.append(f"{run_config_rel} missing {snippet}")
-        errors.extend(_public_safety_errors(run_config, label=run_config_rel))
+        errors.extend(
+            _public_safety_errors(
+                run_config,
+                label=run_config_rel,
+                allowed_absolute_prefixes=(dataset_dir.as_posix() + "/",),
+            )
+        )
 
     tasks = manifest.get("tasks")
     if not isinstance(tasks, list):
@@ -252,7 +259,13 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
             "environment/context.json": task_dir / "environment" / "context.json",
             "solution/solve.sh": task_dir / "solution" / "solve.sh",
             "verifier/task_manifest.json": task_dir / "verifier" / "task_manifest.json",
+            "tests/Dockerfile": task_dir / "tests" / "Dockerfile",
+            "tests/task_manifest.json": task_dir / "tests" / "task_manifest.json",
             "tests/test.sh": task_dir / "tests" / "test.sh",
+            "tests/authzbench/score.py": task_dir / "tests" / "authzbench" / "score.py",
+            "tests/authzbench/core.py": task_dir / "tests" / "authzbench" / "core.py",
+            "tests/apps/project_mgmt/app.py": task_dir / "tests" / "apps" / "project_mgmt" / "app.py",
+            "tests/environment/Dockerfile": task_dir / "tests" / "environment" / "Dockerfile",
         }
         for name, path in required_files.items():
             if not path.is_file():
@@ -344,6 +357,35 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                 errors.append(f"{rel_task_dir}: environment/Dockerfile must define a base image")
             errors.extend(_public_safety_errors(dockerfile, label=f"{rel_task_dir}/environment/Dockerfile"))
 
+        if required_files["tests/environment/Dockerfile"].is_file():
+            verifier_dockerfile = required_files["tests/environment/Dockerfile"].read_text(encoding="utf-8")
+            if "not Harbor verifier/scorer parity evidence" not in verifier_dockerfile:
+                errors.append(
+                    f"{rel_task_dir}: tests/environment/Dockerfile must preserve non-evidence claim boundary"
+                )
+            if "FROM python:" not in verifier_dockerfile:
+                errors.append(f"{rel_task_dir}: tests/environment/Dockerfile must define a base image")
+            errors.extend(
+                _public_safety_errors(
+                    verifier_dockerfile,
+                    label=f"{rel_task_dir}/tests/environment/Dockerfile",
+                )
+            )
+
+        if required_files["tests/Dockerfile"].is_file():
+            verifier_dockerfile = required_files["tests/Dockerfile"].read_text(encoding="utf-8")
+            if "not Harbor verifier/scorer parity evidence" not in verifier_dockerfile:
+                errors.append(f"{rel_task_dir}: tests/Dockerfile must preserve non-evidence claim boundary")
+            if "FROM python:" not in verifier_dockerfile:
+                errors.append(f"{rel_task_dir}: tests/Dockerfile must define a base image")
+            if "ENV PYTHONPATH=/tests" not in verifier_dockerfile:
+                errors.append(f"{rel_task_dir}: tests/Dockerfile must expose copied public scorer code")
+            if "COPY authzbench /tests/authzbench" not in verifier_dockerfile:
+                errors.append(f"{rel_task_dir}: tests/Dockerfile must copy public authzbench scorer code")
+            if "COPY apps /tests/apps" not in verifier_dockerfile:
+                errors.append(f"{rel_task_dir}: tests/Dockerfile must copy public app replay code")
+            errors.extend(_public_safety_errors(verifier_dockerfile, label=f"{rel_task_dir}/tests/Dockerfile"))
+
         if required_files["solution/solve.sh"].is_file():
             solution = required_files["solution/solve.sh"].read_text(encoding="utf-8")
             if "does not include a public oracle solution" not in solution:
@@ -356,10 +398,23 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
             script = required_files["tests/test.sh"].read_text(encoding="utf-8")
             if "python3 -m authzbench.score" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must invoke authzbench.score")
+            if "missing agent submission" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must handle missing agent submissions explicitly")
+            if "/tests/task_manifest.json" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must use the verifier task manifest copy")
             if "/logs/artifacts/score.json" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must write score artifact")
+            if "/logs/artifacts/reward.json" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must write reward.json artifact")
+            if "/logs/artifacts/reward.txt" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must write reward.txt artifact")
+            if "/logs/verifier/reward.json" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must write Harbor verifier reward.json")
+            if "/logs/verifier/reward.txt" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must write Harbor verifier reward.txt")
+            errors.extend(_public_safety_errors(script, label=f"{rel_task_dir}/tests/test.sh"))
 
-        for json_name in ("environment/context.json", "verifier/task_manifest.json"):
+        for json_name in ("environment/context.json", "verifier/task_manifest.json", "tests/task_manifest.json"):
             path = required_files[json_name]
             if not path.is_file():
                 continue
@@ -374,6 +429,10 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
             if json_name == "verifier/task_manifest.json" and data.get("id") != task_id:
                 errors.append(f"{rel_task_dir}: verifier task_manifest id must match manifest entry")
             if json_name == "verifier/task_manifest.json" and data.get("split") == "private_holdout":
+                errors.append(f"{rel_task_dir}: private holdout manifests are not allowed")
+            if json_name == "tests/task_manifest.json" and data.get("id") != task_id:
+                errors.append(f"{rel_task_dir}: tests task_manifest id must match manifest entry")
+            if json_name == "tests/task_manifest.json" and data.get("split") == "private_holdout":
                 errors.append(f"{rel_task_dir}: private holdout manifests are not allowed")
 
     errors.extend(_public_safety_errors(manifest, label="dataset-manifest.json"))
