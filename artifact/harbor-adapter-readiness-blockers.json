@@ -26,6 +26,12 @@
       "status": "partial_repo_side_helper",
       "evidence": "scripts/validate_harbor_integration.py",
       "claim_boundary": "Checks public-safe planning contract only; does not prove adapter acceptance or parity."
+    },
+    {
+      "item": "local_execution_preflight",
+      "status": "partial_repo_side_helper",
+      "evidence": "scripts/check_harbor_local_execution.py",
+      "claim_boundary": "Checks generated skeleton validity and Harbor CLI discoverability only; does not run Harbor."
     }
   ],
   "required_before_adapter_ready": [
@@ -88,6 +94,7 @@
       "status": "blocked",
       "missing_input": "Harbor CLI/package installed and exercised against generated dataset",
       "required_evidence": [
+        "scripts/check_harbor_local_execution.py reports harbor_cli_found true",
         "harbor run -p generated dataset command",
         "job config/result files",
         "trial verifier output",

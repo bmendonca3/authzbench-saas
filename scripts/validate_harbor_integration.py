@@ -224,6 +224,7 @@ def validate_harbor_integration(
             "scripts/build_harbor_dataset_skeleton.py",
             "scripts/validate_harbor_dataset_skeleton.py",
             "scripts/validate_harbor_adapter_blockers.py",
+            "scripts/check_harbor_local_execution.py",
         ):
             if term not in runbook:
                 errors.append(f"runbook missing required term: {term}")

@@ -29,6 +29,7 @@ REQUIRED_HELPERS = {
     "public_skeleton_builder",
     "public_skeleton_validator",
     "adapter_contract_validator",
+    "local_execution_preflight",
 }
 DISALLOWED_TEXT = (
     "calendar." + "google.com",
