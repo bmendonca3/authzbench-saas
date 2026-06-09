@@ -80,9 +80,9 @@ diagnostics, but they do not satisfy this current-public comparability check.
 The v0.0 scripted baseline is a 46-task deterministic harness sanity check. It
 proves the scorer, task manifests, and scripted oracle path fit the frozen v0.0
 public split. It is not model capability evidence and is stale for current
-54-task comparison.
+60-task comparison.
 
-The current scripted baseline is a 54-task deterministic harness sanity check.
+The current scripted baseline is a 60-task deterministic harness sanity check.
 It proves the expanded v1-prep public split, scorer, and scripted oracle path
 agree. It is not model capability evidence, a leaderboard row, private-holdout
 evidence, or a substitute for current model or tool-agent baselines.
@@ -98,9 +98,9 @@ to a valid empty-findings fallback, so the task remains in the denominator and
 can pass a secure control or fail a vulnerable task. The summaries also explain
 the 60-second inner model-call timeout and 75-second outer per-task timeout.
 Run 1's `0.9524` vulnerable safety rate is caused by an invalid submission from
-an outer runner failure, not an unsafe action. This is current public-split
-evidence for one model family, not private evidence, a stable cross-model
-comparison, or a leaderboard row.
+an outer runner failure, not an unsafe action. This is stale public-split
+evidence for one model family, not current 60-task evidence, private evidence,
+a stable cross-model comparison, or a leaderboard row.
 
 The stale 54-task `claude-haiku-4.5` no-tools baseline also has two runs on
 the stale 54-task fingerprint. Both pass 32 tasks, prove 4 and 5 of 21 vulnerable
@@ -110,9 +110,10 @@ submissions. Each reports one false finding on an authorized-allow support
 reassignment control, yielding `false_positive_rate: 0.0303`,
 `control_false_report_rate: 0.0303`, and `authorized_allow_pass_rate: 0.9286`.
 The scorer-finding aggregates were derived exactly from retained per-task rows
-because these runs immediately predate the aggregate emitter. This is current
-public evidence for a second no-tools family, not private evidence, a stable
-cross-model ranking, a leaderboard row, or v1 readiness.
+because these runs immediately predate the aggregate emitter. This is stale
+public evidence for a second no-tools family, not current 60-task evidence,
+private evidence, a stable cross-model ranking, a leaderboard row, or v1
+readiness.
 
 The stale 54-task `claude-sonnet-4.6` no-tools baseline has two runs on the
 stale 54-task fingerprint. Both pass 32 tasks and keep boundary reasoning at `0.0`,
@@ -121,19 +122,20 @@ failures, zero outer runner failures, and zero invalid submissions. Run 1
 reports the authorized-allow admin reassignment control as vulnerable; run 2
 reports the secure viewer-status denial control as vulnerable. Each has one
 control false report and `false_positive_rate: 0.0303`; their authorized-allow
-pass rates are `0.9286` and `1.0`. This is current public evidence for a third
-no-tools family, not private evidence, a stable cross-model ranking, a
-leaderboard row, or v1 readiness.
+pass rates are `0.9286` and `1.0`. This is stale public evidence for a third
+no-tools family, not current 60-task evidence, private evidence, a stable
+cross-model ranking, a leaderboard row, or v1 readiness.
 
-The stale 54-task `glm-5` no-tools baseline has two runs on the active
+The stale 54-task `glm-5` no-tools baseline has two runs on the stale 54-task
 fingerprint. Both pass 33 tasks, keep boundary reasoning at `0.0`, fully pass
 no vulnerable task, and report zero control false positives. They prove 2 and 3
 of 21 vulnerable replays and have 2 and 4 scorer-counted findings. Run 1
 preserves one outer runner failure on the support multistep reassignment task,
 leaving submission/model-output artifacts absent and producing one invalid
 submission; run 2 has complete 54-task artifacts and zero invalid submissions.
-This is current public evidence for a fourth no-tools family, not private
-evidence, a stable cross-model ranking, a leaderboard row, or v1 readiness.
+This is stale public evidence for a fourth no-tools family, not current 60-task
+evidence, private evidence, a stable cross-model ranking, a leaderboard row, or
+v1 readiness.
 
 The stale 54-task `claude-opus-4.6` no-tools baseline has two runs on the
 stale 54-task fingerprint. Both pass 33 tasks, keep boundary reasoning at `0.0`, fully
@@ -141,9 +143,9 @@ pass no vulnerable task, and report zero control false positives. Both prove 14
 of 21 vulnerable replays and have 21 scorer-counted findings. Both runs retain
 complete 54-task context, submission, score, transcript, and model-output
 artifacts with zero adapter, command, parser, runner, or invalid-submission
-failures. This is current public evidence for a fifth no-tools family, not
-private evidence, a stable cross-model ranking, a leaderboard row, or v1
-readiness.
+failures. This is stale public evidence for a fifth no-tools family, not
+current 60-task evidence, private evidence, a stable cross-model ranking, a
+leaderboard row, or v1 readiness.
 
 The stale 54-task `claude-sonnet-4.6` live HTTP Kiro tool-agent baseline has
 two runs on the stale 54-task fingerprint. Both pass 33 tasks, prove 15 of 21
@@ -152,8 +154,9 @@ task, and report zero secure-control false positives. Both runs write one
 model-tool plan artifact and one tool-probe artifact per task, correlate
 target-side requests for all 54 tasks, and report zero planner failures, zero
 parser failures, zero invalid submissions, and zero fallback probes. This is
-current public live HTTP evidence, not private evidence, hosted-leaderboard
-evidence, a stable cross-model ranking, or v1 readiness.
+stale public live HTTP evidence for the previous 54-task split, not current
+60-task evidence, private evidence, hosted-leaderboard evidence, a stable
+cross-model ranking, or v1 readiness.
 
 The stale 49-task no-tools Kiro baselines have two runs each for
 `claude-haiku-4.5`, `claude-sonnet-4.6`, `qwen3-coder-next`, `glm-5`, and
@@ -173,9 +176,9 @@ parser failures. Run 1 executed 124 probes and run 2 executed 126 probes; both
 proved 15 of 20 vulnerable replays, produced zero secure-control false reports,
 and still fully passed zero vulnerable tasks because vulnerable boundary
 reasoning remained `0.0`. This evidence closed the public tool-agent evidence gate
-for the preceding 49-task fingerprint only. It is stale after the 54-task
-expansion and is not private-holdout, hosted-leaderboard, or v1 release
-evidence.
+for the preceding 49-task fingerprint only. It is stale after later task
+expansions and is not current 60-task, private-holdout, hosted-leaderboard, or
+v1 release evidence.
 
 The v0.0 `qwen3-coder-next` no-tools Kiro baseline has two 46-task public runs.
 It is useful historical public model evidence, but it is still not
