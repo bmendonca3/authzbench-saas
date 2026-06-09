@@ -106,6 +106,52 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertIn("reference_run_config file is missing", result["errors"])
 
+    def test_rejects_missing_dataset_toml(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            (dataset_dir / "dataset.toml").unlink()
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn("dataset_toml file is missing", result["errors"])
+
+    def test_rejects_dataset_toml_overclaim_and_task_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            (dataset_dir / "dataset.toml").write_text(
+                "\n".join(
+                    [
+                        'name = "authzbench-saas-public-skeleton"',
+                        'version = "public-skeleton"',
+                        'tasks = ["tasks/other"]',
+                        "",
+                        "[metadata.authzbench]",
+                        f'skeleton_schema_version = "harbor-dataset-skeleton-v1"',
+                        'evidence_status = "generated_public_skeleton"',
+                        "private_task_count = 0",
+                        "harbor_execution_verified = true",
+                        "harbor_publish_verified = true",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("tasks must match dataset-manifest" in error for error in result["errors"]), result)
+        self.assertTrue(any("harbor_execution_verified must be false" in error for error in result["errors"]), result)
+        self.assertTrue(any("harbor_publish_verified must be false" in error for error in result["errors"]), result)
+
     def test_rejects_missing_harbor_shape_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             dataset_dir = Path(tmp) / "harbor-public"

@@ -77,6 +77,31 @@ def _reference_run_config() -> str:
     )
 
 
+def _dataset_toml(tasks: list[dict[str, Any]], *, harness_lane: str) -> str:
+    task_dirs = [str(task["harbor_task_dir"]) for task in tasks]
+    return "\n".join(
+        [
+            "# Public-safe Harbor dataset registration skeleton.",
+            "# This file is not Harbor publish evidence, not Harbor execution evidence,",
+            "# and not v1 readiness evidence.",
+            'name = "authzbench-saas-public-skeleton"',
+            'version = "public-skeleton"',
+            'description = "Public-safe AuthZBench-SaaS Harbor-compatible skeleton dataset."',
+            f"tasks = {_toml_list(task_dirs)}",
+            "",
+            "[metadata.authzbench]",
+            f"skeleton_schema_version = {_toml_string(SCHEMA_VERSION)}",
+            'evidence_status = "generated_public_skeleton"',
+            f"harness_lane = {_toml_string(harness_lane)}",
+            "private_task_count = 0",
+            "harbor_execution_verified = false",
+            "harbor_publish_verified = false",
+            'claim_boundary = "Generated public dataset skeleton only; not Harbor publish evidence, not Harbor execution evidence, and not v1 readiness."',
+            "",
+        ]
+    )
+
+
 def _environment_dockerfile() -> str:
     return "\n".join(
         [
@@ -283,9 +308,11 @@ def build_harbor_dataset_skeleton(
         "task_count": len(tasks),
         "private_task_count": 0,
         "harbor_execution_verified": False,
+        "dataset_toml": "dataset.toml",
         "reference_run_config": "run_authzbench_saas.yaml",
         "tasks": tasks,
     }
+    (output_dir / "dataset.toml").write_text(_dataset_toml(tasks, harness_lane=harness_lane), encoding="utf-8")
     (output_dir / "run_authzbench_saas.yaml").write_text(_reference_run_config(), encoding="utf-8")
     (output_dir / "dataset-manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return manifest

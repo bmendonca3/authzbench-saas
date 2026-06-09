@@ -52,11 +52,13 @@ REQUIRED_PUBLIC_SOURCES = {
     "https://www.harborframework.com/docs/tasks",
     "https://www.harborframework.com/docs/run-jobs/results-and-artifacts",
 }
+REQUIRED_DATASET_ROOT_FILES = {"dataset.toml", "dataset-manifest.json", "run_authzbench_saas.yaml"}
 REQUIRED_PACKAGE_LAYOUT = {
     "pyproject.toml",
     "README.md",
     "adapter_metadata.json",
     "parity_experiment.json",
+    "dataset.toml",
     "run_authzbench_saas.yaml",
     "src/authzbench_saas_harbor/__init__.py",
     "src/authzbench_saas_harbor/adapter.py",
@@ -156,6 +158,10 @@ def validate_harbor_integration(
         dataset_shape = {}
     if dataset_shape.get("task_toml_schema_version") != "1.3":
         errors.append("dataset_shape.task_toml_schema_version must be 1.3")
+    dataset_root_files = set(dataset_shape.get("dataset_root_files") or [])
+    missing_dataset_root_files = sorted(REQUIRED_DATASET_ROOT_FILES - dataset_root_files)
+    if missing_dataset_root_files:
+        errors.append("dataset_shape.dataset_root_files missing: " + ", ".join(missing_dataset_root_files))
     task_directory_files = set(dataset_shape.get("task_directory_files") or [])
     for required_file in (
         "instruction.md",
@@ -164,7 +170,6 @@ def validate_harbor_integration(
         "verifier/task_manifest.json",
         "solution/solve.sh",
         "tests/test.sh",
-        "run_authzbench_saas.yaml",
     ):
         if required_file not in task_directory_files:
             errors.append(f"dataset_shape.task_directory_files missing: {required_file}")
