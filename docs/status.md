@@ -19,6 +19,9 @@ Current v1-prep boundary:
   correlation in both runs. All are stale for current 54-task comparison.
 - v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
   community-scale benchmark maturity.
+- Harbor preparation is repo-side only: the public adapter contract, skeleton
+  builder, blocker/template validators, and runbook exist, but no passing Harbor
+  execution or adapter parity evidence is tracked.
 
 Current main / v1-prep split:
 
@@ -118,6 +121,8 @@ baseline registry as historical evidence.
   leaderboard eligible
 - GitHub Actions workflow for public validation gates, including Docker runtime
   smoke
+- public-safe task-quality gate contract and Harbor adapter/skeleton validation
+  checks wired into public validation
 
 ### Frozen v0.0 release snapshot
 
@@ -138,8 +143,13 @@ intentionally absent from public Git history:
 ```bash
 python3 -Wd -m unittest discover -s tests
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
+python3 scripts/validate_task_quality_gate.py --contract artifact/task-quality-gate-contract.json --task 'tasks/*/*.json'
 python3 scripts/validate_baseline_registry.py
 python3 scripts/validate_v0_release.py --allow-incomplete
+python3 scripts/validate_harbor_adapter_blockers.py
+python3 scripts/validate_harbor_adapter_templates.py
+python3 scripts/validate_harbor_integration.py
+python3 scripts/check_harbor_local_execution.py
 python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
 python3 -m compileall -q authzbench apps tests scripts
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted

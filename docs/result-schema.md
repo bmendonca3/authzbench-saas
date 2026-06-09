@@ -72,7 +72,9 @@ Task score:
 
 For vulnerable tasks, `boundary_reasoning` requires the finding claim and the
 submitted `boundary` object to match the task's expected attacker/tenant/role
-boundary.
+boundary. For secure-control replay, each control must have either an integer
+`status` expectation or a non-empty `body_contains` expectation; an omitted
+status with empty `body_contains` is treated as a vacuous control and fails.
 
 The alpha `score` field remains a compatibility score. Run summaries also expose
 v0-candidate metrics that separate exploit proof, boundary reasoning, secure

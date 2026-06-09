@@ -9,6 +9,11 @@ For a generated public-task audit view, see
 coverage and evidence-readiness signals; this rubric remains the qualitative
 review standard.
 
+The public validation gate also enforces the machine-readable acceptance
+contract in
+[`../artifact/task-quality-gate-contract.json`](../artifact/task-quality-gate-contract.json)
+through `scripts/validate_task_quality_gate.py`.
+
 ## Review Scores
 
 Score each category from 0 to 2:
@@ -39,6 +44,9 @@ A task family should not be treated as release-candidate quality unless:
 - vulnerable tasks have replayable proof and correct boundary checks
 - secure controls include both denial and authorized-allow coverage where
   applicable
+- every oracle, control, and evidence requirement has an integer `status` check
+  or a non-empty `body_contains` check; empty body-only checks are not
+  acceptable replay proof
 - the task avoids real customer data, real SaaS branding, and secrets
 - public tasks do not copy private holdout routes, seeds, IDs, or oracle bodies
 - manifest validation and relevant scorer tests pass

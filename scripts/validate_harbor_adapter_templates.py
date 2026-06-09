@@ -19,6 +19,7 @@ REQUIRED_TASK_DIRECTORY_FILES = {
     "instruction.md",
     "task.toml",
     "environment/Dockerfile",
+    "verifier/task_manifest.json",
     "solution/solve.sh",
     "tests/test.sh",
 }

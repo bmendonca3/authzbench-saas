@@ -9,7 +9,8 @@ completion, hosted leaderboard readiness, or `v1` readiness.
 This runbook is based on public Harbor documentation only:
 
 - Harbor describes itself as a framework for evaluating agents in sandboxed
-  environments and can run local datasets with `harbor run -p "<path>"`.
+  environments. For this generated skeleton, use the checked-in reference
+  config from inside the generated dataset directory.
 - A Harbor dataset is a collection of tasks. A task has an instruction,
   environment, and test script.
 - Harbor task directories include `instruction.md`, `task.toml`,
@@ -199,6 +200,13 @@ That preflight generates and validates a temporary public skeleton and checks
 whether the `harbor` CLI is on `PATH`. It does not invoke `harbor run`. In a
 checkout without Harbor installed, it records the local execution gate as
 blocked on the missing CLI/package.
+
+When Harbor is installed and a generated public skeleton has been reviewed, the
+reference command target is:
+
+```bash
+cd <generated-harbor-dataset-path> && harbor run -c run_authzbench_saas.yaml --yes
+```
 
 ## No-Tools Lane
 

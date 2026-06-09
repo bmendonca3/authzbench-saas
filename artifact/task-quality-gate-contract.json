@@ -86,7 +86,7 @@
     "vulnerable_tasks": [
       "expected_boundary includes attacker_actor",
       "expected_boundary includes at least one victim or required authorization dimension",
-      "oracle includes a replayable status or body check",
+      "oracle includes replayable status and non-empty body_contains checks",
       "controls include at least one secure denial replay check",
       "positive exploit replay is scorer-owned through oracle or evidence requirements"
     ],
