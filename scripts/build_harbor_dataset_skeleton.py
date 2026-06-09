@@ -45,6 +45,38 @@ def _toml_list(values: list[str]) -> str:
     return "[" + ", ".join(_toml_string(value) for value in values) + "]"
 
 
+def _reference_run_config() -> str:
+    return "\n".join(
+        [
+            "# Public-safe Harbor run target for generated skeleton datasets.",
+            "# This file is not evidence that Harbor execution has been verified.",
+            "datasets:",
+            "  - path: .",
+            "",
+            "# Default oracle-style verifier lane for structure checks.",
+            "agents:",
+            "  - name: oracle",
+            "",
+            "# Uncomment and verify concrete agents/models in a real Harbor run.",
+            "# agents:",
+            "#   - name: codex",
+            "#     model_name: openai/gpt-5-mini",
+            "",
+            "environment:",
+            "  type: docker",
+            "  delete: true",
+            "",
+            "orchestrator:",
+            "  type: local",
+            "  n_concurrent_trials: 1",
+            "",
+            "artifacts:",
+            "  - /logs/artifacts",
+            "",
+        ]
+    )
+
+
 def _instruction(task: dict[str, Any], context_relpath: str) -> str:
     control_rule = (
         "This is a secure-control task. Return an AuthZBench-SaaS submission with `findings: []` "
@@ -139,12 +171,14 @@ def build_harbor_dataset_skeleton(
     output_dir: Path,
     *,
     harness_lane: str = "no_tools",
+    task_ids: list[str] | None = None,
     limit: int | None = None,
     clean: bool = False,
 ) -> dict[str, Any]:
     if harness_lane not in {"no_tools", "live_http_tool_agent"}:
         raise ValueError("harness_lane must be no_tools or live_http_tool_agent")
     task_paths = _task_paths(task_patterns)
+    requested_task_ids = set(task_ids or [])
     if limit is not None:
         task_paths = task_paths[:limit]
     if clean and output_dir.exists():
@@ -154,6 +188,8 @@ def build_harbor_dataset_skeleton(
     tasks: list[dict[str, Any]] = []
     for task_path in task_paths:
         task = load_json(task_path)
+        if requested_task_ids and task.get("id") not in requested_task_ids:
+            continue
         if task.get("split") == "private_holdout":
             raise ValueError("private holdout manifests must not be exported with the public Harbor skeleton builder")
         task_dir = output_dir / "tasks" / _safe_name(str(task["id"]))
@@ -205,8 +241,10 @@ def build_harbor_dataset_skeleton(
         "task_count": len(tasks),
         "private_task_count": 0,
         "harbor_execution_verified": False,
+        "reference_run_config": "run_authzbench_saas.yaml",
         "tasks": tasks,
     }
+    (output_dir / "run_authzbench_saas.yaml").write_text(_reference_run_config(), encoding="utf-8")
     (output_dir / "dataset-manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return manifest
 
@@ -216,15 +254,18 @@ def main() -> int:
     parser.add_argument("--task", action="append", required=True, help="Public task manifest glob. Repeatable.")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--harness-lane", choices=["no_tools", "live_http_tool_agent"], default="no_tools")
+    parser.add_argument("--task-id", action="append", help="Optional task id filter. Repeatable.")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--clean", action="store_true")
+    parser.add_argument("--overwrite", action="store_true", help="Alias for --clean, matching Harbor adapter CLI expectations.")
     args = parser.parse_args()
     manifest = build_harbor_dataset_skeleton(
         args.task,
         args.output_dir,
         harness_lane=args.harness_lane,
+        task_ids=args.task_id,
         limit=args.limit,
-        clean=args.clean,
+        clean=args.clean or args.overwrite,
     )
     print(json.dumps(manifest, indent=2, sort_keys=True))
     return 0

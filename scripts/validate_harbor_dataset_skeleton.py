@@ -16,6 +16,7 @@ ALLOWED_ABSOLUTE_PREFIXES = (
     "/tasks/",
     "/work-items/",
 )
+ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts"}
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 DISALLOWED_TEXT = (
     "calendar." + "google.com",
@@ -116,7 +117,7 @@ def _public_safety_errors(value: Any, *, label: str) -> list[str]:
             if marker in lower:
                 errors.append(f"{label}: private detail marker is not allowed: {marker}")
         for match in ABSOLUTE_PATH_RE.findall(text):
-            if not any(match.startswith(prefix) for prefix in ALLOWED_ABSOLUTE_PREFIXES):
+            if match not in ALLOWED_ABSOLUTE_PATHS and not any(match.startswith(prefix) for prefix in ALLOWED_ABSOLUTE_PREFIXES):
                 errors.append(f"{label}: local absolute path is not allowed: {match}")
     return errors
 
@@ -145,6 +146,29 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         errors.append("private_task_count must be 0")
     if manifest.get("harness_lane") not in {"no_tools", "live_http_tool_agent"}:
         errors.append("harness_lane must be no_tools or live_http_tool_agent")
+    run_config_path = _safe_relative(dataset_dir, manifest.get("reference_run_config"))
+    if run_config_path is None:
+        errors.append("reference_run_config must be a safe relative path")
+    elif not run_config_path.is_file():
+        errors.append("reference_run_config file is missing")
+    else:
+        run_config_rel = run_config_path.relative_to(dataset_dir).as_posix()
+        run_config = run_config_path.read_text(encoding="utf-8")
+        for snippet in (
+            "datasets:",
+            "  - path: .",
+            "agents:",
+            "  - name: oracle",
+            "environment:",
+            "  type: docker",
+            "orchestrator:",
+            "  type: local",
+            "/logs/artifacts",
+            "not evidence that Harbor execution has been verified",
+        ):
+            if snippet not in run_config:
+                errors.append(f"{run_config_rel} missing {snippet}")
+        errors.extend(_public_safety_errors(run_config, label=run_config_rel))
 
     tasks = manifest.get("tasks")
     if not isinstance(tasks, list):
