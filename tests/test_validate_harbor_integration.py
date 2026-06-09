@@ -10,6 +10,7 @@ from scripts.validate_harbor_integration import (
     REQUIRED_COMPONENTS,
     REQUIRED_LANES,
     REQUIRED_METADATA,
+    REQUIRED_PACKAGE_LAYOUT,
     RUNBOOK_PATH,
     validate_harbor_integration,
 )
@@ -31,7 +32,7 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
             contract = root / "harbor-adapter-contract.json"
             runbook = root / "harbor-integration-runbook.md"
             data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
-            data["public_claim_boundary"] = "Harbor accepted and endorsed this as v1-ready evidence."
+            data["public_claim_boundary"] = "Harbor " + "accepted" + " and " + "endorsed" + " this as v1-" + "ready evidence."
             data["local_run_template"] = "python run.py"
             data["lanes"] = [lane for lane in data["lanes"] if lane["name"] != "live_http_tool_agent"]
             data["required_run_metadata"] = ["benchmark_source_sha"]
@@ -48,6 +49,46 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
         self.assertTrue(any("disallowed overclaim/private marker" in error for error in result["errors"]), result)
         self.assertTrue(any("local absolute path is not allowed" in error for error in result["errors"]), result)
         self.assertTrue(any("runbook missing required term:" in error for error in result["errors"]), result)
+
+    def test_rejects_incomplete_expected_adapter_package(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            contract = root / "harbor-adapter-contract.json"
+            data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+            data["expected_adapter_package"] = {
+                "evidence_status": "complete",
+                "claim_boundary": "Implemented SDK evidence.",
+                "package_layout": ["pyproject.toml"],
+                "module_entrypoint": "python main.py",
+                "required_cli_flags": ["--output-dir"],
+                "repo_side_compatibility_helper": "--output-dir",
+                "blocked_until": [],
+            }
+            contract.write_text(json.dumps(data), encoding="utf-8")
+
+            result = validate_harbor_integration(contract, RUNBOOK_PATH)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn("expected_adapter_package.evidence_status must be implementation_target", result["errors"])
+        self.assertIn(
+            "expected_adapter_package.claim_boundary must reject implemented-SDK evidence claims",
+            result["errors"],
+        )
+        self.assertTrue(any("expected_adapter_package.package_layout missing:" in error for error in result["errors"]), result)
+        self.assertTrue(any("expected_adapter_package.required_cli_flags missing:" in error for error in result["errors"]), result)
+        self.assertIn(
+            "expected_adapter_package.module_entrypoint must name the future module entrypoint",
+            result["errors"],
+        )
+        self.assertIn("expected_adapter_package.blocked_until must list concrete blockers", result["errors"])
+
+    def test_current_contract_lists_expected_adapter_package_layout(self) -> None:
+        data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+        package = data["expected_adapter_package"]
+
+        self.assertEqual(set(package["package_layout"]), REQUIRED_PACKAGE_LAYOUT)
+        self.assertEqual(set(package["required_cli_flags"]), {"--output-dir", "--limit", "--overwrite", "--task-ids"})
+        self.assertIn("uv run python -m authzbench_saas_harbor.main", package["module_entrypoint"])
 
     def test_allows_public_harbor_artifact_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -52,6 +52,22 @@ REQUIRED_PUBLIC_SOURCES = {
     "https://www.harborframework.com/docs/tasks",
     "https://www.harborframework.com/docs/run-jobs/results-and-artifacts",
 }
+REQUIRED_PACKAGE_LAYOUT = {
+    "pyproject.toml",
+    "README.md",
+    "adapter_metadata.json",
+    "parity_experiment.json",
+    "run_authzbench_saas.yaml",
+    "src/authzbench_saas_harbor/__init__.py",
+    "src/authzbench_saas_harbor/adapter.py",
+    "src/authzbench_saas_harbor/main.py",
+    "src/authzbench_saas_harbor/task-template/task.toml",
+    "src/authzbench_saas_harbor/task-template/instruction.md",
+    "src/authzbench_saas_harbor/task-template/environment/Dockerfile",
+    "src/authzbench_saas_harbor/task-template/solution/solve.sh",
+    "src/authzbench_saas_harbor/task-template/tests/test.sh",
+}
+REQUIRED_ADAPTER_CLI_FLAGS = {"--output-dir", "--limit", "--overwrite", "--task-ids"}
 DISALLOWED_TEXT = (
     "accepted",
     "endorsed",
@@ -144,8 +160,9 @@ def validate_harbor_integration(
     for required_file in (
         "instruction.md",
         "task.toml",
-        "environment/",
+        "environment/Dockerfile",
         "verifier/task_manifest.json",
+        "solution/solve.sh",
         "tests/test.sh",
         "run_authzbench_saas.yaml",
     ):
@@ -212,6 +229,37 @@ def validate_harbor_integration(
     blocked = data.get("blocked_until")
     if not isinstance(blocked, list) or len(blocked) < 5:
         errors.append("blocked_until must list concrete blockers")
+
+    expected_package = data.get("expected_adapter_package")
+    if not isinstance(expected_package, dict):
+        errors.append("expected_adapter_package must be an object")
+        expected_package = {}
+    else:
+        if expected_package.get("evidence_status") != "implementation_target":
+            errors.append("expected_adapter_package.evidence_status must be implementation_target")
+        package_boundary = str(expected_package.get("claim_boundary", ""))
+        if "not implemented Harbor SDK integration" not in package_boundary:
+            errors.append("expected_adapter_package.claim_boundary must reject implemented-SDK evidence claims")
+        package_layout = set(expected_package.get("package_layout") or [])
+        missing_package_layout = sorted(REQUIRED_PACKAGE_LAYOUT - package_layout)
+        if missing_package_layout:
+            errors.append("expected_adapter_package.package_layout missing: " + ", ".join(missing_package_layout))
+        module_entrypoint = str(expected_package.get("module_entrypoint", ""))
+        if "uv run python -m authzbench_saas_harbor.main" not in module_entrypoint:
+            errors.append("expected_adapter_package.module_entrypoint must name the future module entrypoint")
+        if "--output-dir" not in module_entrypoint:
+            errors.append("expected_adapter_package.module_entrypoint must include --output-dir")
+        cli_flags = set(expected_package.get("required_cli_flags") or [])
+        missing_cli_flags = sorted(REQUIRED_ADAPTER_CLI_FLAGS - cli_flags)
+        if missing_cli_flags:
+            errors.append("expected_adapter_package.required_cli_flags missing: " + ", ".join(missing_cli_flags))
+        helper = str(expected_package.get("repo_side_compatibility_helper", ""))
+        for flag in sorted(REQUIRED_ADAPTER_CLI_FLAGS):
+            if flag not in helper:
+                errors.append(f"expected_adapter_package.repo_side_compatibility_helper missing {flag}")
+        package_blockers = expected_package.get("blocked_until")
+        if not isinstance(package_blockers, list) or len(package_blockers) < 3:
+            errors.append("expected_adapter_package.blocked_until must list concrete blockers")
 
     if not runbook_path.exists():
         errors.append(f"missing runbook: {runbook_path.relative_to(ROOT)}")

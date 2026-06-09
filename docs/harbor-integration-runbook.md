@@ -59,6 +59,10 @@ Target builder responsibilities:
 - write `task.toml` with Harbor task schema version `1.3`, Harbor config
   tables, public-safe AuthZBench-SaaS metadata under `[metadata.authzbench]`,
   resource requirements, network policy, artifact paths, and verifier settings;
+- write `environment/Dockerfile` and `solution/solve.sh` so generated task
+  directories match the public Harbor adapter shape, while keeping
+  `solution/solve.sh` as a fail-closed placeholder until a verified public
+  oracle exists;
 - include a task-local verifier entrypoint that invokes the AuthZBench-SaaS
   scorer bridge;
 - write a reference `run_authzbench_saas.yaml` for future local Harbor
@@ -86,6 +90,34 @@ A future Harbor SDK adapter should expose these internal seams:
 The adapter should fail closed when required metadata is missing. It should not
 invent task outcomes, target-request coverage, private-pack fingerprints, or
 review evidence.
+
+Expected package/module surface for a real adapter checkout:
+
+- `pyproject.toml`, `README.md`, `adapter_metadata.json`,
+  `parity_experiment.json`, and `run_authzbench_saas.yaml`;
+- `src/authzbench_saas_harbor/main.py` with a module entrypoint equivalent to
+  `uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>`;
+- `src/authzbench_saas_harbor/adapter.py` for parsing benchmark manifests and
+  generating task directories;
+- task templates for `task.toml`, `instruction.md`,
+  `environment/Dockerfile`, `solution/solve.sh`, and `tests/test.sh`;
+- CLI support for `--output-dir`, `--limit`, `--overwrite`, and `--task-ids`.
+
+The current repository has a compatibility helper, not a packaged Harbor SDK
+adapter:
+
+```bash
+python3 scripts/build_harbor_dataset_skeleton.py \
+  --task 'tasks/*/*.json' \
+  --output-dir <generated-harbor-dataset-path> \
+  --task-ids <comma-separated-task-ids> \
+  --limit <n> \
+  --overwrite
+```
+
+This helper writes a public-safe skeleton and placeholder package-shape files.
+It does not produce `adapter_metadata.json`, `parity_experiment.json`, a real
+Harbor package, or Harbor execution evidence.
 
 The machine-readable version of this target is tracked at
 [`artifact/harbor-adapter-contract.json`](../artifact/harbor-adapter-contract.json)
@@ -121,9 +153,11 @@ python3 scripts/build_harbor_dataset_skeleton.py \
 
 For live HTTP tool-agent planning, use `--harness-lane live_http_tool_agent`.
 Use repeatable `--task-id <id>` for subset generation. `--overwrite` is an
-alias for replacing an existing generated output directory. The builder writes
-Harbor-shaped task directories and a reference `run_authzbench_saas.yaml`, but
-it does not invoke Harbor and does not create private execution evidence.
+alias for replacing an existing generated output directory. `--task-ids` is a
+comma-separated compatibility alias for future Harbor adapter packaging. The
+builder writes Harbor-shaped task directories and a reference
+`run_authzbench_saas.yaml`, but it does not invoke Harbor and does not create
+private execution evidence.
 
 Validate a generated skeleton with:
 

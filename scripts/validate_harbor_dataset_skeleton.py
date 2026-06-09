@@ -16,7 +16,7 @@ ALLOWED_ABSOLUTE_PREFIXES = (
     "/tasks/",
     "/work-items/",
 )
-ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts"}
+ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts", "/usr/bin/env"}
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 DISALLOWED_TEXT = (
     "calendar." + "google.com",
@@ -198,7 +198,9 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         required_files = {
             "instruction.md": task_dir / "instruction.md",
             "task.toml": task_dir / "task.toml",
+            "environment/Dockerfile": task_dir / "environment" / "Dockerfile",
             "environment/context.json": task_dir / "environment" / "context.json",
+            "solution/solve.sh": task_dir / "solution" / "solve.sh",
             "verifier/task_manifest.json": task_dir / "verifier" / "task_manifest.json",
             "tests/test.sh": task_dir / "tests" / "test.sh",
         }
@@ -283,6 +285,22 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                     errors.append(f"{rel_task_dir}: agent.network_mode must be {expected_agent_network}")
                 if environment.get("network_mode") != "no-network":
                     errors.append(f"{rel_task_dir}: environment.network_mode must be no-network")
+
+        if required_files["environment/Dockerfile"].is_file():
+            dockerfile = required_files["environment/Dockerfile"].read_text(encoding="utf-8")
+            if "not Harbor execution evidence" not in dockerfile:
+                errors.append(f"{rel_task_dir}: environment/Dockerfile must preserve non-evidence claim boundary")
+            if "FROM python:" not in dockerfile:
+                errors.append(f"{rel_task_dir}: environment/Dockerfile must define a base image")
+            errors.extend(_public_safety_errors(dockerfile, label=f"{rel_task_dir}/environment/Dockerfile"))
+
+        if required_files["solution/solve.sh"].is_file():
+            solution = required_files["solution/solve.sh"].read_text(encoding="utf-8")
+            if "does not include a public oracle solution" not in solution:
+                errors.append(f"{rel_task_dir}: solution/solve.sh must preserve placeholder oracle boundary")
+            if "exit 64" not in solution:
+                errors.append(f"{rel_task_dir}: solution/solve.sh must fail closed until a verified oracle exists")
+            errors.extend(_public_safety_errors(solution, label=f"{rel_task_dir}/solution/solve.sh"))
 
         if required_files["tests/test.sh"].is_file():
             script = required_files["tests/test.sh"].read_text(encoding="utf-8")

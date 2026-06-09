@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -21,6 +23,8 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
             task_dir = output / manifest["tasks"][0]["harbor_task_dir"]
             task_toml = (task_dir / "task.toml").read_text(encoding="utf-8")
             instruction = (task_dir / "instruction.md").read_text(encoding="utf-8")
+            dockerfile = (task_dir / "environment" / "Dockerfile").read_text(encoding="utf-8")
+            solution = (task_dir / "solution" / "solve.sh").read_text(encoding="utf-8")
             context = json.loads((task_dir / "environment" / "context.json").read_text(encoding="utf-8"))
             task_manifest = json.loads((task_dir / "verifier" / "task_manifest.json").read_text(encoding="utf-8"))
             run_config = (output / manifest["reference_run_config"]).read_text(encoding="utf-8")
@@ -35,6 +39,10 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn("harbor_execution_verified = false", task_toml)
         self.assertIn('environment_mode = "separate"', task_toml)
         self.assertIn("findings: []", instruction)
+        self.assertIn("not Harbor execution evidence", dockerfile)
+        self.assertIn("FROM python:", dockerfile)
+        self.assertIn("does not include a public oracle solution", solution)
+        self.assertIn("exit 64", solution)
         self.assertEqual(context["task_id"], "pm_same_tenant_read_control")
         self.assertEqual(task_manifest["id"], "pm_same_tenant_read_control")
         self.assertIn("datasets:", run_config)
@@ -89,6 +97,43 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
             self.assertFalse((output / "stale.txt").exists())
 
         self.assertEqual([task["id"] for task in manifest["tasks"]], ["pm_same_tenant_read_control"])
+
+    def test_filters_by_task_ids_before_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "harbor-public"
+            manifest = build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/*.json"],
+                output,
+                task_ids=["pm_bola_read_alpha_from_beta"],
+                limit=1,
+            )
+
+        self.assertEqual([task["id"] for task in manifest["tasks"]], ["pm_bola_read_alpha_from_beta"])
+
+    def test_cli_accepts_task_ids_alias(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "harbor-public"
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/build_harbor_dataset_skeleton.py",
+                    "--task",
+                    "tasks/project_mgmt/*.json",
+                    "--output-dir",
+                    str(output),
+                    "--task-ids",
+                    "pm_bola_read_alpha_from_beta",
+                    "--limit",
+                    "1",
+                    "--overwrite",
+                ],
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            )
+
+        manifest = json.loads(result.stdout)
+        self.assertEqual([task["id"] for task in manifest["tasks"]], ["pm_bola_read_alpha_from_beta"])
 
 
 if __name__ == "__main__":
