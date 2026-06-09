@@ -153,6 +153,11 @@
       "claim_boundary": "Generates Harbor-shaped public task directories only; does not run Harbor and does not export private manifests."
     },
     {
+      "path": "scripts/validate_harbor_dataset_skeleton.py",
+      "status": "public_skeleton_validator",
+      "claim_boundary": "Validates generated public skeleton structure and redaction boundary only; does not run Harbor."
+    },
+    {
       "path": "scripts/validate_harbor_integration.py",
       "status": "contract_validator",
       "claim_boundary": "Validates adapter planning metadata only; does not run Harbor."

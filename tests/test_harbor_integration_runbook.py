@@ -35,8 +35,8 @@ class HarborIntegrationRunbookTests(unittest.TestCase):
         lower = text.lower()
 
         disallowed = [
-            "accepted by",
-            "endorsed by",
+            "accepted" + " by",
+            "endorsed" + " by",
             "private meeting",
             "calendar." + "google.com",
             "appointments/" + "schedules",

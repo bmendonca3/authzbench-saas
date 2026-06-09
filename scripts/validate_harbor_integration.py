@@ -192,7 +192,13 @@ def validate_harbor_integration(
         errors.append(f"missing runbook: {runbook_path.relative_to(ROOT)}")
     else:
         runbook = runbook_path.read_text(encoding="utf-8")
-        for term in ("Harbor-compatible execution target", "SDK Adapter Expectations", "Live HTTP Tool-Agent Lane"):
+        for term in (
+            "Harbor-compatible execution target",
+            "SDK Adapter Expectations",
+            "Live HTTP Tool-Agent Lane",
+            "scripts/build_harbor_dataset_skeleton.py",
+            "scripts/validate_harbor_dataset_skeleton.py",
+        ):
             if term not in runbook:
                 errors.append(f"runbook missing required term: {term}")
 
