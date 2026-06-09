@@ -98,7 +98,7 @@
       "authorized_allow controls include 2xx replay checks"
     ],
     "all_tasks": [
-      "controls include actor, method, path, and status",
+      "controls include actor, method, path, and status or body_contains",
       "allowed hosts are local benchmark fixtures",
       "task manifests remain public-safe"
     ]

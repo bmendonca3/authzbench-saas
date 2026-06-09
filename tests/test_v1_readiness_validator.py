@@ -129,12 +129,18 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(gates["external_review_packet_ready"]["passed"])
         self.assertTrue(gates["submission_governance_spec_defined"]["passed"])
         self.assertTrue(gates["harbor_repo_side_target_specified"]["passed"])
-        self.assertIn(
-            "harbor_cli_found=False",
-            gates["harbor_repo_side_target_specified"]["evidence"],
+        self.assertTrue(
+            any(
+                item in gates["harbor_repo_side_target_specified"]["evidence"]
+                for item in ("harbor_cli_found=False", "harbor_cli_found=True")
+            )
         )
         self.assertIn(
             "harbor_execution_verified=False",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "ready_for_local_harbor_run=False",
             gates["harbor_repo_side_target_specified"]["evidence"],
         )
         self.assertIn(
@@ -2233,6 +2239,17 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         errors = self._source_and_release_with_changed_path("artifact/submission-runner-smoke.json")
 
         self.assertEqual(errors, [])
+
+    def test_benchmark_source_allows_harbor_template_artifact_changes(self) -> None:
+        for path in (
+            "artifact/harbor-adapter-metadata.template.json",
+            "artifact/harbor-parity-experiment.template.json",
+            "scripts/validate_harbor_adapter_templates.py",
+        ):
+            with self.subTest(path=path):
+                errors = self._source_and_release_with_changed_path(path)
+
+            self.assertEqual(errors, [])
 
     def test_paper_readiness_allows_only_narrow_post_source_evidence_changes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

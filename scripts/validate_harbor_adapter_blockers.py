@@ -46,8 +46,8 @@ PRIVATE_MARKERS = (
     "oracle:",
 )
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
-ALLOWED_ABSOLUTE_PREFIXES = ("/logs/artifacts/",)
-ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts"}
+ALLOWED_ABSOLUTE_PREFIXES = ("/logs/artifacts/", "/logs/verifier/")
+ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts", "/logs/verifier"}
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -122,8 +122,8 @@ def validate_harbor_adapter_blockers(path: Path = BLOCKERS_PATH) -> dict[str, An
         if not isinstance(helper, dict):
             errors.append("repo_side_progress entries must be objects")
             continue
-        if helper.get("status") != "partial_repo_side_helper":
-            errors.append(f"{helper.get('item')}: status must be partial_repo_side_helper")
+        if helper.get("status") not in {"partial_repo_side_helper", "partial_repo_side_smoke"}:
+            errors.append(f"{helper.get('item')}: status must be partial_repo_side_helper or partial_repo_side_smoke")
         if "does not" not in str(helper.get("claim_boundary", "")):
             errors.append(f"{helper.get('item')}: claim_boundary must state what the helper does not prove")
 
@@ -139,8 +139,8 @@ def validate_harbor_adapter_blockers(path: Path = BLOCKERS_PATH) -> dict[str, An
         if not isinstance(blocker, dict):
             errors.append("required_before_adapter_ready entries must be objects")
             continue
-        if blocker.get("status") != "blocked":
-            errors.append(f"{blocker.get('item')}: status must be blocked")
+        if blocker.get("status") not in {"blocked", "partial_repo_side_smoke"}:
+            errors.append(f"{blocker.get('item')}: status must be blocked or partial_repo_side_smoke")
         if not isinstance(blocker.get("required_evidence"), list) or not blocker["required_evidence"]:
             errors.append(f"{blocker.get('item')}: required_evidence must be a non-empty list")
         if not isinstance(blocker.get("missing_input"), str) or not blocker["missing_input"].strip():

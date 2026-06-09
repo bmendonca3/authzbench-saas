@@ -38,6 +38,12 @@
       "status": "partial_repo_side_helper",
       "evidence": "scripts/check_harbor_local_execution.py",
       "claim_boundary": "Checks generated skeleton validity and Harbor CLI discoverability only; does not run Harbor."
+    },
+    {
+      "item": "local_harbor_verification_smoke_target",
+      "status": "partial_repo_side_helper",
+      "evidence": "Generated public skeletons include a current Harbor run config and verifier image layout intended for a local verification-enabled smoke run.",
+      "claim_boundary": "This blocker artifact does not record Harbor execution evidence, scorer parity, adapter readiness, or v1 readiness. Local Harbor smoke results must be rerun and reported separately from this implementation-blocker file."
     }
   ],
   "required_before_adapter_ready": [
@@ -98,14 +104,16 @@
     {
       "item": "local_harbor_run",
       "status": "blocked",
-      "missing_input": "Docker daemon available for Harbor's local Docker execution environment after invoking the Harbor package with uvx or installing it on PATH",
+      "missing_input": "submission-producing Harbor agent run plus scorer output from a valid AuthZBench-SaaS submission and comparable original-run evidence",
       "required_evidence": [
         "Harbor CLI/package command available through uvx harbor or harbor on PATH",
-        "uvx harbor run -p <generated-public-dataset> -a oracle -o <jobs-dir> -n 1 -l 1 --yes command exits successfully, or an equivalent installed harbor command does",
+        "uvx harbor run -c <generated-public-run-config> --yes command exits successfully with verification enabled, or an equivalent installed harbor command does",
         "job config/result files",
-        "trial verifier output",
-        "agent trajectory or equivalent agent artifact",
-        "redacted /logs/artifacts collection"
+        "trial verifier output with scorer-derived reward.json or reward.txt",
+        "agent trajectory showing a valid submission.json was produced",
+        "redacted run-bundle collection with score output",
+        "original AuthZBench-SaaS run evidence for the same public task and agent configuration",
+        "parity disposition comparing original and Harbor results"
       ]
     },
     {

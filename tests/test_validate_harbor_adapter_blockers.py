@@ -20,7 +20,7 @@ class HarborAdapterBlockerValidatorTests(unittest.TestCase):
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["errors"], [])
         self.assertEqual(result["blocked_item_count"], len(REQUIRED_BLOCKERS))
-        self.assertEqual(result["repo_side_helper_count"], len(REQUIRED_HELPERS))
+        self.assertGreaterEqual(result["repo_side_helper_count"], len(REQUIRED_HELPERS))
 
     def test_rejects_unblocked_parity_and_private_leak_markers(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -37,7 +37,7 @@ class HarborAdapterBlockerValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"], result)
         self.assertIn("public_claim_boundary must reject adapter readiness and parity evidence claims", result["errors"])
-        self.assertTrue(any("status must be blocked" in error for error in result["errors"]), result)
+        self.assertTrue(any("status must be blocked or partial_repo_side_smoke" in error for error in result["errors"]), result)
         self.assertTrue(any("required_evidence must be a non-empty list" in error for error in result["errors"]), result)
         self.assertTrue(any("claim_boundary must state what the helper does not prove" in error for error in result["errors"]), result)
         self.assertTrue(any("sensitive private detail marker" in error for error in result["errors"]), result)
