@@ -135,6 +135,17 @@ python3 scripts/validate_harbor_dataset_skeleton.py \
 This checks the public skeleton structure and redaction boundary. It still does
 not run Harbor.
 
+Check local readiness to attempt a future Harbor run with:
+
+```bash
+python3 scripts/check_harbor_local_execution.py
+```
+
+That preflight generates and validates a temporary public skeleton and checks
+whether the `harbor` CLI is on `PATH`. It does not invoke `harbor run`. In a
+checkout without Harbor installed, it records the local execution gate as
+blocked on the missing CLI/package.
+
 ## No-Tools Lane
 
 For no-tools model runs, Harbor should receive an instruction-only task context
@@ -227,6 +238,7 @@ Blocked before this can become release evidence:
 
 - exact Harbor SDK adapter API integration;
 - passing local Harbor run;
+- local Harbor CLI/package availability for verified run attempts;
 - adapter metadata and parity experiment evidence;
 - active and shadow/candidate private pack operation;
 - protected release-candidate hosted/containerized smoke;
