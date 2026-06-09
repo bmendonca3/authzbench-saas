@@ -208,6 +208,19 @@ reference command target is:
 cd <generated-harbor-dataset-path> && harbor run -c run_authzbench_saas.yaml --yes
 ```
 
+To create a redacted local smoke summary without committing raw `harbor-jobs/`
+output, run:
+
+```bash
+python3 scripts/run_harbor_local_smoke.py
+python3 scripts/validate_harbor_local_evidence.py
+```
+
+The checked-in smoke summary proves only local task/agent/verifier execution for
+the generated public skeleton. It deliberately records `parity_verified: false`
+until a submission-producing public-safe agent or adapter and matching native
+AuthZBench-SaaS run evidence exist.
+
 ## No-Tools Lane
 
 For no-tools model runs, Harbor should receive an instruction-only task context
