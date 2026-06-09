@@ -122,7 +122,10 @@ public-output redaction. It cannot satisfy the release gate because the emitted
 scope is `rehearsal`, not `release_candidate`.
 Release-candidate smoke evidence must replace all angle-bracket placeholders
 with concrete values; placeholders embedded inside required strings, such as
-`runner:<digest>` or `--private-pack <active-pack>`, are rejected.
+`runner:<digest>` or `--private-pack <active-pack>`, are rejected. The
+validator also rejects unresolved text markers such as `TODO`, `TBD`,
+`unknown`, and `n/a`, plus local absolute paths, anywhere in hosted smoke
+evidence before it can count toward the release gate.
 
 ## Rotating Private Packs
 
