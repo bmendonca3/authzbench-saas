@@ -27,9 +27,9 @@
     "validated total task count of at least 100"
   ],
   "current_public_view": {
-    "public_task_count": 54,
+    "public_task_count": 60,
     "validated_private_holdout_task_count": 0,
-    "total_task_count": 54,
+    "total_task_count": 60,
     "required_total_task_count": 100
   },
   "last_verified_public_readiness": {

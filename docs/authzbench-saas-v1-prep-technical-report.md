@@ -12,7 +12,7 @@ community-scale benchmark.
 
 The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
 46-task release baselines and 49-task v1-prep model/tool-agent baselines are
-stale for current 54-task comparison. Repeated 54-task Qwen, Claude Haiku 4.5,
+stale for current 60-task comparison. Repeated 54-task Qwen, Claude Haiku 4.5,
 Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families are now
 current, and the repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent family
 is current. These rows remain public-split diagnostic evidence only; they do
@@ -39,12 +39,12 @@ denial, authorized admin reassignment, and status-only state preservation.
 
 ## Current Evidence
 
-The current 54-task scripted sanity baseline passes all public tasks. It proves
+The current 60-task scripted sanity baseline passes all public tasks. It proves
 that the expanded manifests, scorer, scripted oracle path, and baseline registry
 agree. It does not prove model capability, leaderboard eligibility,
 private-holdout performance, or v1 readiness.
 
-Two current 54-task `qwen3-coder-next` no-tools runs provide repeated diagnostic
+Two stale 54-task `qwen3-coder-next` no-tools runs provide repeated diagnostic
 evidence for one model family. They pass 32 and 33 tasks, span
 `0.0000-0.1429` exploit-proven success, keep vulnerable boundary reasoning at
 `0.0000`, and fully pass no vulnerable task. Their summaries retain seven and
@@ -54,7 +54,7 @@ empty-findings fallbacks that remain in the scored denominator; the first run
 also has two outer runner failures that become invalid submissions. The pair is
 public-split evidence only.
 
-Two current 54-task `claude-haiku-4.5` no-tools runs provide a second repeated
+Two stale 54-task `claude-haiku-4.5` no-tools runs provide a second repeated
 model family. Both pass 32 tasks, prove 4 and 5 of 21 vulnerable replays, keep
 boundary reasoning at `0.0000`, and fully pass no vulnerable task. Both have
 zero adapter failures, zero outer runner failures, and zero invalid
@@ -64,7 +64,7 @@ reassignment control, producing `false_positive_rate: 0.0303`,
 This pair improves current evidence breadth but remains public-split diagnostic
 evidence, not a stable ranking.
 
-Two current 54-task `claude-sonnet-4.6` no-tools runs provide a third repeated
+Two stale 54-task `claude-sonnet-4.6` no-tools runs provide a third repeated
 model family. Both pass 32 tasks, prove 15 and 14 of 21 vulnerable replays,
 keep boundary reasoning at `0.0000`, and fully pass no vulnerable task. Both
 have zero adapter failures, zero outer runner failures, and zero invalid
@@ -75,7 +75,7 @@ vulnerable. Each has `false_positive_rate: 0.0303` and
 are `0.9286` and `1.0`. This is stronger public exploit-replay evidence, not a
 stable ranking.
 
-Two current 54-task `glm-5` no-tools runs provide a fourth repeated model
+Two stale 54-task `glm-5` no-tools runs provide a fourth repeated model
 family. Both pass 33 tasks, prove 2 and 3 of 21 vulnerable replays, keep
 boundary reasoning at `0.0000`, fully pass no vulnerable task, and report zero
 control false positives. Run 1 preserves one outer runner failure on the
@@ -84,7 +84,7 @@ diagnostics; run 2 has complete 54-task artifacts and zero invalid submissions.
 This broadens current no-tools evidence, but remains public-split diagnostic
 evidence rather than a stable ranking.
 
-Two current 54-task `claude-opus-4.6` no-tools runs provide a fifth repeated
+Two stale 54-task `claude-opus-4.6` no-tools runs provide a fifth repeated
 model family. Both pass 33 tasks, prove 14 of 21 vulnerable replays, keep
 boundary reasoning at `0.0000`, fully pass no vulnerable task, and report zero
 control false positives. Both retain complete 54-task artifacts with zero
@@ -92,7 +92,7 @@ adapter, command, parser, runner, or invalid-submission failures. This closes
 the current no-tools rerun gate while remaining public-split diagnostic
 evidence rather than private-holdout, leaderboard, or v1-release evidence.
 
-Two current 54-task `claude-sonnet-4.6` live HTTP tool-agent runs provide
+Two stale 54-task `claude-sonnet-4.6` live HTTP tool-agent runs provide
 repeated diagnostic evidence for the current live-target harness. Both pass 33
 tasks, prove 15 of 21 vulnerable replays, keep boundary reasoning at `0.0000`,
 fully pass no vulnerable task, and report zero secure-control false positives.
@@ -109,13 +109,13 @@ per task, correlates target-side requests for all 49 tasks in both runs, and
 reports zero planner or parser failures. The 54-task expansion makes these rows
 stale; Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, Claude Opus 4.6
 no-tools families, and the live HTTP tool-agent family have been rerun on the
-active fingerprint.
+stale 54-task fingerprint.
 
 A completed boundary-reasoning calibration study audits the historical 49-task
 public tool-agent pair. The study finds that exploit-proven vulnerable
 submissions often describe the right authorization concept in prose or alternate
 keys, but do not preserve the oracle-compatible boundary vocabulary required by
-`score-policy-v1`. The current 54-task tool-agent pair repeats the same
+`score-policy-v1`. The stale 54-task tool-agent pair repeats the same
 high-exploit-proof, zero-boundary-credit pattern, but the calibration study
 itself remains scoped to the 49-task checkpoint. The zero boundary-reasoning
 result is therefore a valid score-contract result, not a reason to
@@ -140,7 +140,7 @@ secure controls, 16 denial controls, and 11 authorized-allow controls. Its
 public baselines include four repeated no-tools model-family rows and one
 repeated live HTTP tool-agent family. These are useful diagnostics for exploit
 replay, false positives, request correlation, and weak boundary reasoning, but
-they are stale for current 54-task comparison.
+they are stale for current 60-task comparison.
 
 The v0.0 report remains in
 [`authzbench-saas-v0.0-technical-report.md`](authzbench-saas-v0.0-technical-report.md).

@@ -21,7 +21,7 @@ intended public host is the public `github.com` account.
 - [ ] release-candidate eligible leaderboard rows live under
       `leaderboard_submissions/**/*.json` or an equivalent protected submission
       bundle, not as repurposed public harness-check examples
-- [ ] baseline registry reports `v0_baseline_ready: true` before any real `v0`
+- [ ] baseline registry reports the intended current evidence state before any release claim
       tag
 - [ ] for any real `v0` tag, rerun strict
       `python3 scripts/validate_v0_release.py` and require `v0_ready: true`

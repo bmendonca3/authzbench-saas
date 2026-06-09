@@ -44,7 +44,7 @@
         "Does the evidence support the stated claim boundary?",
         "Are public-split diagnostics separated from private-holdout leaderboard claims?",
         "Are repeated-run ranges presented as descriptive evidence rather than statistical certainty?",
-        "Are stale 44-task, frozen 46-task, historical 49-task, and current 54-task baselines separated clearly?"
+        "Are stale 44-task, frozen 46-task, historical 49-task, and stale 54-task and current 60-task baselines separated clearly?"
       ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",

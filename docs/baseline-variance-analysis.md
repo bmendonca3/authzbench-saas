@@ -114,9 +114,9 @@ absent for that task and producing one invalid submission; run 2 has complete
 
 ## Interpretation
 
-The current 54-task Qwen, Claude Haiku, Claude Sonnet, GLM, and Claude Opus
+The stale 54-task Qwen, Claude Haiku, Claude Sonnet, GLM, and Claude Opus
 pairs establish repeated evidence for five no-tools model families on the
-active fingerprint.
+stale 54-task fingerprint.
 The Qwen pair passes
 32-33 of 54 tasks,
 proves 0-3 of 21 vulnerable replays, keeps vulnerable boundary reasoning at
@@ -156,9 +156,9 @@ replays, keeps boundary reasoning at `0.0000`, fully passes zero vulnerable
 tasks, and reports no secure-control findings. Both runs have complete
 submission, score, transcript, context, and model-output artifacts with zero
 adapter, runner, command, parse, or invalid-submission failures. This closes
-the current 54-task no-tools family rerun gate.
+the stale 54-task no-tools family rerun gate.
 
-The current 54-task Claude Sonnet live HTTP tool-agent pair passes 33 tasks in
+The stale 54-task Claude Sonnet live HTTP tool-agent pair passes 33 tasks in
 both runs, proves 15 of 21 vulnerable replays, keeps boundary reasoning at
 `0.0000`, fully passes zero vulnerable tasks, and reports no secure-control
 findings. Both runs retain one model-tool plan artifact and one tool-probe
@@ -195,7 +195,7 @@ The central research signal is not a model ranking. It is the gap between
 exploit replay and boundary reasoning: the frozen v0.0 live tool-agent proves
 14 of 19 vulnerable public tasks in both runs (`0.7368` exploit-proven
 success), the 49-task live tool-agent proves 15 of 20 vulnerable public tasks in
-both runs (`0.7500` exploit-proven success), the current 54-task live
+both runs (`0.7500` exploit-proven success), the stale 54-task live
 tool-agent proves 15 of 21 vulnerable public tasks in both runs (`0.7143`
 exploit-proven success), and 49-task Opus no-tools proves 11 of 20 vulnerable
 public tasks in both runs, yet all still record zero vulnerable full passes
@@ -204,7 +204,7 @@ because boundary reasoning remains at `0.0000`.
 ## Reproduction Notes
 
 The table was recomputed by reading `baselines/baseline-registry.json`,
-selecting the five current 54-task no-tools model rows, the current 54-task
+selecting the five stale 54-task no-tools model rows, the stale 54-task
 tool-agent row, the stale 49-task model and tool-agent baselines, and the five
 non-scripted entries in the `v0.0`
 release snapshot, then loading each entry's `run_artifacts` from `baselines/`.
@@ -242,7 +242,7 @@ print(len([
 PY
 ```
 
-Expected counts: `6` current 54-task model/agent families, `6` stale 49-task
+Expected counts: `0` current 60-task model/agent families until rerun, `6` stale 54-task model/agent families, `6` stale 49-task
 model/agent families, and `5` frozen v0.0 repeated model/agent families.
 
 Recompute this file after any task-count, scoring-contract, baseline-registry,

@@ -27,7 +27,7 @@
         "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md",
         "2026-06-06-task-quality-matrix-panel-summary.md"
       ],
-      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, the first project-management multi-step workflow wave, and the generated public task-quality matrix have review coverage. The current 54-task live HTTP tool-agent evidence is tracked by the baseline credibility gate and now has repeated public evidence."
+      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, the first project-management multi-step workflow wave, and the generated public task-quality matrix have review coverage. The 54-task live HTTP tool-agent evidence is now stale after the 60-task expansion and remains tracked for audit only."
     },
     {
       "id": "scorer_runner_request_logs_live_proof",
@@ -80,7 +80,7 @@
         "2026-06-08-current-opus-54-evidence-review-summary.md",
         "2026-06-08-current-tool-agent-54-evidence-review-summary.md"
       ],
-      "notes": "Review coverage for registry, leaderboard validators, frozen v0.0 46-task public model summaries, the repeated frozen v0.0 46-task public tool-agent baseline, chart readability, and benchmark fingerprint comparability is complete. The active 54-task split has internally reviewed repeated no-tools Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families, plus repeated public live HTTP Claude Sonnet 4.6 tool-agent evidence with 54/54 target-request correlation. Qwen and GLM retain explicit task-level adapter or runner failure diagnostics; Haiku, Sonnet, Opus, and the current live tool-agent pair have complete zero-failure artifacts for their expected artifact classes. The historical 49-task split has five repeated no-tools model families plus one repeated live HTTP tool-agent family with full target-request correlation; those rows are stale for the active 54-task split. This supports Level 1/v0 baseline credibility and limited current 54-task public diagnostics, not stable current cross-model comparison, hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
+      "notes": "Review coverage for registry, leaderboard validators, frozen v0.0 46-task public model summaries, the repeated frozen v0.0 46-task public tool-agent baseline, chart readability, and benchmark fingerprint comparability is complete. The stale 54-task split has internally reviewed repeated no-tools Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families, plus repeated public live HTTP Claude Sonnet 4.6 tool-agent evidence with 54/54 target-request correlation. Qwen and GLM retain explicit task-level adapter or runner failure diagnostics; Haiku, Sonnet, Opus, and the current live tool-agent pair have complete zero-failure artifacts for their expected artifact classes. The historical 49-task split has five repeated no-tools model families plus one repeated live HTTP tool-agent family with full target-request correlation; those rows are stale for the current 60-task split. This supports Level 1/v0 baseline credibility and limited stale 54-task public diagnostics, not stable current cross-model comparison, hosted leaderboard readiness, v1-scale community status, or private-holdout model ranking claims."
     },
     {
       "id": "holdout_contamination_anti_gaming",

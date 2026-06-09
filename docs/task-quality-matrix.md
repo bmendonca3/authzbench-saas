@@ -17,22 +17,22 @@ python3 scripts/generate_task_quality_matrix.py
 
 | Metric | Value |
 | --- | ---: |
-| Public tasks | 54 |
+| Public tasks | 60 |
 | App families | 6 |
-| Vulnerable tasks | 21 |
-| Secure controls | 33 |
-| Denial controls | 19 |
-| Authorized-allow controls | 14 |
-| Tasks with explicit workflow evidence requirements | 2 |
-| Vulnerable workflow tasks with evidence requirements | 2 |
+| Vulnerable tasks | 24 |
+| Secure controls | 36 |
+| Denial controls | 21 |
+| Authorized-allow controls | 15 |
+| Tasks with explicit workflow evidence requirements | 5 |
+| Vulnerable workflow tasks with evidence requirements | 5 |
 
 ## App Mix
 
 | App | Tasks | Vulnerable | Controls | Denial | Authorized Allow | Workflow Evidence |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| api_tokens | 8 | 3 | 5 | 3 | 2 | 0 |
-| audit_settings | 7 | 3 | 4 | 1 | 3 | 0 |
-| billing | 11 | 4 | 7 | 4 | 3 | 0 |
+| api_tokens | 10 | 4 | 6 | 3 | 3 | 1 |
+| audit_settings | 9 | 4 | 5 | 2 | 3 | 1 |
+| billing | 13 | 5 | 8 | 5 | 3 | 1 |
 | file_sharing | 8 | 3 | 5 | 3 | 2 | 0 |
 | project_mgmt | 9 | 4 | 5 | 3 | 2 | 1 |
 | support | 11 | 4 | 7 | 5 | 2 | 1 |
@@ -47,7 +47,9 @@ python3 scripts/generate_task_quality_matrix.py
 | tok_read_scope_updates_secret | api_tokens | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_scope | 0 |
 | tok_secure_cross_tenant_secret_control | api_tokens | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | tok_secure_export_scope_control | api_tokens | control:denial | secure_control_oracle | 2 | n/a | 0 |
+| tok_secure_same_tenant_secret_control | api_tokens | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | tok_secure_write_scope_control | api_tokens | control:denial | secure_control_oracle | 1 | n/a | 0 |
+| tok_vault_alias_cross_tenant_secret_read | api_tokens | vulnerable | multi_step_evidence_requirements | 1 | attacker_actor, required_boundary, victim_tenant | 1 |
 | tok_write_token_rotates_secret_control | api_tokens | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | aud_admin_updates_security_settings_control | audit_settings | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | aud_auditor_downloads_export_control | audit_settings | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
@@ -55,8 +57,12 @@ python3 scripts/generate_task_quality_matrix.py
 | aud_bfla_member_disables_sso | audit_settings | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role, setting | 0 |
 | aud_bfla_member_downloads_audit_export | audit_settings | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, required_role, resource | 0 |
 | aud_bola_nimbus_reads_quasar_audit_log | audit_settings | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, required_boundary, victim_org | 0 |
+| aud_event_alias_cross_org_log_read | audit_settings | vulnerable | multi_step_evidence_requirements | 1 | attacker_actor, required_boundary, victim_org | 1 |
+| aud_member_export_preview_denial_control | audit_settings | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | aud_secure_cross_org_audit_control | audit_settings | control:denial | secure_control_oracle | 1 | n/a | 0 |
+| bill_account_entitlements_alias_plan_change | billing | vulnerable | multi_step_evidence_requirements | 1 | attacker_actor, org, protected_action, required_role | 1 |
 | bill_admin_entitlement_access_control | billing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
+| bill_admin_export_denies_member_control | billing | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | bill_admin_plan_access_control | billing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | bill_bfla_member_enables_export_entitlement | billing | vulnerable | direct_oracle_and_controls | 3 | attacker_actor, entitlement, org, required_role | 0 |
 | bill_bfla_member_plan_change | billing | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, required_role | 0 |
