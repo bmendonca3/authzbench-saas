@@ -98,6 +98,18 @@ python3 scripts/validate_harbor_integration.py
 That validator checks the public-safe contract shape only. It does not execute
 Harbor and cannot close the SDK integration gate by itself.
 
+Harbor adapter-readiness blockers are tracked separately at
+[`artifact/harbor-adapter-readiness-blockers.json`](../artifact/harbor-adapter-readiness-blockers.json)
+and validated with:
+
+```bash
+python3 scripts/validate_harbor_adapter_blockers.py
+```
+
+That blocker record covers adapter metadata, parity experiment evidence, local
+Harbor execution evidence, and adapter review/publish evidence that must remain
+blocked until real runs and review artifacts exist.
+
 The public-only skeleton builder is:
 
 ```bash
@@ -215,6 +227,7 @@ Blocked before this can become release evidence:
 
 - exact Harbor SDK adapter API integration;
 - passing local Harbor run;
+- adapter metadata and parity experiment evidence;
 - active and shadow/candidate private pack operation;
 - protected release-candidate hosted/containerized smoke;
 - repeated private no-tools and tool-agent rows;

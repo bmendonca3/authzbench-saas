@@ -61,6 +61,26 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
 
         self.assertTrue(result["passed"], result)
 
+    def test_rejects_invalid_adapter_blocker_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            blockers = root / "harbor-adapter-readiness-blockers.json"
+            blockers.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "harbor-adapter-readiness-blockers-v1",
+                        "evidence_status": "complete",
+                        "public_claim_boundary": "Adapter ready.",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_integration(CONTRACT_PATH, RUNBOOK_PATH, blockers)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any(error.startswith("adapter_readiness_blockers:") for error in result["errors"]), result)
+
 
 if __name__ == "__main__":
     unittest.main()
