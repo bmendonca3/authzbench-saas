@@ -16,7 +16,7 @@ Current v1-prep boundary:
   expanded public split.
 - The preceding 49-task split has five repeated no-tools Kiro model families
   and one repeated live HTTP Kiro tool-agent family with 49/49 target-request
-  correlation in both runs. All are stale for current 54-task comparison.
+  correlation in both runs. All are stale for current 60-task comparison.
 - v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
   community-scale benchmark maturity.
 - Harbor preparation is repo-side only: the public adapter contract, skeleton
@@ -25,18 +25,18 @@ Current v1-prep boundary:
 
 Current main / v1-prep split:
 
-- 54 public task manifests
-- 21 vulnerable tasks
-- 33 secure-control tasks
-- 19 denial controls and 14 authorized-allow controls
-- one current 54-task deterministic scripted sanity baseline
-- five current repeated 54-task no-tools model-family baselines: Qwen with
+- 60 public task manifests
+- 24 vulnerable tasks
+- 36 secure-control tasks
+- 21 denial controls and 15 authorized-allow controls
+- one current 60-task deterministic scripted sanity baseline
+- five stale repeated 54-task no-tools model-family baselines: Qwen with
   model-output failure diagnostics, Claude Haiku 4.5 with complete zero-failure
   task artifacts, Claude Sonnet 4.6 with complete zero-failure task artifacts
   and runner-emitted finding totals, GLM-5 with retained runner-failure
   diagnostics in one run and a clean retry run, and Claude Opus 4.6 with
   complete zero-failure task artifacts
-- one current repeated 54-task live HTTP Kiro `claude-sonnet-4.6` tool-agent
+- one stale repeated 54-task live HTTP Kiro `claude-sonnet-4.6` tool-agent
   baseline with 54/54 target-request correlation in both runs
 - five repeated 49-task no-tools Kiro model-family baselines, now stale
 - one repeated 49-task live HTTP Kiro tool-agent baseline, now stale
@@ -55,7 +55,7 @@ baseline registry as historical evidence.
 - 33 secure-control tasks
 - 19 denial controls and 14 authorized-allow controls
 - one current deterministic scripted harness check
-- five current repeated 54-task no-tools Kiro model baselines:
+- five stale repeated 54-task no-tools Kiro model baselines:
   `qwen3-coder-next`, with explicit model-output failure diagnostics, and
   `claude-haiku-4.5`, with zero adapter, runner, and invalid-submission failures;
   and `claude-sonnet-4.6`, with zero adapter, runner, and invalid-submission
@@ -81,13 +81,13 @@ baseline registry as historical evidence.
 - baseline registry validation that separates harness checks, legacy snapshots,
   current public split summaries, frozen release snapshots, and leaderboard
   eligibility
-- current 54-task deterministic scripted harness check
-- repeated current 54-task no-tools Kiro `qwen3-coder-next` model baseline
-- repeated current 54-task no-tools Kiro `claude-haiku-4.5` model baseline
-- repeated current 54-task no-tools Kiro `claude-sonnet-4.6` model baseline
-- repeated current 54-task no-tools Kiro `glm-5` model baseline
-- repeated current 54-task no-tools Kiro `claude-opus-4.6` model baseline
-- repeated current 54-task live HTTP Kiro `claude-sonnet-4.6` tool-agent
+- current 60-task deterministic scripted harness check
+- repeated stale 54-task no-tools Kiro `qwen3-coder-next` model baseline
+- repeated stale 54-task no-tools Kiro `claude-haiku-4.5` model baseline
+- repeated stale 54-task no-tools Kiro `claude-sonnet-4.6` model baseline
+- repeated stale 54-task no-tools Kiro `glm-5` model baseline
+- repeated stale 54-task no-tools Kiro `claude-opus-4.6` model baseline
+- repeated stale 54-task live HTTP Kiro `claude-sonnet-4.6` tool-agent
   baseline with per-task plan/probe artifacts and 54/54 target-request
   correlation
 - repeated stale 49-task no-tools Kiro `claude-haiku-4.5` model baseline
@@ -132,7 +132,7 @@ baseline registry as historical evidence.
 - 16 denial controls and 11 authorized-allow controls
 - historical 46-task scripted and model/tool-agent baseline summaries retained
   for v0.0 auditability
-- 46-task baseline rows are stale for current 54-task comparison until rerun
+- 46-task baseline rows are stale for current 60-task comparison until rerun
 
 ## Verified Locally
 
@@ -174,7 +174,7 @@ Actions public-validation workflow.
 The deterministic scripted baseline was rerun on the v0.0 46-task public split.
 The `qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, and `glm-5`
 no-tools Kiro baselines were each rerun twice on that 46-task split. Those rows
-are now stale for current 54-task comparison. The older live HTTP scripted,
+are now stale for current 60-task comparison. The older live HTTP scripted,
 heuristic, and older Kiro model/tool-agent summaries remain stale 44-task
 snapshots because earlier public splits changed. The v0.0
 `claude-sonnet-4.6` live HTTP tool-agent baseline has two 46-task public-split
@@ -198,7 +198,7 @@ secure-control false reports, but vulnerable boundary reasoning remained
 `0.0`, so no vulnerable task fully passed. It is still public-split diagnostic
 evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence.
 
-The current 54-task live HTTP Kiro `claude-sonnet-4.6` tool-agent baseline has
+The stale 54-task live HTTP Kiro `claude-sonnet-4.6` tool-agent baseline has
 two runs with one model-plan artifact and one tool-probe artifact per task,
 54/54 target-request correlation in both runs, zero planner failures, zero
 parser failures, zero invalid submissions, and zero secure-control false
@@ -212,18 +212,18 @@ evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence.
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline, current v1-prep split | 54 | 54 | 1.0 | 1.0 | 0.0 | 1.0 |
-| Kiro `qwen3-coder-next` no-tools current 54-task run 1 | 54 | 32 | 0.0 | 0.0 | 0.0303 | 1.0 |
-| Kiro `qwen3-coder-next` no-tools current 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
-| Kiro `claude-haiku-4.5` no-tools current 54-task run 1 | 54 | 32 | 0.1905 | 0.0 | 0.0303 | 0.9286 |
-| Kiro `claude-haiku-4.5` no-tools current 54-task run 2 | 54 | 32 | 0.2381 | 0.0 | 0.0303 | 0.9286 |
-| Kiro `claude-sonnet-4.6` no-tools current 54-task run 1 | 54 | 32 | 0.7143 | 0.0 | 0.0303 | 0.9286 |
-| Kiro `claude-sonnet-4.6` no-tools current 54-task run 2 | 54 | 32 | 0.6667 | 0.0 | 0.0303 | 1.0 |
-| Kiro `glm-5` no-tools current 54-task run 1 | 54 | 33 | 0.0952 | 0.0 | 0.0 | 1.0 |
-| Kiro `glm-5` no-tools current 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
-| Kiro `claude-opus-4.6` no-tools current 54-task run 1 | 54 | 33 | 0.6667 | 0.0 | 0.0 | 1.0 |
-| Kiro `claude-opus-4.6` no-tools current 54-task run 2 | 54 | 33 | 0.6667 | 0.0 | 0.0 | 1.0 |
-| Kiro live HTTP tool-agent `claude-sonnet-4.6` current 54-task run 1 | 54 | 33 | 0.7143 | 0.0 | 0.0 | 1.0 |
-| Kiro live HTTP tool-agent `claude-sonnet-4.6` current 54-task run 2 | 54 | 33 | 0.7143 | 0.0 | 0.0 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools stale 54-task run 1 | 54 | 32 | 0.0 | 0.0 | 0.0303 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools stale 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-haiku-4.5` no-tools stale 54-task run 1 | 54 | 32 | 0.1905 | 0.0 | 0.0303 | 0.9286 |
+| Kiro `claude-haiku-4.5` no-tools stale 54-task run 2 | 54 | 32 | 0.2381 | 0.0 | 0.0303 | 0.9286 |
+| Kiro `claude-sonnet-4.6` no-tools stale 54-task run 1 | 54 | 32 | 0.7143 | 0.0 | 0.0303 | 0.9286 |
+| Kiro `claude-sonnet-4.6` no-tools stale 54-task run 2 | 54 | 32 | 0.6667 | 0.0 | 0.0303 | 1.0 |
+| Kiro `glm-5` no-tools stale 54-task run 1 | 54 | 33 | 0.0952 | 0.0 | 0.0 | 1.0 |
+| Kiro `glm-5` no-tools stale 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-opus-4.6` no-tools stale 54-task run 1 | 54 | 33 | 0.6667 | 0.0 | 0.0 | 1.0 |
+| Kiro `claude-opus-4.6` no-tools stale 54-task run 2 | 54 | 33 | 0.6667 | 0.0 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` stale 54-task run 1 | 54 | 33 | 0.7143 | 0.0 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` stale 54-task run 2 | 54 | 33 | 0.7143 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 1 | 49 | 29 | 0.3 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 49-task run 2 | 49 | 29 | 0.15 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-sonnet-4.6` no-tools stale 49-task run 1 | 49 | 29 | 0.2 | 0.0 | 0.0 | 1.0 |
@@ -331,10 +331,10 @@ expanded to 54 tasks.
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
-- current 54-task deterministic scripted harness summary exists for the live
+- current 60-task deterministic scripted harness summary exists for the live
   v1-prep split
-- five repeated current 54-task no-tools model-family baselines and one repeated
-  current 54-task live HTTP tool-agent family exist on the active public split
+- five repeated stale 54-task no-tools model-family baselines and one repeated
+  stale 54-task live HTTP tool-agent family exist on the previous 54-task public split
 - frozen v0.0 deterministic scripted harness summary exists for the 46-task
   release snapshot
 - four repeated v0.0 no-tools model-family baselines and one repeated v0.0 live
@@ -344,7 +344,7 @@ expanded to 54 tasks.
 - five repeated 49-task no-tools model-family baselines and one repeated
   49-task live HTTP tool-agent family remain as stale historical evidence
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: true` for the live 54-task public baseline bar and
+  `v0_baseline_ready: false` for the live 60-task public baseline bar and
   `v0_release_snapshot_ready: true` for the frozen v0.0 release snapshot
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence

@@ -74,12 +74,12 @@ Start here if you are reviewing the benchmark:
 
 ### Evidence and Baselines
 
-- current 54-task scripted sanity baseline proving the expanded public split,
+- current 60-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- current repeated 54-task no-tools public baselines across Qwen, Claude Haiku
+- stale repeated 54-task no-tools public baselines across Qwen, Claude Haiku
   4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6; public-split evidence
   only
-- current repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+- stale repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
   one plan/probe artifact per task, 54/54 target-request correlation in both
   runs, zero planner or parser failures, and zero secure-control false reports;
   public-split evidence only
@@ -309,7 +309,7 @@ Important interpretation:
   model families and a repeated live HTTP tool-agent family. They are now stale
   after the 54-task support-reassignment expansion and cannot support current
   comparison until rerun.
-- The current 54-task split has repeated no-tools Qwen, Claude Haiku 4.5,
+- The stale 54-task split has repeated no-tools Qwen, Claude Haiku 4.5,
   Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families, plus a repeated live
   HTTP Claude Sonnet 4.6 tool-agent family with 54/54 target-request
   correlation in both runs. This closes the stable v1-prep public-evidence
@@ -318,7 +318,7 @@ Important interpretation:
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
-  vocabulary required for full vulnerable-task credit. The current 54-task
+  vocabulary required for full vulnerable-task credit. The stale 54-task
   live tool-agent pair repeats the same exploit-proof versus boundary-credit
   pattern, but it is not a new calibration study.
 - Stale 44-task baselines are retained for historical context only.

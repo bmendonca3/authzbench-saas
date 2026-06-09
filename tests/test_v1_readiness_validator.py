@@ -124,8 +124,15 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertFalse(result["v1_ready"])
         self.assertEqual(result["gate_count"], 12)
-        self.assertTrue(gates["stable_v1_prep_public_evidence"]["passed"])
-        self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])
+        self.assertFalse(gates["stable_v1_prep_public_evidence"]["passed"])
+        self.assertIn(
+            "fewer than five current public model families are registered",
+            gates["stable_v1_prep_public_evidence"]["unmet"],
+        )
+        self.assertIn(
+            "missing current public tool-agent baseline",
+            gates["stable_v1_prep_public_evidence"]["unmet"],
+        )
         self.assertTrue(gates["external_review_packet_ready"]["passed"])
         self.assertTrue(gates["submission_governance_spec_defined"]["passed"])
         self.assertTrue(gates["harbor_repo_side_target_specified"]["passed"])
@@ -180,9 +187,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         )
         self.assertFalse(gates["v1_task_scale"]["passed"])
         self.assertIn("artifact/v1-task-scale-roadmap.json", gates["v1_task_scale"]["evidence"])
-        self.assertIn("planned_total_task_count=102", gates["v1_task_scale"]["evidence"])
+        self.assertIn("planned_total_task_count=108", gates["v1_task_scale"]["evidence"])
         self.assertIn(
-            "total public plus private holdout tasks is 54, expected at least 100",
+            "total public plus private holdout tasks is 60, expected at least 100",
             gates["v1_task_scale"]["unmet"],
         )
 
@@ -271,9 +278,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "next_actions": ["Stage private packs under the maintainer-only holdout root."],
                         "required_private_inputs": ["active private pack", "shadow private pack"],
                         "current_public_view": {
-                            "public_task_count": 54,
+                            "public_task_count": 60,
                             "validated_private_holdout_task_count": 0,
-                            "total_task_count": 54,
+                            "total_task_count": 60,
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
@@ -291,7 +298,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertEqual(
@@ -335,7 +342,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertIn("schema_version must be private-holdout-operation-blocker-v1", result["unmet"])
@@ -348,7 +355,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("public_claim_boundary is required", result["unmet"])
         self.assertIn("next_actions must list concrete non-placeholder values", result["unmet"])
         self.assertIn("required_private_inputs must list concrete non-placeholder values", result["unmet"])
-        self.assertIn("current_public_view.public_task_count must match current public count 54", result["unmet"])
+        self.assertIn("current_public_view.public_task_count must match current public count 60", result["unmet"])
         self.assertIn("current_public_view.validated_private_holdout_task_count must be 0", result["unmet"])
         self.assertIn("current_public_view.total_task_count must equal public_task_count in public view", result["unmet"])
         self.assertIn("current_public_view.required_total_task_count must be 100", result["unmet"])
@@ -395,9 +402,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "next_actions": ["Stage private packs under the maintainer-only holdout root."],
                         "required_private_inputs": ["active private pack", "shadow private pack"],
                         "current_public_view": {
-                            "public_task_count": 54,
+                            "public_task_count": 60,
                             "validated_private_holdout_task_count": 0,
-                            "total_task_count": 54,
+                            "total_task_count": 60,
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
@@ -415,7 +422,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertIn("last_verified_public_readiness.ci_run_id must match ci_run_url", result["unmet"])
@@ -473,14 +480,14 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
     def test_v1_scale_roadmap_is_structured_planning_evidence(self) -> None:
         result = _validate_v1_scale_roadmap(
-            public_task_count=54,
+            public_task_count=60,
             validated_private_holdout_task_count=0,
         )
 
         self.assertTrue(result["passed"])
         self.assertEqual(result["path"], "artifact/v1-task-scale-roadmap.json")
         self.assertEqual(result["planned_additional_task_count"], 48)
-        self.assertEqual(result["planned_total_task_count"], 102)
+        self.assertEqual(result["planned_total_task_count"], 108)
         self.assertEqual(result["unmet"], [])
 
     def test_v1_scale_roadmap_rejects_overclaiming_and_under_target_plan(self) -> None:
@@ -520,7 +527,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
             result = _validate_v1_scale_roadmap(
                 root,
-                public_task_count=54,
+                public_task_count=60,
                 validated_private_holdout_task_count=0,
             )
 
@@ -537,7 +544,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         )
         self.assertIn("required_total_task_count must be 100", result["unmet"])
         self.assertIn(
-            "minimum_additional_tasks_required must be 46 for the current task counts",
+            "minimum_additional_tasks_required must be 40 for the current task counts",
             result["unmet"],
         )
         self.assertIn(
@@ -550,7 +557,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "planned_waves must include a private-holdout-shadow or private-holdout-candidate wave",
             result["unmet"],
         )
-        self.assertIn("planned total task count is 64, expected at least 100", result["unmet"])
+        self.assertIn("planned total task count is 70, expected at least 100", result["unmet"])
 
     def test_private_operation_blocker_rejects_sensitive_public_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -573,9 +580,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "next_actions": ["Stage private packs without publishing private internals."],
                         "required_private_inputs": ["active private pack", "shadow private pack"],
                         "current_public_view": {
-                            "public_task_count": 54,
+                            "public_task_count": 60,
                             "validated_private_holdout_task_count": 0,
-                            "total_task_count": 54,
+                            "total_task_count": 60,
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
@@ -593,7 +600,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertTrue(any("sensitive key is not allowed" in item for item in result["unmet"]), result)
