@@ -47,6 +47,8 @@ A task family should not be treated as release-candidate quality unless:
 - every oracle, control, and evidence requirement has an integer `status` check
   or a non-empty `body_contains` check; empty body-only checks are not
   acceptable replay proof
+- every task declares non-empty `allowed_hosts` containing only local benchmark
+  fixture app names
 - the task avoids real customer data, real SaaS branding, and secrets
 - public tasks do not copy private holdout routes, seeds, IDs, or oracle bodies
 - manifest validation and relevant scorer tests pass

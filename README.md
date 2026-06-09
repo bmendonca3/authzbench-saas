@@ -403,6 +403,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
 - [`docs/boundary-reasoning-calibration-study.md`](docs/boundary-reasoning-calibration-study.md): current boundary calibration
 - [`docs/v1-community-submission-governance.md`](docs/v1-community-submission-governance.md): future submission governance
+- [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md): Harbor adapter target and non-evidence boundary
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task-quality review rubric
 - [`docs/task-quality-matrix.md`](docs/task-quality-matrix.md): public task-quality matrix
 - [`docs/v0-release-plan.md`](docs/v0-release-plan.md): v0 release criteria
