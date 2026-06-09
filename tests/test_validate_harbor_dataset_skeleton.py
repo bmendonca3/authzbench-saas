@@ -120,6 +120,44 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertIn("dataset_toml file is missing", result["errors"])
 
+    def test_rejects_empty_manifest_task_list(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            manifest_path = dataset_dir / "dataset-manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["tasks"] = []
+            manifest["task_count"] = 0
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            (dataset_dir / "dataset.toml").write_text(
+                "\n".join(
+                    [
+                        'name = "authzbench-saas-public-skeleton"',
+                        'version = "public-skeleton"',
+                        'description = "Public-safe AuthZBench-SaaS Harbor-compatible skeleton dataset."',
+                        "tasks = []",
+                        "",
+                        "[metadata.authzbench]",
+                        'skeleton_schema_version = "harbor-dataset-skeleton-v1"',
+                        'evidence_status = "generated_public_skeleton"',
+                        'harness_lane = "no_tools"',
+                        "private_task_count = 0",
+                        "harbor_execution_verified = false",
+                        "harbor_publish_verified = false",
+                        'claim_boundary = "Generated public dataset skeleton only; not Harbor publish evidence, not Harbor execution evidence, and not v1 readiness."',
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn("tasks must contain at least one public task", result["errors"])
+
     def test_rejects_dataset_toml_overclaim_and_task_drift(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             dataset_dir = Path(tmp) / "harbor-public"

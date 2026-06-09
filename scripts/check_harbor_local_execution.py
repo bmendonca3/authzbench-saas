@@ -25,6 +25,7 @@ def check_harbor_local_execution(
     harness_lane: str = "no_tools",
     harbor_command: str = "harbor",
     require_harbor: bool = False,
+    discover_harbor_cli: bool = True,
 ) -> dict[str, Any]:
     """Check whether a verified generated skeleton is ready for a future Harbor run.
 
@@ -43,7 +44,7 @@ def check_harbor_local_execution(
         )
         skeleton_result = validate_harbor_dataset_skeleton(output_dir)
 
-    harbor_path = shutil.which(harbor_command)
+    harbor_path = shutil.which(harbor_command) if discover_harbor_cli else None
     harbor_cli_found = harbor_path is not None
     blocked_until: list[str] = []
     if not harbor_cli_found:
@@ -78,6 +79,11 @@ def main() -> int:
     parser.add_argument("--harness-lane", choices=["no_tools", "live_http_tool_agent"], default="no_tools")
     parser.add_argument("--harbor-command", default="harbor")
     parser.add_argument("--require-harbor", action="store_true", help="Exit non-zero when the Harbor CLI is not available.")
+    parser.add_argument(
+        "--skip-harbor-discovery",
+        action="store_true",
+        help="Do not inspect PATH for Harbor; useful for deterministic public fixtures.",
+    )
     args = parser.parse_args()
 
     result = check_harbor_local_execution(
@@ -85,6 +91,7 @@ def main() -> int:
         harness_lane=args.harness_lane,
         harbor_command=args.harbor_command,
         require_harbor=args.require_harbor,
+        discover_harbor_cli=not args.skip_harbor_discovery,
     )
     print(json.dumps(result, indent=2, sort_keys=True))
     if args.require_harbor and not result["harbor_cli_found"]:

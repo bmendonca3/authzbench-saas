@@ -242,6 +242,8 @@ def build_harbor_dataset_skeleton(
         task_paths = filtered_paths
     if limit is not None:
         task_paths = task_paths[:limit]
+    if not task_paths:
+        raise ValueError("at least one public task manifest must match the requested filters")
     if clean and output_dir.exists():
         shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

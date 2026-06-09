@@ -1894,7 +1894,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
-def _validate_harbor_repo_side_target() -> dict[str, Any]:
+def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str, Any]:
     unmet: list[str] = []
 
     integration = validate_harbor_integration()
@@ -1909,7 +1909,7 @@ def _validate_harbor_repo_side_target() -> dict[str, Any]:
     if not templates["passed"]:
         unmet.extend(f"harbor adapter template artifacts: {error}" for error in templates["errors"])
 
-    preflight = check_harbor_local_execution()
+    preflight = check_harbor_local_execution(discover_harbor_cli=not public_view)
     if preflight.get("generated_skeleton_validated") is not True:
         unmet.append("Harbor local preflight did not validate a generated public skeleton")
     if preflight.get("harbor_execution_verified") is not False:
@@ -2083,7 +2083,7 @@ def validate_v1_readiness(
         governance_unmet,
     )
 
-    harbor_repo_side = _validate_harbor_repo_side_target()
+    harbor_repo_side = _validate_harbor_repo_side_target(public_view=public_view)
     _add_gate(
         gates,
         "harbor_repo_side_target_specified",
