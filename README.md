@@ -35,9 +35,9 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Area | Current state |
 | --- | --- |
 | Public apps | 6 synthetic SaaS targets |
-| Public tasks | 54 total: 21 vulnerable, 33 secure controls |
-| Control mix | 19 denial controls, 14 authorized-allow controls |
-| Baselines | Current 54-task scripted sanity plus repeated Qwen, Haiku, Sonnet, GLM, Opus no-tools evidence and repeated live HTTP Sonnet tool-agent evidence; 49-task model/tool-agent evidence remains stale; v0.0 46-task snapshot preserved |
+| Public tasks | 60 total: 24 vulnerable, 36 secure controls |
+| Control mix | 21 denial controls, 15 authorized-allow controls |
+| Baselines | Current 60-task scripted sanity only; repeated 54-task Qwen, Haiku, Sonnet, GLM, Opus no-tools evidence and repeated live HTTP Sonnet tool-agent evidence are stale until rerun; v0.0 46-task snapshot preserved |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Harbor integration | Public-safe adapter contract, skeleton builder, blockers, and runbook only; no verified Harbor execution yet |
@@ -67,7 +67,7 @@ Start here if you are reviewing the benchmark:
 
 - 6 local SaaS fixtures: project management, billing, support, file sharing,
   API tokens, and audit settings
-- 54 public task manifests with seeded tenants, users, roles, objects, tokens,
+- 60 public task manifests with seeded tenants, users, roles, objects, tokens,
   scopes, routes, and controls
 - deterministic scorer-owned backend replay
 - Docker targets with request-log correlation for live HTTP agents
