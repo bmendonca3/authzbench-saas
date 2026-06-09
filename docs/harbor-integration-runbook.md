@@ -148,6 +148,20 @@ That blocker record covers adapter metadata, parity experiment evidence, local
 Harbor execution evidence, and adapter review/publish evidence that must remain
 blocked until real runs and review artifacts exist.
 
+Public-safe templates for future adapter metadata and parity artifacts are:
+
+```bash
+python3 scripts/validate_harbor_adapter_templates.py
+```
+
+The templates live at
+[`artifact/harbor-adapter-metadata.template.json`](../artifact/harbor-adapter-metadata.template.json)
+and
+[`artifact/harbor-parity-experiment.template.json`](../artifact/harbor-parity-experiment.template.json).
+They define the required future artifact shapes only. They do not contain real
+adapter metadata, Harbor run IDs, parity rows, review findings, or release
+evidence.
+
 The public-only skeleton builder is:
 
 ```bash

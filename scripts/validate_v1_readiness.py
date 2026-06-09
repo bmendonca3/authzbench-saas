@@ -23,6 +23,7 @@ from scripts.containerized_submission_smoke import (
 from scripts.check_harbor_local_execution import check_harbor_local_execution
 from scripts.validate_baseline_registry import validate_registry
 from scripts.validate_harbor_adapter_blockers import validate_harbor_adapter_blockers
+from scripts.validate_harbor_adapter_templates import validate_harbor_adapter_templates
 from scripts.validate_harbor_integration import validate_harbor_integration
 from scripts.validate_holdout_pack import validate_holdout_pack
 from scripts.validate_leaderboard_submission import _submission_paths, validate_submission
@@ -64,6 +65,9 @@ HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json
 HARBOR_ADAPTER_CONTRACT_PATH = "artifact/harbor-adapter-contract.json"
 HARBOR_ADAPTER_BLOCKERS_PATH = "artifact/harbor-adapter-readiness-blockers.json"
 HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH = "scripts/validate_harbor_adapter_blockers.py"
+HARBOR_ADAPTER_METADATA_TEMPLATE_PATH = "artifact/harbor-adapter-metadata.template.json"
+HARBOR_ADAPTER_PARITY_TEMPLATE_PATH = "artifact/harbor-parity-experiment.template.json"
+HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH = "scripts/validate_harbor_adapter_templates.py"
 HARBOR_INTEGRATION_RUNBOOK_PATH = "docs/harbor-integration-runbook.md"
 HARBOR_INTEGRATION_VALIDATOR_PATH = "scripts/validate_harbor_integration.py"
 HARBOR_LOCAL_PREFLIGHT_PATH = "scripts/check_harbor_local_execution.py"
@@ -1901,6 +1905,10 @@ def _validate_harbor_repo_side_target() -> dict[str, Any]:
     if not blockers["passed"]:
         unmet.extend(f"harbor adapter blocker record: {error}" for error in blockers["errors"])
 
+    templates = validate_harbor_adapter_templates()
+    if not templates["passed"]:
+        unmet.extend(f"harbor adapter template artifacts: {error}" for error in templates["errors"])
+
     preflight = check_harbor_local_execution()
     if preflight.get("generated_skeleton_validated") is not True:
         unmet.append("Harbor local preflight did not validate a generated public skeleton")
@@ -1913,6 +1921,9 @@ def _validate_harbor_repo_side_target() -> dict[str, Any]:
         HARBOR_ADAPTER_CONTRACT_PATH,
         HARBOR_ADAPTER_BLOCKERS_PATH,
         HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+        HARBOR_ADAPTER_METADATA_TEMPLATE_PATH,
+        HARBOR_ADAPTER_PARITY_TEMPLATE_PATH,
+        HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
         HARBOR_INTEGRATION_RUNBOOK_PATH,
         HARBOR_INTEGRATION_VALIDATOR_PATH,
         HARBOR_LOCAL_PREFLIGHT_PATH,
@@ -2081,8 +2092,11 @@ def validate_v1_readiness(
             HARBOR_INTEGRATION_RUNBOOK_PATH,
             HARBOR_ADAPTER_CONTRACT_PATH,
             HARBOR_ADAPTER_BLOCKERS_PATH,
+            HARBOR_ADAPTER_METADATA_TEMPLATE_PATH,
+            HARBOR_ADAPTER_PARITY_TEMPLATE_PATH,
             HARBOR_INTEGRATION_VALIDATOR_PATH,
             HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+            HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
             HARBOR_LOCAL_PREFLIGHT_PATH,
             f"harbor_cli_found={harbor_repo_side['harbor_cli_found']}",
             f"generated_skeleton_validated={harbor_repo_side['skeleton_validated']}",

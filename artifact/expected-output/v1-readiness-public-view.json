@@ -49,8 +49,11 @@
         "docs/harbor-integration-runbook.md",
         "artifact/harbor-adapter-contract.json",
         "artifact/harbor-adapter-readiness-blockers.json",
+        "artifact/harbor-adapter-metadata.template.json",
+        "artifact/harbor-parity-experiment.template.json",
         "scripts/validate_harbor_integration.py",
         "scripts/validate_harbor_adapter_blockers.py",
+        "scripts/validate_harbor_adapter_templates.py",
         "scripts/check_harbor_local_execution.py",
         "harbor_cli_found=False",
         "generated_skeleton_validated=True",
@@ -137,7 +140,7 @@
         "evidence_scope must be release_candidate",
         "upstream_review_and_infrastructure_complete must be true",
         "live upstream review and infrastructure gates must pass",
-        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/support/app.py, artifact/README.md, artifact/install.md, artifact/submission-runner-smoke.json, baselines/README.md"
+        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/support/app.py, artifact/README.md, artifact/harbor-adapter-metadata.template.json, artifact/harbor-parity-experiment.template.json, artifact/install.md"
       ]
     },
     {

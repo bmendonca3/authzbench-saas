@@ -137,6 +137,14 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "harbor_execution_verified=False",
             gates["harbor_repo_side_target_specified"]["evidence"],
         )
+        self.assertIn(
+            "artifact/harbor-adapter-metadata.template.json",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "artifact/harbor-parity-experiment.template.json",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
         self.assertFalse(gates["external_review_completed"]["passed"])
         self.assertFalse(gates["hosted_or_containerized_submission_execution"]["passed"])
         self.assertFalse(gates["rotating_private_holdouts_implemented"]["passed"])
