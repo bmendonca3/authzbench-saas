@@ -39,6 +39,7 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertEqual(manifest["schema_version"], "harbor-dataset-skeleton-v1")
         self.assertEqual(manifest["task_count"], 1)
         self.assertFalse(manifest["harbor_execution_verified"])
+        self.assertEqual(manifest["oracle_solution_mode"], "none")
         self.assertIn("not Harbor execution evidence", manifest["claim_boundary"])
         self.assertIn('schema_version = "1.3"', task_toml)
         self.assertIn("[metadata.authzbench]", task_toml)
@@ -83,6 +84,32 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn("score_submission(task, submission)", test_script)
         self.assertIn("raise SystemExit(0)", test_script)
         self.assertNotIn("private_pack_fingerprint_sha256", json.dumps(manifest))
+
+    def test_can_build_secure_control_empty_findings_oracle_solution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "harbor-public"
+            manifest = build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                output,
+                harness_lane="no_tools",
+                oracle_solution_mode="secure-control-empty-findings",
+            )
+            task_dir = output / manifest["tasks"][0]["harbor_task_dir"]
+            solution = (task_dir / "solution" / "solve.sh").read_text(encoding="utf-8")
+
+        self.assertEqual(manifest["oracle_solution_mode"], "secure-control-empty-findings")
+        self.assertEqual(manifest["tasks"][0]["oracle_solution_mode"], "secure-control-empty-findings")
+        self.assertIn('/logs/artifacts/submission.json', solution)
+        self.assertIn('{"findings":[]}', solution)
+
+    def test_rejects_oracle_solution_for_vulnerable_task(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "requires a secure-control task"):
+                build_harbor_dataset_skeleton(
+                    ["tasks/project_mgmt/pm_bola_read_alpha_from_beta.json"],
+                    Path(tmp) / "harbor-public",
+                    oracle_solution_mode="secure-control-empty-findings",
+                )
 
     def test_live_http_lane_records_service_orchestration_notes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

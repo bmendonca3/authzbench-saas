@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -70,6 +71,33 @@ def _public_safety_errors(data: dict[str, Any]) -> list[str]:
     return errors
 
 
+def _checked_in_evidence_path(path: Path) -> bool:
+    try:
+        return path.resolve() == DEFAULT_EVIDENCE_PATH.resolve()
+    except FileNotFoundError:
+        return False
+
+
+def _source_fingerprint_errors(path: Path, benchmark_source_sha: str, benchmark_source_tree_sha: str) -> list[str]:
+    if not _checked_in_evidence_path(path):
+        return []
+    if not re.fullmatch(r"[0-9a-f]{7,40}", benchmark_source_sha):
+        return ["benchmark_source_sha must be a git SHA for checked-in smoke evidence"]
+    if not re.fullmatch(r"[0-9a-f]{40}", benchmark_source_tree_sha):
+        return ["benchmark_source_tree_sha must be a full git tree SHA for checked-in smoke evidence"]
+    result = subprocess.run(
+        ["git", "cat-file", "-e", f"{benchmark_source_tree_sha}^{{tree}}"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return ["benchmark_source_tree_sha must exist in this repository for checked-in smoke evidence"]
+    return []
+
+
 def validate_harbor_local_evidence(path: Path = DEFAULT_EVIDENCE_PATH) -> dict[str, Any]:
     try:
         data = _load_json(path)
@@ -96,6 +124,13 @@ def validate_harbor_local_evidence(path: Path = DEFAULT_EVIDENCE_PATH) -> dict[s
         errors.append("raw_harbor_jobs_tracked must be false")
     if not isinstance(data.get("benchmark_source_sha"), str) or len(data["benchmark_source_sha"]) < 7:
         errors.append("benchmark_source_sha is required")
+    if not isinstance(data.get("benchmark_source_tree_sha"), str) or not data["benchmark_source_tree_sha"].strip():
+        errors.append("benchmark_source_tree_sha is required")
+        benchmark_source_tree_sha = ""
+    else:
+        benchmark_source_tree_sha = data["benchmark_source_tree_sha"]
+    if isinstance(data.get("benchmark_source_sha"), str):
+        errors.extend(_source_fingerprint_errors(path, data["benchmark_source_sha"], benchmark_source_tree_sha))
     if not isinstance(data.get("harbor_version"), str) or not data["harbor_version"].strip():
         errors.append("harbor_version is required")
     if not isinstance(data.get("docker_server_version"), str) or not data["docker_server_version"].strip():
@@ -110,12 +145,29 @@ def validate_harbor_local_evidence(path: Path = DEFAULT_EVIDENCE_PATH) -> dict[s
         errors.append("n_completed_trials must be 1")
     if data.get("n_errored_trials") != 0:
         errors.append("n_errored_trials must be 0")
-    if data.get("reward_mean") != 0.0:
-        errors.append("reward_mean must be 0.0 for the placeholder no-submission smoke")
+    if data.get("oracle_solution_mode") != "secure-control-empty-findings":
+        errors.append("oracle_solution_mode must be secure-control-empty-findings")
+    if data.get("reward_mean") != 1.0:
+        errors.append("reward_mean must be 1.0 for the secure-control empty-findings smoke")
+    if data.get("scorer_reward_parity_verified") is not True:
+        errors.append("scorer_reward_parity_verified must be true for the secure-control smoke")
+    native_score = data.get("native_score_summary")
+    if not isinstance(native_score, dict):
+        errors.append("native_score_summary is required")
+    else:
+        if native_score.get("submission_shape") != "secure_control_empty_findings":
+            errors.append("native_score_summary.submission_shape must be secure_control_empty_findings")
+        if native_score.get("score") != 1.0:
+            errors.append("native_score_summary.score must be 1.0")
+        if native_score.get("passed") is not True:
+            errors.append("native_score_summary.passed must be true")
+        if native_score.get("control_replay_passed") is not True:
+            errors.append("native_score_summary.control_replay_passed must be true")
     if data.get("verifier_reward_files") != ["reward.json", "reward.txt"]:
         errors.append("verifier_reward_files must list reward.json and reward.txt")
-    if "missing submission" not in str(data.get("expected_zero_reward_reason", "")).lower():
-        errors.append("expected_zero_reward_reason must explain the missing submission boundary")
+    reward_reason = str(data.get("expected_reward_reason", "")).lower()
+    if "secure-control" not in reward_reason or "not full adapter parity" not in reward_reason:
+        errors.append("expected_reward_reason must explain the secure-control smoke boundary")
     blockers = data.get("blocked_until")
     if not isinstance(blockers, list) or not blockers:
         errors.append("blocked_until must list remaining evidence blockers")
