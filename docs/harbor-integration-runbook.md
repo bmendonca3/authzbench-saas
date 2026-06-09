@@ -1,0 +1,183 @@
+# Harbor Integration Runbook
+
+Status: public-safe v1-prep design and implementation target. This file does
+not claim Harbor hosted execution, Harbor acceptance, external review
+completion, hosted leaderboard readiness, or `v1` readiness.
+
+## Public Harbor Facts Used
+
+This runbook is based on public Harbor documentation only:
+
+- Harbor describes itself as a framework for evaluating agents in sandboxed
+  environments and can run local datasets with `harbor run -p "<path>"`.
+- A Harbor dataset is a collection of tasks. A task has an instruction,
+  environment, and test script.
+- Harbor task directories include `instruction.md`, `task.toml`,
+  `environment/`, optional `solution/`, and `tests/test.sh`.
+- Harbor jobs produce job-level config/result files and trial-level agent and
+  verifier artifacts, including agent trajectories and verifier outputs.
+- Harbor automatically collects files written under `/logs/artifacts/`.
+- Harbor supports separate verifier environments, which is the public
+  mechanism that most closely matches AuthZBench-SaaS scorer-controlled private
+  replay.
+
+Public references:
+
+- https://github.com/harbor-framework/harbor
+- https://www.harborframework.com/docs/run-jobs/run-evals
+- https://www.harborframework.com/docs/tasks
+- https://www.harborframework.com/docs/run-jobs/results-and-artifacts
+
+## Claim Boundary
+
+AuthZBench-SaaS can be shaped as a Harbor-compatible execution target, but this
+repository does not yet contain a verified Harbor adapter or a passing Harbor
+job. The current state is an implementation plan plus local validator hardening.
+
+Do not describe this as:
+
+- Harbor platform acceptance or endorsement;
+- a hosted leaderboard;
+- completed external review;
+- passing private hosted execution;
+- `v1-ready` evidence.
+
+The adapter remains blocked until exact Harbor SDK/package APIs are integrated
+and tested against a real Harbor local run.
+
+## Target Dataset Shape
+
+The Harbor dataset should be generated from AuthZBench-SaaS manifests rather
+than hand-maintained as a second source of truth.
+
+Target builder responsibilities:
+
+- read public task manifests from `tasks/*/*.json`;
+- optionally read maintainer-only private manifests outside public Git;
+- render one Harbor task directory per AuthZBench-SaaS task;
+- write `instruction.md` from the existing rendered task context;
+- write `task.toml` with public-safe task metadata, resource requirements,
+  network policy, artifact paths, and verifier settings;
+- include a task-local verifier entrypoint that invokes the AuthZBench-SaaS
+  scorer bridge;
+- never write private task bodies, routes, seeds, or oracles into public Harbor
+  task directories.
+
+For private execution, task names and metadata must remain redacted or
+count-level unless the active release policy explicitly permits publication.
+
+## SDK Adapter Expectations
+
+A future Harbor SDK adapter should expose these internal seams:
+
+| Component | Expected responsibility |
+| --- | --- |
+| Dataset builder | Convert AuthZBench-SaaS manifests into Harbor dataset/task directories without duplicating benchmark truth. |
+| Task context renderer | Render the same `context.json` contract used by `python3 -m authzbench.run`. |
+| Runner bridge | Invoke the Harbor agent/model lane and pass only rendered context plus output paths. |
+| Output collector | Read agent output from `/logs/artifacts/submission.json` or the declared Harbor artifact path. |
+| Verifier/scorer bridge | Run scorer-controlled backend replay and write Harbor-compatible verifier reward and logs. |
+| Metadata normalizer | Emit benchmark source SHA, fingerprint, comparability key, harness type, model, agent, tool access, timeout, and private-pack version/fingerprint when applicable. |
+| Redaction policy | Publish public summaries only; keep private manifests, raw private outputs, captures, credentials, and local paths out of tracked artifacts. |
+
+The adapter should fail closed when required metadata is missing. It should not
+invent task outcomes, target-request coverage, private-pack fingerprints, or
+review evidence.
+
+## No-Tools Lane
+
+For no-tools model runs, Harbor should receive an instruction-only task context
+and write a structured AuthZBench-SaaS `submission.json`.
+
+Expected output rule:
+
+- vulnerable tasks require replayable finding evidence;
+- secure controls require `findings: []`;
+- unsupported prose without a replayable request must not score as proof.
+
+The verifier bridge should translate the AuthZBench-SaaS score into Harbor
+reward output while preserving scorer-derived fields in redacted artifacts.
+
+## Live HTTP Tool-Agent Lane
+
+For live HTTP tool-agent runs, Harbor must orchestrate or attach the target SaaS
+services before the agent phase and preserve request-log correlation.
+
+Required lane metadata:
+
+- target service image or compose source;
+- target startup healthcheck;
+- agent network policy;
+- `AUTHZBENCH_AGENT_ID` or equivalent request-correlation identity;
+- target-request coverage summary;
+- scorer replay result;
+- public-safe plan/probe artifact references when available.
+
+If Harbor cloud providers cannot support the current Docker Compose shape, the
+adapter should use a single prebuilt target image or a documented hosted target
+service, then record that as an implementation blocker until verified.
+
+## Verifier And Oracle Boundary
+
+The verifier must be scorer-controlled. For public tasks this means the Harbor
+test script may call the AuthZBench-SaaS scorer with public manifests. For
+private tasks, the agent environment must not receive private manifests, seeds,
+routes, or oracle fields.
+
+Preferred private execution shape:
+
+- agent environment receives rendered context only;
+- verifier environment is separate or otherwise protected;
+- private manifests are readable only by scorer-controlled code;
+- scorer writes raw private evidence to ignored/protected storage;
+- `/logs/artifacts/` receives only redacted summaries and agent submission
+  artifacts that are safe to publish.
+
+## Harbor Job Artifact Mapping
+
+Harbor job/trial output should map into the existing AuthZBench-SaaS run-bundle
+contract:
+
+| Harbor artifact | AuthZBench-SaaS use |
+| --- | --- |
+| job `config.json` | Run configuration, agent, model, dataset version, environment provider. |
+| job `result.json` | Aggregate status, trial count, pass/fail summary. |
+| trial `config.json` | Task id or redacted task handle, timeout, resource policy. |
+| trial `result.json` | Task-level Harbor reward and verifier status. |
+| trial `agent/trajectory.json` | Agent trajectory evidence for debugging and tool-use audit. |
+| trial `verifier/reward.txt` or `reward.json` | Harbor reward derived from AuthZBench-SaaS scorer output. |
+| trial `verifier/test-stdout.txt` and `test-stderr.txt` | Scorer bridge logs, redacted before publication. |
+| trial `artifacts/submission.json` | Agent submission consumed by the scorer bridge. |
+
+The public run bundle must also preserve:
+
+- benchmark source SHA;
+- benchmark fingerprint;
+- comparability key;
+- source-summary hashes;
+- run IDs and repeated-run source IDs;
+- target-request coverage for tool-agent runs;
+- private-pack version and active private-pack fingerprint for private runs;
+- redaction and privacy-scan status.
+
+## Gate Status
+
+Repo-side Harbor preparation is partial:
+
+- Public-safe Harbor mapping: this runbook.
+- Validator hardening: generic absolute-path rejection in redacted protected
+  evidence and stricter embedded-placeholder checks in release-facing runbook
+  lists and smoke evidence.
+- Local private holdout observation: one aggregate 24-task pack can validate in
+  this checkout, but rotating holdouts still require a separate shadow or
+  candidate pack plus rotation metadata.
+
+Blocked before this can become release evidence:
+
+- exact Harbor SDK adapter API integration;
+- passing local Harbor run;
+- active and shadow/candidate private pack operation;
+- protected release-candidate hosted/containerized smoke;
+- repeated private no-tools and tool-agent rows;
+- external review lanes;
+- strict release evidence.
