@@ -126,6 +126,16 @@ def validate_harbor_integration(
         errors.append("public_claim_boundary must state the contract is not execution/readiness evidence")
     if "harbor run -p" not in str(data.get("local_run_template", "")):
         errors.append("local_run_template must include harbor run -p")
+    dataset_shape = data.get("dataset_shape")
+    if not isinstance(dataset_shape, dict):
+        errors.append("dataset_shape must be an object")
+        dataset_shape = {}
+    if dataset_shape.get("task_toml_schema_version") != "1.3":
+        errors.append("dataset_shape.task_toml_schema_version must be 1.3")
+    task_directory_files = set(dataset_shape.get("task_directory_files") or [])
+    for required_file in ("instruction.md", "task.toml", "environment/", "verifier/task_manifest.json", "tests/test.sh"):
+        if required_file not in task_directory_files:
+            errors.append(f"dataset_shape.task_directory_files missing: {required_file}")
 
     public_sources = set(data.get("public_sources") or [])
     missing_sources = sorted(REQUIRED_PUBLIC_SOURCES - public_sources)
