@@ -192,6 +192,7 @@ class ValidatePublicScriptTests(unittest.TestCase):
 
         commands = [call.args[0] for call in run.call_args_list]
         self.assertIn([validate_public.sys.executable, "scripts/validate_harbor_adapter_blockers.py"], commands)
+        self.assertIn([validate_public.sys.executable, "scripts/validate_harbor_adapter_templates.py"], commands)
         self.assertIn([validate_public.sys.executable, "scripts/validate_harbor_integration.py"], commands)
         self.assertIn([validate_public.sys.executable, "scripts/check_harbor_local_execution.py"], commands)
 

@@ -192,6 +192,16 @@
       "generated tasks pass a verified local Harbor run"
     ]
   },
+  "public_template_artifacts": [
+    {
+      "path": "artifact/harbor-adapter-metadata.template.json",
+      "claim_boundary": "Template only; not Harbor adapter metadata evidence or execution evidence."
+    },
+    {
+      "path": "artifact/harbor-parity-experiment.template.json",
+      "claim_boundary": "Template only; not Harbor parity evidence or execution evidence."
+    }
+  ],
   "repo_side_helpers": [
     {
       "path": "scripts/build_harbor_dataset_skeleton.py",

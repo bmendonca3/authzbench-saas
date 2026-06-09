@@ -28,6 +28,12 @@
       "claim_boundary": "Checks public-safe planning contract only; does not prove adapter acceptance or parity."
     },
     {
+      "item": "adapter_metadata_parity_templates",
+      "status": "partial_repo_side_helper",
+      "evidence": "scripts/validate_harbor_adapter_templates.py",
+      "claim_boundary": "Checks public-safe metadata and parity template shapes only; does not prove real adapter metadata, parity, or Harbor execution."
+    },
+    {
       "item": "local_execution_preflight",
       "status": "partial_repo_side_helper",
       "evidence": "scripts/check_harbor_local_execution.py",
