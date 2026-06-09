@@ -16,6 +16,9 @@ here.
   maintainer-hosted or fully containerized release-candidate smoke path. It is
   not hosted execution evidence and cannot satisfy strict v1 readiness by
   itself.
+- `harbor-adapter-contract.json`: public-safe machine-readable contract for the
+  Harbor-compatible adapter target. It is not Harbor execution evidence and
+  cannot satisfy strict v1 readiness by itself.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1 readiness.
