@@ -18,6 +18,20 @@ ALLOWED_ABSOLUTE_PREFIXES = (
     "/tasks/",
     "/work-items/",
 )
+PUBLIC_ROUTE_FRAGMENT_PREFIXES = (
+    "/audit-exports/",
+    "/audit-logs/",
+    "/cases/",
+    "/compliance/",
+    "/documents/",
+    "/entitlements/",
+    "/events/",
+    "/files/",
+    "/invoices/",
+    "/security/",
+    "/settings/",
+    "/tickets/",
+)
 ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts", "/logs/verifier", "/usr/bin/env"}
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 DISALLOWED_TEXT = (
@@ -119,7 +133,7 @@ def _public_safety_errors(value: Any, *, label: str, allowed_absolute_prefixes: 
             if marker in lower:
                 errors.append(f"{label}: private detail marker is not allowed: {marker}")
         for match in ABSOLUTE_PATH_RE.findall(text):
-            allowed_prefixes = ALLOWED_ABSOLUTE_PREFIXES + allowed_absolute_prefixes
+            allowed_prefixes = ALLOWED_ABSOLUTE_PREFIXES + PUBLIC_ROUTE_FRAGMENT_PREFIXES + allowed_absolute_prefixes
             if match not in ALLOWED_ABSOLUTE_PATHS and not any(match.startswith(prefix) for prefix in allowed_prefixes):
                 errors.append(f"{label}: local absolute path is not allowed: {match}")
     return errors
@@ -264,9 +278,12 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
             "tests/test.sh": task_dir / "tests" / "test.sh",
             "tests/authzbench/score.py": task_dir / "tests" / "authzbench" / "score.py",
             "tests/authzbench/core.py": task_dir / "tests" / "authzbench" / "core.py",
-            "tests/apps/project_mgmt/app.py": task_dir / "tests" / "apps" / "project_mgmt" / "app.py",
-            "tests/environment/Dockerfile": task_dir / "tests" / "environment" / "Dockerfile",
         }
+        expected_app = task.get("app")
+        if isinstance(expected_app, str) and expected_app:
+            required_files[f"tests/apps/{expected_app}/app.py"] = task_dir / "tests" / "apps" / expected_app / "app.py"
+        else:
+            errors.append(f"tasks[{index}].app is required")
         for name, path in required_files.items():
             if not path.is_file():
                 errors.append(f"{rel_task_dir}: missing {name}")
@@ -355,22 +372,9 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                 errors.append(f"{rel_task_dir}: environment/Dockerfile must preserve non-evidence claim boundary")
             if "FROM python:" not in dockerfile:
                 errors.append(f"{rel_task_dir}: environment/Dockerfile must define a base image")
+            if "COPY context.json environment/context.json" not in dockerfile:
+                errors.append(f"{rel_task_dir}: environment/Dockerfile must copy rendered context into the agent environment")
             errors.extend(_public_safety_errors(dockerfile, label=f"{rel_task_dir}/environment/Dockerfile"))
-
-        if required_files["tests/environment/Dockerfile"].is_file():
-            verifier_dockerfile = required_files["tests/environment/Dockerfile"].read_text(encoding="utf-8")
-            if "not Harbor verifier/scorer parity evidence" not in verifier_dockerfile:
-                errors.append(
-                    f"{rel_task_dir}: tests/environment/Dockerfile must preserve non-evidence claim boundary"
-                )
-            if "FROM python:" not in verifier_dockerfile:
-                errors.append(f"{rel_task_dir}: tests/environment/Dockerfile must define a base image")
-            errors.extend(
-                _public_safety_errors(
-                    verifier_dockerfile,
-                    label=f"{rel_task_dir}/tests/environment/Dockerfile",
-                )
-            )
 
         if required_files["tests/Dockerfile"].is_file():
             verifier_dockerfile = required_files["tests/Dockerfile"].read_text(encoding="utf-8")
@@ -396,7 +400,12 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
 
         if required_files["tests/test.sh"].is_file():
             script = required_files["tests/test.sh"].read_text(encoding="utf-8")
-            if "python3 -m authzbench.score" not in script:
+            invokes_score_cli = "python3 -m authzbench.score" in script
+            invokes_score_api = (
+                "from authzbench.score import score_submission" in script
+                and "score_submission(task, submission)" in script
+            )
+            if not (invokes_score_cli or invokes_score_api):
                 errors.append(f"{rel_task_dir}: tests/test.sh must invoke authzbench.score")
             if "missing agent submission" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must handle missing agent submissions explicitly")

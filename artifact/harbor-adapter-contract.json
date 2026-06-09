@@ -8,7 +8,7 @@
     "https://www.harborframework.com/docs/tasks",
     "https://www.harborframework.com/docs/run-jobs/results-and-artifacts"
   ],
-  "local_run_template": "harbor run -p <generated-harbor-dataset-path>",
+  "local_run_template": "cd <generated-harbor-dataset-path> && harbor run -c run_authzbench_saas.yaml --yes",
   "dataset_shape": {
     "source_of_truth": "AuthZBench-SaaS task manifests and rendered task context",
     "task_toml_schema_version": "1.3",

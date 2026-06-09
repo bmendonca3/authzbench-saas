@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added a public-safe Harbor adapter contract, skeleton builder, blocker
+  record, template validators, local preflight, and runbook while preserving the
+  no-Harbor-execution claim boundary.
+- Added a public task-quality gate contract and validator requiring replayable
+  status or non-empty `body_contains` checks for oracles, controls, and
+  evidence requirements.
 - Stabilized `leaderboard-submission-v1` with benchmark fingerprints,
   deterministic comparability keys, eligibility-policy versioning, and explicit
   repeated-run provenance.

@@ -40,8 +40,9 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Baselines | Current 54-task scripted sanity plus repeated Qwen, Haiku, Sonnet, GLM, Opus no-tools evidence and repeated live HTTP Sonnet tool-agent evidence; 49-task model/tool-agent evidence remains stale; v0.0 46-task snapshot preserved |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
+| Harbor integration | Public-safe adapter contract, skeleton builder, blockers, and runbook only; no verified Harbor execution yet |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
-| Not included | Hosted leaderboard, rotating multi-pack holdouts, v1/community claims |
+| Not included | Hosted leaderboard, verified Harbor adapter/run, rotating multi-pack holdouts, v1/community claims |
 
 Public checkouts intentionally do not include private holdout manifests. That is
 part of the contamination-control design, not a missing file.
@@ -94,6 +95,9 @@ Start here if you are reviewing the benchmark:
   fingerprints, and comparability keys
 - public-safe benchmark charts, task-quality matrix, benchmark card, release
   gates, privacy checks, and fresh-clone validation
+- task-quality gate contract, Harbor adapter contract, Harbor skeleton builder,
+  Harbor readiness blockers, and Harbor integration runbook; these preserve
+  public-safe target shapes and explicitly do not claim Harbor execution
 - v1 governance, run-bundle, private-rotation, hosted-submission, external
   review, paper-readiness, and release-candidate runbooks/templates; these are
   specifications and validator contracts, not hosted-leaderboard evidence

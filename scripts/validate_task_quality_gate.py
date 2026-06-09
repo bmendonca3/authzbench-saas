@@ -47,8 +47,33 @@ AUTHORIZATION_BOUNDARY_KEYS = {
     "resource",
     "org",
 }
+LOCAL_BENCHMARK_FIXTURES = {
+    "api_tokens",
+    "audit_settings",
+    "billing",
+    "file_sharing",
+    "project_mgmt",
+    "support",
+}
 
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
+ALLOWED_PUBLIC_ROUTE_PREFIXES = (
+    "/api/",
+    "/audit-exports/",
+    "/audit-logs/",
+    "/cases/",
+    "/compliance/",
+    "/documents/",
+    "/entitlements/",
+    "/events/",
+    "/files/",
+    "/invoices/",
+    "/security/",
+    "/settings/",
+    "/tasks/",
+    "/tickets/",
+    "/work-items/",
+)
 PRIVATE_MARKERS = (
     "credential:",
     "private route:",
@@ -95,6 +120,12 @@ def text_values(value: Any) -> list[str]:
     return []
 
 
+def public_route_or_local_path(value: str) -> str | None:
+    if any(value.startswith(prefix) for prefix in ALLOWED_PUBLIC_ROUTE_PREFIXES):
+        return None
+    return value
+
+
 def validate_contract(path: Path) -> list[str]:
     errors: list[str] = []
     try:
@@ -133,7 +164,9 @@ def validate_contract(path: Path) -> list[str]:
             if marker in lower:
                 errors.append(f"{display_path(path)}: private marker is not allowed: {marker}")
         for match in ABSOLUTE_PATH_RE.findall(value):
-            errors.append(f"{display_path(path)}: local absolute path is not allowed: {match}")
+            local_path = public_route_or_local_path(match)
+            if local_path:
+                errors.append(f"{display_path(path)}: local absolute path is not allowed: {local_path}")
     return errors
 
 
@@ -175,6 +208,15 @@ def validate_task(path: Path) -> tuple[dict[str, int], list[str]]:
 
     errors: list[str] = []
     task_id = str(data.get("id") or path.stem)
+    for value in text_values(data):
+        lower = value.lower()
+        for marker in PRIVATE_MARKERS:
+            if marker in lower:
+                errors.append(f"{display_path(path)}: {task_id}: private marker is not allowed: {marker}")
+        for match in ABSOLUTE_PATH_RE.findall(value):
+            local_path = public_route_or_local_path(match)
+            if local_path:
+                errors.append(f"{display_path(path)}: {task_id}: local absolute path is not allowed: {local_path}")
     expected_vulnerable = data.get("expected_vulnerable") is True
     oracle = data.get("oracle") if isinstance(data.get("oracle"), dict) else {}
     controls = data.get("controls")
@@ -191,6 +233,17 @@ def validate_task(path: Path) -> tuple[dict[str, int], list[str]]:
         errors.append(f"{display_path(path)}: {task_id}: task-quality gate only counts public manifests")
     if not isinstance(data.get("allowed_hosts"), list) or not data["allowed_hosts"]:
         errors.append(f"{display_path(path)}: {task_id}: allowed_hosts must be a non-empty list")
+    else:
+        invalid_hosts = sorted(
+            str(host)
+            for host in data["allowed_hosts"]
+            if not isinstance(host, str) or host not in LOCAL_BENCHMARK_FIXTURES
+        )
+        if invalid_hosts:
+            errors.append(
+                f"{display_path(path)}: {task_id}: allowed_hosts must be local benchmark fixtures: "
+                + ", ".join(invalid_hosts)
+            )
     errors.extend(validate_control_shape(path, task_id, controls))
     if not has_replay_check(oracle):
         errors.append(f"{display_path(path)}: {task_id}: oracle must include status or non-empty body_contains")

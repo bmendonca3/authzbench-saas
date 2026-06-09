@@ -25,7 +25,6 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
             instruction = (task_dir / "instruction.md").read_text(encoding="utf-8")
             dockerfile = (task_dir / "environment" / "Dockerfile").read_text(encoding="utf-8")
             verifier_root_dockerfile = (task_dir / "tests" / "Dockerfile").read_text(encoding="utf-8")
-            verifier_dockerfile = (task_dir / "tests" / "environment" / "Dockerfile").read_text(encoding="utf-8")
             solution = (task_dir / "solution" / "solve.sh").read_text(encoding="utf-8")
             dataset_toml = (output / manifest["dataset_toml"]).read_text(encoding="utf-8")
             context = json.loads((task_dir / "environment" / "context.json").read_text(encoding="utf-8"))
@@ -49,13 +48,13 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn("findings: []", instruction)
         self.assertIn("not Harbor execution evidence", dockerfile)
         self.assertIn("FROM python:", dockerfile)
+        self.assertIn("COPY context.json environment/context.json", dockerfile)
         self.assertIn("not Harbor verifier/scorer parity evidence", verifier_root_dockerfile)
         self.assertIn("FROM python:", verifier_root_dockerfile)
         self.assertIn("ENV PYTHONPATH=/tests", verifier_root_dockerfile)
         self.assertIn("COPY authzbench /tests/authzbench", verifier_root_dockerfile)
         self.assertIn("COPY apps /tests/apps", verifier_root_dockerfile)
-        self.assertIn("not Harbor verifier/scorer parity evidence", verifier_dockerfile)
-        self.assertIn("FROM python:", verifier_dockerfile)
+        self.assertFalse((task_dir / "tests" / "environment" / "Dockerfile").exists())
         self.assertTrue(has_public_score_module)
         self.assertTrue(has_public_core_module)
         self.assertTrue(has_public_app_module)
@@ -80,6 +79,8 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn("/logs/verifier/reward.json", test_script)
         self.assertIn("/logs/verifier/reward.txt", test_script)
         self.assertIn("missing agent submission", test_script)
+        self.assertIn("invalid agent submission", test_script)
+        self.assertIn("score_submission(task, submission)", test_script)
         self.assertIn("raise SystemExit(0)", test_script)
         self.assertNotIn("private_pack_fingerprint_sha256", json.dumps(manifest))
 
@@ -146,6 +147,21 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
                     output,
                     task_ids=["pm_same_tenant_read_control"],
                     clean=True,
+                )
+
+            self.assertTrue((output / "stale.txt").exists())
+
+    def test_rejects_non_empty_output_directory_without_clean(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "harbor-public"
+            output.mkdir()
+            (output / "stale.txt").write_text("old", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "non-empty Harbor skeleton output directory"):
+                build_harbor_dataset_skeleton(
+                    ["tasks/project_mgmt/*.json"],
+                    output,
+                    task_ids=["pm_same_tenant_read_control"],
                 )
 
             self.assertTrue((output / "stale.txt").exists())

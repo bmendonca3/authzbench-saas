@@ -27,6 +27,7 @@ cards, LinkedIn posts, or external-review notes.
 | strict maintainer release gate | the maintainer checkout can report exact pass/fail v0 gates while keeping private holdouts out of public Git history | hosted leaderboard readiness or v1-scale external validation |
 | v1 readiness checklist | v1 task expansion has a documented startup gate, stale-baseline policy, validation commands, and rerun matrix | v1 release readiness, new current model comparisons, or hosted leaderboard operation |
 | v1/community submission governance | submission states, eligibility gates, run-bundle expectations, private-pack rotation, tie/stale-score rules, appeals, and hosted/containerized flow requirements are defined | that hosted or containerized evaluation is implemented, smoked, or open for third-party submissions |
+| Harbor adapter contract, skeleton builder, blockers, and runbook | the repository has a public-safe Harbor-compatible target shape, local skeleton generator, validation checks, and explicit blocker record | Harbor SDK integration, Harbor platform acceptance, passing Harbor execution, parity evidence, or v1 readiness |
 | external review packet | the repository has a public-safe packet ready for AppSec, benchmark/evals, and AI-agent/tooling reviewers | that independent external review has happened |
 
 ## Approved Public Framing
@@ -45,6 +46,8 @@ Use:
 - `target-request correlation when live Docker targets are used`
 - `boundary-vocabulary calibration`
 - `v1/community submission governance specification`
+- `public-safe Harbor adapter target`
+- `Harbor skeleton builder`
 
 Avoid:
 
@@ -56,6 +59,8 @@ Avoid:
 - `private holdouts are publicly reproducible`
 - `public-split scores are final rankings`
 - `external review complete` unless reviewer dispositions are recorded
+- `Harbor execution verified`
+- `Harbor accepted` or `Harbor endorsed`
 
 ## Headline Metrics
 

@@ -75,6 +75,18 @@ def _safe_clean_output_dir(output_dir: Path) -> None:
     shutil.rmtree(output_dir)
 
 
+def _ensure_output_dir_ready(output_dir: Path, *, clean: bool) -> None:
+    if clean:
+        _safe_clean_output_dir(output_dir)
+        return
+    if not output_dir.exists():
+        return
+    if not output_dir.is_dir():
+        raise ValueError(f"Harbor skeleton output path exists and is not a directory: {output_dir}")
+    if any(output_dir.iterdir()):
+        raise ValueError("refusing to write into a non-empty Harbor skeleton output directory without --clean")
+
+
 def _toml_string(value: str) -> str:
     return json.dumps(value)
 
@@ -104,8 +116,8 @@ def _reference_run_config(tasks: list[dict[str, Any]], output_dir: Path) -> str:
             "",
             "# Uncomment and verify concrete agents/models in a real Harbor run.",
             "# agents:",
-            "#   - name: codex",
-            "#     model_name: openai/gpt-5-mini",
+            "#   - name: sample_agent",
+            "#     model_name: provider/model-name",
             "",
             "environment:",
             "  type: docker",
@@ -151,6 +163,7 @@ def _environment_dockerfile() -> str:
             "FROM python:3.11-slim",
             "WORKDIR /workspace",
             "ENV PYTHONUNBUFFERED=1",
+            "COPY context.json environment/context.json",
             "",
             "# A verified Harbor adapter must replace this placeholder with a",
             "# pinned image/package path that provides authzbench scoring code.",
@@ -313,8 +326,7 @@ def build_harbor_dataset_skeleton(
         task_paths = task_paths[:limit]
     if not task_paths:
         raise ValueError("at least one public task manifest must match the requested filters")
-    if clean:
-        _safe_clean_output_dir(output_dir)
+    _ensure_output_dir_ready(output_dir, clean=clean)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     tasks: list[dict[str, Any]] = []
@@ -341,14 +353,11 @@ def build_harbor_dataset_skeleton(
         solution_dir.mkdir(parents=True, exist_ok=True)
         verifier_dir.mkdir(parents=True, exist_ok=True)
         tests_dir.mkdir(parents=True, exist_ok=True)
-        tests_environment_dir = tests_dir / "environment"
-        tests_environment_dir.mkdir(parents=True, exist_ok=True)
 
         context = build_context(task)
         (environment_dir / "context.json").write_text(dump_json(context) + "\n", encoding="utf-8")
         (environment_dir / "Dockerfile").write_text(_environment_dockerfile(), encoding="utf-8")
         (tests_dir / "Dockerfile").write_text(_verifier_environment_dockerfile(), encoding="utf-8")
-        (tests_environment_dir / "Dockerfile").write_text(_verifier_environment_dockerfile(), encoding="utf-8")
         (verifier_dir / "task_manifest.json").write_text(dump_json(task) + "\n", encoding="utf-8")
         (tests_dir / "task_manifest.json").write_text(dump_json(task) + "\n", encoding="utf-8")
         for package_name in ("authzbench", "apps"):
@@ -393,11 +402,24 @@ def build_harbor_dataset_skeleton(
                 "PY",
                 "  exit 0",
                 "fi",
-                'python3 -m authzbench.score /tests/task_manifest.json /logs/artifacts/submission.json > /logs/artifacts/score.json',
                 'python3 - <<\'PY\'',
                 "import json",
                 "from pathlib import Path",
-                "score = json.loads(Path('/logs/artifacts/score.json').read_text())",
+                "from authzbench.core import dump_json, load_json",
+                "from authzbench.score import score_submission",
+                "task = load_json('/tests/task_manifest.json')",
+                "try:",
+                "    submission = load_json('/logs/artifacts/submission.json')",
+                "    score = score_submission(task, submission)",
+                "except Exception as exc:",
+                "    score = {",
+                "        'task_id': task.get('id'),",
+                "        'score': 0,",
+                "        'passed': False,",
+                "        'invalid_submission': True,",
+                "        'reason': 'invalid agent submission: ' + type(exc).__name__,",
+                "    }",
+                "Path('/logs/artifacts/score.json').write_text(dump_json(score) + '\\n')",
                 "reward = float(score.get('score') or 0)",
                 "Path('/logs/artifacts/reward.json').write_text(json.dumps({'reward': reward}) + '\\n')",
                 "Path('/logs/artifacts/reward.txt').write_text(f'{reward}\\n')",

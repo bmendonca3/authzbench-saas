@@ -67,9 +67,6 @@ def check_harbor_local_execution(
 
     effective_harbor_command = harbor_command
     harbor_cli_found = _harbor_command_is_runnable(harbor_command) if discover_harbor_cli else False
-    if not harbor_cli_found and discover_harbor_cli and harbor_command == "harbor" and _harbor_command_is_runnable("uvx harbor"):
-        effective_harbor_command = "uvx harbor"
-        harbor_cli_found = True
     blocked_until: list[str] = []
     if not harbor_cli_found:
         blocked_until.append("Harbor CLI/package is not installed or not on PATH")

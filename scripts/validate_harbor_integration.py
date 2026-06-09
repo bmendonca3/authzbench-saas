@@ -150,8 +150,9 @@ def validate_harbor_integration(
     boundary = data.get("public_claim_boundary")
     if not _nonempty_string(boundary) or "not" not in str(boundary).lower():
         errors.append("public_claim_boundary must state the contract is not execution/readiness evidence")
-    if "harbor run -p" not in str(data.get("local_run_template", "")):
-        errors.append("local_run_template must include harbor run -p")
+    local_run_template = str(data.get("local_run_template", ""))
+    if "harbor run -c run_authzbench_saas.yaml --yes" not in local_run_template:
+        errors.append("local_run_template must include harbor run -c run_authzbench_saas.yaml --yes")
     dataset_shape = data.get("dataset_shape")
     if not isinstance(dataset_shape, dict):
         errors.append("dataset_shape must be an object")
