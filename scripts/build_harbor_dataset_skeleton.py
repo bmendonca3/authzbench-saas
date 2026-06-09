@@ -77,6 +77,35 @@ def _reference_run_config() -> str:
     )
 
 
+def _environment_dockerfile() -> str:
+    return "\n".join(
+        [
+            "# Public-safe placeholder environment for the Harbor dataset skeleton.",
+            "# This file is not Harbor execution evidence.",
+            "FROM python:3.11-slim",
+            "WORKDIR /workspace",
+            "ENV PYTHONUNBUFFERED=1",
+            "",
+            "# A verified Harbor adapter must replace this placeholder with a",
+            "# pinned image/package path that provides authzbench scoring code.",
+            "",
+        ]
+    )
+
+
+def _solution_script() -> str:
+    return "\n".join(
+        [
+            "#!/usr/bin/env bash",
+            "set -euo pipefail",
+            "echo 'AuthZBench-SaaS Harbor skeleton does not include a public oracle solution.' >&2",
+            "echo 'Run the scorer-controlled verifier against an agent submission instead.' >&2",
+            "exit 64",
+            "",
+        ]
+    )
+
+
 def _instruction(task: dict[str, Any], context_relpath: str) -> str:
     control_rule = (
         "This is a secure-control task. Return an AuthZBench-SaaS submission with `findings: []` "
@@ -177,8 +206,15 @@ def build_harbor_dataset_skeleton(
 ) -> dict[str, Any]:
     if harness_lane not in {"no_tools", "live_http_tool_agent"}:
         raise ValueError("harness_lane must be no_tools or live_http_tool_agent")
-    task_paths = _task_paths(task_patterns)
     requested_task_ids = set(task_ids or [])
+    task_paths = _task_paths(task_patterns)
+    if requested_task_ids:
+        filtered_paths: list[Path] = []
+        for task_path in task_paths:
+            task = load_json(task_path)
+            if task.get("id") in requested_task_ids:
+                filtered_paths.append(task_path)
+        task_paths = filtered_paths
     if limit is not None:
         task_paths = task_paths[:limit]
     if clean and output_dir.exists():
@@ -194,17 +230,23 @@ def build_harbor_dataset_skeleton(
             raise ValueError("private holdout manifests must not be exported with the public Harbor skeleton builder")
         task_dir = output_dir / "tasks" / _safe_name(str(task["id"]))
         environment_dir = task_dir / "environment"
+        solution_dir = task_dir / "solution"
         verifier_dir = task_dir / "verifier"
         tests_dir = task_dir / "tests"
         environment_dir.mkdir(parents=True, exist_ok=True)
+        solution_dir.mkdir(parents=True, exist_ok=True)
         verifier_dir.mkdir(parents=True, exist_ok=True)
         tests_dir.mkdir(parents=True, exist_ok=True)
 
         context = build_context(task)
         (environment_dir / "context.json").write_text(dump_json(context) + "\n", encoding="utf-8")
+        (environment_dir / "Dockerfile").write_text(_environment_dockerfile(), encoding="utf-8")
         (verifier_dir / "task_manifest.json").write_text(dump_json(task) + "\n", encoding="utf-8")
         (task_dir / "instruction.md").write_text(_instruction(task, "environment/context.json"), encoding="utf-8")
         (task_dir / "task.toml").write_text(_task_toml(task, task_path=task_path, harness_lane=harness_lane), encoding="utf-8")
+        solution_path = solution_dir / "solve.sh"
+        solution_path.write_text(_solution_script(), encoding="utf-8")
+        solution_path.chmod(0o755)
         test_script = "\n".join(
             [
                 "#!/usr/bin/env bash",
@@ -255,15 +297,23 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--harness-lane", choices=["no_tools", "live_http_tool_agent"], default="no_tools")
     parser.add_argument("--task-id", action="append", help="Optional task id filter. Repeatable.")
+    parser.add_argument(
+        "--task-ids",
+        action="append",
+        help="Comma-separated task id filter, matching Harbor adapter CLI expectations. Repeatable.",
+    )
     parser.add_argument("--limit", type=int)
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--overwrite", action="store_true", help="Alias for --clean, matching Harbor adapter CLI expectations.")
     args = parser.parse_args()
+    task_ids = list(args.task_id or [])
+    for value in args.task_ids or []:
+        task_ids.extend(task_id.strip() for task_id in value.split(",") if task_id.strip())
     manifest = build_harbor_dataset_skeleton(
         args.task,
         args.output_dir,
         harness_lane=args.harness_lane,
-        task_ids=args.task_id,
+        task_ids=task_ids,
         limit=args.limit,
         clean=args.clean or args.overwrite,
     )

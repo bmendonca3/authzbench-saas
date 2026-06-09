@@ -15,8 +15,9 @@
     "task_directory_files": [
       "instruction.md",
       "task.toml",
-      "environment/",
+      "environment/Dockerfile",
       "verifier/task_manifest.json",
+      "solution/solve.sh",
       "tests/test.sh",
       "run_authzbench_saas.yaml"
     ],
@@ -154,6 +155,38 @@
     "external review lanes are complete",
     "strict release evidence exists"
   ],
+  "expected_adapter_package": {
+    "evidence_status": "implementation_target",
+    "claim_boundary": "Expected package/module surface only; not implemented Harbor SDK integration or local Harbor execution evidence.",
+    "package_layout": [
+      "pyproject.toml",
+      "README.md",
+      "adapter_metadata.json",
+      "parity_experiment.json",
+      "run_authzbench_saas.yaml",
+      "src/authzbench_saas_harbor/__init__.py",
+      "src/authzbench_saas_harbor/adapter.py",
+      "src/authzbench_saas_harbor/main.py",
+      "src/authzbench_saas_harbor/task-template/task.toml",
+      "src/authzbench_saas_harbor/task-template/instruction.md",
+      "src/authzbench_saas_harbor/task-template/environment/Dockerfile",
+      "src/authzbench_saas_harbor/task-template/solution/solve.sh",
+      "src/authzbench_saas_harbor/task-template/tests/test.sh"
+    ],
+    "module_entrypoint": "uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>",
+    "required_cli_flags": [
+      "--output-dir",
+      "--limit",
+      "--overwrite",
+      "--task-ids"
+    ],
+    "repo_side_compatibility_helper": "scripts/build_harbor_dataset_skeleton.py supports --output-dir, --limit, --overwrite, and --task-ids as a public-safe skeleton-builder compatibility target.",
+    "blocked_until": [
+      "package layout is implemented in a real Harbor adapter checkout",
+      "adapter metadata and parity files are produced from real Harbor runs",
+      "generated tasks pass a verified local Harbor run"
+    ]
+  },
   "repo_side_helpers": [
     {
       "path": "scripts/build_harbor_dataset_skeleton.py",
