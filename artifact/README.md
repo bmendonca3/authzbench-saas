@@ -112,16 +112,20 @@ Use `artifact/submission-runner-smoke.template.json` only as a starting shape
 for that release-candidate record. Replace every placeholder with real
 maintainer-platform or containerized smoke evidence before writing
 `artifact/submission-runner-smoke.json`. The validator rejects the template if
-it is copied unchanged, and it also rejects angle-bracket placeholders embedded
-inside required fields such as `runner:<digest>` or `--private-pack <active-pack>`.
+it is copied unchanged. It also rejects unresolved placeholders embedded inside
+required fields, such as `runner:<digest>`, `TODO`, or `--private-pack
+<active-pack>`, and rejects local absolute paths anywhere in hosted smoke
+evidence.
 
 Use `artifact/hosted-submission-execution-runbook.json` as the public-safe
 procedure checklist for that release-candidate smoke. The readiness validator
 checks that the runbook defines hosted and fully containerized modes, required
 private inputs, isolation controls, required smoke fields, and publication
-rules. A valid runbook still does not satisfy the hosted-execution gate; only
-passed `execution_scope: release_candidate` evidence tied to the active private
-pack can do that.
+rules. Required private inputs and publication rules cannot contain unresolved
+placeholders, including embedded `TODO`, `TBD`, `unknown`, `n/a`, or
+angle-bracket markers. A valid runbook still does not satisfy the
+hosted-execution gate; only passed `execution_scope: release_candidate`
+evidence tied to the active private pack can do that.
 
 The tracked `artifact/submission-runner-smoke.json` file is allowed to contain a
 public-safe blocker record while the active private pack and maintainer-platform
@@ -155,7 +159,8 @@ starting shape for the ignored maintainer-only file
 `tasks_private/holdout/rotation-metadata.json`. Replace every placeholder with
 real active and shadow/candidate pack metadata, then validate in the private
 checkout. The v1 readiness validator rejects the template if it is copied
-unchanged into the private rotation metadata path. The populated metadata must
+unchanged into the private rotation metadata path, and recursively rejects any
+unresolved placeholder left in populated metadata. The populated metadata must
 declare concrete pack versions, lowercase SHA-256 fingerprints that match each
 computed pack fingerprint, a concrete compatibility policy, non-placeholder
 retirement triggers, and a rerun policy that requires both no-tools and

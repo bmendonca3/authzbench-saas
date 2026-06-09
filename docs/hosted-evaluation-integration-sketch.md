@@ -50,6 +50,10 @@ Required per-run metadata:
 - cleanup status;
 - public-output redaction proof.
 
+Hosted-compatible evidence and public summaries must not contain unresolved
+placeholders or local absolute paths. Public outputs remain limited to
+redacted summaries and aggregate metadata.
+
 ## Compatibility Notes
 
 Current simple publication resources can support public split packaging,
