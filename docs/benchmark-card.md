@@ -61,10 +61,10 @@ AuthZBench-SaaS does not claim to measure:
 ## Current v1-Prep Public Split
 
 - 6 synthetic SaaS apps
-- 54 public tasks
-- 21 vulnerable tasks
-- 33 secure-control tasks
-- 19 denial controls and 14 authorized-allow controls
+- 60 public tasks
+- 24 vulnerable tasks
+- 36 secure-control tasks
+- 21 denial controls and 15 authorized-allow controls
 - billing entitlement and support ticket reassignment expansion slices
 - current 60-task scripted sanity baseline
 - five repeated stale 54-task public no-tools model-family baselines: Qwen

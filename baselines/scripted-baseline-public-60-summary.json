@@ -3,7 +3,7 @@
   "agent_cmd": "python3 scripts/scripted_baseline_agent.py",
   "authorized_allow_control_task_count": 15,
   "authorized_allow_pass_rate": 1.0,
-  "benchmark_commit_sha": "aa9ab0922d99fdd948655bebd62649dd4fda1e28",
+  "benchmark_commit_sha": "490992c7af9ab7cbfa849c9eb2a194922968d24f",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 15,
     "control_task_count": 36,
@@ -39,7 +39,7 @@
   "per_task_tool_probe_artifact_count": 0,
   "planner_failure_count": 0,
   "planner_parse_error_count": 0,
-  "run_id": "20260609T193258654403Z-593952b9",
+  "run_id": "20260609T195212512777Z-4f8e561e",
   "scored_submission_finding_total": 24,
   "submitted_finding_total": 0,
   "target_log_dir": null,
