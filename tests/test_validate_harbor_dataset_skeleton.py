@@ -66,6 +66,32 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
         self.assertTrue(any("disallowed private/overclaim marker" in error for error in result["errors"]), result)
         self.assertTrue(any("local absolute path is not allowed" in error for error in result["errors"]), result)
 
+    def test_rejects_non_harbor_task_toml_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            manifest = json.loads((dataset_dir / "dataset-manifest.json").read_text(encoding="utf-8"))
+            task_dir = dataset_dir / manifest["tasks"][0]["harbor_task_dir"]
+            (task_dir / "task.toml").write_text(
+                "\n".join(
+                    [
+                        'schema_version = "harbor-dataset-skeleton-v1"',
+                        'private_execution = false',
+                        'harbor_execution_verified = false',
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("task.toml schema_version must be 1.3" in error for error in result["errors"]), result)
+        self.assertTrue(any("[metadata.authzbench]" in error for error in result["errors"]), result)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -41,6 +41,40 @@ def _load_json(path: Path) -> dict[str, Any]:
     return data
 
 
+def _load_toml(path: Path) -> dict[str, Any]:
+    root: dict[str, Any] = {}
+    current: dict[str, Any] = root
+    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            current = root
+            for part in line[1:-1].split("."):
+                if not part:
+                    raise ValueError(f"{path}:{line_number}: empty TOML table component")
+                child = current.setdefault(part, {})
+                if not isinstance(child, dict):
+                    raise ValueError(f"{path}:{line_number}: table conflicts with scalar value")
+                current = child
+            continue
+        if "=" not in line:
+            raise ValueError(f"{path}:{line_number}: expected key = value")
+        key, value = (part.strip() for part in line.split("=", 1))
+        if not key:
+            raise ValueError(f"{path}:{line_number}: empty TOML key")
+        if value in {"true", "false"}:
+            current[key] = value == "true"
+        elif value.startswith('"') and value.endswith('"'):
+            current[key] = json.loads(value)
+        else:
+            try:
+                current[key] = json.loads(value)
+            except json.JSONDecodeError:
+                current[key] = value
+    return root
+
+
 def _safe_relative(base: Path, value: Any) -> Path | None:
     if not isinstance(value, str) or not value.strip():
         return None
@@ -159,10 +193,18 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         if required_files["task.toml"].is_file():
             task_toml = required_files["task.toml"].read_text(encoding="utf-8")
             required_snippets = (
-                f'schema_version = "{SCHEMA_VERSION}"',
+                'schema_version = "1.3"',
+                "[task]",
+                "[metadata.authzbench]",
+                f'skeleton_schema_version = "{SCHEMA_VERSION}"',
                 "private_execution = false",
                 "harbor_execution_verified = false",
-                'command = "tests/test.sh"',
+                "[verifier]",
+                'environment_mode = "separate"',
+                "[agent]",
+                "[environment]",
+                "[metadata.authzbench.verifier]",
+                'test_script = "tests/test.sh"',
                 'scorer_contract = "v0-candidate-authz-evidence"',
             )
             for snippet in required_snippets:
@@ -171,6 +213,52 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
             if manifest.get("harness_lane") == "live_http_tool_agent" and "request correlation" not in task_toml:
                 errors.append(f"{rel_task_dir}: live HTTP task.toml must mention request correlation")
             errors.extend(_public_safety_errors(task_toml, label=f"{rel_task_dir}/task.toml"))
+            try:
+                task_config = _load_toml(required_files["task.toml"])
+            except Exception as exc:
+                errors.append(str(exc))
+            else:
+                task_table = task_config.get("task")
+                metadata = task_config.get("metadata")
+                authzbench = metadata.get("authzbench") if isinstance(metadata, dict) else None
+                verifier = task_config.get("verifier")
+                agent = task_config.get("agent")
+                environment = task_config.get("environment")
+                if not isinstance(task_table, dict):
+                    errors.append(f"{rel_task_dir}: task.toml [task] table is required")
+                    task_table = {}
+                if not isinstance(authzbench, dict):
+                    errors.append(f"{rel_task_dir}: task.toml [metadata.authzbench] table is required")
+                    authzbench = {}
+                if not isinstance(verifier, dict):
+                    errors.append(f"{rel_task_dir}: task.toml [verifier] table is required")
+                    verifier = {}
+                if not isinstance(agent, dict):
+                    errors.append(f"{rel_task_dir}: task.toml [agent] table is required")
+                    agent = {}
+                if not isinstance(environment, dict):
+                    errors.append(f"{rel_task_dir}: task.toml [environment] table is required")
+                    environment = {}
+
+                if task_config.get("schema_version") != "1.3":
+                    errors.append(f"{rel_task_dir}: task.toml schema_version must be 1.3")
+                if authzbench.get("skeleton_schema_version") != SCHEMA_VERSION:
+                    errors.append(f"{rel_task_dir}: metadata.authzbench.skeleton_schema_version must be {SCHEMA_VERSION}")
+                if authzbench.get("id") != task_id:
+                    errors.append(f"{rel_task_dir}: metadata.authzbench.id must match manifest entry")
+                if authzbench.get("private_execution") is not False:
+                    errors.append(f"{rel_task_dir}: metadata.authzbench.private_execution must be false")
+                if authzbench.get("harbor_execution_verified") is not False:
+                    errors.append(f"{rel_task_dir}: metadata.authzbench.harbor_execution_verified must be false")
+                if verifier.get("environment_mode") != "separate":
+                    errors.append(f"{rel_task_dir}: verifier.environment_mode must be separate")
+                if verifier.get("network_mode") != "no-network":
+                    errors.append(f"{rel_task_dir}: verifier.network_mode must be no-network")
+                expected_agent_network = "allowlist" if manifest.get("harness_lane") == "live_http_tool_agent" else "no-network"
+                if agent.get("network_mode") != expected_agent_network:
+                    errors.append(f"{rel_task_dir}: agent.network_mode must be {expected_agent_network}")
+                if environment.get("network_mode") != "no-network":
+                    errors.append(f"{rel_task_dir}: environment.network_mode must be no-network")
 
         if required_files["tests/test.sh"].is_file():
             script = required_files["tests/test.sh"].read_text(encoding="utf-8")
