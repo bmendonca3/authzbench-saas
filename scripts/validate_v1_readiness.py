@@ -20,7 +20,10 @@ from scripts.containerized_submission_smoke import (
     REQUIRED_CONTAINER_CONSTRAINTS,
     validate_smoke_evidence,
 )
+from scripts.check_harbor_local_execution import check_harbor_local_execution
 from scripts.validate_baseline_registry import validate_registry
+from scripts.validate_harbor_adapter_blockers import validate_harbor_adapter_blockers
+from scripts.validate_harbor_integration import validate_harbor_integration
 from scripts.validate_holdout_pack import validate_holdout_pack
 from scripts.validate_leaderboard_submission import _submission_paths, validate_submission
 
@@ -59,8 +62,11 @@ HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
 HOSTED_EXECUTION_RUNBOOK_PATH = "artifact/hosted-submission-execution-runbook.json"
 HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json"
 HARBOR_ADAPTER_CONTRACT_PATH = "artifact/harbor-adapter-contract.json"
+HARBOR_ADAPTER_BLOCKERS_PATH = "artifact/harbor-adapter-readiness-blockers.json"
+HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH = "scripts/validate_harbor_adapter_blockers.py"
 HARBOR_INTEGRATION_RUNBOOK_PATH = "docs/harbor-integration-runbook.md"
 HARBOR_INTEGRATION_VALIDATOR_PATH = "scripts/validate_harbor_integration.py"
+HARBOR_LOCAL_PREFLIGHT_PATH = "scripts/check_harbor_local_execution.py"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PRIVATE_OPERATION_RUNBOOK_PATH = "artifact/private-holdout-operation-runbook.json"
 PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
@@ -138,8 +144,11 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HARBOR_ADAPTER_CONTRACT_PATH,
+    HARBOR_ADAPTER_BLOCKERS_PATH,
+    HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
     HARBOR_INTEGRATION_RUNBOOK_PATH,
     HARBOR_INTEGRATION_VALIDATOR_PATH,
+    HARBOR_LOCAL_PREFLIGHT_PATH,
     HOSTED_EXECUTION_EVIDENCE_PATH,
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
@@ -157,8 +166,11 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "artifact/expected-output/v1-readiness-public-view.json",
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
     HARBOR_ADAPTER_CONTRACT_PATH,
+    HARBOR_ADAPTER_BLOCKERS_PATH,
+    HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
     HARBOR_INTEGRATION_RUNBOOK_PATH,
     HARBOR_INTEGRATION_VALIDATOR_PATH,
+    HARBOR_LOCAL_PREFLIGHT_PATH,
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
@@ -1878,6 +1890,47 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     }
 
 
+def _validate_harbor_repo_side_target() -> dict[str, Any]:
+    unmet: list[str] = []
+
+    integration = validate_harbor_integration()
+    if not integration["passed"]:
+        unmet.extend(f"harbor integration contract: {error}" for error in integration["errors"])
+
+    blockers = validate_harbor_adapter_blockers()
+    if not blockers["passed"]:
+        unmet.extend(f"harbor adapter blocker record: {error}" for error in blockers["errors"])
+
+    preflight = check_harbor_local_execution()
+    if preflight.get("generated_skeleton_validated") is not True:
+        unmet.append("Harbor local preflight did not validate a generated public skeleton")
+    if preflight.get("harbor_execution_verified") is not False:
+        unmet.append("Harbor local preflight must not claim Harbor execution")
+    if "not Harbor execution evidence" not in str(preflight.get("public_claim_boundary", "")):
+        unmet.append("Harbor local preflight must preserve non-evidence claim boundary")
+
+    for path in (
+        HARBOR_ADAPTER_CONTRACT_PATH,
+        HARBOR_ADAPTER_BLOCKERS_PATH,
+        HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+        HARBOR_INTEGRATION_RUNBOOK_PATH,
+        HARBOR_INTEGRATION_VALIDATOR_PATH,
+        HARBOR_LOCAL_PREFLIGHT_PATH,
+    ):
+        if not (ROOT / path).exists():
+            unmet.append(f"missing Harbor repo-side artifact: {path}")
+
+    return {
+        "blocked_until": preflight.get("blocked_until", []),
+        "harbor_cli_found": preflight.get("harbor_cli_found"),
+        "harbor_execution_verified": preflight.get("harbor_execution_verified"),
+        "passed": not unmet,
+        "ready_for_local_harbor_run": preflight.get("ready_for_local_harbor_run"),
+        "skeleton_validated": preflight.get("generated_skeleton_validated"),
+        "unmet": unmet,
+    }
+
+
 def _benchmark_source_sha_from_release_evidence(release_evidence_path: Path | None) -> str | None:
     if release_evidence_path is None:
         return None
@@ -2017,6 +2070,27 @@ def validate_v1_readiness(
         not governance_unmet,
         ["docs/v1-community-submission-governance.md"],
         governance_unmet,
+    )
+
+    harbor_repo_side = _validate_harbor_repo_side_target()
+    _add_gate(
+        gates,
+        "harbor_repo_side_target_specified",
+        bool(harbor_repo_side["passed"]),
+        [
+            HARBOR_INTEGRATION_RUNBOOK_PATH,
+            HARBOR_ADAPTER_CONTRACT_PATH,
+            HARBOR_ADAPTER_BLOCKERS_PATH,
+            HARBOR_INTEGRATION_VALIDATOR_PATH,
+            HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+            HARBOR_LOCAL_PREFLIGHT_PATH,
+            f"harbor_cli_found={harbor_repo_side['harbor_cli_found']}",
+            f"generated_skeleton_validated={harbor_repo_side['skeleton_validated']}",
+            f"harbor_execution_verified={harbor_repo_side['harbor_execution_verified']}",
+            f"ready_for_local_harbor_run={harbor_repo_side['ready_for_local_harbor_run']}",
+            f"blocked_until={harbor_repo_side['blocked_until']}",
+        ],
+        list(harbor_repo_side["unmet"]),
     )
 
     hosted_result = _validate_hosted_execution_evidence(

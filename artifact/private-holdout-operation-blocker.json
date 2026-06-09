@@ -39,7 +39,7 @@
     "ci_run_id": "27151712736",
     "workflow": "Validate AuthZBench-SaaS",
     "v1_ready": false,
-    "passed_gate_count": 3,
+    "passed_gate_count": 4,
     "unmet_gate_count": 8
   }
 }

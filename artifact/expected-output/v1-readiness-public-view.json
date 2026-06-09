@@ -1,5 +1,5 @@
 {
-  "gate_count": 11,
+  "gate_count": 12,
   "gates": [
     {
       "evidence": [
@@ -41,6 +41,24 @@
         "docs/v1-community-submission-governance.md"
       ],
       "id": "submission_governance_spec_defined",
+      "passed": true,
+      "unmet": []
+    },
+    {
+      "evidence": [
+        "docs/harbor-integration-runbook.md",
+        "artifact/harbor-adapter-contract.json",
+        "artifact/harbor-adapter-readiness-blockers.json",
+        "scripts/validate_harbor_integration.py",
+        "scripts/validate_harbor_adapter_blockers.py",
+        "scripts/check_harbor_local_execution.py",
+        "harbor_cli_found=False",
+        "generated_skeleton_validated=True",
+        "harbor_execution_verified=False",
+        "ready_for_local_harbor_run=False",
+        "blocked_until=['Harbor CLI/package is not installed or not on PATH']"
+      ],
+      "id": "harbor_repo_side_target_specified",
       "passed": true,
       "unmet": []
     },
@@ -119,7 +137,7 @@
         "evidence_scope must be release_candidate",
         "upstream_review_and_infrastructure_complete must be true",
         "live upstream review and infrastructure gates must pass",
-        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/support/app.py, artifact/README.md, artifact/harbor-adapter-readiness-blockers.json, artifact/install.md, artifact/submission-runner-smoke.json"
+        "release-affecting files changed after benchmark_source_sha: README.md, ROADMAP.md, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/support/app.py, artifact/README.md, artifact/install.md, artifact/submission-runner-smoke.json, baselines/README.md"
       ]
     },
     {
@@ -135,7 +153,7 @@
     }
   ],
   "passed": false,
-  "passed_gate_count": 3,
+  "passed_gate_count": 4,
   "unmet_gate_count": 8,
   "v1_ready": false
 }

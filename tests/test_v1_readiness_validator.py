@@ -123,11 +123,20 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertFalse(result["v1_ready"])
-        self.assertEqual(result["gate_count"], 11)
+        self.assertEqual(result["gate_count"], 12)
         self.assertTrue(gates["stable_v1_prep_public_evidence"]["passed"])
         self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])
         self.assertTrue(gates["external_review_packet_ready"]["passed"])
         self.assertTrue(gates["submission_governance_spec_defined"]["passed"])
+        self.assertTrue(gates["harbor_repo_side_target_specified"]["passed"])
+        self.assertIn(
+            "harbor_cli_found=False",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "harbor_execution_verified=False",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
         self.assertFalse(gates["external_review_completed"]["passed"])
         self.assertFalse(gates["hosted_or_containerized_submission_execution"]["passed"])
         self.assertFalse(gates["rotating_private_holdouts_implemented"]["passed"])
