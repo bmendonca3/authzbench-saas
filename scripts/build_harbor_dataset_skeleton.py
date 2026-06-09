@@ -45,6 +45,36 @@ def _private_holdout_path(path: Path) -> bool:
     )
 
 
+def _safe_clean_output_dir(output_dir: Path) -> None:
+    resolved = output_dir.resolve()
+    forbidden = {Path("/").resolve(), ROOT.resolve(), ROOT.parent.resolve(), Path.home().resolve()}
+    if resolved in forbidden:
+        raise ValueError(f"refusing to clean dangerous Harbor skeleton output directory: {output_dir}")
+    if not output_dir.exists():
+        return
+    if not output_dir.is_dir():
+        raise ValueError(f"refusing to clean non-directory Harbor skeleton output path: {output_dir}")
+    if not any(output_dir.iterdir()):
+        output_dir.rmdir()
+        return
+    manifest_path = output_dir / "dataset-manifest.json"
+    if not manifest_path.is_file():
+        raise ValueError(
+            "refusing to clean output directory without a generated Harbor skeleton manifest"
+        )
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError("refusing to clean output directory with invalid skeleton manifest") from exc
+    if (
+        manifest.get("schema_version") != SCHEMA_VERSION
+        or manifest.get("evidence_status") != "generated_public_skeleton"
+        or manifest.get("private_task_count") != 0
+    ):
+        raise ValueError("refusing to clean output directory with non-skeleton manifest metadata")
+    shutil.rmtree(output_dir)
+
+
 def _toml_string(value: str) -> str:
     return json.dumps(value)
 
@@ -53,13 +83,20 @@ def _toml_list(values: list[str]) -> str:
     return "[" + ", ".join(_toml_string(value) for value in values) + "]"
 
 
-def _reference_run_config() -> str:
+def _reference_run_config(tasks: list[dict[str, Any]], output_dir: Path) -> str:
+    task_paths = [str(task["harbor_task_dir"]) for task in tasks]
+    task_lines = [f"  - path: {_toml_string(path)}" for path in task_paths]
     return "\n".join(
         [
             "# Public-safe Harbor run target for generated skeleton datasets.",
             "# This file is not evidence that Harbor execution has been verified.",
-            "datasets:",
-            "  - path: .",
+            "job_name: authzbench-public-skeleton-smoke",
+            "jobs_dir: ./harbor-jobs",
+            "n_attempts: 1",
+            "n_concurrent_trials: 1",
+            "debug: true",
+            "tasks:",
+            *task_lines,
             "",
             "# Default oracle-style verifier lane for structure checks.",
             "agents:",
@@ -73,10 +110,6 @@ def _reference_run_config() -> str:
             "environment:",
             "  type: docker",
             "  delete: true",
-            "",
-            "orchestrator:",
-            "  type: local",
-            "  n_concurrent_trials: 1",
             "",
             "artifacts:",
             "  - /logs/artifacts",
@@ -121,6 +154,28 @@ def _environment_dockerfile() -> str:
             "",
             "# A verified Harbor adapter must replace this placeholder with a",
             "# pinned image/package path that provides authzbench scoring code.",
+            "",
+        ]
+    )
+
+
+def _verifier_environment_dockerfile() -> str:
+    return "\n".join(
+        [
+            "# Public-safe placeholder verifier environment for Harbor.",
+            "# This file is not Harbor verifier/scorer parity evidence.",
+            "FROM python:3.11-slim",
+            "WORKDIR /workspace",
+            "ENV PYTHONUNBUFFERED=1",
+            "ENV PYTHONPATH=/tests",
+            "COPY test.sh /tests/test.sh",
+            "COPY task_manifest.json /tests/task_manifest.json",
+            "COPY authzbench /tests/authzbench",
+            "COPY apps /tests/apps",
+            "RUN chmod +x /tests/test.sh",
+            "",
+            "# This image contains only public AuthZBench-SaaS scorer/app code",
+            "# copied into the generated verifier context.",
             "",
         ]
     )
@@ -199,7 +254,7 @@ def _task_toml(task: dict[str, Any], *, task_path: Path, harness_lane: str) -> s
         "private_execution = false",
         "harbor_execution_verified = false",
         f"claim_boundary = {_toml_string('Generated public dataset skeleton only; not Harbor execution evidence or v1 readiness.')}",
-        f"required_artifacts = {_toml_list(['/logs/artifacts/submission.json', '/logs/artifacts/score.json'])}",
+        f"required_artifacts = {_toml_list(['/logs/artifacts/submission.json', '/logs/artifacts/score.json', '/logs/artifacts/reward.json', '/logs/artifacts/reward.txt'])}",
         f"service_notes = {_toml_list(service_notes)}",
         "",
         "[verifier]",
@@ -223,6 +278,10 @@ def _task_toml(task: dict[str, Any], *, task_path: Path, harness_lane: str) -> s
         'scorer_contract = "v0-candidate-authz-evidence"',
         'submission_path = "/logs/artifacts/submission.json"',
         'score_output_path = "/logs/artifacts/score.json"',
+        'harbor_reward_json_path = "/logs/verifier/reward.json"',
+        'harbor_reward_text_path = "/logs/verifier/reward.txt"',
+        'public_reward_json_path = "/logs/artifacts/reward.json"',
+        'public_reward_text_path = "/logs/artifacts/reward.txt"',
         "",
     ]
     return "\n".join(lines)
@@ -254,18 +313,26 @@ def build_harbor_dataset_skeleton(
         task_paths = task_paths[:limit]
     if not task_paths:
         raise ValueError("at least one public task manifest must match the requested filters")
-    if clean and output_dir.exists():
-        shutil.rmtree(output_dir)
+    if clean:
+        _safe_clean_output_dir(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     tasks: list[dict[str, Any]] = []
+    task_dir_names: dict[str, str] = {}
     for task_path in task_paths:
         task = load_json(task_path)
         if requested_task_ids and task.get("id") not in requested_task_ids:
             continue
         if task.get("split") == "private_holdout":
             raise ValueError("private holdout manifests must not be exported with the public Harbor skeleton builder")
-        task_dir = output_dir / "tasks" / _safe_name(str(task["id"]))
+        safe_task_name = _safe_name(str(task["id"]))
+        if safe_task_name in task_dir_names:
+            raise ValueError(
+                "task ids produce duplicate Harbor task directory "
+                f"{safe_task_name!r}: {task_dir_names[safe_task_name]!r} and {task['id']!r}"
+            )
+        task_dir_names[safe_task_name] = str(task["id"])
+        task_dir = output_dir / "tasks" / safe_task_name
         environment_dir = task_dir / "environment"
         solution_dir = task_dir / "solution"
         verifier_dir = task_dir / "verifier"
@@ -274,11 +341,26 @@ def build_harbor_dataset_skeleton(
         solution_dir.mkdir(parents=True, exist_ok=True)
         verifier_dir.mkdir(parents=True, exist_ok=True)
         tests_dir.mkdir(parents=True, exist_ok=True)
+        tests_environment_dir = tests_dir / "environment"
+        tests_environment_dir.mkdir(parents=True, exist_ok=True)
 
         context = build_context(task)
         (environment_dir / "context.json").write_text(dump_json(context) + "\n", encoding="utf-8")
         (environment_dir / "Dockerfile").write_text(_environment_dockerfile(), encoding="utf-8")
+        (tests_dir / "Dockerfile").write_text(_verifier_environment_dockerfile(), encoding="utf-8")
+        (tests_environment_dir / "Dockerfile").write_text(_verifier_environment_dockerfile(), encoding="utf-8")
         (verifier_dir / "task_manifest.json").write_text(dump_json(task) + "\n", encoding="utf-8")
+        (tests_dir / "task_manifest.json").write_text(dump_json(task) + "\n", encoding="utf-8")
+        for package_name in ("authzbench", "apps"):
+            package_source = ROOT / package_name
+            package_destination = tests_dir / package_name
+            if package_destination.exists():
+                shutil.rmtree(package_destination)
+            shutil.copytree(
+                package_source,
+                package_destination,
+                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+            )
         (task_dir / "instruction.md").write_text(_instruction(task, "environment/context.json"), encoding="utf-8")
         (task_dir / "task.toml").write_text(_task_toml(task, task_path=task_path, harness_lane=harness_lane), encoding="utf-8")
         solution_path = solution_dir / "solve.sh"
@@ -288,13 +370,40 @@ def build_harbor_dataset_skeleton(
             [
                 "#!/usr/bin/env bash",
                 "set -euo pipefail",
-                "mkdir -p /logs/artifacts",
-                'python3 -m authzbench.score verifier/task_manifest.json /logs/artifacts/submission.json > /logs/artifacts/score.json',
+                "mkdir -p /logs/artifacts /logs/verifier",
+                "if [ ! -s /logs/artifacts/submission.json ]; then",
+                "  python3 - <<'PY'",
+                "import json",
+                "from pathlib import Path",
+                "task = json.loads(Path('/tests/task_manifest.json').read_text())",
+                "score = {",
+                "    'task_id': task.get('id'),",
+                "    'score': 0,",
+                "    'passed': False,",
+                "    'invalid_submission': True,",
+                "    'reason': 'missing agent submission',",
+                "}",
+                "for path in (Path('/logs/artifacts/score.json'),):",
+                "    path.write_text(json.dumps(score, sort_keys=True) + '\\n')",
+                "reward = {'reward': 0.0}",
+                "for path in (Path('/logs/artifacts/reward.json'), Path('/logs/verifier/reward.json')):",
+                "    path.write_text(json.dumps(reward, sort_keys=True) + '\\n')",
+                "for path in (Path('/logs/artifacts/reward.txt'), Path('/logs/verifier/reward.txt')):",
+                "    path.write_text('0.0\\n')",
+                "PY",
+                "  exit 0",
+                "fi",
+                'python3 -m authzbench.score /tests/task_manifest.json /logs/artifacts/submission.json > /logs/artifacts/score.json',
                 'python3 - <<\'PY\'',
                 "import json",
                 "from pathlib import Path",
                 "score = json.loads(Path('/logs/artifacts/score.json').read_text())",
-                "raise SystemExit(0 if score.get('passed') is True else 1)",
+                "reward = float(score.get('score') or 0)",
+                "Path('/logs/artifacts/reward.json').write_text(json.dumps({'reward': reward}) + '\\n')",
+                "Path('/logs/artifacts/reward.txt').write_text(f'{reward}\\n')",
+                "Path('/logs/verifier/reward.json').write_text(json.dumps({'reward': reward}) + '\\n')",
+                "Path('/logs/verifier/reward.txt').write_text(f'{reward}\\n')",
+                "raise SystemExit(0)",
                 "PY",
                 "",
             ]
@@ -325,7 +434,7 @@ def build_harbor_dataset_skeleton(
         "tasks": tasks,
     }
     (output_dir / "dataset.toml").write_text(_dataset_toml(tasks, harness_lane=harness_lane), encoding="utf-8")
-    (output_dir / "run_authzbench_saas.yaml").write_text(_reference_run_config(), encoding="utf-8")
+    (output_dir / "run_authzbench_saas.yaml").write_text(_reference_run_config(tasks, output_dir), encoding="utf-8")
     (output_dir / "dataset-manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return manifest
 

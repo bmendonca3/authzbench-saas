@@ -200,12 +200,16 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
             manifest = json.loads((dataset_dir / "dataset-manifest.json").read_text(encoding="utf-8"))
             task_dir = dataset_dir / manifest["tasks"][0]["harbor_task_dir"]
             (task_dir / "environment" / "Dockerfile").unlink()
+            (task_dir / "tests" / "Dockerfile").unlink()
+            (task_dir / "tests" / "environment" / "Dockerfile").unlink()
             (task_dir / "solution" / "solve.sh").unlink()
 
             result = validate_harbor_dataset_skeleton(dataset_dir)
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("missing environment/Dockerfile" in error for error in result["errors"]), result)
+        self.assertTrue(any("missing tests/Dockerfile" in error for error in result["errors"]), result)
+        self.assertTrue(any("missing tests/environment/Dockerfile" in error for error in result["errors"]), result)
         self.assertTrue(any("missing solution/solve.sh" in error for error in result["errors"]), result)
 
     def test_rejects_overclaiming_solution_placeholder(self) -> None:
@@ -227,6 +231,26 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("placeholder oracle boundary" in error for error in result["errors"]), result)
         self.assertTrue(any("fail closed" in error for error in result["errors"]), result)
+
+    def test_rejects_private_markers_in_test_script(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            manifest = json.loads((dataset_dir / "dataset-manifest.json").read_text(encoding="utf-8"))
+            task_dir = dataset_dir / manifest["tasks"][0]["harbor_task_dir"]
+            test_script = task_dir / "tests" / "test.sh"
+            test_script.write_text(
+                test_script.read_text(encoding="utf-8") + "\necho 'raw private output at /tmp/private.json'\n",
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("tests/test.sh" in error and "private detail marker" in error for error in result["errors"]), result)
 
 
 if __name__ == "__main__":

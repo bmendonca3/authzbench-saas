@@ -137,8 +137,18 @@ def validate_contract(path: Path) -> list[str]:
     return errors
 
 
+def meaningful_body_contains(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, (dict, list, str)):
+        return bool(value)
+    return True
+
+
 def has_replay_check(item: dict[str, Any]) -> bool:
-    return isinstance(item.get("status"), int) or "body_contains" in item
+    return isinstance(item.get("status"), int) or (
+        "body_contains" in item and meaningful_body_contains(item.get("body_contains"))
+    )
 
 
 def validate_control_shape(path: Path, task_id: str, controls: Any) -> list[str]:
@@ -149,11 +159,11 @@ def validate_control_shape(path: Path, task_id: str, controls: Any) -> list[str]
         if not isinstance(control, dict):
             errors.append(f"{display_path(path)}: {task_id}: controls[{index}] must be an object")
             continue
-        for field in ("actor", "method", "path", "status"):
+        for field in ("actor", "method", "path"):
             if field not in control:
                 errors.append(f"{display_path(path)}: {task_id}: controls[{index}].{field} is required")
         if not has_replay_check(control):
-            errors.append(f"{display_path(path)}: {task_id}: controls[{index}] must include status or body_contains")
+            errors.append(f"{display_path(path)}: {task_id}: controls[{index}] must include status or non-empty body_contains")
     return errors
 
 
@@ -183,9 +193,13 @@ def validate_task(path: Path) -> tuple[dict[str, int], list[str]]:
         errors.append(f"{display_path(path)}: {task_id}: allowed_hosts must be a non-empty list")
     errors.extend(validate_control_shape(path, task_id, controls))
     if not has_replay_check(oracle):
-        errors.append(f"{display_path(path)}: {task_id}: oracle must include status or body_contains")
+        errors.append(f"{display_path(path)}: {task_id}: oracle must include status or non-empty body_contains")
 
     if expected_vulnerable:
+        if not isinstance(oracle.get("status"), int):
+            errors.append(f"{display_path(path)}: {task_id}: vulnerable oracle must include status")
+        if not meaningful_body_contains(oracle.get("body_contains")):
+            errors.append(f"{display_path(path)}: {task_id}: vulnerable oracle must include non-empty body_contains")
         boundary = data.get("expected_boundary")
         if not isinstance(boundary, dict):
             errors.append(f"{display_path(path)}: {task_id}: vulnerable task must include expected_boundary")
@@ -215,7 +229,7 @@ def validate_task(path: Path) -> tuple[dict[str, int], list[str]]:
                         )
                     if not isinstance(requirement, dict) or not has_replay_check(requirement):
                         errors.append(
-                            f"{display_path(path)}: {task_id}: evidence_requirements[{index}] must include status or body_contains"
+                            f"{display_path(path)}: {task_id}: evidence_requirements[{index}] must include status or non-empty body_contains"
                         )
     else:
         control_type = data.get("control_type")
@@ -226,9 +240,27 @@ def validate_task(path: Path) -> tuple[dict[str, int], list[str]]:
         if control_type not in {"denial", "authorized_allow"}:
             errors.append(f"{display_path(path)}: {task_id}: secure control_type must be denial or authorized_allow")
         statuses = [control.get("status") for control in control_list if isinstance(control, dict)]
-        if control_type == "denial" and not any(isinstance(status, int) and status >= 400 for status in statuses):
+        if control_type == "denial" and not any(
+            (isinstance(status, int) and status >= 400) or (
+                "body_contains" in control and meaningful_body_contains(control.get("body_contains"))
+            )
+            for status, control in (
+                (control.get("status"), control)
+                for control in control_list
+                if isinstance(control, dict)
+            )
+        ):
             errors.append(f"{display_path(path)}: {task_id}: denial control must include a denial replay check")
-        if control_type == "authorized_allow" and not any(isinstance(status, int) and 200 <= status < 300 for status in statuses):
+        if control_type == "authorized_allow" and not any(
+            (isinstance(status, int) and 200 <= status < 300) or (
+                "body_contains" in control and meaningful_body_contains(control.get("body_contains"))
+            )
+            for status, control in (
+                (control.get("status"), control)
+                for control in control_list
+                if isinstance(control, dict)
+            )
+        ):
             errors.append(f"{display_path(path)}: {task_id}: authorized_allow control must include a 2xx replay check")
 
     return stats, errors

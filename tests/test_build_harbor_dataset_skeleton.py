@@ -24,11 +24,18 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
             task_toml = (task_dir / "task.toml").read_text(encoding="utf-8")
             instruction = (task_dir / "instruction.md").read_text(encoding="utf-8")
             dockerfile = (task_dir / "environment" / "Dockerfile").read_text(encoding="utf-8")
+            verifier_root_dockerfile = (task_dir / "tests" / "Dockerfile").read_text(encoding="utf-8")
+            verifier_dockerfile = (task_dir / "tests" / "environment" / "Dockerfile").read_text(encoding="utf-8")
             solution = (task_dir / "solution" / "solve.sh").read_text(encoding="utf-8")
             dataset_toml = (output / manifest["dataset_toml"]).read_text(encoding="utf-8")
             context = json.loads((task_dir / "environment" / "context.json").read_text(encoding="utf-8"))
             task_manifest = json.loads((task_dir / "verifier" / "task_manifest.json").read_text(encoding="utf-8"))
+            test_task_manifest = json.loads((task_dir / "tests" / "task_manifest.json").read_text(encoding="utf-8"))
             run_config = (output / manifest["reference_run_config"]).read_text(encoding="utf-8")
+            test_script = (task_dir / "tests" / "test.sh").read_text(encoding="utf-8")
+            has_public_score_module = (task_dir / "tests" / "authzbench" / "score.py").is_file()
+            has_public_core_module = (task_dir / "tests" / "authzbench" / "core.py").is_file()
+            has_public_app_module = (task_dir / "tests" / "apps" / "project_mgmt" / "app.py").is_file()
 
         self.assertEqual(manifest["schema_version"], "harbor-dataset-skeleton-v1")
         self.assertEqual(manifest["task_count"], 1)
@@ -42,6 +49,16 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn("findings: []", instruction)
         self.assertIn("not Harbor execution evidence", dockerfile)
         self.assertIn("FROM python:", dockerfile)
+        self.assertIn("not Harbor verifier/scorer parity evidence", verifier_root_dockerfile)
+        self.assertIn("FROM python:", verifier_root_dockerfile)
+        self.assertIn("ENV PYTHONPATH=/tests", verifier_root_dockerfile)
+        self.assertIn("COPY authzbench /tests/authzbench", verifier_root_dockerfile)
+        self.assertIn("COPY apps /tests/apps", verifier_root_dockerfile)
+        self.assertIn("not Harbor verifier/scorer parity evidence", verifier_dockerfile)
+        self.assertIn("FROM python:", verifier_dockerfile)
+        self.assertTrue(has_public_score_module)
+        self.assertTrue(has_public_core_module)
+        self.assertTrue(has_public_app_module)
         self.assertIn("does not include a public oracle solution", solution)
         self.assertIn("exit 64", solution)
         self.assertIn('name = "authzbench-saas-public-skeleton"', dataset_toml)
@@ -51,9 +68,19 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn("harbor_publish_verified = false", dataset_toml)
         self.assertEqual(context["task_id"], "pm_same_tenant_read_control")
         self.assertEqual(task_manifest["id"], "pm_same_tenant_read_control")
-        self.assertIn("datasets:", run_config)
-        self.assertIn("  - path: .", run_config)
+        self.assertEqual(test_task_manifest["id"], "pm_same_tenant_read_control")
+        self.assertIn("tasks:", run_config)
+        self.assertIn("  - path: \"tasks/pm_same_tenant_read_control\"", run_config)
+        self.assertNotIn(str(task_dir.resolve()), run_config)
         self.assertIn("not evidence that Harbor execution has been verified", run_config)
+        self.assertIn("/logs/artifacts/reward.json", task_toml)
+        self.assertIn("/logs/artifacts/reward.txt", task_toml)
+        self.assertIn("/logs/artifacts/reward.json", test_script)
+        self.assertIn("/logs/artifacts/reward.txt", test_script)
+        self.assertIn("/logs/verifier/reward.json", test_script)
+        self.assertIn("/logs/verifier/reward.txt", test_script)
+        self.assertIn("missing agent submission", test_script)
+        self.assertIn("raise SystemExit(0)", test_script)
         self.assertNotIn("private_pack_fingerprint_sha256", json.dumps(manifest))
 
     def test_live_http_lane_records_service_orchestration_notes(self) -> None:
@@ -107,11 +134,30 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
 
             self.assertTrue((output / "stale.txt").exists())
 
-    def test_filters_by_task_id_and_overwrites_existing_output(self) -> None:
+    def test_rejects_cleaning_non_generated_output_directory(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "harbor-public"
             output.mkdir()
             (output / "stale.txt").write_text("old", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "without a generated Harbor skeleton manifest"):
+                build_harbor_dataset_skeleton(
+                    ["tasks/project_mgmt/*.json"],
+                    output,
+                    task_ids=["pm_same_tenant_read_control"],
+                    clean=True,
+                )
+
+            self.assertTrue((output / "stale.txt").exists())
+
+    def test_filters_by_task_id_and_overwrites_generated_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_bola_read_alpha_from_beta.json"],
+                output,
+            )
+            (output / "stale-generated.txt").write_text("old", encoding="utf-8")
 
             manifest = build_harbor_dataset_skeleton(
                 ["tasks/project_mgmt/*.json"],
@@ -120,9 +166,21 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
                 clean=True,
             )
 
-            self.assertFalse((output / "stale.txt").exists())
+            self.assertFalse((output / "stale-generated.txt").exists())
+            self.assertEqual([task["id"] for task in manifest["tasks"]], ["pm_same_tenant_read_control"])
 
-        self.assertEqual([task["id"] for task in manifest["tasks"]], ["pm_same_tenant_read_control"])
+    def test_rejects_sanitized_task_directory_collisions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = json.loads(Path("tasks/project_mgmt/pm_same_tenant_read_control.json").read_text(encoding="utf-8"))
+            first = Path(tmp) / "first.json"
+            second = Path(tmp) / "second.json"
+            first_task = dict(base, id="collision/a")
+            second_task = dict(base, id="collision:a")
+            first.write_text(json.dumps(first_task), encoding="utf-8")
+            second.write_text(json.dumps(second_task), encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "duplicate Harbor task directory"):
+                build_harbor_dataset_skeleton([str(first), str(second)], Path(tmp) / "harbor-public")
 
     def test_filters_by_task_ids_before_limit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

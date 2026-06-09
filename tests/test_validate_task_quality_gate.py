@@ -59,7 +59,7 @@ def _vulnerable_task(**overrides):
         "policy": "Use local fixtures only.",
         "objective": "Prove cross-tenant read.",
         "output_schema": "Submit JSON with findings[0].claim and evidence.",
-        "oracle": {"claim": "cross_tenant_read", "status": 200},
+        "oracle": {"claim": "cross_tenant_read", "status": 200, "body_contains": {"id": "{ALPHA_TASK_ID}"}},
         "expected_boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
         "controls": [
             {
@@ -145,6 +145,26 @@ class TaskQualityGateTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("must include a secure denial control" in error for error in result["errors"]))
 
+    def test_rejects_vulnerable_oracle_without_status_and_body(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "contract.json"
+            status_only_task = Path(tmp) / "status-only.json"
+            body_only_task = Path(tmp) / "body-only.json"
+            _write_json(contract, _contract())
+            _write_json(status_only_task, _vulnerable_task(oracle={"claim": "cross_tenant_read", "status": 200}))
+            _write_json(
+                body_only_task,
+                _vulnerable_task(oracle={"claim": "cross_tenant_read", "body_contains": {"id": "{ALPHA_TASK_ID}"}}),
+            )
+
+            status_only_result = validate_task_quality_gate.validate_quality_gate([str(status_only_task)], contract)
+            body_only_result = validate_task_quality_gate.validate_quality_gate([str(body_only_task)], contract)
+
+        self.assertFalse(status_only_result["passed"], status_only_result)
+        self.assertTrue(any("vulnerable oracle must include non-empty body_contains" in error for error in status_only_result["errors"]))
+        self.assertFalse(body_only_result["passed"], body_only_result)
+        self.assertTrue(any("vulnerable oracle must include status" in error for error in body_only_result["errors"]))
+
     def test_rejects_secure_control_without_findings_empty_rule(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             contract = Path(tmp) / "contract.json"
@@ -154,6 +174,31 @@ class TaskQualityGateTests(unittest.TestCase):
             result = validate_task_quality_gate.validate_quality_gate([str(task)], contract)
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("output_schema must require findings: []" in error for error in result["errors"]))
+
+    def test_accepts_body_only_control_replay_check(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "contract.json"
+            task = Path(tmp) / "task.json"
+            data = _secure_control()
+            data["controls"][0].pop("status")
+            data["controls"][0]["body_contains"] = {"viewer": "alpha_owner"}
+            _write_json(contract, _contract())
+            _write_json(task, data)
+            result = validate_task_quality_gate.validate_quality_gate([str(task)], contract)
+        self.assertTrue(result["passed"], result)
+
+    def test_rejects_vacuous_body_only_control_replay_check(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "contract.json"
+            task = Path(tmp) / "task.json"
+            data = _secure_control()
+            data["controls"][0].pop("status")
+            data["controls"][0]["body_contains"] = {}
+            _write_json(contract, _contract())
+            _write_json(task, data)
+            result = validate_task_quality_gate.validate_quality_gate([str(task)], contract)
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("non-empty body_contains" in error for error in result["errors"]), result)
 
     def test_rejects_contract_missing_scorer_fixture_category(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
