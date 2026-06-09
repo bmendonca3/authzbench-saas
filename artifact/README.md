@@ -53,9 +53,10 @@ Run the public validation entrypoint from the repository root:
 artifact/run-public-validation.sh
 ```
 
-The script runs the public validation gate, baseline registry validation,
-leaderboard submission validation, and the tracked-path privacy check. Its final
-line should be:
+The script runs the public validation gate, v1 public-readiness fixture check,
+Harbor adapter/blocker/preflight checks, baseline registry validation,
+leaderboard submission validation, and the tracked-path privacy check. Its
+final line should be:
 
 ```text
 Artifact privacy check passed: no private/raw artifact paths are tracked.
