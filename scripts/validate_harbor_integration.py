@@ -21,6 +21,7 @@ REQUIRED_COMPONENTS = {
     "metadata_normalizer",
     "artifact_redaction_policy",
     "dataset_skeleton_builder",
+    "reference_run_config",
 }
 REQUIRED_LANES = {"no_tools", "live_http_tool_agent"}
 REQUIRED_METADATA = {
@@ -133,7 +134,14 @@ def validate_harbor_integration(
     if dataset_shape.get("task_toml_schema_version") != "1.3":
         errors.append("dataset_shape.task_toml_schema_version must be 1.3")
     task_directory_files = set(dataset_shape.get("task_directory_files") or [])
-    for required_file in ("instruction.md", "task.toml", "environment/", "verifier/task_manifest.json", "tests/test.sh"):
+    for required_file in (
+        "instruction.md",
+        "task.toml",
+        "environment/",
+        "verifier/task_manifest.json",
+        "tests/test.sh",
+        "run_authzbench_saas.yaml",
+    ):
         if required_file not in task_directory_files:
             errors.append(f"dataset_shape.task_directory_files missing: {required_file}")
 

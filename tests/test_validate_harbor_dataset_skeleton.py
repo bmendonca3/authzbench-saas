@@ -92,6 +92,20 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
         self.assertTrue(any("task.toml schema_version must be 1.3" in error for error in result["errors"]), result)
         self.assertTrue(any("[metadata.authzbench]" in error for error in result["errors"]), result)
 
+    def test_rejects_missing_reference_run_config(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            (dataset_dir / "run_authzbench_saas.yaml").unlink()
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn("reference_run_config file is missing", result["errors"])
+
 
 if __name__ == "__main__":
     unittest.main()
