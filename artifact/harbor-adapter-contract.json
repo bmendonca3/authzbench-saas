@@ -17,7 +17,8 @@
       "task.toml",
       "environment/",
       "verifier/task_manifest.json",
-      "tests/test.sh"
+      "tests/test.sh",
+      "run_authzbench_saas.yaml"
     ],
     "public_task_inputs": [
       "rendered context",
@@ -71,6 +72,11 @@
       "name": "dataset_skeleton_builder",
       "required": true,
       "responsibility": "Generate a public-only Harbor-shaped dataset skeleton with instruction.md, task.toml, environment context, verifier manifest, and tests/test.sh without claiming Harbor execution."
+    },
+    {
+      "name": "reference_run_config",
+      "required": true,
+      "responsibility": "Emit a public-safe run_authzbench_saas.yaml reference config for future Harbor oracle/structure checks without claiming execution."
     }
   ],
   "lanes": [

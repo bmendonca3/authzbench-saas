@@ -61,6 +61,8 @@ Target builder responsibilities:
   resource requirements, network policy, artifact paths, and verifier settings;
 - include a task-local verifier entrypoint that invokes the AuthZBench-SaaS
   scorer bridge;
+- write a reference `run_authzbench_saas.yaml` for future local Harbor
+  structure/oracle checks without claiming the run has passed;
 - never write private task bodies, routes, seeds, or oracles into public Harbor
   task directories.
 
@@ -106,8 +108,10 @@ python3 scripts/build_harbor_dataset_skeleton.py \
 ```
 
 For live HTTP tool-agent planning, use `--harness-lane live_http_tool_agent`.
-The builder writes Harbor-shaped task directories, but it does not invoke
-Harbor and does not create private execution evidence.
+Use repeatable `--task-id <id>` for subset generation. `--overwrite` is an
+alias for replacing an existing generated output directory. The builder writes
+Harbor-shaped task directories and a reference `run_authzbench_saas.yaml`, but
+it does not invoke Harbor and does not create private execution evidence.
 
 Validate a generated skeleton with:
 

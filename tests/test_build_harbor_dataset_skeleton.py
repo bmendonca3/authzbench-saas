@@ -23,6 +23,7 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
             instruction = (task_dir / "instruction.md").read_text(encoding="utf-8")
             context = json.loads((task_dir / "environment" / "context.json").read_text(encoding="utf-8"))
             task_manifest = json.loads((task_dir / "verifier" / "task_manifest.json").read_text(encoding="utf-8"))
+            run_config = (output / manifest["reference_run_config"]).read_text(encoding="utf-8")
 
         self.assertEqual(manifest["schema_version"], "harbor-dataset-skeleton-v1")
         self.assertEqual(manifest["task_count"], 1)
@@ -36,6 +37,9 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn("findings: []", instruction)
         self.assertEqual(context["task_id"], "pm_same_tenant_read_control")
         self.assertEqual(task_manifest["id"], "pm_same_tenant_read_control")
+        self.assertIn("datasets:", run_config)
+        self.assertIn("  - path: .", run_config)
+        self.assertIn("not evidence that Harbor execution has been verified", run_config)
         self.assertNotIn("private_pack_fingerprint_sha256", json.dumps(manifest))
 
     def test_live_http_lane_records_service_orchestration_notes(self) -> None:
@@ -68,6 +72,23 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValueError, "private holdout manifests"):
                 build_harbor_dataset_skeleton([str(private_task)], Path(tmp) / "out")
+
+    def test_filters_by_task_id_and_overwrites_existing_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "harbor-public"
+            output.mkdir()
+            (output / "stale.txt").write_text("old", encoding="utf-8")
+
+            manifest = build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/*.json"],
+                output,
+                task_ids=["pm_same_tenant_read_control"],
+                clean=True,
+            )
+
+            self.assertFalse((output / "stale.txt").exists())
+
+        self.assertEqual([task["id"] for task in manifest["tasks"]], ["pm_same_tenant_read_control"])
 
 
 if __name__ == "__main__":
