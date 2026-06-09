@@ -194,17 +194,34 @@ def _verifier_environment_dockerfile() -> str:
     )
 
 
-def _solution_script() -> str:
-    return "\n".join(
-        [
-            "#!/usr/bin/env bash",
-            "set -euo pipefail",
-            "echo 'AuthZBench-SaaS Harbor skeleton does not include a public oracle solution.' >&2",
-            "echo 'Run the scorer-controlled verifier against an agent submission instead.' >&2",
-            "exit 64",
-            "",
-        ]
-    )
+def _solution_script(task: dict[str, Any], *, oracle_solution_mode: str) -> str:
+    if oracle_solution_mode == "none":
+        return "\n".join(
+            [
+                "#!/usr/bin/env bash",
+                "set -euo pipefail",
+                "echo 'AuthZBench-SaaS Harbor skeleton does not include a public oracle solution.' >&2",
+                "echo 'Run the scorer-controlled verifier against an agent submission instead.' >&2",
+                "exit 64",
+                "",
+            ]
+        )
+    if oracle_solution_mode == "secure-control-empty-findings":
+        if task.get("expected_vulnerable") is not False:
+            raise ValueError("secure-control-empty-findings oracle solution mode requires a secure-control task")
+        return "\n".join(
+            [
+                "#!/usr/bin/env bash",
+                "set -euo pipefail",
+                "mkdir -p /logs/artifacts",
+                "cat > /logs/artifacts/submission.json <<'JSON'",
+                '{"findings":[]}',
+                "JSON",
+                "echo 'Wrote public secure-control empty-findings submission.' >&2",
+                "",
+            ]
+        )
+    raise ValueError(f"unsupported oracle solution mode: {oracle_solution_mode}")
 
 
 def _instruction(task: dict[str, Any], context_relpath: str) -> str:
@@ -305,12 +322,15 @@ def build_harbor_dataset_skeleton(
     output_dir: Path,
     *,
     harness_lane: str = "no_tools",
+    oracle_solution_mode: str = "none",
     task_ids: list[str] | None = None,
     limit: int | None = None,
     clean: bool = False,
 ) -> dict[str, Any]:
     if harness_lane not in {"no_tools", "live_http_tool_agent"}:
         raise ValueError("harness_lane must be no_tools or live_http_tool_agent")
+    if oracle_solution_mode not in {"none", "secure-control-empty-findings"}:
+        raise ValueError("oracle_solution_mode must be none or secure-control-empty-findings")
     requested_task_ids = set(task_ids or [])
     task_paths = _task_paths(task_patterns)
     if any(_private_holdout_path(task_path) for task_path in task_paths):
@@ -373,7 +393,7 @@ def build_harbor_dataset_skeleton(
         (task_dir / "instruction.md").write_text(_instruction(task, "environment/context.json"), encoding="utf-8")
         (task_dir / "task.toml").write_text(_task_toml(task, task_path=task_path, harness_lane=harness_lane), encoding="utf-8")
         solution_path = solution_dir / "solve.sh"
-        solution_path.write_text(_solution_script(), encoding="utf-8")
+        solution_path.write_text(_solution_script(task, oracle_solution_mode=oracle_solution_mode), encoding="utf-8")
         solution_path.chmod(0o755)
         test_script = "\n".join(
             [
@@ -439,6 +459,7 @@ def build_harbor_dataset_skeleton(
                 "app": task["app"],
                 "expected_vulnerable": bool(task.get("expected_vulnerable")),
                 "harbor_task_dir": task_dir.relative_to(output_dir).as_posix(),
+                "oracle_solution_mode": oracle_solution_mode,
                 "source_task_path": _relative_to_root(task_path),
             }
         )
@@ -451,6 +472,7 @@ def build_harbor_dataset_skeleton(
         "task_count": len(tasks),
         "private_task_count": 0,
         "harbor_execution_verified": False,
+        "oracle_solution_mode": oracle_solution_mode,
         "dataset_toml": "dataset.toml",
         "reference_run_config": "run_authzbench_saas.yaml",
         "tasks": tasks,
@@ -466,6 +488,12 @@ def main() -> int:
     parser.add_argument("--task", action="append", required=True, help="Public task manifest glob. Repeatable.")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--harness-lane", choices=["no_tools", "live_http_tool_agent"], default="no_tools")
+    parser.add_argument(
+        "--oracle-solution-mode",
+        choices=["none", "secure-control-empty-findings"],
+        default="none",
+        help="Optional public oracle solution mode for local smoke runs. Default keeps skeletons non-oracle.",
+    )
     parser.add_argument("--task-id", action="append", help="Optional task id filter. Repeatable.")
     parser.add_argument(
         "--task-ids",
@@ -483,6 +511,7 @@ def main() -> int:
         args.task,
         args.output_dir,
         harness_lane=args.harness_lane,
+        oracle_solution_mode=args.oracle_solution_mode,
         task_ids=task_ids,
         limit=args.limit,
         clean=args.clean or args.overwrite,

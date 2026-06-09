@@ -17,6 +17,8 @@ sys.path.insert(0, str(ROOT))
 from scripts.build_harbor_dataset_skeleton import build_harbor_dataset_skeleton
 from scripts.validate_harbor_dataset_skeleton import validate_harbor_dataset_skeleton
 from scripts.validate_harbor_local_evidence import SCHEMA_VERSION
+from authzbench.core import load_json
+from authzbench.score import score_submission
 
 
 DEFAULT_TASK = "tasks/project_mgmt/pm_same_tenant_read_control.json"
@@ -82,14 +84,22 @@ def build_harbor_local_smoke(
     task: str,
     output: Path,
     harbor_command: str,
+    oracle_solution_mode: str,
 ) -> dict[str, Any]:
     harbor_version = _command_version(harbor_command, ["--version"])
     docker_version = _docker_server_version()
     benchmark_source_sha = _run_capture(["git", "rev-parse", "HEAD"], cwd=ROOT, timeout=30).stdout.strip()
+    benchmark_source_tree_sha = _run_capture(["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, timeout=30).stdout.strip()
 
     with tempfile.TemporaryDirectory(prefix="authzbench-harbor-smoke-") as tmp:
         dataset_dir = Path(tmp) / "dataset"
-        manifest = build_harbor_dataset_skeleton([task], dataset_dir, harness_lane="no_tools", clean=True)
+        manifest = build_harbor_dataset_skeleton(
+            [task],
+            dataset_dir,
+            harness_lane="no_tools",
+            oracle_solution_mode=oracle_solution_mode,
+            clean=True,
+        )
         validation = validate_harbor_dataset_skeleton(dataset_dir)
         if not validation["passed"]:
             raise RuntimeError("generated Harbor dataset skeleton failed validation: " + json.dumps(validation["errors"]))
@@ -105,6 +115,20 @@ def build_harbor_local_smoke(
             raise RuntimeError("Harbor run failed: " + " | ".join(detail))
         harbor_summary = _harbor_result(dataset_dir)
 
+    native_score_summary: dict[str, Any] | None = None
+    scorer_reward_parity_verified = False
+    if oracle_solution_mode == "secure-control-empty-findings":
+        native_score = score_submission(load_json(task), {"findings": []})
+        native_reward = float(native_score.get("score") or 0)
+        harbor_reward = harbor_summary.get("reward_mean")
+        scorer_reward_parity_verified = harbor_reward == native_reward
+        native_score_summary = {
+            "submission_shape": "secure_control_empty_findings",
+            "score": native_reward,
+            "passed": native_score.get("passed") is True,
+            "control_replay_passed": native_score.get("control_replay_passed") is True,
+        }
+
     evidence = {
         "schema_version": SCHEMA_VERSION,
         "evidence_status": "local_harbor_execution_smoke",
@@ -114,6 +138,7 @@ def build_harbor_local_smoke(
             "and not v1 readiness."
         ),
         "benchmark_source_sha": benchmark_source_sha,
+        "benchmark_source_tree_sha": benchmark_source_tree_sha,
         "harbor_command": harbor_command,
         "harbor_version": harbor_version,
         "docker_server_version": docker_version,
@@ -121,16 +146,25 @@ def build_harbor_local_smoke(
         "task_ids": [task["id"] for task in manifest["tasks"]],
         "task_count": manifest["task_count"],
         "harness_lane": "no_tools",
+        "oracle_solution_mode": oracle_solution_mode,
         "harbor_execution_verified": True,
         "parity_verified": False,
+        "scorer_reward_parity_verified": scorer_reward_parity_verified,
+        "native_score_summary": native_score_summary,
         "public_outputs_redacted": True,
         "private_artifacts_tracked": False,
         "raw_harbor_jobs_tracked": False,
-        "expected_zero_reward_reason": "The generated skeleton oracle does not write an agent submission, so verifier completion is expected to produce zero reward for missing submission.",
+        "expected_reward_reason": (
+            "The generated public oracle solution writes findings: [] for a secure-control task, "
+            "so Harbor verifier reward should match the native AuthZBench-SaaS scorer reward. "
+            "This is a local control-task smoke only, not full adapter parity."
+            if oracle_solution_mode == "secure-control-empty-findings"
+            else "The generated skeleton oracle does not write an agent submission, so verifier completion is expected to produce zero reward for missing submission."
+        ),
         "blocked_until": [
-            "a public-safe agent or adapter writes a valid submission.json",
-            "matching native AuthZBench-SaaS public-run evidence is generated",
-            "parity_experiment.json is computed from real Harbor and native run artifacts",
+            "a public-safe adapter writes valid submissions for vulnerable and secure-control tasks",
+            "matching native AuthZBench-SaaS public-run evidence is generated for the same task set",
+            "parity_experiment.json is computed from real multi-task Harbor and native run artifacts",
         ],
         **harbor_summary,
     }
@@ -144,8 +178,18 @@ def main() -> int:
     parser.add_argument("--task", default=DEFAULT_TASK)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--harbor-command", default="uvx harbor")
+    parser.add_argument(
+        "--oracle-solution-mode",
+        choices=["none", "secure-control-empty-findings"],
+        default="secure-control-empty-findings",
+    )
     args = parser.parse_args()
-    evidence = build_harbor_local_smoke(task=args.task, output=args.output, harbor_command=args.harbor_command)
+    evidence = build_harbor_local_smoke(
+        task=args.task,
+        output=args.output,
+        harbor_command=args.harbor_command,
+        oracle_solution_mode=args.oracle_solution_mode,
+    )
     print(json.dumps(evidence, indent=2, sort_keys=True))
     return 0
 

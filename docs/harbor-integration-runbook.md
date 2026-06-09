@@ -217,9 +217,13 @@ python3 scripts/validate_harbor_local_evidence.py
 ```
 
 The checked-in smoke summary proves only local task/agent/verifier execution for
-the generated public skeleton. It deliberately records `parity_verified: false`
-until a submission-producing public-safe agent or adapter and matching native
-AuthZBench-SaaS run evidence exist.
+the generated public skeleton. It uses an explicit public secure-control oracle
+solution that writes `findings: []`, then records whether Harbor verifier reward
+matches the native AuthZBench-SaaS scorer reward for that one control task.
+It deliberately records `parity_verified: false` until a public-safe adapter can
+produce valid submissions across vulnerable and secure-control tasks and a
+multi-task `parity_experiment.json` is computed from matching Harbor and native
+run artifacts.
 
 ## No-Tools Lane
 
@@ -312,9 +316,9 @@ Repo-side Harbor preparation is partial:
 Blocked before this can become release evidence:
 
 - exact Harbor SDK adapter API integration;
-- passing local Harbor run;
-- local Harbor CLI/package availability for verified run attempts;
 - adapter metadata and parity experiment evidence;
+- multi-task vulnerable/control Harbor parity evidence from a public-safe
+  submission-producing adapter;
 - active and shadow/candidate private pack operation;
 - protected release-candidate hosted/containerized smoke;
 - repeated private no-tools and tool-agent rows;
