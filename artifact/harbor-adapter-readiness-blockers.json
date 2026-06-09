@@ -44,6 +44,12 @@
       "status": "partial_repo_side_helper",
       "evidence": "Generated public skeletons include a current Harbor run config and verifier image layout intended for a local verification-enabled smoke run.",
       "claim_boundary": "This blocker artifact does not record Harbor execution evidence, scorer parity, adapter readiness, or v1 readiness. Local Harbor smoke results must be rerun and reported separately from this implementation-blocker file."
+    },
+    {
+      "item": "local_harbor_execution_smoke",
+      "status": "partial_repo_side_smoke",
+      "evidence": "artifact/harbor-local-execution-smoke.json",
+      "claim_boundary": "Records a redacted local Harbor task/agent/verifier smoke only; does not prove valid agent submission handling, scorer parity, adapter readiness, hosted readiness, or v1 readiness."
     }
   ],
   "required_before_adapter_ready": [
@@ -103,7 +109,7 @@
     },
     {
       "item": "local_harbor_run",
-      "status": "blocked",
+      "status": "partial_repo_side_smoke",
       "missing_input": "submission-producing Harbor agent run plus scorer output from a valid AuthZBench-SaaS submission and comparable original-run evidence",
       "required_evidence": [
         "Harbor CLI/package command available through uvx harbor or harbor on PATH",
