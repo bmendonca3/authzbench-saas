@@ -1,19 +1,19 @@
 # Baseline Variance Analysis
 
-Status: descriptive two-run analysis from five current v1-prep 54-task public
-no-tools families, one current v1-prep 54-task public live HTTP tool-agent
+Status: descriptive two-run analysis from five stale v1-prep 54-task public
+no-tools families, one stale v1-prep 54-task public live HTTP tool-agent
 family, the historical 49-task public no-tools and live HTTP tool-agent
 artifacts, and the frozen v0.0 46-task release snapshot. These ranges are
 diagnostic public-split evidence only, not confidence intervals, private
-holdout evidence, or leaderboard rankings. The 49-task rows are stale for the
-active 54-task split.
+holdout evidence, or leaderboard rankings. The 54-task and 49-task rows are
+stale for the current 60-task split.
 
 This file uses only tracked public-safe summaries named by
 `baselines/baseline-registry.json`. Each row below has exactly two runs.
 
 ## Artifact Set
 
-### Current v1-prep 54-task public split
+### Stale v1-prep 54-task public split
 
 | Baseline family | Harness | Model | Source summaries |
 | --- | --- | --- | --- |
@@ -47,7 +47,7 @@ This file uses only tracked public-safe summaries named by
 
 ## Two-Run Metric Ranges
 
-### Current v1-prep 54-task public split
+### Stale v1-prep 54-task public split
 
 | Baseline family | `mean_score` | `exploit_proven_success_rate` | `vulnerable_full_pass_count` | `boundary_reasoning_pass_rate` | `false_positive_rate` | `invalid_submission_rate` | `target_request_coverage_rate` |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -58,7 +58,7 @@ This file uses only tracked public-safe summaries named by
 | Claude Opus no-tools | 0.8444-0.8444 | 0.6667-0.6667 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0000 | n/a |
 | Claude Sonnet live tool-agent | 0.8472-0.8472 | 0.7143-0.7143 | 0-0 | 0.0000-0.0000 | 0.0000-0.0000 | 0.0000-0.0000 | 1.0000-1.0000 |
 
-The two current Qwen runs also preserve adapter diagnostics. Run 1 records
+The two stale 54-task Qwen runs also preserve adapter diagnostics. Run 1 records
 seven task-level adapter failures: two inner Kiro command failures and five
 outputs without a usable submission object, plus two outer runner failures.
 Run 2 records twelve task-level adapter failures: seven inner Kiro command
@@ -69,14 +69,14 @@ can pass a secure control or fail a vulnerable task. The outer runner failures
 become invalid submissions. The agent command uses a 60-second inner
 model-call timeout while the runner uses a 75-second per-task timeout.
 
-Both current Claude Haiku 4.5 runs have zero adapter failures, zero outer runner
+Both stale 54-task Claude Haiku 4.5 runs have zero adapter failures, zero outer runner
 failures, and zero invalid submissions. They contain 11 and 12 scorer-counted
 findings, respectively; the promoted aggregates were derived exactly from the
 retained per-task rows because the runs completed immediately before the runner
 began emitting `scored_submission_finding_total`. Both runs submit one false
 finding on the same authorized-allow support reassignment control.
 
-Both current Claude Sonnet 4.6 runs also have zero adapter failures, zero outer
+Both stale 54-task Claude Sonnet 4.6 runs also have zero adapter failures, zero outer
 runner failures, and zero invalid submissions. They contain 22 and 21
 runner-counted findings and prove 15 and 14 vulnerable replays, respectively.
 Run 1 falsely reports the authorized-allow admin reassignment control; run 2
@@ -84,7 +84,7 @@ falsely reports the secure viewer-status denial control. Each therefore has one
 control false report and `false_positive_rate: 0.0303`, while their
 authorized-allow pass rates differ (`0.9286` and `1.0000`).
 
-The current GLM-5 runs pass 33 tasks each, prove 2 and 3 vulnerable replays,
+The stale 54-task GLM-5 runs pass 33 tasks each, prove 2 and 3 vulnerable replays,
 and keep zero boundary-reasoning credit and zero vulnerable full passes. Both
 have zero control false reports. Run 1 records one outer runner failure on the
 support multistep reassignment task, leaving submission/model-output artifacts
@@ -135,18 +135,18 @@ vulnerable tasks. Both runs have a `0.0303` false-positive and false-report rate
 because each reports the same authorized-allow control as vulnerable; the
 authorized-allow pass rate is `0.9286`. The absence of adapter, runner, and
 invalid-submission failures makes this a cleaner model-output comparison than
-the current Qwen pair, but these public-only families remain insufficient for
+the stale 54-task Qwen pair, but these public-only families remain insufficient for
 private-holdout or leaderboard conclusions.
 
 The Claude Sonnet pair passes 32 of 54 tasks in both runs, proves 14-15 of 21
 vulnerable replays, keeps boundary reasoning at `0.0000`, and fully passes zero
 vulnerable tasks. Both runs have one false-reported support control, but the
 control type differs across runs. This pair is a substantially stronger exploit
-replay signal than the current Qwen and Haiku pairs, yet remains public-split
+replay signal than the stale 54-task Qwen and Haiku pairs, yet remains public-split
 diagnostic evidence rather than a model ranking.
 
 The GLM pair passes 33 tasks in both runs, proves 2-3 vulnerable replays, and
-reports no secure-control findings. It adds breadth to the current no-tools
+reports no secure-control findings. It adds breadth to the stale 54-task no-tools
 comparison but also carries one run-level adapter/runner caveat: run 1 has one
 invalid vulnerable-task submission from an outer runner failure. The pair
 therefore remains diagnostic evidence rather than a polished ranking row.
@@ -164,8 +164,9 @@ both runs, proves 15 of 21 vulnerable replays, keeps boundary reasoning at
 findings. Both runs retain one model-tool plan artifact and one tool-probe
 artifact per task, correlate target requests for 54/54 tasks, and report zero
 planner failures, zero parser failures, zero invalid submissions, and zero
-fallback probes. This restores the active public live HTTP evidence bar while
-still leaving private/hosted evidence gates open.
+fallback probes. This preserves diagnostic live HTTP evidence for the previous
+54-task split while leaving current 60-task, private, and hosted evidence gates
+open.
 
 Qwen run 1's `vulnerable_safety_pass_rate` is `0.9524` because its outer
 runner failure on one vulnerable task produced an invalid submission with no
@@ -217,7 +218,7 @@ python3 - <<'PY'
 import json
 from pathlib import Path
 registry = json.loads(Path("baselines/baseline-registry.json").read_text())
-current_54 = [
+stale_54 = [
     entry
     for entry in registry["baselines"]
     if entry["release_suitability"] == "current_public_split"
@@ -232,7 +233,7 @@ stale_49 = [
     and entry["kind"] in {"model_baseline", "tool_agent_baseline"}
 ]
 snapshot = next(item for item in registry["release_snapshots"] if item["id"] == "v0.0")
-print(len(current_54))
+print(len(stale_54))
 print(len(stale_49))
 print(len([
     baseline_id

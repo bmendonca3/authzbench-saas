@@ -27,58 +27,59 @@ well-labeled before any release claim is made.
 - `scripted-baseline-public-54-summary.json`: stale v1-prep 54-task
   deterministic harness sanity-check baseline retained for audit only.
 - `kiro-qwen3-coder-next-current-public-54-run1-summary.json` and
-  `kiro-qwen3-coder-next-current-public-54-run2-summary.json`: current repeated
+  `kiro-qwen3-coder-next-current-public-54-run2-summary.json`: stale repeated
   54-task public split no-tools Qwen runs through the hardened Kiro adapter.
   The summaries retain task-level adapter failures, outer runner failures, and
   inner/outer timeout semantics. Inner Kiro command or JSON-extraction failures
   produce a valid empty-findings fallback that remains in the scored
   denominator; it can pass a secure control or fail a vulnerable task. They are
-  current public-split evidence for one model family, not private-holdout,
-  leaderboard-eligible, or v1 release evidence.
+  stale public-split evidence for one model family, not current 60-task,
+  private-holdout, leaderboard-eligible, or v1 release evidence.
 - `kiro-claude-haiku-4.5-current-public-54-run1-summary.json` and
-  `kiro-claude-haiku-4.5-current-public-54-run2-summary.json`: current repeated
+  `kiro-claude-haiku-4.5-current-public-54-run2-summary.json`: stale repeated
   54-task public split no-tools Claude Haiku 4.5 runs. Both have complete
   54-task score, submission, model-output, and agent artifacts, zero adapter or
   runner failures, and zero invalid submissions. The scorer-derived finding
   totals were reconstructed exactly from retained per-task rows because these
   runs completed immediately before the runner began emitting that aggregate.
-  They are current public-split evidence for a second model family, not
-  private-holdout, leaderboard-eligible, or v1 release evidence.
+  They are stale public-split evidence for a second model family, not current
+  60-task, private-holdout, leaderboard-eligible, or v1 release evidence.
 - `kiro-claude-sonnet-4.6-current-public-54-run1-summary.json` and
-  `kiro-claude-sonnet-4.6-current-public-54-run2-summary.json`: current repeated
+  `kiro-claude-sonnet-4.6-current-public-54-run2-summary.json`: stale repeated
   54-task public split no-tools Claude Sonnet 4.6 runs. Both retain complete
   54-task artifacts, zero adapter or runner failures, zero invalid submissions,
   and runner-emitted scorer-finding totals. They pass 32 tasks each and prove
   15 and 14 of 21 vulnerable replays. Each reports one different support
-  control as vulnerable. They are current public-split evidence for a third
-  model family, not private-holdout, leaderboard-eligible, or v1 release
-  evidence.
+  control as vulnerable. They are stale public-split evidence for a third
+  model family, not current 60-task, private-holdout, leaderboard-eligible, or
+  v1 release evidence.
 - `kiro-glm-5-current-public-54-run1-summary.json` and
   `kiro-glm-5-current-public-54-run2-summary.json`: stale repeated 54-task
   public split no-tools GLM-5 runs. Both pass 33 tasks, keep boundary reasoning
   at zero, fully pass no vulnerable task, and report zero control false
   positives. Run 1 proves 2 of 21 vulnerable replays and preserves one outer
   runner failure with missing submission/model-output diagnostics; run 2 proves
-  3 of 21 vulnerable replays with complete 54-task artifacts. They are current
-  public-split evidence for a fourth model family, not private-holdout,
-  leaderboard-eligible, or v1 release evidence.
+  3 of 21 vulnerable replays with complete 54-task artifacts. They are stale
+  public-split evidence for a fourth model family, not current 60-task,
+  private-holdout, leaderboard-eligible, or v1 release evidence.
 - `kiro-claude-opus-4.6-current-public-54-run1-summary.json` and
-  `kiro-claude-opus-4.6-current-public-54-run2-summary.json`: current repeated
+  `kiro-claude-opus-4.6-current-public-54-run2-summary.json`: stale repeated
   54-task public split no-tools Claude Opus 4.6 runs. Both pass 33 tasks, prove
   14 of 21 vulnerable replays, keep boundary reasoning at zero, fully pass no
   vulnerable task, report zero control false positives, and retain complete
-  zero-failure task artifacts. They are current public-split evidence for a
-  fifth model family, not private-holdout, leaderboard-eligible, or v1 release
-  evidence.
+  zero-failure task artifacts. They are stale public-split evidence for a fifth
+  model family, not current 60-task, private-holdout, leaderboard-eligible, or
+  v1 release evidence.
 - `kiro-live-tool-agent-sonnet-current-public-54-run1-summary.json` and
-  `kiro-live-tool-agent-sonnet-current-public-54-run2-summary.json`: current
+  `kiro-live-tool-agent-sonnet-current-public-54-run2-summary.json`: stale
   repeated 54-task public split live HTTP tool-agent runs using
   `claude-sonnet-4.6` through the Kiro adapter. Both write one model-tool plan
   artifact and one tool-probe artifact per task, correlate target-side requests
   for all 54 tasks, report zero planner failures, zero parser failures, zero
-  invalid submissions, and zero secure-control false reports. They are current
-  public-split evidence for the live HTTP tool-agent family, not private-holdout,
-  leaderboard-eligible, hosted, or v1 release evidence.
+  invalid submissions, and zero secure-control false reports. They are stale
+  public-split evidence for the live HTTP tool-agent family, not current
+  60-task, private-holdout, leaderboard-eligible, hosted, or v1 release
+  evidence.
 - `scripted-baseline-public-49-summary.json`: historical v1-prep 49-task
   deterministic harness sanity-check baseline, now stale for current
   comparison.
