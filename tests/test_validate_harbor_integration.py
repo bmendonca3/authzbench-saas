@@ -8,6 +8,7 @@ from pathlib import Path
 from scripts.validate_harbor_integration import (
     CONTRACT_PATH,
     REQUIRED_COMPONENTS,
+    REQUIRED_DATASET_ROOT_FILES,
     REQUIRED_LANES,
     REQUIRED_METADATA,
     REQUIRED_PACKAGE_LAYOUT,
@@ -34,6 +35,7 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
             data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
             data["public_claim_boundary"] = "Harbor " + "accepted" + " and " + "endorsed" + " this as v1-" + "ready evidence."
             data["local_run_template"] = "python run.py"
+            data["dataset_shape"]["dataset_root_files"] = ["dataset-manifest.json"]
             data["lanes"] = [lane for lane in data["lanes"] if lane["name"] != "live_http_tool_agent"]
             data["required_run_metadata"] = ["benchmark_source_sha"]
             data["debug_note"] = "raw private output at /tmp/authzbench/private.json"
@@ -44,6 +46,7 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"], result)
         self.assertIn("local_run_template must include harbor run -p", result["errors"])
+        self.assertTrue(any("dataset_shape.dataset_root_files missing:" in error for error in result["errors"]), result)
         self.assertIn("lanes missing: live_http_tool_agent", result["errors"])
         self.assertTrue(any("required_run_metadata missing:" in error for error in result["errors"]), result)
         self.assertTrue(any("disallowed overclaim/private marker" in error for error in result["errors"]), result)
@@ -86,6 +89,7 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
         data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
         package = data["expected_adapter_package"]
 
+        self.assertEqual(set(data["dataset_shape"]["dataset_root_files"]), REQUIRED_DATASET_ROOT_FILES)
         self.assertEqual(set(package["package_layout"]), REQUIRED_PACKAGE_LAYOUT)
         self.assertEqual(set(package["required_cli_flags"]), {"--output-dir", "--limit", "--overwrite", "--task-ids"})
         self.assertIn("uv run python -m authzbench_saas_harbor.main", package["module_entrypoint"])

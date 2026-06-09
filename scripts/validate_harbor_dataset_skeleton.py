@@ -146,6 +146,54 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         errors.append("private_task_count must be 0")
     if manifest.get("harness_lane") not in {"no_tools", "live_http_tool_agent"}:
         errors.append("harness_lane must be no_tools or live_http_tool_agent")
+    dataset_toml_path = _safe_relative(dataset_dir, manifest.get("dataset_toml"))
+    if dataset_toml_path is None:
+        errors.append("dataset_toml must be a safe relative path")
+    elif not dataset_toml_path.is_file():
+        errors.append("dataset_toml file is missing")
+    else:
+        dataset_toml_rel = dataset_toml_path.relative_to(dataset_dir).as_posix()
+        dataset_toml = dataset_toml_path.read_text(encoding="utf-8")
+        for snippet in (
+            'name = "authzbench-saas-public-skeleton"',
+            'version = "public-skeleton"',
+            'evidence_status = "generated_public_skeleton"',
+            "harbor_execution_verified = false",
+            "harbor_publish_verified = false",
+            "not Harbor publish evidence",
+            "not Harbor execution evidence",
+        ):
+            if snippet not in dataset_toml:
+                errors.append(f"{dataset_toml_rel} missing {snippet}")
+        errors.extend(_public_safety_errors(dataset_toml, label=dataset_toml_rel))
+        try:
+            dataset_config = _load_toml(dataset_toml_path)
+        except Exception as exc:
+            errors.append(str(exc))
+        else:
+            authzbench = dataset_config.get("metadata", {}).get("authzbench")
+            if dataset_config.get("name") != "authzbench-saas-public-skeleton":
+                errors.append(f"{dataset_toml_rel}: name must be authzbench-saas-public-skeleton")
+            if dataset_config.get("version") != "public-skeleton":
+                errors.append(f"{dataset_toml_rel}: version must be public-skeleton")
+            task_refs = dataset_config.get("tasks")
+            if not isinstance(task_refs, list):
+                errors.append(f"{dataset_toml_rel}: tasks must be a list")
+                task_refs = []
+            manifest_task_refs = [task.get("harbor_task_dir") for task in manifest.get("tasks", []) if isinstance(task, dict)]
+            if task_refs != manifest_task_refs:
+                errors.append(f"{dataset_toml_rel}: tasks must match dataset-manifest harbor_task_dir order")
+            if not isinstance(authzbench, dict):
+                errors.append(f"{dataset_toml_rel}: [metadata.authzbench] table is required")
+                authzbench = {}
+            if authzbench.get("skeleton_schema_version") != SCHEMA_VERSION:
+                errors.append(f"{dataset_toml_rel}: metadata.authzbench.skeleton_schema_version must be {SCHEMA_VERSION}")
+            if authzbench.get("private_task_count") != 0:
+                errors.append(f"{dataset_toml_rel}: metadata.authzbench.private_task_count must be 0")
+            if authzbench.get("harbor_execution_verified") is not False:
+                errors.append(f"{dataset_toml_rel}: metadata.authzbench.harbor_execution_verified must be false")
+            if authzbench.get("harbor_publish_verified") is not False:
+                errors.append(f"{dataset_toml_rel}: metadata.authzbench.harbor_publish_verified must be false")
     run_config_path = _safe_relative(dataset_dir, manifest.get("reference_run_config"))
     if run_config_path is None:
         errors.append("reference_run_config must be a safe relative path")
