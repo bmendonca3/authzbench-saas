@@ -116,6 +116,22 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
 
         self.assertEqual([task["id"] for task in manifest["tasks"]], ["pm_bola_read_alpha_from_beta"])
 
+    def test_rejects_empty_task_selection_without_cleaning_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "harbor-public"
+            output.mkdir()
+            (output / "stale.txt").write_text("old", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "at least one public task"):
+                build_harbor_dataset_skeleton(
+                    ["tasks/project_mgmt/*.json"],
+                    output,
+                    task_ids=["does-not-exist"],
+                    clean=True,
+                )
+
+            self.assertTrue((output / "stale.txt").exists())
+
     def test_cli_accepts_task_ids_alias(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "harbor-public"

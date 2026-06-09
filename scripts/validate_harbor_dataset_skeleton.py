@@ -222,6 +222,8 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
     if not isinstance(tasks, list):
         errors.append("tasks must be a list")
         tasks = []
+    if not tasks:
+        errors.append("tasks must contain at least one public task")
     if manifest.get("task_count") != len(tasks):
         errors.append("task_count must match tasks length")
 

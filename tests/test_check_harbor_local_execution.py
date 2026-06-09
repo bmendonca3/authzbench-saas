@@ -35,6 +35,18 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
         self.assertFalse(result["harbor_execution_verified"])
         self.assertEqual(result["blocked_until"], [])
 
+    def test_can_skip_harbor_discovery_for_deterministic_public_fixtures(self) -> None:
+        with mock.patch("scripts.check_harbor_local_execution.shutil.which", return_value="/usr/local/bin/harbor"):
+            result = check_harbor_local_execution(
+                task_patterns=["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                harbor_command="harbor",
+                discover_harbor_cli=False,
+            )
+
+        self.assertFalse(result["harbor_cli_found"])
+        self.assertFalse(result["ready_for_local_harbor_run"])
+        self.assertIn("Harbor CLI/package is not installed or not on PATH", result["blocked_until"])
+
 
 if __name__ == "__main__":
     unittest.main()

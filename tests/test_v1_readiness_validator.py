@@ -180,6 +180,16 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["v1_task_scale"]["unmet"],
         )
 
+    def test_public_view_harbor_preflight_is_not_path_dependent(self) -> None:
+        with patch("scripts.check_harbor_local_execution.shutil.which", return_value="/usr/local/bin/harbor"):
+            result = validate_v1_readiness(public_view=True)
+
+        gates = {gate["id"]: gate for gate in result["gates"]}
+        evidence = gates["harbor_repo_side_target_specified"]["evidence"]
+        self.assertIn("harbor_cli_found=False", evidence)
+        self.assertIn("ready_for_local_harbor_run=False", evidence)
+        self.assertIn("blocked_until=['Harbor CLI/package is not installed or not on PATH']", evidence)
+
     def test_external_review_packet_requires_human_intake_form(self) -> None:
         self.assertIn(
             "docs/reviews/external-review-intake.md",
