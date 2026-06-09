@@ -56,8 +56,9 @@ Target builder responsibilities:
 - optionally read maintainer-only private manifests outside public Git;
 - render one Harbor task directory per AuthZBench-SaaS task;
 - write `instruction.md` from the existing rendered task context;
-- write `task.toml` with public-safe task metadata, resource requirements,
-  network policy, artifact paths, and verifier settings;
+- write `task.toml` with Harbor task schema version `1.3`, Harbor config
+  tables, public-safe AuthZBench-SaaS metadata under `[metadata.authzbench]`,
+  resource requirements, network policy, artifact paths, and verifier settings;
 - include a task-local verifier entrypoint that invokes the AuthZBench-SaaS
   scorer bridge;
 - never write private task bodies, routes, seeds, or oracles into public Harbor
