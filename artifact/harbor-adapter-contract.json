@@ -64,6 +64,11 @@
       "name": "artifact_redaction_policy",
       "required": true,
       "responsibility": "Keep private manifests, raw private outputs, captures, credentials, local paths, routes, seeds, and oracles out of tracked public artifacts."
+    },
+    {
+      "name": "dataset_skeleton_builder",
+      "required": true,
+      "responsibility": "Generate a public-only Harbor-shaped dataset skeleton with instruction.md, task.toml, environment context, verifier manifest, and tests/test.sh without claiming Harbor execution."
     }
   ],
   "lanes": [
@@ -140,5 +145,17 @@
     "release-candidate hosted or containerized smoke passes against the active private pack",
     "external review lanes are complete",
     "strict release evidence exists"
+  ],
+  "repo_side_helpers": [
+    {
+      "path": "scripts/build_harbor_dataset_skeleton.py",
+      "status": "public_skeleton_builder",
+      "claim_boundary": "Generates Harbor-shaped public task directories only; does not run Harbor and does not export private manifests."
+    },
+    {
+      "path": "scripts/validate_harbor_integration.py",
+      "status": "contract_validator",
+      "claim_boundary": "Validates adapter planning metadata only; does not run Harbor."
+    }
   ]
 }

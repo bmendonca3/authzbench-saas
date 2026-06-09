@@ -20,6 +20,7 @@ REQUIRED_COMPONENTS = {
     "verifier_scorer_bridge",
     "metadata_normalizer",
     "artifact_redaction_policy",
+    "dataset_skeleton_builder",
 }
 REQUIRED_LANES = {"no_tools", "live_http_tool_agent"}
 REQUIRED_METADATA = {
