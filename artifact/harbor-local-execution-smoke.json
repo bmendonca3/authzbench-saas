@@ -1,0 +1,35 @@
+{
+  "benchmark_source_sha": "51fd30775f87f4d59116bca9ff5ac14c5543e137",
+  "blocked_until": [
+    "a public-safe agent or adapter writes a valid submission.json",
+    "matching native AuthZBench-SaaS public-run evidence is generated",
+    "parity_experiment.json is computed from real Harbor and native run artifacts"
+  ],
+  "docker_server_version": "29.5.2",
+  "evidence_status": "local_harbor_execution_smoke",
+  "expected_zero_reward_reason": "The generated skeleton oracle does not write an agent submission, so verifier completion is expected to produce zero reward for missing submission.",
+  "harbor_command": "uvx harbor",
+  "harbor_execution_verified": true,
+  "harbor_run_id": "31420187-f6d3-43d2-ab5c-d7f3119f819a",
+  "harbor_version": "0.13.1",
+  "harness_lane": "no_tools",
+  "n_completed_trials": 1,
+  "n_errored_trials": 0,
+  "n_total_trials": 1,
+  "parity_verified": false,
+  "private_artifacts_tracked": false,
+  "public_claim_boundary": "This is local Harbor task/agent/verifier smoke evidence only; not parity evidence, not hosted leaderboard readiness, not external review evidence, and not v1 readiness.",
+  "public_outputs_redacted": true,
+  "raw_harbor_jobs_tracked": false,
+  "reward_mean": 0.0,
+  "run_command_template": "cd <generated-public-dataset> && harbor run -c run_authzbench_saas.yaml --yes --debug",
+  "schema_version": "harbor-local-execution-smoke-v1",
+  "task_count": 1,
+  "task_ids": [
+    "pm_same_tenant_read_control"
+  ],
+  "verifier_reward_files": [
+    "reward.json",
+    "reward.txt"
+  ]
+}
