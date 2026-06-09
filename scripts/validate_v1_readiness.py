@@ -58,6 +58,9 @@ EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH = "docs/reviews/external-review-response.
 HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
 HOSTED_EXECUTION_RUNBOOK_PATH = "artifact/hosted-submission-execution-runbook.json"
 HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json"
+HARBOR_ADAPTER_CONTRACT_PATH = "artifact/harbor-adapter-contract.json"
+HARBOR_INTEGRATION_RUNBOOK_PATH = "docs/harbor-integration-runbook.md"
+HARBOR_INTEGRATION_VALIDATOR_PATH = "scripts/validate_harbor_integration.py"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PRIVATE_OPERATION_RUNBOOK_PATH = "artifact/private-holdout-operation-runbook.json"
 PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
@@ -134,6 +137,9 @@ VALID_REVIEW_STATUSES = {"pending", "complete"}
 POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HARBOR_ADAPTER_CONTRACT_PATH,
+    HARBOR_INTEGRATION_RUNBOOK_PATH,
+    HARBOR_INTEGRATION_VALIDATOR_PATH,
     HOSTED_EXECUTION_EVIDENCE_PATH,
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
@@ -150,6 +156,9 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HARBOR_ADAPTER_CONTRACT_PATH,
+    HARBOR_INTEGRATION_RUNBOOK_PATH,
+    HARBOR_INTEGRATION_VALIDATOR_PATH,
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,

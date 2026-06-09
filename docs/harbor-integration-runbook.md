@@ -84,6 +84,17 @@ The adapter should fail closed when required metadata is missing. It should not
 invent task outcomes, target-request coverage, private-pack fingerprints, or
 review evidence.
 
+The machine-readable version of this target is tracked at
+[`artifact/harbor-adapter-contract.json`](../artifact/harbor-adapter-contract.json)
+and validated with:
+
+```bash
+python3 scripts/validate_harbor_integration.py
+```
+
+That validator checks the public-safe contract shape only. It does not execute
+Harbor and cannot close the SDK integration gate by itself.
+
 ## No-Tools Lane
 
 For no-tools model runs, Harbor should receive an instruction-only task context
