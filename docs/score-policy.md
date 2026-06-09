@@ -20,6 +20,12 @@ For benchmark claims, use the security-relevant axes instead:
 - target-request coverage for live-target runs
 - invalid submissions
 
+Secure-control execution is replayed against the benchmark app logic. A control
+passes only when its expected integer `status` matches, or when a body-only
+control provides a non-empty `body_contains` subset that matches the response.
+Body-only controls with empty `body_contains` are intentionally rejected as
+vacuous.
+
 ## Default Interpretation
 
 Use these as the headline metrics:

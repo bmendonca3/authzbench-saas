@@ -29,6 +29,9 @@ here.
 - `harbor-parity-experiment.template.json`: public-safe template for future real
   Harbor parity rows. It is not parity evidence, Harbor execution evidence, or
   v1 readiness.
+- `task-quality-gate-contract.json`: public-safe acceptance contract for task
+  quality gates enforced during public validation. It is not external review
+  evidence and cannot satisfy strict v1 readiness by itself.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1 readiness.

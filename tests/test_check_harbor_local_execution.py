@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 import unittest
 from unittest import mock
 
@@ -56,7 +55,7 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
         self.assertTrue(result["harbor_cli_found"], result)
         self.assertIn("uvx harbor run -c run_authzbench_saas.yaml --yes", result["local_run_template"])
 
-    def test_default_discovery_does_not_treat_broken_uvx_harbor_as_harbor(self) -> None:
+    def test_default_discovery_does_not_probe_uvx_harbor(self) -> None:
         def fake_which(executable: str) -> str | None:
             return "/usr/local/bin/uvx" if executable == "uvx" else None
 
@@ -64,18 +63,17 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
             mock.patch("scripts.check_harbor_local_execution.shutil.which", side_effect=fake_which),
             mock.patch("scripts.check_harbor_local_execution.subprocess.run") as run,
         ):
-            run.side_effect = subprocess.CalledProcessError(1, ["uvx", "harbor", "--version"])
             result = check_harbor_local_execution(
                 task_patterns=["tasks/project_mgmt/pm_same_tenant_read_control.json"],
                 harbor_command="harbor",
             )
 
-        run.assert_called_once()
+        run.assert_not_called()
         self.assertFalse(result["harbor_cli_found"], result)
         self.assertEqual(result["harbor_command"], "harbor")
         self.assertIn("Harbor CLI/package is not installed or not on PATH", result["blocked_until"])
 
-    def test_default_discovery_falls_back_to_runnable_uvx_harbor(self) -> None:
+    def test_uvx_harbor_requires_explicit_command(self) -> None:
         def fake_which(executable: str) -> str | None:
             return "/usr/local/bin/uvx" if executable == "uvx" else None
 
@@ -85,7 +83,7 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
         ):
             result = check_harbor_local_execution(
                 task_patterns=["tasks/project_mgmt/pm_same_tenant_read_control.json"],
-                harbor_command="harbor",
+                harbor_command="uvx harbor",
             )
 
         run.assert_called_once()

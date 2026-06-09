@@ -45,7 +45,7 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
             result = validate_harbor_integration(contract, runbook)
 
         self.assertFalse(result["passed"], result)
-        self.assertIn("local_run_template must include harbor run -p", result["errors"])
+        self.assertIn("local_run_template must include harbor run -c run_authzbench_saas.yaml --yes", result["errors"])
         self.assertTrue(any("dataset_shape.dataset_root_files missing:" in error for error in result["errors"]), result)
         self.assertIn("lanes missing: live_http_tool_agent", result["errors"])
         self.assertTrue(any("required_run_metadata missing:" in error for error in result["errors"]), result)

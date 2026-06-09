@@ -32,6 +32,7 @@ class HarborAdapterTemplateValidatorTests(unittest.TestCase):
             metadata["public_claim_boundary"] = "Complete adapter metadata evidence."
             metadata["required_cli_flags"] = ["--output-dir"]
             metadata["dataset_root_files"] = []
+            metadata["task_directory_files"] = ["instruction.md"]
             metadata["artifact_policy"]["private_manifests_tracked"] = True
             metadata["debug_note"] = "raw private " + "output at /tmp/authzbench/private.json"
             metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
@@ -47,6 +48,7 @@ class HarborAdapterTemplateValidatorTests(unittest.TestCase):
         )
         self.assertTrue(any("required_cli_flags missing:" in error for error in result["errors"]), result)
         self.assertTrue(any("dataset_root_files missing:" in error for error in result["errors"]), result)
+        self.assertTrue(any("task_directory_files missing:" in error and "verifier/task_manifest.json" in error for error in result["errors"]), result)
         self.assertIn(
             "adapter metadata template artifact_policy.private_manifests_tracked must be false",
             result["errors"],

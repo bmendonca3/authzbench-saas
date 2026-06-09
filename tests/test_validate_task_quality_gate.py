@@ -165,6 +165,18 @@ class TaskQualityGateTests(unittest.TestCase):
         self.assertFalse(body_only_result["passed"], body_only_result)
         self.assertTrue(any("vulnerable oracle must include status" in error for error in body_only_result["errors"]))
 
+    def test_rejects_non_local_allowed_hosts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "contract.json"
+            task = Path(tmp) / "task.json"
+            _write_json(contract, _contract())
+            _write_json(task, _secure_control(allowed_hosts=["project_mgmt", "example.com"]))
+
+            result = validate_task_quality_gate.validate_quality_gate([str(task)], contract)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("allowed_hosts must be local benchmark fixtures" in error for error in result["errors"]), result)
+
     def test_rejects_secure_control_without_findings_empty_rule(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             contract = Path(tmp) / "contract.json"
@@ -199,6 +211,23 @@ class TaskQualityGateTests(unittest.TestCase):
             result = validate_task_quality_gate.validate_quality_gate([str(task)], contract)
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("non-empty body_contains" in error for error in result["errors"]), result)
+
+    def test_rejects_private_markers_and_local_paths_in_task_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "contract.json"
+            task = Path(tmp) / "task.json"
+            data = _secure_control(
+                policy="private route: do not expose",
+                objective="Inspect raw private output at /tmp/private.json",
+            )
+            _write_json(contract, _contract())
+            _write_json(task, data)
+
+            result = validate_task_quality_gate.validate_quality_gate([str(task)], contract)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("private marker is not allowed: private route:" in error for error in result["errors"]), result)
+        self.assertTrue(any("local absolute path is not allowed: /tmp/private.json" in error for error in result["errors"]), result)
 
     def test_rejects_contract_missing_scorer_fixture_category(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

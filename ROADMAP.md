@@ -49,10 +49,13 @@ Evidence already in place:
 - public-safe charts and task-quality matrix
 - release evidence registry
 - privacy checks, fresh-clone validation path, Docker smoke, and CI
+- public-safe task-quality gate contract and Harbor adapter/skeleton validation
+  checks
 
 Not yet in place:
 
 - hosted public leaderboard
+- verified Harbor SDK adapter, local Harbor execution, or Harbor parity evidence
 - repeated private tool-agent leaderboard row
 - rotating private holdout packs
 - third-party runs or independent external review
@@ -123,6 +126,7 @@ Status: complete for v0.0.
 - [x] Add first public multi-step workflow wave.
 - [x] Add public benchmark card and methodology docs.
 - [x] Add task-quality rubric and generated task-quality matrix.
+- [x] Add machine-readable task-quality gate validation for public manifests.
 - [x] Add public-safe benchmark charts.
 
 Next improvements:
@@ -194,6 +198,8 @@ Next improvements:
 - [x] Add signed or attestable run-bundle guidance.
 - [x] Publish leaderboard governance rules.
 - [x] Add clear rules for reruns, ties, stale scores, and task-pack rotations.
+- [x] Add a public-safe Harbor adapter target contract, skeleton builder, and
+      blocker record without claiming Harbor execution.
 
 ## Milestone 5: Research-Grade v1
 
