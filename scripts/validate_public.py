@@ -163,6 +163,9 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         ],
         cwd,
     )
+    run([sys.executable, "scripts/validate_harbor_adapter_blockers.py"], cwd)
+    run([sys.executable, "scripts/validate_harbor_integration.py"], cwd)
+    run([sys.executable, "scripts/check_harbor_local_execution.py"], cwd)
     run([sys.executable, "scripts/generate_task_quality_matrix.py"], cwd)
     run(["git", "diff", "--exit-code", "--", "docs/task-quality-matrix.json", "docs/task-quality-matrix.md"], cwd)
     run([sys.executable, "scripts/generate_benchmark_charts.py"], cwd)
