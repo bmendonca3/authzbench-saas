@@ -19,6 +19,10 @@ here.
 - `harbor-adapter-contract.json`: public-safe machine-readable contract for the
   Harbor-compatible adapter target. It is not Harbor execution evidence and
   cannot satisfy strict v1 readiness by itself.
+- `harbor-adapter-readiness-blockers.json`: public-safe blocker record for
+  Harbor adapter metadata, parity, local Harbor execution, and adapter review
+  evidence that do not exist yet. It is not adapter readiness or parity
+  evidence and cannot satisfy strict v1 readiness by itself.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1 readiness.

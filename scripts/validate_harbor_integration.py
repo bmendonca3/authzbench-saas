@@ -7,10 +7,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts.validate_harbor_adapter_blockers import validate_harbor_adapter_blockers
+except ModuleNotFoundError:  # direct execution as python3 scripts/validate_harbor_integration.py
+    from validate_harbor_adapter_blockers import validate_harbor_adapter_blockers
+
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "artifact" / "harbor-adapter-contract.json"
 RUNBOOK_PATH = ROOT / "docs" / "harbor-integration-runbook.md"
+BLOCKERS_PATH = ROOT / "artifact" / "harbor-adapter-readiness-blockers.json"
 SCHEMA_VERSION = "harbor-adapter-contract-v1"
 REQUIRED_COMPONENTS = {
     "dataset_builder",
@@ -111,6 +117,7 @@ def _nonempty_string(value: Any) -> bool:
 def validate_harbor_integration(
     contract_path: Path = CONTRACT_PATH,
     runbook_path: Path = RUNBOOK_PATH,
+    blockers_path: Path = BLOCKERS_PATH,
 ) -> dict[str, Any]:
     errors: list[str] = []
     try:
@@ -216,9 +223,15 @@ def validate_harbor_integration(
             "Live HTTP Tool-Agent Lane",
             "scripts/build_harbor_dataset_skeleton.py",
             "scripts/validate_harbor_dataset_skeleton.py",
+            "scripts/validate_harbor_adapter_blockers.py",
         ):
             if term not in runbook:
                 errors.append(f"runbook missing required term: {term}")
+
+    blocker_result = validate_harbor_adapter_blockers(blockers_path)
+    if not blocker_result["passed"]:
+        for error in blocker_result["errors"]:
+            errors.append(f"adapter_readiness_blockers: {error}")
 
     errors.extend(_public_safety_errors(data))
     return {
@@ -234,8 +247,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate public-safe Harbor adapter planning contract.")
     parser.add_argument("--contract", type=Path, default=CONTRACT_PATH)
     parser.add_argument("--runbook", type=Path, default=RUNBOOK_PATH)
+    parser.add_argument("--blockers", type=Path, default=BLOCKERS_PATH)
     args = parser.parse_args()
-    result = validate_harbor_integration(args.contract, args.runbook)
+    result = validate_harbor_integration(args.contract, args.runbook, args.blockers)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["passed"] else 1
 
