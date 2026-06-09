@@ -98,10 +98,10 @@
     {
       "item": "local_harbor_run",
       "status": "blocked",
-      "missing_input": "Harbor CLI/package installed and exercised against generated dataset",
+      "missing_input": "Docker daemon available for Harbor's local Docker execution environment after invoking the Harbor package with uvx or installing it on PATH",
       "required_evidence": [
-        "scripts/check_harbor_local_execution.py reports harbor_cli_found true",
-        "harbor run -p generated dataset command",
+        "Harbor CLI/package command available through uvx harbor or harbor on PATH",
+        "uvx harbor run -p <generated-public-dataset> -a oracle -o <jobs-dir> -n 1 -l 1 --yes command exits successfully, or an equivalent installed harbor command does",
         "job config/result files",
         "trial verifier output",
         "agent trajectory or equivalent agent artifact",
