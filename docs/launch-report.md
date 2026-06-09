@@ -144,7 +144,7 @@ Tracked summary:
 
 Initial frozen v0.0 model baselines were also run through the Kiro no-tools
 adapter. These 46-task rows remain auditable v0.0 evidence, but they are stale
-for the live 54-task v1-prep split.
+for the now-stale 54-task v1-prep split.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -286,7 +286,7 @@ including secure controls. Panel review classified it as deterministic harness
 evidence, not a v0 tool-agent baseline.
 
 The Kiro snapshots are public-split baselines, not private leaderboard results.
-Qwen, Haiku, Sonnet, GLM, and Opus now have repeated current 54-task no-tools
+Qwen, Haiku, Sonnet, GLM, and Opus now have repeated stale 54-task no-tools
 public runs, while older 46-, 49-, and 44-task rows remain useful historical
 diagnostics only. These families are public-only no-tools runs and are not
 leaderboard eligible.
@@ -316,9 +316,9 @@ Both runs produced 49/49 model-tool plan artifacts, 49/49 tool-probe artifacts,
 failures. Each run passed 29 of 49 tasks, replay-proved 15 of 20 vulnerable
 tasks, had zero control false reports, and had boundary reasoning pass rate
 `0.0`. It is useful historical public-split tool-agent evidence, but it is not
-current 54-task, private-holdout, or hosted leaderboard evidence.
+current 60-task, private-holdout, or hosted leaderboard evidence.
 
-The current 54-task Kiro live HTTP tool-agent baseline also uses
+The stale 54-task Kiro live HTTP tool-agent baseline also uses
 `claude-sonnet-4.6` against live local targets. Both current runs produced 54/54
 model-tool plan artifacts, 54/54 tool-probe artifacts, 54/54 target-request
 correlation, zero planner failures, zero parser failures, zero invalid
@@ -344,9 +344,9 @@ exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks, reports `v0_baseline_ready: true` for the live 54-task
-public baseline bar, and reports `v0_release_snapshot_ready: true` for the
-frozen v0.0 46-task release snapshot. That is a public-split baseline
+consistency checks, reports `v0_baseline_ready: false` for the live 60-task
+public baseline bar until model/tool-agent rows are rerun, and reports
+`v0_release_snapshot_ready: true` for the frozen v0.0 46-task release snapshot. That is a public-split baseline
 credibility claim, not a current v1, hosted-leaderboard, or community-scale
 benchmark claim.
 

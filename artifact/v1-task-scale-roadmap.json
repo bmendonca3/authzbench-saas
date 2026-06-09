@@ -2,10 +2,10 @@
   "schema_version": "v1-task-scale-roadmap-v1",
   "evidence_status": "planning",
   "public_claim_boundary": "This roadmap is not task-scale evidence. It defines the public-safe path to at least 100 validated tasks, but the v1_task_scale gate remains incomplete until real manifests validate.",
-  "current_public_task_count": 54,
+  "current_public_task_count": 60,
   "current_validated_private_holdout_task_count": 0,
   "required_total_task_count": 100,
-  "minimum_additional_tasks_required": 46,
+  "minimum_additional_tasks_required": 40,
   "planned_waves": [
     {
       "id": "active-private-holdout-v1-pack",

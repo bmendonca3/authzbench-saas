@@ -66,9 +66,9 @@ live-target request coverage.
 Frozen v0.0 public baselines are diagnostic public-split evidence. They show
 that agents can sometimes produce replayable exploit evidence while still
 failing full vulnerable-task passes because boundary reasoning remains weak.
-They must be rerun before current 54-task v1-prep comparison.
+They must be rerun before current 60-task v1-prep comparison.
 
-On the current 54-task fingerprint, two Qwen no-tools runs pass 32 and 33 tasks,
+On the stale 54-task fingerprint, two Qwen no-tools runs pass 32 and 33 tasks,
 span 0.0000--0.1429 exploit-proven success, and retain zero vulnerable full
 passes because boundary reasoning remains at 0.0000. Their public summaries
 also retain seven and twelve task-level adapter failures, respectively,
@@ -209,7 +209,7 @@ validation path.
 
 The \releaseversion{} public split is small, synthetic, and inspectable. The
 baseline table is frozen v0.0 diagnostic public-split evidence, not a final
-ordering of model quality. The current 54-task Qwen, Claude Haiku 4.5, Claude
+ordering of model quality. The stale 54-task Qwen, Claude Haiku 4.5, Claude
 Sonnet 4.6, GLM-5, and Claude Opus 4.6 pairs cover five no-tools families, but
 they remain public-only evidence and are insufficient for private-holdout or
 leaderboard comparison.

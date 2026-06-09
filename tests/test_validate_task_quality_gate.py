@@ -108,10 +108,10 @@ class TaskQualityGateTests(unittest.TestCase):
             validate_task_quality_gate.DEFAULT_CONTRACT,
         )
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["summary"]["task_count"], 54, result)
-        self.assertEqual(result["summary"]["vulnerable_task_count"], 21, result)
-        self.assertEqual(result["summary"]["denial_control_task_count"], 19, result)
-        self.assertEqual(result["summary"]["authorized_allow_control_task_count"], 14, result)
+        self.assertEqual(result["summary"]["task_count"], 60, result)
+        self.assertEqual(result["summary"]["vulnerable_task_count"], 24, result)
+        self.assertEqual(result["summary"]["denial_control_task_count"], 21, result)
+        self.assertEqual(result["summary"]["authorized_allow_control_task_count"], 15, result)
 
     def test_rejects_vulnerable_task_without_attacker_actor(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
