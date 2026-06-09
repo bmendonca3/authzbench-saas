@@ -7,27 +7,28 @@ post-v0 development state while preserving the frozen v0.0 claim boundary.
 
 AuthZBench-SaaS v0.0 is the released historical artifact. Current `main` is now
 post-v0 active development. It contains two v1 task-expansion slices and a
-54-task public split, but it is not a v1 release, a hosted leaderboard, or a
+60-task public split, but it is not a v1 release, a hosted leaderboard, or a
 community-scale benchmark.
 
 The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
-46-task release baselines and 49-task v1-prep model/tool-agent baselines are
-stale for current 60-task comparison. Repeated 54-task Qwen, Claude Haiku 4.5,
-Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools families are now
-current, and the repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent family
-is current. These rows remain public-split diagnostic evidence only; they do
-not provide private-holdout, hosted-leaderboard, or v1 release evidence.
+46-task release baselines, 49-task v1-prep model/tool-agent baselines, and
+54-task v1-prep model/tool-agent baselines are stale for current 60-task
+comparison. Repeated 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5,
+and Claude Opus 4.6 no-tools families plus the repeated 54-task Claude Sonnet
+4.6 live HTTP tool-agent family remain public-split diagnostic evidence only;
+they do not provide current 60-task comparison, private-holdout,
+hosted-leaderboard, or v1 release evidence.
 
 ## Current Public Split
 
 The current v1-prep public split contains:
 
 - 6 synthetic SaaS target families
-- 54 public tasks
-- 21 vulnerable tasks
-- 33 secure controls
-- 19 denial controls
-- 14 authorized-allow controls
+- 60 public tasks
+- 24 vulnerable tasks
+- 36 secure controls
+- 21 denial controls
+- 15 authorized-allow controls
 
 The first expansion slice adds billing entitlement coverage. The vulnerable
 task checks whether a same-organization non-admin member can enable an
@@ -61,7 +62,7 @@ zero adapter failures, zero outer runner failures, and zero invalid
 submissions. Each reports one false finding on the authorized-allow support
 reassignment control, producing `false_positive_rate: 0.0303`,
 `control_false_report_rate: 0.0303`, and `authorized_allow_pass_rate: 0.9286`.
-This pair improves current evidence breadth but remains public-split diagnostic
+This pair remains stale diagnostic evidence but remains public-split diagnostic
 evidence, not a stable ranking.
 
 Two stale 54-task `claude-sonnet-4.6` no-tools runs provide a third repeated
@@ -81,7 +82,7 @@ boundary reasoning at `0.0000`, fully pass no vulnerable task, and report zero
 control false positives. Run 1 preserves one outer runner failure on the
 support multistep reassignment task with missing submission/model-output
 diagnostics; run 2 has complete 54-task artifacts and zero invalid submissions.
-This broadens current no-tools evidence, but remains public-split diagnostic
+This remains stale no-tools diagnostic evidence, but remains public-split diagnostic
 evidence rather than a stable ranking.
 
 Two stale 54-task `claude-opus-4.6` no-tools runs provide a fifth repeated
@@ -89,18 +90,19 @@ model family. Both pass 33 tasks, prove 14 of 21 vulnerable replays, keep
 boundary reasoning at `0.0000`, fully pass no vulnerable task, and report zero
 control false positives. Both retain complete 54-task artifacts with zero
 adapter, command, parser, runner, or invalid-submission failures. This closes
-the current no-tools rerun gate while remaining public-split diagnostic
+the previous 54-task no-tools rerun gate while remaining public-split diagnostic
 evidence rather than private-holdout, leaderboard, or v1-release evidence.
 
 Two stale 54-task `claude-sonnet-4.6` live HTTP tool-agent runs provide
-repeated diagnostic evidence for the current live-target harness. Both pass 33
+repeated diagnostic evidence for the previous 54-task live-target harness. Both pass 33
 tasks, prove 15 of 21 vulnerable replays, keep boundary reasoning at `0.0000`,
 fully pass no vulnerable task, and report zero secure-control false positives.
 Both runs retain 54 model-tool plan artifacts, 54 tool-probe artifacts, 54/54
 target-request correlation, zero planner failures, zero planner parse errors,
-zero invalid submissions, and zero fallback probes. This closes the current
-public live HTTP rerun gate while remaining public-split diagnostic evidence
-rather than private-holdout, hosted-leaderboard, or v1-release evidence.
+zero invalid submissions, and zero fallback probes. This closes the previous
+54-task live HTTP rerun gate while remaining stale public-split diagnostic
+evidence rather than current 60-task, private-holdout, hosted-leaderboard, or
+v1-release evidence.
 
 The preceding 49-task public split has repeated diagnostic Kiro baselines: five
 no-tools model families and one live HTTP `claude-sonnet-4.6` tool-agent family.
@@ -108,7 +110,7 @@ The tool-agent pair preserves one model-plan artifact and one tool-probe artifac
 per task, correlates target-side requests for all 49 tasks in both runs, and
 reports zero planner or parser failures. The 54-task expansion makes these rows
 stale; Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, Claude Opus 4.6
-no-tools families, and the live HTTP tool-agent family have been rerun on the
+no-tools families, and the live HTTP tool-agent family were rerun on the now
 stale 54-task fingerprint.
 
 A completed boundary-reasoning calibration study audits the historical 49-task
@@ -130,7 +132,7 @@ The current registry separates:
 - `release_snapshots` for frozen tagged-release evidence such as v0.0
 
 Rows marked `requires_rerun_before_current_comparison` cannot support current
-54-task comparison. That marker does not imply the frozen v0.0 release snapshot
+60-task comparison. That marker does not imply the frozen v0.0 release snapshot
 itself needs to be rerun.
 
 ## Frozen v0.0 Evidence

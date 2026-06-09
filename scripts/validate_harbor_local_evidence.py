@@ -85,7 +85,17 @@ def _source_fingerprint_errors(path: Path, benchmark_source_sha: str, benchmark_
         return ["benchmark_source_sha must be a git SHA for checked-in smoke evidence"]
     if not re.fullmatch(r"[0-9a-f]{40}", benchmark_source_tree_sha):
         return ["benchmark_source_tree_sha must be a full git tree SHA for checked-in smoke evidence"]
-    result = subprocess.run(
+    commit_result = subprocess.run(
+        ["git", "cat-file", "-e", f"{benchmark_source_sha}^{{commit}}"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if commit_result.returncode != 0:
+        return ["benchmark_source_sha must exist as a commit in this repository for checked-in smoke evidence"]
+    tree_result = subprocess.run(
         ["git", "cat-file", "-e", f"{benchmark_source_tree_sha}^{{tree}}"],
         cwd=ROOT,
         stdout=subprocess.PIPE,
@@ -93,8 +103,20 @@ def _source_fingerprint_errors(path: Path, benchmark_source_sha: str, benchmark_
         text=True,
         check=False,
     )
-    if result.returncode != 0:
+    if tree_result.returncode != 0:
         return ["benchmark_source_tree_sha must exist in this repository for checked-in smoke evidence"]
+    resolved_tree = subprocess.run(
+        ["git", "rev-parse", f"{benchmark_source_sha}^{{tree}}"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if resolved_tree.returncode != 0:
+        return ["benchmark_source_sha tree could not be resolved for checked-in smoke evidence"]
+    if resolved_tree.stdout.strip() != benchmark_source_tree_sha:
+        return ["benchmark_source_tree_sha must match benchmark_source_sha tree for checked-in smoke evidence"]
     return []
 
 

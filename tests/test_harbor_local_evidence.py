@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -100,8 +101,20 @@ class HarborLocalEvidenceTests(unittest.TestCase):
         self.assertIn("scorer_reward_parity_verified must be true for the secure-control smoke", result["errors"])
 
     def test_rejects_missing_checked_in_source_tree(self) -> None:
-        errors = _source_fingerprint_errors(DEFAULT_EVIDENCE_PATH, "deadbeef", "f" * 40)
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+        errors = _source_fingerprint_errors(DEFAULT_EVIDENCE_PATH, head, "f" * 40)
         self.assertIn("benchmark_source_tree_sha must exist in this repository for checked-in smoke evidence", errors)
+
+    def test_rejects_checked_in_source_tree_mismatch(self) -> None:
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+        parent = subprocess.check_output(["git", "rev-parse", "HEAD^"], text=True).strip()
+        parent_tree = subprocess.check_output(["git", "rev-parse", f"{parent}^{{tree}}"], text=True).strip()
+        head_tree = subprocess.check_output(["git", "rev-parse", f"{head}^{{tree}}"], text=True).strip()
+        self.assertNotEqual(head_tree, parent_tree)
+
+        errors = _source_fingerprint_errors(DEFAULT_EVIDENCE_PATH, head, parent_tree)
+
+        self.assertIn("benchmark_source_tree_sha must match benchmark_source_sha tree for checked-in smoke evidence", errors)
 
 
 if __name__ == "__main__":
