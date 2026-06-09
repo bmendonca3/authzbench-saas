@@ -55,6 +55,11 @@ Target builder responsibilities:
 - read public task manifests from `tasks/*/*.json`;
 - optionally read maintainer-only private manifests outside public Git;
 - render one Harbor task directory per AuthZBench-SaaS task;
+- write root-level `dataset.toml` with generated task references, public-safe
+  dataset metadata, and explicit non-evidence flags for Harbor publishing and
+  execution;
+- write root-level `dataset-manifest.json` as the AuthZBench-SaaS skeleton
+  manifest consumed by local validators;
 - write `instruction.md` from the existing rendered task context;
 - write `task.toml` with Harbor task schema version `1.3`, Harbor config
   tables, public-safe AuthZBench-SaaS metadata under `[metadata.authzbench]`,
@@ -94,7 +99,7 @@ review evidence.
 Expected package/module surface for a real adapter checkout:
 
 - `pyproject.toml`, `README.md`, `adapter_metadata.json`,
-  `parity_experiment.json`, and `run_authzbench_saas.yaml`;
+  `parity_experiment.json`, `dataset.toml`, and `run_authzbench_saas.yaml`;
 - `src/authzbench_saas_harbor/main.py` with a module entrypoint equivalent to
   `uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>`;
 - `src/authzbench_saas_harbor/adapter.py` for parsing benchmark manifests and
@@ -115,9 +120,10 @@ python3 scripts/build_harbor_dataset_skeleton.py \
   --overwrite
 ```
 
-This helper writes a public-safe skeleton and placeholder package-shape files.
-It does not produce `adapter_metadata.json`, `parity_experiment.json`, a real
-Harbor package, or Harbor execution evidence.
+This helper writes a public-safe `dataset.toml`, skeleton task directories, and
+placeholder package-shape files. It does not produce `adapter_metadata.json`,
+`parity_experiment.json`, a real Harbor package, Harbor publish evidence, or
+Harbor execution evidence.
 
 The machine-readable version of this target is tracked at
 [`artifact/harbor-adapter-contract.json`](../artifact/harbor-adapter-contract.json)
@@ -155,9 +161,9 @@ For live HTTP tool-agent planning, use `--harness-lane live_http_tool_agent`.
 Use repeatable `--task-id <id>` for subset generation. `--overwrite` is an
 alias for replacing an existing generated output directory. `--task-ids` is a
 comma-separated compatibility alias for future Harbor adapter packaging. The
-builder writes Harbor-shaped task directories and a reference
-`run_authzbench_saas.yaml`, but it does not invoke Harbor and does not create
-private execution evidence.
+builder writes Harbor-shaped task directories, `dataset.toml`, and a reference
+`run_authzbench_saas.yaml`, but it does not invoke Harbor, publish a dataset, or
+create private execution evidence.
 
 Validate a generated skeleton with:
 
