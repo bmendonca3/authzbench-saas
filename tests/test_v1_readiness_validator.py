@@ -688,6 +688,22 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("execution_modes must include fully_containerized", result["unmet"])
         self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
 
+    def test_hosted_execution_runbook_rejects_embedded_placeholders_and_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runbook = root / "artifact" / "hosted-submission-execution-runbook.json"
+            runbook.parent.mkdir(parents=True)
+            payload = json.loads(Path(HOSTED_EXECUTION_RUNBOOK_PATH).read_text(encoding="utf-8"))
+            payload["required_private_inputs"][0] = "active private pack path TODO"
+            payload["publication_rules"][0] = "public output is redacted summary only from /tmp/authzbench"
+            runbook.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_hosted_execution_runbook(root)
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("absolute path is not allowed" in item for item in result["unmet"]), result)
+        self.assertIn("required_private_inputs cannot contain placeholders", result["unmet"])
+
     def test_paper_readiness_runbook_is_structured_procedure_evidence(self) -> None:
         result = _validate_paper_readiness_runbook()
 
@@ -925,6 +941,43 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("private_pack_version must not be a template placeholder", result["unmet"])
         self.assertIn("isolation_model must not be a template placeholder", result["unmet"])
         self.assertIn("command must not be a template placeholder", result["unmet"])
+
+    def test_hosted_smoke_rejects_private_publication_markers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-v1",
+                        "execution_scope": "release_candidate",
+                        "result": "passed",
+                        "benchmark_source_sha": "a" * 40,
+                        "runner_image_or_hosted_version": "runner:v1@sha256:example",
+                        "private_pack_version": "active-pack-v1",
+                        "private_pack_fingerprint_sha256": "b" * 64,
+                        "isolation_model": "container-rendered-context-only",
+                        "command": "containerized submission smoke wrote log /tmp/private-log.json",
+                        "submitter_private_manifest_read_denied": True,
+                        "scorer_controlled_private_eval": True,
+                        "cleanup_completed": True,
+                        "privacy_scan_passed": True,
+                        "public_output_private_artifacts_included": False,
+                        "container_constraints": list(REQUIRED_CONTAINER_CONSTRAINTS),
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(
+                root,
+                benchmark_source_sha="a" * 40,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("absolute path is not allowed" in item for item in result["unmet"]), result)
 
     def test_hosted_smoke_blocked_evidence_is_structured_but_not_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

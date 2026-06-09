@@ -171,22 +171,29 @@ blocker records with passing evidence.
 - [ ] Convert external platform/framework interest into concrete integration
   evidence.
   Required evidence:
-  - inspect candidate benchmark-platform and agent-eval framework resources
+  - [ ] inspect candidate benchmark-platform and agent-eval framework resources
     against AuthZBench-SaaS requirements;
-  - draft a short hosted-evaluation integration sketch that maps current runner,
+  - [x] draft a short hosted-evaluation integration sketch that maps current runner,
     scorer, task manifest, source-summary, run-bundle, and Docker/private-pack
-    assumptions to the candidate platform/framework model;
-  - identify which parts can be supported by current simple-eval publishing
+    assumptions to the candidate platform/framework model (see
+    [`docs/hosted-evaluation-integration-sketch.md`](hosted-evaluation-integration-sketch.md));
+  - [x] identify which parts can be supported by current simple-eval publishing
     resources and which parts require future Docker-based task support;
-  - document expected run artifacts and metadata for a hosted-compatible
+  - [x] document expected run artifacts and metadata for a hosted-compatible
     version, including benchmark source SHA, task split/fingerprint,
     comparability key, source summaries, target-request coverage, private-pack
     fingerprint where applicable, and redaction rules;
-  - record any external platform, model-team, SaaS-provider, or
+  - [ ] record any external platform, model-team, SaaS-provider, or
     product-security feedback as bounded notes, review findings, or explicit
     advisory comments rather than informal endorsement;
   - keep the gate open until the integration sketch is reviewed or implemented
     and tied to concrete artifacts, commands, or follow-up commits.
+
+  Current repo-side evidence:
+  - [`docs/hosted-evaluation-integration-sketch.md`](hosted-evaluation-integration-sketch.md)
+    is a public-safe design sketch only. It does not close the gate because
+    candidate platform/framework inspection, bounded external feedback, and
+    reviewed or implemented integration evidence remain open.
 
 - [ ] Convert external interest into real review evidence.
   Required evidence:
