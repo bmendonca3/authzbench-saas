@@ -23,6 +23,12 @@ here.
   Harbor adapter metadata, parity, local Harbor execution, and adapter review
   evidence that do not exist yet. It is not adapter readiness or parity
   evidence and cannot satisfy strict v1 readiness by itself.
+- `harbor-adapter-metadata.template.json`: public-safe template for future real
+  Harbor adapter metadata. It is not adapter metadata evidence, Harbor
+  execution evidence, or v1 readiness.
+- `harbor-parity-experiment.template.json`: public-safe template for future real
+  Harbor parity rows. It is not parity evidence, Harbor execution evidence, or
+  v1 readiness.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1 readiness.
@@ -54,7 +60,7 @@ artifact/run-public-validation.sh
 ```
 
 The script runs the public validation gate, v1 public-readiness fixture check,
-Harbor adapter/blocker/preflight checks, baseline registry validation,
+Harbor adapter/blocker/template/preflight checks, baseline registry validation,
 leaderboard submission validation, and the tracked-path privacy check. Its
 final line should be:
 

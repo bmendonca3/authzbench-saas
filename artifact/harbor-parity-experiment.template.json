@@ -1,0 +1,39 @@
+{
+  "schema_version": "harbor-parity-experiment-template-v1",
+  "template_only": true,
+  "evidence_status": "implementation_template",
+  "public_claim_boundary": "Template only; not Harbor parity evidence, not Harbor execution evidence, not external review evidence, and not v1 readiness.",
+  "adapter_name": "authzbench-saas-harbor",
+  "dataset_name": "authzbench-saas-public-skeleton",
+  "parity_verified": false,
+  "harbor_execution_verified": false,
+  "comparison_scope": "future_verified_runs_only",
+  "required_inputs": [
+    "real Harbor runs from the packaged adapter",
+    "matching original AuthZBench-SaaS runs",
+    "matching benchmark_source_sha",
+    "matching comparability_key",
+    "matching task ids or redacted private-pack fingerprint",
+    "matching agent/model/timeouts",
+    "public-safe redaction and privacy scan status"
+  ],
+  "result_fields_required_before_parity_claim": [
+    "harbor_run_ids",
+    "authzbench_run_ids",
+    "task_count",
+    "metric_name",
+    "harbor_mean",
+    "authzbench_mean",
+    "absolute_delta",
+    "standard_error",
+    "parity_acceptance_rule",
+    "privacy_scan_status"
+  ],
+  "result_rows": [],
+  "blocked_until": [
+    "Harbor CLI/package is installed",
+    "generated dataset passes a real Harbor run",
+    "matching original AuthZBench-SaaS run evidence exists",
+    "parity rows are computed from real run artifacts"
+  ]
+}
