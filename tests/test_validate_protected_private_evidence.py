@@ -113,6 +113,25 @@ class ProtectedPrivateEvidenceValidatorTests(unittest.TestCase):
         self.assertTrue(any("run_id values must be unique" in error for error in result["errors"]), result)
         self.assertTrue(any("tool-agent summary is required" in error for error in result["errors"]), result)
 
+    def test_rejects_generic_absolute_paths_in_redacted_summaries(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            bad = _summary("run-1", harness_type="tool-agent", coverage=1.0)
+            bad["redacted_output_note"] = "maintainer scratch path /tmp/authzbench/private-summary.json"
+            paths = []
+            for name, data in {
+                "bad.json": bad,
+                "good.json": _summary("run-2", harness_type="tool-agent", coverage=1.0),
+            }.items():
+                path = root / name
+                path.write_text(json.dumps(data), encoding="utf-8")
+                paths.append(path)
+
+            result = validate_protected_private_evidence(paths)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("absolute path is not allowed" in error for error in result["errors"]), result)
+
 
 if __name__ == "__main__":
     unittest.main()

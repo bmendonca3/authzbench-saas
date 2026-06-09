@@ -112,7 +112,7 @@ PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS = (
     "private route",
     "private seed",
 )
-PRIVATE_OPERATION_ABSOLUTE_PATH_RE = re.compile(r"(^|[\s:])/(Users|home|private/var|var/folders|tmp)(/|$)")
+PRIVATE_OPERATION_ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 RELEASE_VALIDATION_TEMPLATE_PATH = "artifact/v1-release-candidate-validation.template.json"
 REQUIRED_RELEASE_VALIDATION_COMMANDS = (
     "python3 -m unittest discover -s tests",
@@ -229,6 +229,19 @@ def _unresolved_placeholder(value: Any) -> bool:
         r"(?i)(^|[^A-Za-z0-9_])(tbd|todo|pending|unknown|n/a)([^A-Za-z0-9_]|$)",
         text,
     ) is not None
+
+
+def _recursive_unresolved_placeholders(value: Any, path: str = "$") -> list[str]:
+    errors: list[str] = []
+    if isinstance(value, dict):
+        for raw_key, child in value.items():
+            errors.extend(_recursive_unresolved_placeholders(child, f"{path}.{raw_key}"))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            errors.extend(_recursive_unresolved_placeholders(child, f"{path}[{index}]"))
+    elif _unresolved_placeholder(value):
+        errors.append(f"{path}: unresolved placeholder is not allowed")
+    return errors
 
 
 def _safe_existing_relative_path(root: Path, value: str) -> bool:
@@ -396,6 +409,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         }
     if data.get("template_only") is True or data.get("schema_version") == "private-holdout-rotation-metadata-template-v1":
         unmet.append("private holdout rotation metadata template is not private holdout evidence")
+    unmet.extend(_recursive_unresolved_placeholders(data))
 
     packs = data.get("packs")
     if not isinstance(packs, list) or not packs:
@@ -1259,7 +1273,7 @@ def _validate_hosted_execution_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_inputs = sorted(required_input_set - input_set)
     if missing_inputs:
         unmet.append("required_private_inputs missing: " + ", ".join(missing_inputs))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in required_inputs):
         unmet.append("required_private_inputs cannot contain placeholders")
 
     modes = data.get("execution_modes")
@@ -1335,7 +1349,7 @@ def _validate_hosted_execution_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_rules = sorted(required_rules - rule_set)
     if missing_rules:
         unmet.append("publication_rules missing: " + ", ".join(missing_rules))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in publication_rules):
         unmet.append("publication_rules cannot contain placeholders")
 
     return {
@@ -1357,6 +1371,8 @@ def _validate_hosted_execution_evidence(
         return {"passed": False, "path": HOSTED_EXECUTION_EVIDENCE_PATH, "unmet": unmet}
     if data.get("template_only") is True or data.get("schema_version") == "submission-runner-smoke-template-v1":
         unmet.append("submission-runner smoke template is not release-candidate hosted execution evidence")
+    unmet.extend(_private_operation_public_safety_errors(data))
+    unmet.extend(_recursive_unresolved_placeholders(data))
 
     if data.get("evidence_status") == "blocked":
         if data.get("schema_version") != HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION:
@@ -1364,13 +1380,13 @@ def _validate_hosted_execution_evidence(
         if data.get("blocked_gate") != "hosted_or_containerized_submission_execution":
             unmet.append("blocked_gate must be hosted_or_containerized_submission_execution")
         for field in ("blocker", "next_action"):
-            if not _nonempty_string(data.get(field)) or _placeholder(data.get(field)):
+            if not _nonempty_string(data.get(field)) or _unresolved_placeholder(data.get(field)):
                 unmet.append(f"{field} is required")
         required_inputs = data.get("required_release_inputs")
         if (
             not isinstance(required_inputs, list)
             or not required_inputs
-            or any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs)
+            or any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in required_inputs)
         ):
             unmet.append("required_release_inputs must list concrete missing release inputs")
         rehearsal = data.get("last_verified_public_rehearsal")
@@ -1763,7 +1779,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_inputs = sorted(required_input_set - input_set)
     if missing_inputs:
         unmet.append("required_inputs missing: " + ", ".join(missing_inputs))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in required_inputs):
         unmet.append("required_inputs cannot contain placeholders")
 
     commands = data.get("required_commands")
@@ -1774,7 +1790,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_commands = sorted(set(REQUIRED_RELEASE_VALIDATION_COMMANDS) - command_set)
     if missing_commands:
         unmet.append("required_commands missing: " + ", ".join(missing_commands))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in commands):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in commands):
         unmet.append("required_commands cannot contain placeholders")
 
     evidence_fields = data.get("required_evidence_fields")
@@ -1798,7 +1814,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_fields = sorted(required_fields - field_set)
     if missing_fields:
         unmet.append("required_evidence_fields missing: " + ", ".join(missing_fields))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in evidence_fields):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in evidence_fields):
         unmet.append("required_evidence_fields cannot contain placeholders")
 
     acceptance_checks = data.get("acceptance_checks")
@@ -1822,7 +1838,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_acceptance = sorted(required_acceptance - acceptance_set)
     if missing_acceptance:
         unmet.append("acceptance_checks missing: " + ", ".join(missing_acceptance))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in acceptance_checks):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in acceptance_checks):
         unmet.append("acceptance_checks cannot contain placeholders")
 
     publication_rules = data.get("publication_rules")
@@ -1843,7 +1859,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_rules = sorted(required_rules - rule_set)
     if missing_rules:
         unmet.append("publication_rules missing: " + ", ".join(missing_rules))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in publication_rules):
         unmet.append("publication_rules cannot contain placeholders")
 
     return {
