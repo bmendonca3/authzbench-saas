@@ -37,6 +37,14 @@ def _relative_to_root(path: Path) -> str:
         return path.as_posix()
 
 
+def _private_holdout_path(path: Path) -> bool:
+    parts = path.parts
+    return any(
+        part == "tasks_private" and index + 1 < len(parts) and parts[index + 1] == "holdout"
+        for index, part in enumerate(parts)
+    )
+
+
 def _toml_string(value: str) -> str:
     return json.dumps(value)
 
@@ -233,6 +241,8 @@ def build_harbor_dataset_skeleton(
         raise ValueError("harness_lane must be no_tools or live_http_tool_agent")
     requested_task_ids = set(task_ids or [])
     task_paths = _task_paths(task_patterns)
+    if any(_private_holdout_path(task_path) for task_path in task_paths):
+        raise ValueError("private holdout paths must not be exported with the public Harbor skeleton builder")
     if requested_task_ids:
         filtered_paths: list[Path] = []
         for task_path in task_paths:

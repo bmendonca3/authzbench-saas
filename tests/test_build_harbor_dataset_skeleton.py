@@ -87,6 +87,26 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "private holdout manifests"):
                 build_harbor_dataset_skeleton([str(private_task)], Path(tmp) / "out")
 
+    def test_rejects_private_holdout_path_before_manifest_read(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            private_dir = Path(tmp) / "tasks_private" / "holdout"
+            private_dir.mkdir(parents=True)
+            private_task = private_dir / "malformed.json"
+            private_task.write_text("{not json", encoding="utf-8")
+            output = Path(tmp) / "harbor-public"
+            output.mkdir()
+            (output / "stale.txt").write_text("old", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "private holdout paths"):
+                build_harbor_dataset_skeleton(
+                    [str(private_task)],
+                    output,
+                    task_ids=["would-require-reading-json"],
+                    clean=True,
+                )
+
+            self.assertTrue((output / "stale.txt").exists())
+
     def test_filters_by_task_id_and_overwrites_existing_output(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "harbor-public"
