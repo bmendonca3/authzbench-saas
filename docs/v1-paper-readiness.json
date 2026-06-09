@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "25a2860cff30073280b7b2d1d4d9925b5ddc3cc5",
+  "benchmark_source_sha": "72d66c16ca577b79b3e6375ace6986f21ae921c0",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "v1_prep_preflight",
@@ -12,7 +12,7 @@
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
     "ci_refresh_note": "The paper preflight source is pinned to the verified GLM-5 54-task evidence completion record, which also retains the verified Qwen, Haiku, and Sonnet current-family evidence and the earlier finding-telemetry hardening. Exact-head CI run 27110222646 passed on the GLM paper-preflight descendant. Exact-head CI for this final provenance descendant remains required. Final paper readiness remains incomplete.",
     "prior_exact_head_ci": {
-      "commit_sha": "90e514367231135eff557e08e268971b02f80b5f",
+      "commit_sha": "2df5fb64992562ef2cd40bc12aebf1e2120e02d5",
       "conclusion": "success",
       "run_id": 27110222646,
       "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27110222646"

@@ -93,24 +93,30 @@ surface: external review evidence, reproducible run bundles, private-pack
 rotation, submitter isolation, clear eligibility rules, and paper/report wording
 that a reviewer can inspect without relying on maintainer memory.
 
-### External Platform Meeting Framing
+### External Platform / Evaluation-Framework Follow-Up
 
-Use this framing for the upcoming external platform discussion:
+Status: active external collaboration path. Keep public docs at the level of
+technical next steps; do not publish names, email addresses, private meeting
+details, calendar links, or informal partner-specific signals.
 
-- What we have: a released v0.0 SaaS authorization benchmark, a stable
-  54-task v1-prep public split, deterministic scoring, complete current
-  54-task public no-tools baselines for five model families, repeated current
-  live HTTP tool-agent public evidence, and clear public/private claim
-  boundaries.
-- What we want feedback on: benchmark framing, hosted submission workflow,
-  leaderboard eligibility, run-bundle evidence, private holdout rotation, and
-  how hosted evaluation infrastructure could support secure SaaS-authz evaluation.
-- What we should not claim yet: `v1-ready`, hosted leaderboard operation,
-  private-holdout ranking readiness, external-review completion, or stable
-  community-scale model comparisons.
-- The near-term collaboration ask: turn interest into bounded review evidence
-  and infrastructure design notes that can be traced to artifacts, findings,
-  or implementation commits.
+Public-safe follow-up themes:
+
+- evaluate agent-eval framework compatibility for runner orchestration,
+  rollout capture, and result packaging;
+- sketch a Docker-compatible hosted-task shape for AuthZBench-SaaS;
+- compare current benchmark resources against the project's runner, scorer,
+  task-manifest, source-summary, run-bundle, and private-pack assumptions;
+- pursue SaaS-provider or product-security input on real authorization patterns;
+- convert any outside feedback into bounded review evidence before treating it
+  as a readiness gate.
+
+Claim boundary:
+
+- This is a promising infrastructure/review path.
+- It is not a v1 release, hosted leaderboard, completed external review,
+  third-party endorsement, or platform acceptance.
+- Any external platform, model-team, SaaS-provider, or product-security feedback
+  must be converted into bounded evidence before it can close a readiness gate.
 
 ### Objective
 
@@ -161,6 +167,26 @@ The remaining unblockers are listed in the checklist below. Until those
 external/maintainer-only inputs exist, keep this goal in `v1-prep`, keep
 `validate_v1_readiness.py` reporting `v1_ready: false`, and do not replace
 blocker records with passing evidence.
+
+- [ ] Convert external platform/framework interest into concrete integration
+  evidence.
+  Required evidence:
+  - inspect candidate benchmark-platform and agent-eval framework resources
+    against AuthZBench-SaaS requirements;
+  - draft a short hosted-evaluation integration sketch that maps current runner,
+    scorer, task manifest, source-summary, run-bundle, and Docker/private-pack
+    assumptions to the candidate platform/framework model;
+  - identify which parts can be supported by current simple-eval publishing
+    resources and which parts require future Docker-based task support;
+  - document expected run artifacts and metadata for a hosted-compatible
+    version, including benchmark source SHA, task split/fingerprint,
+    comparability key, source summaries, target-request coverage, private-pack
+    fingerprint where applicable, and redaction rules;
+  - record any external platform, model-team, SaaS-provider, or
+    product-security feedback as bounded notes, review findings, or explicit
+    advisory comments rather than informal endorsement;
+  - keep the gate open until the integration sketch is reviewed or implemented
+    and tied to concrete artifacts, commands, or follow-up commits.
 
 - [ ] Convert external interest into real review evidence.
   Required evidence:
