@@ -49,7 +49,7 @@
       "item": "local_harbor_execution_smoke",
       "status": "partial_repo_side_smoke",
       "evidence": "artifact/harbor-local-execution-smoke.json",
-      "claim_boundary": "Records a redacted local Harbor task/agent/verifier smoke only; does not prove valid agent submission handling, scorer parity, adapter readiness, hosted readiness, or v1 readiness."
+      "claim_boundary": "Records a redacted local Harbor task/agent/verifier smoke with one public secure-control submission and native-scorer reward parity; does not prove multi-task adapter parity, hosted readiness, or v1 readiness."
     }
   ],
   "required_before_adapter_ready": [
@@ -110,15 +110,15 @@
     {
       "item": "local_harbor_run",
       "status": "partial_repo_side_smoke",
-      "missing_input": "submission-producing Harbor agent run plus scorer output from a valid AuthZBench-SaaS submission and comparable original-run evidence",
+      "missing_input": "multi-task submission-producing Harbor adapter run plus comparable original-run evidence",
       "required_evidence": [
         "Harbor CLI/package command available through uvx harbor or harbor on PATH",
         "uvx harbor run -c <generated-public-run-config> --yes command exits successfully with verification enabled, or an equivalent installed harbor command does",
         "job config/result files",
         "trial verifier output with scorer-derived reward.json or reward.txt",
-        "agent trajectory showing a valid submission.json was produced",
+        "agent trajectory showing valid submission.json files were produced for vulnerable and secure-control tasks",
         "redacted run-bundle collection with score output",
-        "original AuthZBench-SaaS run evidence for the same public task and agent configuration",
+        "original AuthZBench-SaaS run evidence for the same public task set and agent configuration",
         "parity disposition comparing original and Harbor results"
       ]
     },

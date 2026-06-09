@@ -159,6 +159,9 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         errors.append("claim_boundary must state the skeleton is not Harbor execution evidence")
     if manifest.get("harbor_execution_verified") is not False:
         errors.append("harbor_execution_verified must be false")
+    oracle_solution_mode = manifest.get("oracle_solution_mode", "none")
+    if oracle_solution_mode not in {"none", "secure-control-empty-findings"}:
+        errors.append("oracle_solution_mode must be none or secure-control-empty-findings")
     if manifest.get("private_task_count") != 0:
         errors.append("private_task_count must be 0")
     if manifest.get("harness_lane") not in {"no_tools", "live_http_tool_agent"}:
@@ -254,6 +257,9 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
             errors.append(f"tasks[{index}] must be an object")
             continue
         task_id = task.get("id")
+        task_oracle_solution_mode = task.get("oracle_solution_mode", oracle_solution_mode)
+        if task_oracle_solution_mode != oracle_solution_mode:
+            errors.append(f"tasks[{index}].oracle_solution_mode must match manifest oracle_solution_mode")
         task_dir = _safe_relative(dataset_dir, task.get("harbor_task_dir"))
         if task_dir is None:
             errors.append(f"tasks[{index}].harbor_task_dir must be a safe relative path")
@@ -392,10 +398,18 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
 
         if required_files["solution/solve.sh"].is_file():
             solution = required_files["solution/solve.sh"].read_text(encoding="utf-8")
-            if "does not include a public oracle solution" not in solution:
-                errors.append(f"{rel_task_dir}: solution/solve.sh must preserve placeholder oracle boundary")
-            if "exit 64" not in solution:
-                errors.append(f"{rel_task_dir}: solution/solve.sh must fail closed until a verified oracle exists")
+            if task_oracle_solution_mode == "none":
+                if "does not include a public oracle solution" not in solution:
+                    errors.append(f"{rel_task_dir}: solution/solve.sh must preserve placeholder oracle boundary")
+                if "exit 64" not in solution:
+                    errors.append(f"{rel_task_dir}: solution/solve.sh must fail closed until a verified oracle exists")
+            elif task_oracle_solution_mode == "secure-control-empty-findings":
+                if task.get("expected_vulnerable") is not False:
+                    errors.append(f"{rel_task_dir}: secure-control oracle solution requires expected_vulnerable=false")
+                if "/logs/artifacts/submission.json" not in solution or '{"findings":[]}' not in solution:
+                    errors.append(f"{rel_task_dir}: secure-control oracle solution must write findings: [] submission")
+            else:
+                errors.append(f"{rel_task_dir}: unsupported oracle solution mode")
             errors.extend(_public_safety_errors(solution, label=f"{rel_task_dir}/solution/solve.sh"))
 
         if required_files["tests/test.sh"].is_file():
