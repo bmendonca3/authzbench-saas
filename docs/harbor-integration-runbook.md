@@ -108,6 +108,16 @@ For live HTTP tool-agent planning, use `--harness-lane live_http_tool_agent`.
 The builder writes Harbor-shaped task directories, but it does not invoke
 Harbor and does not create private execution evidence.
 
+Validate a generated skeleton with:
+
+```bash
+python3 scripts/validate_harbor_dataset_skeleton.py \
+  --dataset-dir <generated-harbor-dataset-path>
+```
+
+This checks the public skeleton structure and redaction boundary. It still does
+not run Harbor.
+
 ## No-Tools Lane
 
 For no-tools model runs, Harbor should receive an instruction-only task context
