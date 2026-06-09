@@ -95,6 +95,19 @@ python3 scripts/validate_harbor_integration.py
 That validator checks the public-safe contract shape only. It does not execute
 Harbor and cannot close the SDK integration gate by itself.
 
+The public-only skeleton builder is:
+
+```bash
+python3 scripts/build_harbor_dataset_skeleton.py \
+  --task 'tasks/*/*.json' \
+  --output-dir <generated-harbor-dataset-path> \
+  --harness-lane no_tools
+```
+
+For live HTTP tool-agent planning, use `--harness-lane live_http_tool_agent`.
+The builder writes Harbor-shaped task directories, but it does not invoke
+Harbor and does not create private execution evidence.
+
 ## No-Tools Lane
 
 For no-tools model runs, Harbor should receive an instruction-only task context
