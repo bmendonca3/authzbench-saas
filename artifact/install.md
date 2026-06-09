@@ -20,6 +20,10 @@ Public validation without Docker smoke:
 python3 scripts/validate_public.py --include-scripted-baseline
 ```
 
+This also runs the task-quality gate, the public v1-readiness fixture check, the
+Harbor adapter/blocker/template/preflight validators, baseline and leaderboard
+validators, and the tracked-path privacy scan.
+
 Public validation with Docker smoke, when Docker is available:
 
 ```bash
