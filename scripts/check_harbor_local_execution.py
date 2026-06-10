@@ -21,6 +21,18 @@ SCHEMA_VERSION = "harbor-local-execution-preflight-v1"
 DEFAULT_TASK = "tasks/project_mgmt/pm_same_tenant_read_control.json"
 
 
+def _resolve_harbor_command(harbor_command: str) -> str:
+    """Prefer direct Harbor, but use the documented uvx package path when needed."""
+    parts = shlex.split(harbor_command)
+    if not parts:
+        return harbor_command
+    if shutil.which(parts[0]) is not None:
+        return harbor_command
+    if harbor_command == "harbor" and shutil.which("uvx") is not None:
+        return "uvx harbor"
+    return harbor_command
+
+
 def _harbor_command_is_runnable(harbor_command: str) -> bool:
     parts = shlex.split(harbor_command)
     if not parts:
@@ -65,8 +77,8 @@ def check_harbor_local_execution(
         )
         skeleton_result = validate_harbor_dataset_skeleton(output_dir)
 
-    effective_harbor_command = harbor_command
-    harbor_cli_found = _harbor_command_is_runnable(harbor_command) if discover_harbor_cli else False
+    effective_harbor_command = _resolve_harbor_command(harbor_command) if discover_harbor_cli else harbor_command
+    harbor_cli_found = _harbor_command_is_runnable(effective_harbor_command) if discover_harbor_cli else False
     blocked_until: list[str] = []
     if not harbor_cli_found:
         blocked_until.append("Harbor CLI/package is not installed or not on PATH")

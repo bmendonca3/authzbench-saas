@@ -25,6 +25,12 @@ CURRENT_SONNET_ID = "kiro-claude-sonnet-4-6-current-public-46"
 STALE_TOOL_AGENT_49_ID = "kiro-live-tool-agent-sonnet-current-public-49"
 CURRENT_TOOL_AGENT_54_ID = "kiro-live-tool-agent-sonnet-current-public-54"
 CURRENT_SCRIPTED_60_ID = "scripted-sanity-public-60"
+CURRENT_QWEN_60_ID = "kiro-qwen3-coder-next-current-public-60"
+CURRENT_HAIKU_60_ID = "kiro-claude-haiku-4-5-current-public-60"
+CURRENT_SONNET_60_ID = "kiro-claude-sonnet-4-6-current-public-60"
+CURRENT_GLM_60_ID = "kiro-glm-5-current-public-60"
+CURRENT_OPUS_60_ID = "kiro-claude-opus-4-6-current-public-60"
+CURRENT_TOOL_AGENT_60_ID = "kiro-live-tool-agent-sonnet-current-public-60"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
@@ -56,25 +62,23 @@ def _baseline_by_id(registry: dict, baseline_id: str) -> dict:
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_demotes_54_task_rows_after_60_task_expansion(self) -> None:
+    def test_current_registry_keeps_54_task_rows_stale_after_60_task_expansion(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 31, result)
+        self.assertEqual(result["baseline_count"], 37, result)
         self.assertEqual(result["public_split"]["task_count"], 60, result)
-        self.assertEqual(result["current_public_model_family_count"], 0, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
-        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
-        self.assertFalse(result["v0_baseline_ready"], result)
+        self.assertEqual(result["current_public_model_family_count"], 6, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 6, result)
+        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
+        self.assertTrue(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
         self.assertEqual(len(result["release_snapshots"]), 1, result)
         self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertIn("current public model families: 0 of 5", result["unmet_v0_requirements"])
-        self.assertIn("repeated model baselines: 0 of 5", result["unmet_v0_requirements"])
-        self.assertIn("missing current public tool-agent baseline", result["unmet_v0_requirements"])
+        self.assertEqual(result["unmet_v0_requirements"], [])
 
         registry = load_json(REGISTRY)
         current_scripted = _baseline_by_id(registry, CURRENT_SCRIPTED_60_ID)
@@ -82,6 +86,27 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(current_scripted["run_count"], 1)
         self.assertEqual(current_scripted["release_suitability"], "current_public_harness_check")
         self.assertFalse(current_scripted["requires_rerun_before_current_comparison"])
+        current_qwen_60 = _baseline_by_id(registry, CURRENT_QWEN_60_ID)
+        self.assertEqual(current_qwen_60["expected_task_count"], 60)
+        self.assertEqual(current_qwen_60["run_count"], 2)
+        self.assertEqual(current_qwen_60["release_suitability"], "current_public_split")
+        self.assertFalse(current_qwen_60["requires_rerun_before_current_comparison"])
+        current_haiku_60 = _baseline_by_id(registry, CURRENT_HAIKU_60_ID)
+        self.assertEqual(current_haiku_60["expected_model"], "claude-haiku-4.5")
+        self.assertEqual(current_haiku_60["release_suitability"], "current_public_split")
+        current_sonnet_60 = _baseline_by_id(registry, CURRENT_SONNET_60_ID)
+        self.assertEqual(current_sonnet_60["expected_model"], "claude-sonnet-4.6")
+        self.assertEqual(current_sonnet_60["release_suitability"], "current_public_split")
+        current_glm_60 = _baseline_by_id(registry, CURRENT_GLM_60_ID)
+        self.assertEqual(current_glm_60["expected_model"], "glm-5")
+        self.assertEqual(current_glm_60["release_suitability"], "current_public_split")
+        current_opus_60 = _baseline_by_id(registry, CURRENT_OPUS_60_ID)
+        self.assertEqual(current_opus_60["expected_model"], "claude-opus-4.6")
+        self.assertEqual(current_opus_60["release_suitability"], "current_public_split")
+        current_tool_agent_60 = _baseline_by_id(registry, CURRENT_TOOL_AGENT_60_ID)
+        self.assertEqual(current_tool_agent_60["expected_harness_type"], "tool-agent")
+        self.assertEqual(current_tool_agent_60["expected_task_count"], 60)
+        self.assertEqual(current_tool_agent_60["release_suitability"], "current_public_split")
         current_qwen = _baseline_by_id(registry, CURRENT_QWEN_54_ID)
         self.assertEqual(current_qwen["expected_task_count"], 54)
         self.assertEqual(current_qwen["run_count"], 2)

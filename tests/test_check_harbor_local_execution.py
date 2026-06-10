@@ -50,12 +50,12 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
                 harbor_command="uvx harbor",
             )
 
-        which.assert_called_once_with("uvx")
+        self.assertEqual(which.call_args_list, [mock.call("uvx"), mock.call("uvx")])
         run.assert_called_once()
         self.assertTrue(result["harbor_cli_found"], result)
         self.assertIn("uvx harbor run -c run_authzbench_saas.yaml --yes", result["local_run_template"])
 
-    def test_default_discovery_does_not_probe_uvx_harbor(self) -> None:
+    def test_default_discovery_uses_uvx_harbor_when_direct_command_missing(self) -> None:
         def fake_which(executable: str) -> str | None:
             return "/usr/local/bin/uvx" if executable == "uvx" else None
 
@@ -68,10 +68,10 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
                 harbor_command="harbor",
             )
 
-        run.assert_not_called()
-        self.assertFalse(result["harbor_cli_found"], result)
-        self.assertEqual(result["harbor_command"], "harbor")
-        self.assertIn("Harbor CLI/package is not installed or not on PATH", result["blocked_until"])
+        self.assertEqual(run.call_count, 1)
+        self.assertTrue(result["harbor_cli_found"], result)
+        self.assertEqual(result["harbor_command"], "uvx harbor")
+        self.assertEqual(result["blocked_until"], ["real Harbor execution has not been run by this preflight"])
 
     def test_uvx_harbor_requires_explicit_command(self) -> None:
         def fake_which(executable: str) -> str | None:

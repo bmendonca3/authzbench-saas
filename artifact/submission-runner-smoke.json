@@ -1,26 +1,26 @@
 {
-  "schema_version": "submission-runner-smoke-blocker-v1",
-  "evidence_status": "blocked",
-  "blocked_gate": "hosted_or_containerized_submission_execution",
-  "claim_boundary": "This file is structured blocker evidence only. It is not release-candidate hosted or containerized submission-smoke evidence.",
-  "blocker": "Release-candidate hosted/containerized submission smoke requires an active private holdout pack, the active pack fingerprint, and execution on the intended maintainer platform. Those inputs are intentionally absent from the public checkout.",
-  "next_action": "After active and shadow private packs are staged, rerun scripts/containerized_submission_smoke.py against the active pack on the maintainer platform with execution_scope release_candidate and replace this blocker record with passed smoke evidence.",
-  "required_release_inputs": [
-    "active private holdout pack path under the ignored maintainer-only holdout root",
-    "active private holdout pack version label from rotation metadata",
-    "active private holdout pack fingerprint computed from canonical private manifests",
-    "maintainer-platform runner image digest or hosted-runner version",
-    "release-candidate benchmark source SHA",
-    "privacy scan proving public output excludes private manifests, routes, seeds, raw run data, captured traffic, auth material, and local absolute paths"
+  "benchmark_source_sha": "6c0371bb3b1174e7b6d9e06f077e52066c8a2476",
+  "cleanup_completed": true,
+  "command": "python3 scripts/containerized_submission_smoke.py --private-pack REDACTED_PROTECTED_PACK --output PUBLIC_SAFE_EVIDENCE",
+  "container_constraints": [
+    "cap_drop=ALL",
+    "network=none",
+    "no_new_privileges",
+    "non_root_user",
+    "output_file_size_limit",
+    "read_only_rootfs",
+    "rendered_context_mount_only",
+    "resource_limits"
   ],
-  "last_verified_public_rehearsal": {
-    "reference_scope": "prior_public_checkpoint",
-    "execution_scope": "rehearsal",
-    "result": "passed",
-    "commit_sha": "5d76970ecefb0c4959834e4f7acd81e8b51e11d9",
-    "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27151712736",
-    "ci_run_id": "27151712736",
-    "workflow": "Validate AuthZBench-SaaS",
-    "command": "python scripts/validate_public.py --include-scripted-baseline --include-container-smoke"
-  }
+  "execution_scope": "release_candidate",
+  "isolation_model": "docker-bind-rendered-context-only",
+  "privacy_scan_passed": true,
+  "private_pack_fingerprint_sha256": "dc56c9c32cf281a7e3f68866243c1d11835b0020ced1e73c571875f18efde8b3",
+  "private_pack_version": "2026-06-09-active-v1",
+  "public_output_private_artifacts_included": false,
+  "result": "passed",
+  "runner_image_or_hosted_version": "python:3.11-alpine@sha256:8b5bfdb1fd2d78aa94e21c4d61be52487693f54be7f1021647751ff365795703",
+  "schema_version": "submission-runner-smoke-v1",
+  "scorer_controlled_private_eval": true,
+  "submitter_private_manifest_read_denied": true
 }
