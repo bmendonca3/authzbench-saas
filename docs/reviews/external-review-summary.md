@@ -59,7 +59,7 @@ return real review evidence and maintainers copy public-safe summaries into
   and target-request coverage separated clearly enough?
 - Are two-run ranges framed as descriptive evidence rather than statistical
   certainty?
-- Are stale 44-task, frozen 46-task, historical 49-task, and current 54-task
+- Are stale 44-task, frozen 46-task, historical 49-task, and stale 54-task and current 60-task
   evidence clearly separated?
 - Does the validation packet give enough public reproducibility without leaking
   private holdout internals?

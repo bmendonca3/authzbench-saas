@@ -1,0 +1,44 @@
+{
+  "benchmark_source_sha": "ea07119ac6c044a78a4af06e2f59ac21869d6d59",
+  "benchmark_source_tree_sha": "0baf93bf08e6755e6c25ac3f37333bcbd8abcb6c",
+  "blocked_until": [
+    "a public-safe adapter writes valid submissions for vulnerable and secure-control tasks",
+    "matching native AuthZBench-SaaS public-run evidence is generated for the same task set",
+    "parity_experiment.json is computed from real multi-task Harbor and native run artifacts"
+  ],
+  "docker_server_version": "29.5.2",
+  "evidence_status": "local_harbor_execution_smoke",
+  "expected_reward_reason": "The generated public oracle solution writes findings: [] for a secure-control task, so Harbor verifier reward should match the native AuthZBench-SaaS scorer reward. This is a local control-task smoke only, not full adapter parity.",
+  "harbor_command": "uvx harbor",
+  "harbor_execution_verified": true,
+  "harbor_run_id": "212f50af-6fd6-48be-8b4b-5c43bc918769",
+  "harbor_version": "0.13.1",
+  "harness_lane": "no_tools",
+  "n_completed_trials": 1,
+  "n_errored_trials": 0,
+  "n_total_trials": 1,
+  "native_score_summary": {
+    "control_replay_passed": true,
+    "passed": true,
+    "score": 1.0,
+    "submission_shape": "secure_control_empty_findings"
+  },
+  "oracle_solution_mode": "secure-control-empty-findings",
+  "parity_verified": false,
+  "private_artifacts_tracked": false,
+  "public_claim_boundary": "This is local Harbor task/agent/verifier smoke evidence only; not parity evidence, not hosted leaderboard readiness, not external review evidence, and not v1 readiness.",
+  "public_outputs_redacted": true,
+  "raw_harbor_jobs_tracked": false,
+  "reward_mean": 1.0,
+  "run_command_template": "cd <generated-public-dataset> && harbor run -c run_authzbench_saas.yaml --yes --debug",
+  "schema_version": "harbor-local-execution-smoke-v1",
+  "scorer_reward_parity_verified": true,
+  "task_count": 1,
+  "task_ids": [
+    "pm_same_tenant_read_control"
+  ],
+  "verifier_reward_files": [
+    "reward.json",
+    "reward.txt"
+  ]
+}

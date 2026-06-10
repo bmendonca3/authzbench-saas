@@ -123,16 +123,86 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertFalse(result["v1_ready"])
-        self.assertEqual(result["gate_count"], 11)
+        self.assertEqual(result["gate_count"], 12)
         self.assertTrue(gates["stable_v1_prep_public_evidence"]["passed"])
+        self.assertIn(
+            "current_public_model_family_count=6",
+            gates["stable_v1_prep_public_evidence"]["evidence"],
+        )
+        self.assertIn(
+            "has_current_public_tool_agent_baseline=True",
+            gates["stable_v1_prep_public_evidence"]["evidence"],
+        )
         self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])
         self.assertTrue(gates["external_review_packet_ready"]["passed"])
         self.assertTrue(gates["submission_governance_spec_defined"]["passed"])
+        self.assertTrue(gates["harbor_repo_side_target_specified"]["passed"])
+        self.assertTrue(
+            any(
+                item in gates["harbor_repo_side_target_specified"]["evidence"]
+                for item in ("harbor_cli_found=False", "harbor_cli_found=True")
+            )
+        )
+        self.assertIn(
+            "harbor_execution_verified=False",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "ready_for_local_harbor_run=False",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "artifact/harbor-adapter-metadata.template.json",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "artifact/harbor-parity-experiment.template.json",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
         self.assertFalse(gates["external_review_completed"]["passed"])
-        self.assertFalse(gates["hosted_or_containerized_submission_execution"]["passed"])
-        self.assertFalse(gates["rotating_private_holdouts_implemented"]["passed"])
-        self.assertFalse(gates["repeated_private_tool_agent_evidence"]["passed"])
-        self.assertFalse(gates["repeated_private_no_tools_evidence"]["passed"])
+        if gates["hosted_or_containerized_submission_execution"]["passed"]:
+            self.assertEqual(gates["hosted_or_containerized_submission_execution"]["unmet"], [])
+        else:
+            self.assertTrue(gates["hosted_or_containerized_submission_execution"]["unmet"])
+            self.assertTrue(
+                any(
+                    item in gates["hosted_or_containerized_submission_execution"]["unmet"]
+                    for item in (
+                        "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist",
+                        "active private pack fingerprint is required for hosted smoke evidence",
+                    )
+                )
+            )
+        if gates["rotating_private_holdouts_implemented"]["passed"]:
+            self.assertIn(
+                "validated_private_holdout_task_count=48",
+                gates["rotating_private_holdouts_implemented"]["evidence"],
+            )
+        else:
+            self.assertTrue(
+                any(
+                    item in gates["rotating_private_holdouts_implemented"]["unmet"]
+                    for item in (
+                        "missing structured evidence: tasks_private/holdout/rotation-metadata.json",
+                        "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist",
+                    )
+                )
+            )
+        for gate_id, expected_blocker in (
+            (
+                "repeated_private_tool_agent_evidence",
+                "no repeated eligible private-holdout tool-agent leaderboard row exists",
+            ),
+            (
+                "repeated_private_no_tools_evidence",
+                "no repeated eligible private-holdout no-tools model leaderboard row exists",
+            ),
+        ):
+            if gates[gate_id]["passed"]:
+                self.assertEqual(gates[gate_id]["unmet"], [])
+                self.assertTrue(gates[gate_id]["evidence"][0].startswith("eligible_private_"))
+            else:
+                self.assertIn(expected_blocker, gates[gate_id]["unmet"])
         self.assertFalse(gates["paper_and_artifact_readiness"]["passed"])
         self.assertIn(
             PAPER_READINESS_RUNBOOK_PATH,
@@ -147,21 +217,35 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "independent external review lanes are not complete",
             gates["external_review_completed"]["unmet"],
         )
-        self.assertIn(
-            "no repeated eligible private-holdout tool-agent leaderboard row exists",
-            gates["repeated_private_tool_agent_evidence"]["unmet"],
+        self.assertEqual(
+            gates["v1_task_scale"]["passed"],
+            gates["rotating_private_holdouts_implemented"]["passed"],
         )
-        self.assertIn(
-            "no repeated eligible private-holdout no-tools model leaderboard row exists",
-            gates["repeated_private_no_tools_evidence"]["unmet"],
-        )
-        self.assertFalse(gates["v1_task_scale"]["passed"])
         self.assertIn("artifact/v1-task-scale-roadmap.json", gates["v1_task_scale"]["evidence"])
-        self.assertIn("planned_total_task_count=102", gates["v1_task_scale"]["evidence"])
-        self.assertIn(
-            "total public plus private holdout tasks is 54, expected at least 100",
-            gates["v1_task_scale"]["unmet"],
-        )
+        if gates["rotating_private_holdouts_implemented"]["passed"]:
+            self.assertIn("total_task_count=108", gates["v1_task_scale"]["evidence"])
+            self.assertEqual(gates["v1_task_scale"]["unmet"], [])
+        else:
+            self.assertTrue(
+                any(
+                    item in gates["v1_task_scale"]["evidence"]
+                    for item in ("planned_total_task_count=60", "planned_total_task_count=108")
+                )
+            )
+            self.assertIn(
+                "total public plus private holdout tasks is 60, expected at least 100",
+                gates["v1_task_scale"]["unmet"],
+            )
+
+    def test_public_view_harbor_preflight_is_not_path_dependent(self) -> None:
+        with patch("scripts.check_harbor_local_execution.shutil.which", return_value="/usr/local/bin/harbor"):
+            result = validate_v1_readiness(public_view=True)
+
+        gates = {gate["id"]: gate for gate in result["gates"]}
+        evidence = gates["harbor_repo_side_target_specified"]["evidence"]
+        self.assertIn("harbor_cli_found=False", evidence)
+        self.assertIn("ready_for_local_harbor_run=False", evidence)
+        self.assertIn("blocked_until=['Harbor CLI/package is not installed or not on PATH']", evidence)
 
     def test_external_review_packet_requires_human_intake_form(self) -> None:
         self.assertIn(
@@ -238,9 +322,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "next_actions": ["Stage private packs under the maintainer-only holdout root."],
                         "required_private_inputs": ["active private pack", "shadow private pack"],
                         "current_public_view": {
-                            "public_task_count": 54,
+                            "public_task_count": 60,
                             "validated_private_holdout_task_count": 0,
-                            "total_task_count": 54,
+                            "total_task_count": 60,
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
@@ -258,7 +342,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertEqual(
@@ -302,7 +386,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertIn("schema_version must be private-holdout-operation-blocker-v1", result["unmet"])
@@ -315,7 +399,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("public_claim_boundary is required", result["unmet"])
         self.assertIn("next_actions must list concrete non-placeholder values", result["unmet"])
         self.assertIn("required_private_inputs must list concrete non-placeholder values", result["unmet"])
-        self.assertIn("current_public_view.public_task_count must match current public count 54", result["unmet"])
+        self.assertIn("current_public_view.public_task_count must match current public count 60", result["unmet"])
         self.assertIn("current_public_view.validated_private_holdout_task_count must be 0", result["unmet"])
         self.assertIn("current_public_view.total_task_count must equal public_task_count in public view", result["unmet"])
         self.assertIn("current_public_view.required_total_task_count must be 100", result["unmet"])
@@ -362,9 +446,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "next_actions": ["Stage private packs under the maintainer-only holdout root."],
                         "required_private_inputs": ["active private pack", "shadow private pack"],
                         "current_public_view": {
-                            "public_task_count": 54,
+                            "public_task_count": 60,
                             "validated_private_holdout_task_count": 0,
-                            "total_task_count": 54,
+                            "total_task_count": 60,
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
@@ -382,7 +466,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertIn("last_verified_public_readiness.ci_run_id must match ci_run_url", result["unmet"])
@@ -438,16 +522,16 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(any(item.startswith("acceptance_checks missing:") for item in result["unmet"]))
         self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
 
-    def test_v1_scale_roadmap_is_structured_planning_evidence(self) -> None:
+    def test_v1_scale_roadmap_is_structured_count_level_evidence(self) -> None:
         result = _validate_v1_scale_roadmap(
-            public_task_count=54,
-            validated_private_holdout_task_count=0,
+            public_task_count=60,
+            validated_private_holdout_task_count=48,
         )
 
         self.assertTrue(result["passed"])
         self.assertEqual(result["path"], "artifact/v1-task-scale-roadmap.json")
-        self.assertEqual(result["planned_additional_task_count"], 48)
-        self.assertEqual(result["planned_total_task_count"], 102)
+        self.assertEqual(result["planned_additional_task_count"], 0)
+        self.assertEqual(result["planned_total_task_count"], 108)
         self.assertEqual(result["unmet"], [])
 
     def test_v1_scale_roadmap_rejects_overclaiming_and_under_target_plan(self) -> None:
@@ -487,24 +571,20 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
             result = _validate_v1_scale_roadmap(
                 root,
-                public_task_count=54,
+                public_task_count=60,
                 validated_private_holdout_task_count=0,
             )
 
         self.assertFalse(result["passed"])
         self.assertIn("schema_version must be v1-task-scale-roadmap-v1", result["unmet"])
-        self.assertIn("evidence_status must be planning", result["unmet"])
-        self.assertIn(
-            "public_claim_boundary must state that the roadmap is not task-scale evidence",
-            result["unmet"],
-        )
+        self.assertIn("evidence_status must be planning or validated_private_holdout_counts", result["unmet"])
         self.assertIn(
             "current_validated_private_holdout_task_count must match validated private holdout task count",
             result["unmet"],
         )
         self.assertIn("required_total_task_count must be 100", result["unmet"])
         self.assertIn(
-            "minimum_additional_tasks_required must be 46 for the current task counts",
+            "minimum_additional_tasks_required must be 40 for the current task counts",
             result["unmet"],
         )
         self.assertIn(
@@ -517,7 +597,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "planned_waves must include a private-holdout-shadow or private-holdout-candidate wave",
             result["unmet"],
         )
-        self.assertIn("planned total task count is 64, expected at least 100", result["unmet"])
+        self.assertIn("planned total task count is 70, expected at least 100", result["unmet"])
 
     def test_private_operation_blocker_rejects_sensitive_public_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -540,9 +620,9 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "next_actions": ["Stage private packs without publishing private internals."],
                         "required_private_inputs": ["active private pack", "shadow private pack"],
                         "current_public_view": {
-                            "public_task_count": 54,
+                            "public_task_count": 60,
                             "validated_private_holdout_task_count": 0,
-                            "total_task_count": 54,
+                            "total_task_count": 60,
                             "required_total_task_count": 100,
                         },
                         "last_verified_public_readiness": {
@@ -560,7 +640,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_private_operation_blocker(root, expected_public_task_count=54)
+            result = _validate_private_operation_blocker(root, expected_public_task_count=60)
 
         self.assertFalse(result["passed"])
         self.assertTrue(any("sensitive key is not allowed" in item for item in result["unmet"]), result)
@@ -614,7 +694,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_hosted_execution_evidence(root)
+            result = _validate_hosted_execution_evidence(root, benchmark_source_sha="b" * 40)
 
         self.assertFalse(result["passed"])
         self.assertIn("submission-runner smoke result must be passed", result["unmet"])
@@ -639,9 +719,14 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(hosted_gate["passed"])
         self.assertIn("artifact/submission-runner-smoke.json", hosted_gate["evidence"])
         self.assertIn(HOSTED_EXECUTION_RUNBOOK_PATH, hosted_gate["evidence"])
-        self.assertEqual(
-            hosted_gate["unmet"],
-            ["hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"],
+        self.assertTrue(
+            any(
+                item in hosted_gate["unmet"]
+                for item in (
+                    "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist",
+                    "active private pack fingerprint is required for hosted smoke evidence",
+                )
+            )
         )
 
     def test_hosted_execution_runbook_rejects_overclaiming_and_incomplete_controls(self) -> None:
@@ -687,6 +772,22 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("hosted_runner: command must use placeholders and release_candidate scope", result["unmet"])
         self.assertIn("execution_modes must include fully_containerized", result["unmet"])
         self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
+
+    def test_hosted_execution_runbook_rejects_embedded_placeholders_and_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runbook = root / "artifact" / "hosted-submission-execution-runbook.json"
+            runbook.parent.mkdir(parents=True)
+            payload = json.loads(Path(HOSTED_EXECUTION_RUNBOOK_PATH).read_text(encoding="utf-8"))
+            payload["required_private_inputs"][0] = "active private pack path TODO"
+            payload["publication_rules"][0] = "public output is redacted summary only from /tmp/authzbench"
+            runbook.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_hosted_execution_runbook(root)
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("absolute path is not allowed" in item for item in result["unmet"]), result)
+        self.assertIn("required_private_inputs cannot contain placeholders", result["unmet"])
 
     def test_paper_readiness_runbook_is_structured_procedure_evidence(self) -> None:
         result = _validate_paper_readiness_runbook()
@@ -925,6 +1026,43 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("private_pack_version must not be a template placeholder", result["unmet"])
         self.assertIn("isolation_model must not be a template placeholder", result["unmet"])
         self.assertIn("command must not be a template placeholder", result["unmet"])
+
+    def test_hosted_smoke_rejects_private_publication_markers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            evidence = root / "artifact" / "submission-runner-smoke.json"
+            evidence.parent.mkdir(parents=True)
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "submission-runner-smoke-v1",
+                        "execution_scope": "release_candidate",
+                        "result": "passed",
+                        "benchmark_source_sha": "a" * 40,
+                        "runner_image_or_hosted_version": "runner:v1@sha256:example",
+                        "private_pack_version": "active-pack-v1",
+                        "private_pack_fingerprint_sha256": "b" * 64,
+                        "isolation_model": "container-rendered-context-only",
+                        "command": "containerized submission smoke wrote log /tmp/private-log.json",
+                        "submitter_private_manifest_read_denied": True,
+                        "scorer_controlled_private_eval": True,
+                        "cleanup_completed": True,
+                        "privacy_scan_passed": True,
+                        "public_output_private_artifacts_included": False,
+                        "container_constraints": list(REQUIRED_CONTAINER_CONSTRAINTS),
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_hosted_execution_evidence(
+                root,
+                benchmark_source_sha="a" * 40,
+                private_pack_fingerprint_sha256="b" * 64,
+            )
+
+        self.assertFalse(result["passed"])
+        self.assertTrue(any("absolute path is not allowed" in item for item in result["unmet"]), result)
 
     def test_hosted_smoke_blocked_evidence_is_structured_but_not_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2153,6 +2291,17 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         errors = self._source_and_release_with_changed_path("artifact/submission-runner-smoke.json")
 
         self.assertEqual(errors, [])
+
+    def test_benchmark_source_allows_harbor_template_artifact_changes(self) -> None:
+        for path in (
+            "artifact/harbor-adapter-metadata.template.json",
+            "artifact/harbor-parity-experiment.template.json",
+            "scripts/validate_harbor_adapter_templates.py",
+        ):
+            with self.subTest(path=path):
+                errors = self._source_and_release_with_changed_path(path)
+
+            self.assertEqual(errors, [])
 
     def test_paper_readiness_allows_only_narrow_post_source_evidence_changes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

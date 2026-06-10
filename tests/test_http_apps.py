@@ -116,6 +116,21 @@ class HttpAppTests(unittest.TestCase):
         self.assertEqual(alias_body["route"], "workspace_work_item_alias")
         self.assertEqual(alias_body["task"]["tenant_id"], refs["ALPHA_TENANT_ID"])
 
+        portfolio_status, portfolio_body = _request(
+            f"{base_url}/api/portfolios/{refs['ALPHA_TENANT_ID']}/backlog-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+            "beta_member",
+        )
+        self.assertEqual(portfolio_status, 200)
+        self.assertEqual(portfolio_body["route"], "portfolio_backlog")
+        self.assertEqual(portfolio_body["backlog_item"]["tenant_id"], refs["ALPHA_TENANT_ID"])
+
+        secure_portfolio_status, secure_portfolio_body = _request(
+            f"{base_url}/api/secure/tenants/{refs['ALPHA_TENANT_ID']}/backlog-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
+            "beta_member",
+        )
+        self.assertEqual(secure_portfolio_status, 403)
+        self.assertEqual(secure_portfolio_body["error"], "forbidden")
+
         decoy_status, decoy_body = _request(
             f"{base_url}/api/projects/{refs['ALPHA_PROJECT_ID']}/admin-export",
             "beta_member",

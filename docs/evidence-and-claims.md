@@ -9,12 +9,12 @@ cards, LinkedIn posts, or external-review notes.
 | Evidence | What It Proves | What It Does Not Prove |
 | --- | --- | --- |
 | v0.0 release snapshot: 46 public tasks across 6 synthetic SaaS apps | the v0.0 public scaffold covers multiple SaaS authorization surfaces, including the first project-management multi-step workflow wave | that future expanded public splits have comparable current baselines before rerun |
-| v1-prep public split: 54 public tasks across 6 synthetic SaaS apps | the billing-entitlement and support-reassignment expansion slices are present with denial and authorized-allow controls | v1 release readiness, current model comparisons before rerun, or hosted leaderboard operation |
-| current 54-task scripted sanity baseline | the expanded public split, scorer, scripted oracle path, and baseline registry agree | model capability, leaderboard eligibility, private-holdout performance, or v1 release readiness |
-| current repeated 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools baselines | five no-tools model families have repeated current-fingerprint public runs; Qwen and GLM preserve explicit model-output or runner-failure diagnostics, while Haiku, Sonnet, and Opus have complete zero-failure task artifacts | private-holdout performance, leaderboard eligibility, or v1 readiness |
-| current repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline | the current public live-target harness has repeated tool-agent evidence with one plan/probe artifact per task, 54/54 target-request correlation, zero planner/parser failures, zero invalid submissions, and zero secure-control false reports | private-holdout performance, hosted leaderboard readiness, broad tool-agent ranking, or v1/community readiness |
-| stale 49-task public no-tools and live HTTP tool-agent baselines | five repeated no-tools model families and one repeated live HTTP tool-agent family remain auditable for the earlier 49-task split, with the tool-agent runs preserving 49/49 target-request correlation | current 54-task comparison, private-holdout performance, hosted leaderboard readiness, or v1/community readiness |
-| boundary-reasoning calibration study | the historical 49-task public tool-agent runs often prove vulnerable backend behavior but fail to preserve the oracle-compatible boundary vocabulary required by `score-policy-v1`; the current 54-task live tool-agent pair repeats the high-exploit-proof, zero-boundary-credit pattern | that old runs should receive retroactive boundary credit, that the 54-task pair has had a separate calibration study, or that scorer/prompt changes can be made without a new policy version and reruns |
+| v1-prep public split: 60 public tasks across 6 synthetic SaaS apps | the billing, support, audit, token, file-sharing, and project-management slices are present with denial and authorized-allow controls | v1 release readiness, current model comparisons before rerun, or hosted leaderboard operation |
+| current 60-task scripted sanity baseline | the expanded public split, scorer, scripted oracle path, and baseline registry agree | model capability, leaderboard eligibility, private-holdout performance, or v1 release readiness |
+| stale repeated 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 no-tools baselines | five no-tools model families have repeated previous-fingerprint public runs; Qwen and GLM preserve explicit model-output or runner-failure diagnostics, while Haiku, Sonnet, and Opus have complete zero-failure task artifacts | current 60-task comparison, private-holdout performance, leaderboard eligibility, or v1 readiness |
+| stale repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline | the previous public live-target harness has repeated tool-agent evidence with one plan/probe artifact per task, 54/54 target-request correlation, zero planner/parser failures, zero invalid submissions, and zero secure-control false reports | current 60-task comparison, private-holdout performance, hosted leaderboard readiness, broad tool-agent ranking, or v1/community readiness |
+| stale 49-task public no-tools and live HTTP tool-agent baselines | five repeated no-tools model families and one repeated live HTTP tool-agent family remain auditable for the earlier 49-task split, with the tool-agent runs preserving 49/49 target-request correlation | current 60-task comparison, private-holdout performance, hosted leaderboard readiness, or v1/community readiness |
+| boundary-reasoning calibration study | the historical 49-task public tool-agent runs often prove vulnerable backend behavior but fail to preserve the oracle-compatible boundary vocabulary required by `score-policy-v1`; the stale 54-task live tool-agent pair repeats the high-exploit-proof, zero-boundary-credit pattern | that old runs should receive retroactive boundary credit, that the 54-task pair has had a separate calibration study, or that scorer/prompt changes can be made without a new policy version and reruns |
 | deterministic scorer replay | submitted evidence can be checked against backend behavior | the agent necessarily interacted with a live target unless request-log correlation is present |
 | secure controls and authorized-allow controls | the benchmark can penalize false positives and over-reporting | all real SaaS false-positive patterns are covered |
 | five repeated v0.0 46-task public model/agent families | four no-tools model families plus one live HTTP tool-agent family have v0.0 public-split replay evidence | broad model rankings, private-holdout performance, v1 comparability after task expansion, or leaderboard eligibility |
@@ -27,6 +27,7 @@ cards, LinkedIn posts, or external-review notes.
 | strict maintainer release gate | the maintainer checkout can report exact pass/fail v0 gates while keeping private holdouts out of public Git history | hosted leaderboard readiness or v1-scale external validation |
 | v1 readiness checklist | v1 task expansion has a documented startup gate, stale-baseline policy, validation commands, and rerun matrix | v1 release readiness, new current model comparisons, or hosted leaderboard operation |
 | v1/community submission governance | submission states, eligibility gates, run-bundle expectations, private-pack rotation, tie/stale-score rules, appeals, and hosted/containerized flow requirements are defined | that hosted or containerized evaluation is implemented, smoked, or open for third-party submissions |
+| Harbor adapter contract, skeleton builder, blockers, and runbook | the repository has a public-safe Harbor-compatible target shape, local skeleton generator, validation checks, and explicit blocker record | Harbor SDK integration, Harbor platform acceptance, passing Harbor execution, parity evidence, or v1 readiness |
 | external review packet | the repository has a public-safe packet ready for AppSec, benchmark/evals, and AI-agent/tooling reviewers | that independent external review has happened |
 
 ## Approved Public Framing
@@ -45,6 +46,8 @@ Use:
 - `target-request correlation when live Docker targets are used`
 - `boundary-vocabulary calibration`
 - `v1/community submission governance specification`
+- `public-safe Harbor adapter target`
+- `Harbor skeleton builder`
 
 Avoid:
 
@@ -56,6 +59,8 @@ Avoid:
 - `private holdouts are publicly reproducible`
 - `public-split scores are final rankings`
 - `external review complete` unless reviewer dispositions are recorded
+- `Harbor execution verified`
+- `Harbor accepted` or `Harbor endorsed`
 
 ## Headline Metrics
 

@@ -1,0 +1,45 @@
+{
+  "schema_version": "harbor-adapter-metadata-template-v1",
+  "template_only": true,
+  "evidence_status": "implementation_template",
+  "public_claim_boundary": "Template only; not Harbor adapter metadata evidence, not Harbor execution evidence, not parity evidence, and not v1 readiness.",
+  "adapter_name": "authzbench-saas-harbor",
+  "dataset_name": "authzbench-saas-public-skeleton",
+  "package_entrypoint": "uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>",
+  "required_cli_flags": [
+    "--output-dir",
+    "--limit",
+    "--overwrite",
+    "--task-ids"
+  ],
+  "dataset_root_files": [
+    "dataset.toml",
+    "dataset-manifest.json",
+    "run_authzbench_saas.yaml"
+  ],
+  "task_directory_files": [
+    "instruction.md",
+    "task.toml",
+    "environment/Dockerfile",
+    "verifier/task_manifest.json",
+    "solution/solve.sh",
+    "tests/test.sh"
+  ],
+  "supported_lanes": [
+    "no_tools",
+    "live_http_tool_agent"
+  ],
+  "artifact_policy": {
+    "agent_submission_path": "/logs/artifacts/submission.json",
+    "score_output_path": "/logs/artifacts/score.json",
+    "public_outputs_redacted": true,
+    "private_manifests_tracked": false,
+    "raw_private_artifacts_tracked": false
+  },
+  "required_before_real_metadata": [
+    "real Harbor adapter package exists in the expected src layout",
+    "generated public dataset passes a local Harbor run",
+    "adapter metadata is produced from the real adapter package",
+    "public-safe privacy scan passes on generated adapter artifacts"
+  ]
+}

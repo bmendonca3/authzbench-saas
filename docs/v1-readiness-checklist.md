@@ -62,6 +62,8 @@ Every new secure-control task must include:
 - `control_type` set to `denial` or `authorized_allow`;
 - expected agent behavior of `findings: []`;
 - backend replay that proves the control behavior;
+- replay expectations that use an integer `status` or non-empty
+  `body_contains` check;
 - wording that discourages false reports without revealing the scorer oracle.
 
 ## First v1 Task Wave
@@ -147,6 +149,11 @@ Run these before committing task, scoring, runner, or artifact-contract changes:
 python3 scripts/validate_public.py --include-scripted-baseline
 python3 scripts/validate_v0_release.py
 python3 scripts/validate_baseline_registry.py
+python3 scripts/validate_task_quality_gate.py --contract artifact/task-quality-gate-contract.json --task 'tasks/*/*.json'
+python3 scripts/validate_harbor_adapter_blockers.py
+python3 scripts/validate_harbor_adapter_templates.py
+python3 scripts/validate_harbor_integration.py
+python3 scripts/check_harbor_local_execution.py
 python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary
 artifact/run-public-validation.sh
 python3 scripts/generate_paper_tables.py

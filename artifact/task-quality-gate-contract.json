@@ -1,0 +1,116 @@
+{
+  "schema_version": "task-quality-gate-contract-v1",
+  "status": "v1_prep_acceptance_gate",
+  "public_claim_boundary": "This contract defines public-safe acceptance gates for adding and counting tasks. It is not external review evidence, not private holdout rotation evidence, not hosted execution evidence, and not v1 readiness evidence.",
+  "privacy_boundary": "Public outputs may include task ids, app names, relative manifest paths, aggregate counts, and structural pass/fail categories. They must not include private manifests, private routes, seeds, oracle body values, raw private evidence, credentials, local absolute paths, or reviewer/private-source details.",
+  "required_gates": [
+    {
+      "id": "task_family_design_spec",
+      "status": "required_for_new_families",
+      "evidence": [
+        "family objective",
+        "SaaS authorization boundary",
+        "vulnerable route family",
+        "secure denial controls",
+        "authorized allow controls",
+        "oracle and replay contract",
+        "privacy and redaction notes",
+        "baseline rerun impact"
+      ]
+    },
+    {
+      "id": "static_manifest_boundary_validation",
+      "status": "enforced_by_validator",
+      "evidence": [
+        "actor boundary keys",
+        "tenant/org/workspace/role/scope/object/action boundary keys",
+        "oracle replay checks",
+        "control replay checks",
+        "secure findings-empty rule"
+      ]
+    },
+    {
+      "id": "app_behavior_tests",
+      "status": "required_when_app_routes_change",
+      "evidence": [
+        "vulnerable route behavior",
+        "secure denial behavior",
+        "authorized allow behavior",
+        "target request coverage for tool-agent runs"
+      ]
+    },
+    {
+      "id": "scorer_fixtures",
+      "status": "required_when_scoring_or_task_semantics_change",
+      "evidence": [
+        "positive_exploit",
+        "wrong_actor",
+        "wrong_tenant",
+        "wrong_object",
+        "missing_boundary",
+        "secure_false_positive_failure",
+        "secure_empty_findings_pass"
+      ]
+    },
+    {
+      "id": "scripted_baseline_sanity",
+      "status": "required_after_task_count_or_scoring_changes",
+      "evidence": [
+        "deterministic scripted baseline row",
+        "benchmark source SHA",
+        "task count",
+        "control pass rates"
+      ]
+    },
+    {
+      "id": "matrix_and_chart_regeneration",
+      "status": "required_after_task_count_or_scoring_changes",
+      "evidence": [
+        "task quality matrix regenerated",
+        "benchmark charts regenerated",
+        "no tracked artifact drift"
+      ]
+    },
+    {
+      "id": "privacy_and_public_output_scan",
+      "status": "required_before_commit_or_release",
+      "evidence": [
+        "no private paths tracked",
+        "no private names or private-source details",
+        "no local absolute paths",
+        "no overclaim wording"
+      ]
+    }
+  ],
+  "minimum_static_requirements": {
+    "vulnerable_tasks": [
+      "expected_boundary includes attacker_actor",
+      "expected_boundary includes at least one victim or required authorization dimension",
+      "oracle includes replayable status and non-empty body_contains checks",
+      "controls include at least one secure denial replay check",
+      "positive exploit replay is scorer-owned through oracle or evidence requirements"
+    ],
+    "secure_controls": [
+      "oracle claim is no_vulnerability",
+      "output_schema instructs findings: []",
+      "control_type is denial or authorized_allow",
+      "denial controls include denial replay checks",
+      "authorized_allow controls include 2xx replay checks"
+    ],
+    "all_tasks": [
+      "controls include actor, method, path, and status or body_contains",
+      "allowed hosts are local benchmark fixtures",
+      "task manifests remain public-safe"
+    ]
+  },
+  "blocked_until_external_inputs": [
+    {
+      "track": "external_review",
+      "missing_input": "real appsec, benchmark/evals, and AI-agent/tooling reviewer responses"
+    },
+    {
+      "track": "true_v1_release_validation",
+      "missing_input": "strict release evidence and non-allow-incomplete readiness pass"
+    }
+  ]
+}

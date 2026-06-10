@@ -174,6 +174,28 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "bill_account_entitlements_alias_plan_change":
+        return {
+            "findings": [
+                _finding(
+                    "member_can_change_billing_plan_via_account_alias",
+                    {
+                        "actor": "atlas_member",
+                        "method": "PATCH",
+                        "path": f"/api/accounts/{refs['ATLAS_ORG_ID']}/entitlements/plan",
+                        "body": {"plan": "business"},
+                    },
+                    {
+                        "attacker_actor": "atlas_member",
+                        "required_role": "admin",
+                        "org": "atlas",
+                        "protected_action": "billing_plan_change",
+                    },
+                    "A non-admin organization member can change billing-plan settings through the account entitlements alias.",
+                )
+            ]
+        }
+
     if task_id == "sup_bola_acme_reads_orbit_ticket":
         return {
             "findings": [
@@ -325,6 +347,26 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "tok_vault_alias_cross_tenant_secret_read":
+        return {
+            "findings": [
+                _finding(
+                    "vault_alias_cross_tenant_secret_read",
+                    {
+                        "actor": "meridian_read_token",
+                        "method": "GET",
+                        "path": f"/api/vault/secrets/{refs['HELIO_SECRET_ID']}",
+                    },
+                    {
+                        "attacker_actor": "meridian_read_token",
+                        "victim_tenant": "helio",
+                        "required_boundary": "same_tenant",
+                    },
+                    "A Meridian read token can read Helio tenant secret material through the vault alias.",
+                )
+            ]
+        }
+
     if task_id == "tok_read_scope_updates_secret":
         return {
             "findings": [
@@ -370,6 +412,26 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
                     },
                     {"attacker_actor": "nimbus_auditor", "victim_org": "quasar", "required_boundary": "same_org"},
                     "A Nimbus auditor can read Quasar's restricted security audit log.",
+                )
+            ]
+        }
+
+    if task_id == "aud_event_alias_cross_org_log_read":
+        return {
+            "findings": [
+                _finding(
+                    "event_alias_cross_org_audit_log_read",
+                    {
+                        "actor": "nimbus_auditor",
+                        "method": "GET",
+                        "path": f"/api/orgs/{refs['QUASAR_ORG_ID']}/events/{refs['QUASAR_AUDIT_LOG_ID']}",
+                    },
+                    {
+                        "attacker_actor": "nimbus_auditor",
+                        "victim_org": "quasar",
+                        "required_boundary": "same_org",
+                    },
+                    "A Nimbus auditor can read Quasar's restricted audit log through the event alias route.",
                 )
             ]
         }
