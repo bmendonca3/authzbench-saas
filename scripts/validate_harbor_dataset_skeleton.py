@@ -21,6 +21,7 @@ ALLOWED_ABSOLUTE_PREFIXES = (
 PUBLIC_ROUTE_FRAGMENT_PREFIXES = (
     "/audit-exports/",
     "/audit-logs/",
+    "/backlog-items/",
     "/cases/",
     "/compliance/",
     "/documents/",
