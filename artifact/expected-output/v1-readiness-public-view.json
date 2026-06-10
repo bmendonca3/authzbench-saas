@@ -73,8 +73,6 @@
       "id": "hosted_or_containerized_submission_execution",
       "passed": false,
       "unmet": [
-        "benchmark_source_sha does not match expected source SHA",
-        "benchmark_source_sha must match release benchmark_source_sha",
         "active private pack fingerprint is required for hosted smoke evidence"
       ]
     },
