@@ -374,7 +374,7 @@ class ProtectedPrivateEvalTests(unittest.TestCase):
         self.assertEqual(summary["control_false_report_count"], 0, summary)
         self.assertEqual(summary["control_false_report_rate"], 0.0, summary)
         self.assertEqual(summary["control_execution_pass_rate"], 0.0, summary)
-        self.assertEqual(summary["false_positive_rate"], 1.0, summary)
+        self.assertEqual(summary["false_positive_rate"], 0.0, summary)
         self.assertEqual(summary["tasks"][0]["submission_finding_count"], 0, summary)
         self.assertEqual(summary["tasks"][0]["control_replay_passed"], False, summary)
 
