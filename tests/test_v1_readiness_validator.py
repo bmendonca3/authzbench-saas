@@ -694,7 +694,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = _validate_hosted_execution_evidence(root)
+            result = _validate_hosted_execution_evidence(root, benchmark_source_sha="b" * 40)
 
         self.assertFalse(result["passed"])
         self.assertIn("submission-runner smoke result must be passed", result["unmet"])

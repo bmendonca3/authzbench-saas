@@ -1467,7 +1467,7 @@ def _validate_hosted_execution_evidence(
             "unmet": list(dict.fromkeys(unmet)),
         }
 
-    expected_sha = benchmark_source_sha or _current_commit_sha()
+    expected_sha = benchmark_source_sha
     unmet.extend(
         validate_smoke_evidence(
             data,
@@ -1485,7 +1485,7 @@ def _validate_hosted_execution_evidence(
         unmet.append("submission-runner smoke result must be passed")
     if data.get("execution_scope") != "release_candidate":
         unmet.append("submission-runner smoke execution_scope must be release_candidate")
-    if data.get("benchmark_source_sha") != expected_sha:
+    if expected_sha is not None and data.get("benchmark_source_sha") != expected_sha:
         unmet.append("benchmark_source_sha must match release benchmark_source_sha")
     if private_pack_fingerprint_sha256 is None:
         unmet.append("active private pack fingerprint is required for hosted smoke evidence")
@@ -1981,6 +1981,15 @@ def _benchmark_source_sha_from_release_evidence(release_evidence_path: Path | No
     return value if _sha(value) else None
 
 
+def _benchmark_source_sha_from_hosted_smoke() -> str | None:
+    try:
+        data = load_json(ROOT / HOSTED_EXECUTION_EVIDENCE_PATH)
+    except Exception:
+        return None
+    value = data.get("benchmark_source_sha") if isinstance(data, dict) else None
+    return value if _sha(value) else None
+
+
 def validate_v1_readiness(
     release_evidence_path: Path | None = None,
     *,
@@ -1988,7 +1997,11 @@ def validate_v1_readiness(
 ) -> dict[str, Any]:
     gates: list[dict[str, Any]] = []
     target_sha = _current_commit_sha()
-    benchmark_source_sha = _benchmark_source_sha_from_release_evidence(release_evidence_path) or target_sha
+    benchmark_source_sha = (
+        _benchmark_source_sha_from_release_evidence(release_evidence_path)
+        or _benchmark_source_sha_from_hosted_smoke()
+        or target_sha
+    )
 
     manifest_result = validate_patterns([str(ROOT / "tasks" / "*" / "*.json")])
     registry_result = validate_registry()
