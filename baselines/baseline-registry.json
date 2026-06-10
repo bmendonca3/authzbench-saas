@@ -52,6 +52,120 @@
       "notes": "Current 60-task deterministic harness sanity check for the live v1-prep public split. Useful for validating scorer and manifests, but not a model result, tool-agent result, private-holdout evidence, or v1 release evidence."
     },
     {
+      "id": "kiro-qwen3-coder-next-current-public-60",
+      "summary_path": "kiro-qwen3-coder-next-current-public-60-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-qwen",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-qwen3-coder-next-current-public-60-run1-summary.json",
+        "kiro-qwen3-coder-next-current-public-60-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "qwen3-coder-next",
+      "expected_task_count": 60,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 60-task public split no-tools Qwen baseline through the hardened Kiro adapter. The six-task public delta was rerun through Kiro and combined with the prior 54-task per-task evidence; this is public-split evidence only, not private-holdout or v1 release evidence."
+    },
+    {
+      "id": "kiro-claude-haiku-4-5-current-public-60",
+      "summary_path": "kiro-claude-haiku-4.5-current-public-60-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-claude-haiku",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-claude-haiku-4.5-current-public-60-run1-summary.json",
+        "kiro-claude-haiku-4.5-current-public-60-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-haiku-4.5",
+      "expected_task_count": 60,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 60-task public split no-tools Claude Haiku 4.5 baseline through the hardened Kiro adapter. The six-task public delta was rerun through Kiro and combined with the prior 54-task per-task evidence; this is public-split evidence only, not private-holdout or v1 release evidence."
+    },
+    {
+      "id": "kiro-claude-sonnet-4-6-current-public-60",
+      "summary_path": "kiro-claude-sonnet-4.6-current-public-60-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-claude-sonnet",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-claude-sonnet-4.6-current-public-60-run1-summary.json",
+        "kiro-claude-sonnet-4.6-current-public-60-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-sonnet-4.6",
+      "expected_task_count": 60,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 60-task public split no-tools Claude Sonnet 4.6 baseline through the hardened Kiro adapter. The six-task public delta was rerun through Kiro and combined with the prior 54-task per-task evidence; this is public-split evidence only, not private-holdout or v1 release evidence."
+    },
+    {
+      "id": "kiro-glm-5-current-public-60",
+      "summary_path": "kiro-glm-5-current-public-60-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-glm",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-glm-5-current-public-60-run1-summary.json",
+        "kiro-glm-5-current-public-60-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "glm-5",
+      "expected_task_count": 60,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 60-task public split no-tools GLM-5 baseline through the hardened Kiro adapter. The six-task public delta was rerun through Kiro and combined with the prior 54-task per-task evidence; command failures remain reflected in the scored rows instead of being smoothed over. This is public-split evidence only, not private-holdout or v1 release evidence."
+    },
+    {
+      "id": "kiro-claude-opus-4-6-current-public-60",
+      "summary_path": "kiro-claude-opus-4.6-current-public-60-run1-summary.json",
+      "kind": "model_baseline",
+      "model_family": "kiro-claude-opus",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-claude-opus-4.6-current-public-60-run1-summary.json",
+        "kiro-claude-opus-4.6-current-public-60-run2-summary.json"
+      ],
+      "expected_harness_type": "no-tools-model",
+      "expected_agent": "kiro_baseline_agent",
+      "expected_model": "claude-opus-4.6",
+      "expected_task_count": 60,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 60-task public split no-tools Claude Opus 4.6 baseline through the hardened Kiro adapter. The six-task public delta was rerun through Kiro and combined with the prior 54-task per-task evidence; this is public-split evidence only, not private-holdout or v1 release evidence."
+    },
+    {
+      "id": "kiro-live-tool-agent-sonnet-current-public-60",
+      "summary_path": "kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json",
+      "kind": "tool_agent_baseline",
+      "model_family": "kiro-live-tool-agent-sonnet",
+      "release_suitability": "current_public_split",
+      "leaderboard_eligible": false,
+      "run_count": 2,
+      "run_artifacts": [
+        "kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json",
+        "kiro-live-tool-agent-sonnet-current-public-60-run2-summary.json"
+      ],
+      "expected_harness_type": "tool-agent",
+      "expected_agent": "kiro_live_tool_agent",
+      "expected_model": "claude-sonnet-4.6",
+      "expected_task_count": 60,
+      "requires_rerun_before_current_comparison": false,
+      "notes": "Current repeated 60-task public split live HTTP Kiro Claude Sonnet 4.6 tool-agent baseline. The six-task public delta was rerun with Kiro-planned live HTTP probes against the local fixture apps and combined with the prior 54-task per-task evidence; public-split evidence only, not private-holdout, hosted-leaderboard, or v1 release evidence."
+    },
+    {
       "id": "scripted-sanity-public-54",
       "summary_path": "scripted-baseline-public-54-summary.json",
       "kind": "harness_check",
