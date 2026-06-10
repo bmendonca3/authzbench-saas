@@ -61,6 +61,7 @@ ALLOWED_PUBLIC_ROUTE_PREFIXES = (
     "/api/",
     "/audit-exports/",
     "/audit-logs/",
+    "/backlog-items/",
     "/cases/",
     "/compliance/",
     "/documents/",

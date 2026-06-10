@@ -2153,6 +2153,20 @@ def validate_v1_readiness(
     hosted_unmet = list(hosted_result["unmet"])
     if not hosted_runbook["passed"]:
         hosted_unmet.extend(hosted_runbook["unmet"])
+    hosted_stale_private_inputs = any(
+        item
+        in {
+            "benchmark_source_sha does not match expected source SHA",
+            "private_pack_fingerprint_sha256 does not match expected active pack",
+            "benchmark_source_sha must match release benchmark_source_sha",
+            "private_pack_fingerprint_sha256 must match the active private pack fingerprint",
+        }
+        for item in hosted_unmet
+    )
+    if hosted_stale_private_inputs:
+        hosted_unmet = [
+            "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
+        ]
     _add_gate(
         gates,
         "hosted_or_containerized_submission_execution",
