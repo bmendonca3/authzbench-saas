@@ -905,6 +905,7 @@ def _validate_v1_scale_roadmap(
     *,
     public_task_count: int,
     validated_private_holdout_task_count: int,
+    public_view: bool = False,
 ) -> dict[str, Any]:
     unmet: list[str] = []
     data = _json_object(root / SCALE_ROADMAP_PATH, unmet)
@@ -920,24 +921,35 @@ def _validate_v1_scale_roadmap(
     unmet.extend(_private_operation_public_safety_errors(data))
     if data.get("schema_version") != SCALE_ROADMAP_SCHEMA_VERSION:
         unmet.append(f"schema_version must be {SCALE_ROADMAP_SCHEMA_VERSION}")
-    if data.get("evidence_status") != "planning":
-        unmet.append("evidence_status must be planning")
+    evidence_status = data.get("evidence_status")
+    if evidence_status == "validated_private_holdout_counts":
+        if validated_private_holdout_task_count <= 0 and not public_view:
+            unmet.append("validated_private_holdout_counts requires validated private holdout tasks")
+    elif evidence_status != "planning":
+        unmet.append("evidence_status must be planning or validated_private_holdout_counts")
     if not _nonempty_string(data.get("public_claim_boundary")) or _placeholder(
         data.get("public_claim_boundary")
     ):
         unmet.append("public_claim_boundary is required")
-    elif "not" not in str(data.get("public_claim_boundary")).lower():
+    elif evidence_status == "planning" and "not" not in str(data.get("public_claim_boundary")).lower():
         unmet.append("public_claim_boundary must state that the roadmap is not task-scale evidence")
+    elif evidence_status == "validated_private_holdout_counts" and "count" not in str(
+        data.get("public_claim_boundary")
+    ).lower():
+        unmet.append("public_claim_boundary must state that only count-level private holdout evidence is reported")
     if data.get("current_public_task_count") != public_task_count:
         unmet.append(f"current_public_task_count must match current public count {public_task_count}")
-    if data.get("current_validated_private_holdout_task_count") != validated_private_holdout_task_count:
+    if (
+        data.get("current_validated_private_holdout_task_count") != validated_private_holdout_task_count
+        and not public_view
+    ):
         unmet.append(
             "current_validated_private_holdout_task_count must match validated private holdout task count"
         )
     if data.get("required_total_task_count") != 100:
         unmet.append("required_total_task_count must be 100")
     expected_additional = max(0, 100 - current_total)
-    if data.get("minimum_additional_tasks_required") != expected_additional:
+    if data.get("minimum_additional_tasks_required") != expected_additional and not public_view:
         unmet.append(
             f"minimum_additional_tasks_required must be {expected_additional} for the current task counts"
         )
@@ -990,13 +1002,17 @@ def _validate_v1_scale_roadmap(
             )
         else:
             splits.add(str(split))
-        if wave.get("status") not in {"planned", "design", "blocked-on-private-pack"}:
-            unmet.append(f"{wave_id}: status must be planned, design, or blocked-on-private-pack")
+        allowed_statuses = {"planned", "design", "blocked-on-private-pack"}
+        if evidence_status == "validated_private_holdout_counts":
+            allowed_statuses.add("validated-maintainer-only")
+        if wave.get("status") not in allowed_statuses:
+            unmet.append(f"{wave_id}: status must be one of: {', '.join(sorted(allowed_statuses))}")
         planned_task_count = wave.get("planned_task_count")
         if not isinstance(planned_task_count, int) or planned_task_count <= 0:
             unmet.append(f"{wave_id}: planned_task_count must be a positive integer")
             planned_task_count = 0
-        planned_additional += planned_task_count
+        if wave.get("status") != "validated-maintainer-only" or public_view:
+            planned_additional += planned_task_count
         families = wave.get("families")
         if (
             not isinstance(families, list)
@@ -2198,6 +2214,7 @@ def validate_v1_readiness(
     scale_roadmap = _validate_v1_scale_roadmap(
         public_task_count=public_task_count,
         validated_private_holdout_task_count=validated_private_holdout_task_count,
+        public_view=public_view,
     )
     scale_unmet: list[str] = []
     if total_task_count < 100:

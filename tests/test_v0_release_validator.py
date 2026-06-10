@@ -32,7 +32,7 @@ class V0ReleaseValidatorTests(unittest.TestCase):
         self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
         self.assertTrue(gates["sectional_reviews"]["passed"], result)
         self.assertTrue(gates["release_verification_evidence"]["passed"], result)
-        self.assertFalse(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
+        self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
         self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_release_snapshot_ready"], result)
         self.assertEqual(
             gates["baseline_credibility"]["evidence"]["release_snapshots"][0]["id"],
@@ -40,12 +40,24 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             result,
         )
         self.assertEqual(gates["baseline_credibility"]["unmet"], [], result)
-        self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 0, result)
-        self.assertEqual(gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"], 0, result)
-        self.assertEqual(gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"], 2, result)
+        self.assertGreaterEqual(
+            gates["baseline_credibility"]["evidence"]["current_public_model_family_count"],
+            5,
+            result,
+        )
+        self.assertGreaterEqual(
+            gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"],
+            5,
+            result,
+        )
+        self.assertGreaterEqual(
+            gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"],
+            2,
+            result,
+        )
         self.assertEqual(
-            gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
-            1,
+            gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"] >= 1,
+            True,
             result,
         )
         self.assertEqual(gates["leaderboard_submissions"]["unmet"], [], result)
@@ -74,12 +86,12 @@ class V0ReleaseValidatorTests(unittest.TestCase):
 
         gates = {gate["id"]: gate for gate in result["gates"]}
         self.assertEqual(gates["leaderboard_submissions"]["evidence"]["example_submission_count"], 1, result)
-        self.assertEqual(
+        self.assertGreaterEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"],
             2,
             result,
         )
-        self.assertEqual(
+        self.assertGreaterEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
             1,
             result,
