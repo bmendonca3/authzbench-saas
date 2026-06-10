@@ -265,5 +265,24 @@ class ValidatePublicScriptTests(unittest.TestCase):
         )
 
 
+    def test_scan_disallowed_coauthor_trailers_rejects_cursor(self) -> None:
+        from scripts import check_commit_message
+
+        hits = check_commit_message.find_disallowed_trailer_hits(
+            "Subject\n\nCo-authored-by: Cursor <cursoragent@cursor.com>\n"
+        )
+        self.assertTrue(hits)
+
+    def test_validate_scans_disallowed_coauthor_trailers(self) -> None:
+        with (
+            patch.object(validate_public, "run"),
+            patch.object(validate_public, "scan_disallowed_coauthor_trailers") as scan,
+            patch.object(validate_public, "scan_privacy"),
+            patch.object(validate_public, "run_container_smoke"),
+        ):
+            validate_public.validate(validate_public.ROOT, include_scripted_baseline=False, include_container_smoke=False)
+        scan.assert_called_once_with(validate_public.ROOT)
+
+
 if __name__ == "__main__":
     unittest.main()

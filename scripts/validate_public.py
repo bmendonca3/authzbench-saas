@@ -31,6 +31,10 @@ PRIVACY_PATTERN_PARTS = [
 PRIVACY_PATTERNS = [re.compile("".join(parts)) for parts in PRIVACY_PATTERN_PARTS]
 
 
+def scan_disallowed_coauthor_trailers(cwd: Path) -> None:
+    run([sys.executable, "scripts/check_commit_message.py", "--scan-history"], cwd)
+
+
 def run(
     cmd: list[str],
     cwd: Path = ROOT,
@@ -139,6 +143,7 @@ def run_container_smoke(cwd: Path) -> None:
 
 
 def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke: bool) -> None:
+    scan_disallowed_coauthor_trailers(cwd)
     run([sys.executable, "-Wd", "-m", "unittest", "discover", "-s", "tests"], cwd)
     run([sys.executable, "-m", "authzbench.validate_manifests", "--task", "tasks/*/*.json"], cwd)
     run(
