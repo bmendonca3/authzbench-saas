@@ -63,6 +63,31 @@ def _load_manifests(pattern: str) -> list[dict[str, Any]]:
     return [load_json(path) for path in _manifest_paths(pattern)]
 
 
+def _private_holdout_pack_patterns() -> list[str]:
+    rotation_metadata = ROOT / "tasks_private" / "holdout" / "rotation-metadata.json"
+    if rotation_metadata.exists():
+        try:
+            data = load_json(rotation_metadata)
+        except Exception:  # noqa: BLE001 - validation below should report malformed task evidence separately.
+            return [str(ROOT / "tasks_private" / "holdout" / "*" / "*.json")]
+        packs = data.get("packs")
+        if isinstance(packs, list):
+            active_patterns: list[str] = []
+            for pack in packs:
+                if not isinstance(pack, dict) or pack.get("role") != "active":
+                    continue
+                raw_path = pack.get("path")
+                if not isinstance(raw_path, str):
+                    continue
+                path = Path(raw_path)
+                if path.is_absolute() or ".." in path.parts:
+                    continue
+                active_patterns.append(str(ROOT / path / "*" / "*.json"))
+            if active_patterns:
+                return active_patterns
+    return [str(ROOT / "tasks_private" / "holdout" / "*" / "*.json")]
+
+
 def _git_ls_files(pathspec: str) -> tuple[list[str], str | None]:
     try:
         result = subprocess.run(
@@ -205,12 +230,18 @@ def validate_v0_release() -> dict[str, Any]:
         unmet=public_unmet,
     )
 
-    private_paths = _manifest_paths("tasks_private/holdout/**/*.json")
+    private_patterns = _private_holdout_pack_patterns()
+    private_paths = sorted(
+        Path(path)
+        for pattern in private_patterns
+        for path in glob.glob(pattern, recursive=True)
+        if Path(path).is_file()
+    )
     private_unmet: list[str] = []
     holdout_result: dict[str, Any] | None = None
     if private_paths:
         holdout_result = validate_holdout_pack(
-            [str(ROOT / "tasks_private" / "holdout" / "**" / "*.json")],
+            private_patterns,
             public_patterns=[str(ROOT / "tasks" / "*" / "*.json")],
             min_count=V0_TARGETS["min_private_holdout_tasks"],
             preferred_count=24,

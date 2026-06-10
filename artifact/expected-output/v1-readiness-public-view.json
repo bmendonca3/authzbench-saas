@@ -5,15 +5,12 @@
       "evidence": [
         "public_task_count=60",
         "vulnerable_task_count=24",
-        "current_public_model_family_count=0",
-        "has_current_public_tool_agent_baseline=False"
+        "current_public_model_family_count=6",
+        "has_current_public_tool_agent_baseline=True"
       ],
       "id": "stable_v1_prep_public_evidence",
-      "passed": false,
-      "unmet": [
-        "fewer than five current public model families are registered",
-        "missing current public tool-agent baseline"
-      ]
+      "passed": true,
+      "unmet": []
     },
     {
       "evidence": [
@@ -76,7 +73,7 @@
       "id": "hosted_or_containerized_submission_execution",
       "passed": false,
       "unmet": [
-        "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
+        "active private pack fingerprint is required for hosted smoke evidence"
       ]
     },
     {
@@ -159,7 +156,7 @@
     }
   ],
   "passed": false,
-  "passed_gate_count": 3,
-  "unmet_gate_count": 9,
+  "passed_gate_count": 4,
+  "unmet_gate_count": 8,
   "v1_ready": false
 }
