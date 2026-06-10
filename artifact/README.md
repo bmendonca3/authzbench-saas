@@ -16,6 +16,22 @@ here.
   maintainer-hosted or fully containerized release-candidate smoke path. It is
   not hosted execution evidence and cannot satisfy strict v1 readiness by
   itself.
+- `harbor-adapter-contract.json`: public-safe machine-readable contract for the
+  Harbor-compatible adapter target. It is not Harbor execution evidence and
+  cannot satisfy strict v1 readiness by itself.
+- `harbor-adapter-readiness-blockers.json`: public-safe blocker record for
+  Harbor adapter metadata, parity, local Harbor execution, and adapter review
+  evidence that do not exist yet. It is not adapter readiness or parity
+  evidence and cannot satisfy strict v1 readiness by itself.
+- `harbor-adapter-metadata.template.json`: public-safe template for future real
+  Harbor adapter metadata. It is not adapter metadata evidence, Harbor
+  execution evidence, or v1 readiness.
+- `harbor-parity-experiment.template.json`: public-safe template for future real
+  Harbor parity rows. It is not parity evidence, Harbor execution evidence, or
+  v1 readiness.
+- `task-quality-gate-contract.json`: public-safe acceptance contract for task
+  quality gates enforced during public validation. It is not external review
+  evidence and cannot satisfy strict v1 readiness by itself.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1 readiness.
@@ -46,9 +62,10 @@ Run the public validation entrypoint from the repository root:
 artifact/run-public-validation.sh
 ```
 
-The script runs the public validation gate, baseline registry validation,
-leaderboard submission validation, and the tracked-path privacy check. Its final
-line should be:
+The script runs the public validation gate, v1 public-readiness fixture check,
+Harbor adapter/blocker/template/preflight checks, baseline registry validation,
+leaderboard submission validation, and the tracked-path privacy check. Its
+final line should be:
 
 ```text
 Artifact privacy check passed: no private/raw artifact paths are tracked.
@@ -112,16 +129,20 @@ Use `artifact/submission-runner-smoke.template.json` only as a starting shape
 for that release-candidate record. Replace every placeholder with real
 maintainer-platform or containerized smoke evidence before writing
 `artifact/submission-runner-smoke.json`. The validator rejects the template if
-it is copied unchanged, and it also rejects angle-bracket placeholders embedded
-inside required fields such as `runner:<digest>` or `--private-pack <active-pack>`.
+it is copied unchanged. It also rejects unresolved placeholders embedded inside
+required fields, such as `runner:<digest>`, `TODO`, or `--private-pack
+<active-pack>`, and rejects local absolute paths anywhere in hosted smoke
+evidence.
 
 Use `artifact/hosted-submission-execution-runbook.json` as the public-safe
 procedure checklist for that release-candidate smoke. The readiness validator
 checks that the runbook defines hosted and fully containerized modes, required
 private inputs, isolation controls, required smoke fields, and publication
-rules. A valid runbook still does not satisfy the hosted-execution gate; only
-passed `execution_scope: release_candidate` evidence tied to the active private
-pack can do that.
+rules. Required private inputs and publication rules cannot contain unresolved
+placeholders, including embedded `TODO`, `TBD`, `unknown`, `n/a`, or
+angle-bracket markers. A valid runbook still does not satisfy the
+hosted-execution gate; only passed `execution_scope: release_candidate`
+evidence tied to the active private pack can do that.
 
 The tracked `artifact/submission-runner-smoke.json` file is allowed to contain a
 public-safe blocker record while the active private pack and maintainer-platform
@@ -155,7 +176,8 @@ starting shape for the ignored maintainer-only file
 `tasks_private/holdout/rotation-metadata.json`. Replace every placeholder with
 real active and shadow/candidate pack metadata, then validate in the private
 checkout. The v1 readiness validator rejects the template if it is copied
-unchanged into the private rotation metadata path. The populated metadata must
+unchanged into the private rotation metadata path, and recursively rejects any
+unresolved placeholder left in populated metadata. The populated metadata must
 declare concrete pack versions, lowercase SHA-256 fingerprints that match each
 computed pack fingerprint, a concrete compatibility policy, non-placeholder
 retirement triggers, and a rerun policy that requires both no-tools and

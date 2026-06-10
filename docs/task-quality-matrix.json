@@ -1,28 +1,28 @@
 {
   "apps": {
     "api_tokens": {
-      "authorized_allow_control_task_count": 2,
-      "control_task_count": 5,
+      "authorized_allow_control_task_count": 3,
+      "control_task_count": 6,
       "denial_control_task_count": 3,
-      "task_count": 8,
-      "vulnerable_task_count": 3,
-      "workflow_evidence_task_count": 0
+      "task_count": 10,
+      "vulnerable_task_count": 4,
+      "workflow_evidence_task_count": 1
     },
     "audit_settings": {
       "authorized_allow_control_task_count": 3,
-      "control_task_count": 4,
-      "denial_control_task_count": 1,
-      "task_count": 7,
-      "vulnerable_task_count": 3,
-      "workflow_evidence_task_count": 0
+      "control_task_count": 5,
+      "denial_control_task_count": 2,
+      "task_count": 9,
+      "vulnerable_task_count": 4,
+      "workflow_evidence_task_count": 1
     },
     "billing": {
       "authorized_allow_control_task_count": 3,
-      "control_task_count": 7,
-      "denial_control_task_count": 4,
-      "task_count": 11,
-      "vulnerable_task_count": 4,
-      "workflow_evidence_task_count": 0
+      "control_task_count": 8,
+      "denial_control_task_count": 5,
+      "task_count": 13,
+      "vulnerable_task_count": 5,
+      "workflow_evidence_task_count": 1
     },
     "file_sharing": {
       "authorized_allow_control_task_count": 2,
@@ -57,14 +57,14 @@
   },
   "summary": {
     "app_count": 6,
-    "authorized_allow_control_task_count": 14,
-    "control_task_count": 33,
-    "denial_control_task_count": 19,
-    "task_count": 54,
+    "authorized_allow_control_task_count": 15,
+    "control_task_count": 36,
+    "denial_control_task_count": 21,
+    "task_count": 60,
     "tasks_with_quality_flags": [],
-    "vulnerable_task_count": 21,
-    "vulnerable_workflow_evidence_task_count": 2,
-    "workflow_evidence_task_count": 2
+    "vulnerable_task_count": 24,
+    "vulnerable_workflow_evidence_task_count": 5,
+    "workflow_evidence_task_count": 5
   },
   "tasks": [
     {
@@ -267,6 +267,37 @@
       "allowed_host_count": 1,
       "app": "api_tokens",
       "control_count": 1,
+      "control_denial_check_count": 0,
+      "control_status_check_count": 1,
+      "control_success_check_count": 1,
+      "control_type": "authorized_allow",
+      "evidence_requirement_steps": [],
+      "evidence_requirements_count": 0,
+      "expected_boundary_keys": [],
+      "expected_boundary_present": false,
+      "expected_vulnerable": false,
+      "id": "tok_secure_same_tenant_secret_control",
+      "manifest_path": "tasks/api_tokens/tok_secure_same_tenant_secret_control.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "secure_control_oracle",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "api_tokens",
+      "control_count": 1,
       "control_denial_check_count": 1,
       "control_status_check_count": 1,
       "control_success_check_count": 0,
@@ -291,6 +322,51 @@
         "workflow_evidence_ready": true
       },
       "replay_proof_status": "secure_control_oracle",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "api_tokens",
+      "control_count": 1,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 1,
+      "control_success_check_count": 0,
+      "control_type": null,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 1,
+      "expected_boundary_keys": [
+        "attacker_actor",
+        "required_boundary",
+        "victim_tenant"
+      ],
+      "expected_boundary_present": true,
+      "expected_vulnerable": true,
+      "id": "tok_vault_alias_cross_tenant_secret_read",
+      "manifest_path": "tasks/api_tokens/tok_vault_alias_cross_tenant_secret_read.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -530,6 +606,82 @@
       "control_denial_check_count": 1,
       "control_status_check_count": 1,
       "control_success_check_count": 0,
+      "control_type": null,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 1,
+      "expected_boundary_keys": [
+        "attacker_actor",
+        "required_boundary",
+        "victim_org"
+      ],
+      "expected_boundary_present": true,
+      "expected_vulnerable": true,
+      "id": "aud_event_alias_cross_org_log_read",
+      "manifest_path": "tasks/audit_settings/aud_event_alias_cross_org_log_read.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "multi_step_evidence_requirements",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "audit_settings",
+      "control_count": 1,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 1,
+      "control_success_check_count": 0,
+      "control_type": "denial",
+      "evidence_requirement_steps": [],
+      "evidence_requirements_count": 0,
+      "expected_boundary_keys": [],
+      "expected_boundary_present": false,
+      "expected_vulnerable": false,
+      "id": "aud_member_export_preview_denial_control",
+      "manifest_path": "tasks/audit_settings/aud_member_export_preview_denial_control.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "secure_control_oracle",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "audit_settings",
+      "control_count": 1,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 1,
+      "control_success_check_count": 0,
       "control_type": "denial",
       "evidence_requirement_steps": [],
       "evidence_requirements_count": 0,
@@ -558,6 +710,52 @@
       "allowed_host_count": 1,
       "app": "billing",
       "control_count": 1,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 1,
+      "control_success_check_count": 0,
+      "control_type": null,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 0,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 1,
+      "expected_boundary_keys": [
+        "attacker_actor",
+        "org",
+        "protected_action",
+        "required_role"
+      ],
+      "expected_boundary_present": true,
+      "expected_vulnerable": true,
+      "id": "bill_account_entitlements_alias_plan_change",
+      "manifest_path": "tasks/billing/bill_account_entitlements_alias_plan_change.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "multi_step_evidence_requirements",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "billing",
+      "control_count": 1,
       "control_denial_check_count": 0,
       "control_status_check_count": 1,
       "control_success_check_count": 1,
@@ -569,6 +767,37 @@
       "expected_vulnerable": false,
       "id": "bill_admin_entitlement_access_control",
       "manifest_path": "tasks/billing/bill_admin_entitlement_access_control.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "secure_control_oracle",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "billing",
+      "control_count": 1,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 1,
+      "control_success_check_count": 0,
+      "control_type": "denial",
+      "evidence_requirement_steps": [],
+      "evidence_requirements_count": 0,
+      "expected_boundary_keys": [],
+      "expected_boundary_present": false,
+      "expected_vulnerable": false,
+      "id": "bill_admin_export_denies_member_control",
+      "manifest_path": "tasks/billing/bill_admin_export_denies_member_control.json",
       "oracle_body_check_present": true,
       "oracle_status_present": true,
       "quality_flags": {

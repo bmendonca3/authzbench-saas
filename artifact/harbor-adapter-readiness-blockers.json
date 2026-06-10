@@ -1,0 +1,142 @@
+{
+  "schema_version": "harbor-adapter-readiness-blockers-v1",
+  "evidence_status": "implementation_blockers",
+  "public_claim_boundary": "This file is not Harbor adapter readiness evidence, not parity evidence, not external review evidence, and not v1 readiness. It records public-safe blockers that must be replaced with real Harbor execution and adapter-review evidence before release claims.",
+  "public_sources": [
+    "https://www.harborframework.com/docs/datasets/adapters",
+    "https://www.harborframework.com/docs/datasets/publishing",
+    "https://www.harborframework.com/docs/datasets",
+    "https://www.harborframework.com/docs/run-jobs/run-evals"
+  ],
+  "repo_side_progress": [
+    {
+      "item": "public_skeleton_builder",
+      "status": "partial_repo_side_helper",
+      "evidence": "scripts/build_harbor_dataset_skeleton.py",
+      "claim_boundary": "Generates public Harbor-shaped task directories and a reference run config only; does not run Harbor."
+    },
+    {
+      "item": "public_skeleton_validator",
+      "status": "partial_repo_side_helper",
+      "evidence": "scripts/validate_harbor_dataset_skeleton.py",
+      "claim_boundary": "Checks generated skeleton structure and redaction boundaries only; does not prove Harbor execution."
+    },
+    {
+      "item": "adapter_contract_validator",
+      "status": "partial_repo_side_helper",
+      "evidence": "scripts/validate_harbor_integration.py",
+      "claim_boundary": "Checks public-safe planning contract only; does not prove adapter acceptance or parity."
+    },
+    {
+      "item": "adapter_metadata_parity_templates",
+      "status": "partial_repo_side_helper",
+      "evidence": "scripts/validate_harbor_adapter_templates.py",
+      "claim_boundary": "Checks public-safe metadata and parity template shapes only; does not prove real adapter metadata, parity, or Harbor execution."
+    },
+    {
+      "item": "local_execution_preflight",
+      "status": "partial_repo_side_helper",
+      "evidence": "scripts/check_harbor_local_execution.py",
+      "claim_boundary": "Checks generated skeleton validity and Harbor CLI discoverability only; does not run Harbor."
+    },
+    {
+      "item": "local_harbor_verification_smoke_target",
+      "status": "partial_repo_side_helper",
+      "evidence": "Generated public skeletons include a current Harbor run config and verifier image layout intended for a local verification-enabled smoke run.",
+      "claim_boundary": "This blocker artifact does not record Harbor execution evidence, scorer parity, adapter readiness, or v1 readiness. Local Harbor smoke results must be rerun and reported separately from this implementation-blocker file."
+    },
+    {
+      "item": "local_harbor_execution_smoke",
+      "status": "partial_repo_side_smoke",
+      "evidence": "artifact/harbor-local-execution-smoke.json",
+      "claim_boundary": "Records a redacted local Harbor task/agent/verifier smoke with one public secure-control submission and native-scorer reward parity; does not prove multi-task adapter parity, hosted readiness, or v1 readiness."
+    }
+  ],
+  "required_before_adapter_ready": [
+    {
+      "item": "harbor_adapter_package",
+      "status": "blocked",
+      "missing_input": "exact Harbor adapter package layout and SDK/API integration tested in a real Harbor checkout",
+      "required_evidence": [
+        "adapter package/module entrypoint",
+        "CLI supporting --output-dir, --limit, --overwrite, and --task-ids or documented equivalent",
+        "generated dataset checked by Harbor tooling"
+      ]
+    },
+    {
+      "item": "adapter_metadata_json",
+      "status": "blocked",
+      "missing_input": "real adapter metadata after Harbor adapter package and dataset shape are finalized",
+      "required_evidence": [
+        "adapter_name",
+        "adapter_builders",
+        "original_benchmark split descriptors",
+        "harbor_adapter split descriptors",
+        "registry_benchmark_size",
+        "parity_sampling_rate",
+        "parity_matching_agents",
+        "parity_costs"
+      ]
+    },
+    {
+      "item": "parity_experiment_json",
+      "status": "blocked",
+      "missing_input": "real Harbor runs and comparable original AuthZBench-SaaS runs",
+      "required_evidence": [
+        "agent and model identifiers",
+        "adapted benchmark size",
+        "parity benchmark size",
+        "number of runs",
+        "original and Harbor run arrays",
+        "mean plus sample SEM reporting",
+        "matching or divergence disposition"
+      ]
+    },
+    {
+      "item": "adapter_readme_parity_table",
+      "status": "blocked",
+      "missing_input": "completed parity experiment and public-safe links to review artifacts",
+      "required_evidence": [
+        "agent",
+        "model",
+        "metric",
+        "runs",
+        "dataset size",
+        "original mean plus SEM",
+        "Harbor mean plus SEM",
+        "known limitations"
+      ]
+    },
+    {
+      "item": "local_harbor_run",
+      "status": "partial_repo_side_smoke",
+      "missing_input": "multi-task submission-producing Harbor adapter run plus comparable original-run evidence",
+      "required_evidence": [
+        "Harbor CLI/package command available through uvx harbor or harbor on PATH",
+        "uvx harbor run -c <generated-public-run-config> --yes command exits successfully with verification enabled, or an equivalent installed harbor command does",
+        "job config/result files",
+        "trial verifier output with scorer-derived reward.json or reward.txt",
+        "agent trajectory showing valid submission.json files were produced for vulnerable and secure-control tasks",
+        "redacted run-bundle collection with score output",
+        "original AuthZBench-SaaS run evidence for the same public task set and agent configuration",
+        "parity disposition comparing original and Harbor results"
+      ]
+    },
+    {
+      "item": "harbor_review_or_publish_path",
+      "status": "blocked",
+      "missing_input": "maintainer decision to pursue Harbor adapter review, dataset publishing, or private organization sharing",
+      "required_evidence": [
+        "public-safe adapter review artifacts",
+        "dataset visibility decision",
+        "no private manifests or private raw evidence in public output"
+      ]
+    }
+  ],
+  "hard_public_boundaries": [
+    "Do not claim Harbor adapter readiness from this blocker file.",
+    "Do not claim hosted leaderboard readiness without Harbor execution and release evidence.",
+    "Do not publish private manifests, seeds, routes, or oracles.",
+    "Do not synthesize parity results or external review findings."
+  ]
+}

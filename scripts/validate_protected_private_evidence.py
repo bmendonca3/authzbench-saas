@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,7 @@ SENSITIVE_STRING_MARKERS = (
     "results/",
     "tasks_private/holdout",
 )
+ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 
 FINGERPRINT_FIELDS = {
     "schema_version",
@@ -70,6 +72,8 @@ def _find_sensitive_items(value: Any, path: str = "$") -> list[str]:
         for marker in SENSITIVE_STRING_MARKERS:
             if marker in value:
                 findings.append(f"{path}: sensitive path marker {marker!r} is not allowed")
+        if ABSOLUTE_PATH_RE.search(value):
+            findings.append(f"{path}: absolute path is not allowed in redacted evidence")
     return findings
 
 

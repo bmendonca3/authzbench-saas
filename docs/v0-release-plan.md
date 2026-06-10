@@ -286,7 +286,7 @@ Do not tag the real `v0` until all required gates pass:
 - at least five distinct real model or agent families are present or linked,
   excluding scripted/live-scripted harness checks
 - at least one baseline uses a tool-equipped agent harness
-- baseline registry validation passes and reports `v0_baseline_ready: true`
+- baseline registry validation passes and reports the intended current evidence state
 - leaderboard submission validation passes for all tracked examples and any
   release-candidate private-holdout submission files
 - `docs/release-evidence.json` marks every required v0 evidence field true for

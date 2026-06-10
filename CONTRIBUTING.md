@@ -33,11 +33,13 @@ private holdout evidence.
    to `denial` or `authorized_allow`.
 5. Include enough oracle and control information for deterministic backend
    replay, but do not copy private holdout material into public tasks.
-6. Review the task family with [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md).
-7. Run:
+6. Keep `allowed_hosts` limited to local benchmark fixture app names.
+7. Review the task family with [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md).
+8. Run:
 
 ```bash
 python3 -m authzbench.validate_manifests --task 'tasks/*/*.json'
+python3 scripts/validate_task_quality_gate.py --contract artifact/task-quality-gate-contract.json --task 'tasks/*/*.json'
 python3 scripts/validate_public.py --include-scripted-baseline
 ```
 

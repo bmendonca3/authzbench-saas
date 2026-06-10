@@ -40,7 +40,7 @@
   "per_task_tool_probe_artifact_count": 54,
   "planner_failure_count": 0,
   "planner_parse_error_count": 0,
-  "promotion_annotation": "Run 1 of the current repeated 54-task public split live HTTP Kiro Claude Sonnet 4.6 tool-agent baseline. Raw result artifacts and target request logs remain under ignored results/ and captures/ paths.",
+  "promotion_annotation": "Run 1 of the now-stale repeated 54-task public split live HTTP Kiro Claude Sonnet 4.6 tool-agent baseline. Raw result artifacts and target request logs remain under ignored results/ and captures/ paths.",
   "run_id": "20260608T013814005961Z-9c4b9351",
   "scored_submission_finding_total": 20,
   "submitted_finding_total": 20,

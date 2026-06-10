@@ -20,7 +20,11 @@ from scripts.containerized_submission_smoke import (
     REQUIRED_CONTAINER_CONSTRAINTS,
     validate_smoke_evidence,
 )
+from scripts.check_harbor_local_execution import check_harbor_local_execution
 from scripts.validate_baseline_registry import validate_registry
+from scripts.validate_harbor_adapter_blockers import validate_harbor_adapter_blockers
+from scripts.validate_harbor_adapter_templates import validate_harbor_adapter_templates
+from scripts.validate_harbor_integration import validate_harbor_integration
 from scripts.validate_holdout_pack import validate_holdout_pack
 from scripts.validate_leaderboard_submission import _submission_paths, validate_submission
 
@@ -58,6 +62,16 @@ EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH = "docs/reviews/external-review-response.
 HOSTED_EXECUTION_EVIDENCE_PATH = "artifact/submission-runner-smoke.json"
 HOSTED_EXECUTION_RUNBOOK_PATH = "artifact/hosted-submission-execution-runbook.json"
 HOSTED_EXECUTION_TEMPLATE_PATH = "artifact/submission-runner-smoke.template.json"
+HARBOR_ADAPTER_CONTRACT_PATH = "artifact/harbor-adapter-contract.json"
+HARBOR_ADAPTER_BLOCKERS_PATH = "artifact/harbor-adapter-readiness-blockers.json"
+HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH = "scripts/validate_harbor_adapter_blockers.py"
+HARBOR_ADAPTER_METADATA_TEMPLATE_PATH = "artifact/harbor-adapter-metadata.template.json"
+HARBOR_ADAPTER_PARITY_TEMPLATE_PATH = "artifact/harbor-parity-experiment.template.json"
+HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH = "scripts/validate_harbor_adapter_templates.py"
+HARBOR_INTEGRATION_RUNBOOK_PATH = "docs/harbor-integration-runbook.md"
+HARBOR_INTEGRATION_VALIDATOR_PATH = "scripts/validate_harbor_integration.py"
+HARBOR_LOCAL_EVIDENCE_PATH = "artifact/harbor-local-execution-smoke.json"
+HARBOR_LOCAL_PREFLIGHT_PATH = "scripts/check_harbor_local_execution.py"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PRIVATE_OPERATION_RUNBOOK_PATH = "artifact/private-holdout-operation-runbook.json"
 PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
@@ -112,7 +126,7 @@ PRIVATE_OPERATION_SENSITIVE_TEXT_MARKERS = (
     "private route",
     "private seed",
 )
-PRIVATE_OPERATION_ABSOLUTE_PATH_RE = re.compile(r"(^|[\s:])/(Users|home|private/var|var/folders|tmp)(/|$)")
+PRIVATE_OPERATION_ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 RELEASE_VALIDATION_TEMPLATE_PATH = "artifact/v1-release-candidate-validation.template.json"
 REQUIRED_RELEASE_VALIDATION_COMMANDS = (
     "python3 -m unittest discover -s tests",
@@ -134,6 +148,16 @@ VALID_REVIEW_STATUSES = {"pending", "complete"}
 POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     EXTERNAL_REVIEW_EVIDENCE_PATH,
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HARBOR_ADAPTER_CONTRACT_PATH,
+    HARBOR_ADAPTER_BLOCKERS_PATH,
+    HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+    HARBOR_ADAPTER_METADATA_TEMPLATE_PATH,
+    HARBOR_ADAPTER_PARITY_TEMPLATE_PATH,
+    HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
+    HARBOR_INTEGRATION_RUNBOOK_PATH,
+    HARBOR_INTEGRATION_VALIDATOR_PATH,
+    HARBOR_LOCAL_EVIDENCE_PATH,
+    HARBOR_LOCAL_PREFLIGHT_PATH,
     HOSTED_EXECUTION_EVIDENCE_PATH,
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
@@ -150,6 +174,16 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
     EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
+    HARBOR_ADAPTER_CONTRACT_PATH,
+    HARBOR_ADAPTER_BLOCKERS_PATH,
+    HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+    HARBOR_ADAPTER_METADATA_TEMPLATE_PATH,
+    HARBOR_ADAPTER_PARITY_TEMPLATE_PATH,
+    HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
+    HARBOR_INTEGRATION_RUNBOOK_PATH,
+    HARBOR_INTEGRATION_VALIDATOR_PATH,
+    HARBOR_LOCAL_EVIDENCE_PATH,
+    HARBOR_LOCAL_PREFLIGHT_PATH,
     HOSTED_EXECUTION_RUNBOOK_PATH,
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
@@ -229,6 +263,19 @@ def _unresolved_placeholder(value: Any) -> bool:
         r"(?i)(^|[^A-Za-z0-9_])(tbd|todo|pending|unknown|n/a)([^A-Za-z0-9_]|$)",
         text,
     ) is not None
+
+
+def _recursive_unresolved_placeholders(value: Any, path: str = "$") -> list[str]:
+    errors: list[str] = []
+    if isinstance(value, dict):
+        for raw_key, child in value.items():
+            errors.extend(_recursive_unresolved_placeholders(child, f"{path}.{raw_key}"))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            errors.extend(_recursive_unresolved_placeholders(child, f"{path}[{index}]"))
+    elif _unresolved_placeholder(value):
+        errors.append(f"{path}: unresolved placeholder is not allowed")
+    return errors
 
 
 def _safe_existing_relative_path(root: Path, value: str) -> bool:
@@ -396,6 +443,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         }
     if data.get("template_only") is True or data.get("schema_version") == "private-holdout-rotation-metadata-template-v1":
         unmet.append("private holdout rotation metadata template is not private holdout evidence")
+    unmet.extend(_recursive_unresolved_placeholders(data))
 
     packs = data.get("packs")
     if not isinstance(packs, list) or not packs:
@@ -857,6 +905,7 @@ def _validate_v1_scale_roadmap(
     *,
     public_task_count: int,
     validated_private_holdout_task_count: int,
+    public_view: bool = False,
 ) -> dict[str, Any]:
     unmet: list[str] = []
     data = _json_object(root / SCALE_ROADMAP_PATH, unmet)
@@ -872,24 +921,35 @@ def _validate_v1_scale_roadmap(
     unmet.extend(_private_operation_public_safety_errors(data))
     if data.get("schema_version") != SCALE_ROADMAP_SCHEMA_VERSION:
         unmet.append(f"schema_version must be {SCALE_ROADMAP_SCHEMA_VERSION}")
-    if data.get("evidence_status") != "planning":
-        unmet.append("evidence_status must be planning")
+    evidence_status = data.get("evidence_status")
+    if evidence_status == "validated_private_holdout_counts":
+        if validated_private_holdout_task_count <= 0 and not public_view:
+            unmet.append("validated_private_holdout_counts requires validated private holdout tasks")
+    elif evidence_status != "planning":
+        unmet.append("evidence_status must be planning or validated_private_holdout_counts")
     if not _nonempty_string(data.get("public_claim_boundary")) or _placeholder(
         data.get("public_claim_boundary")
     ):
         unmet.append("public_claim_boundary is required")
-    elif "not" not in str(data.get("public_claim_boundary")).lower():
+    elif evidence_status == "planning" and "not" not in str(data.get("public_claim_boundary")).lower():
         unmet.append("public_claim_boundary must state that the roadmap is not task-scale evidence")
+    elif evidence_status == "validated_private_holdout_counts" and "count" not in str(
+        data.get("public_claim_boundary")
+    ).lower():
+        unmet.append("public_claim_boundary must state that only count-level private holdout evidence is reported")
     if data.get("current_public_task_count") != public_task_count:
         unmet.append(f"current_public_task_count must match current public count {public_task_count}")
-    if data.get("current_validated_private_holdout_task_count") != validated_private_holdout_task_count:
+    if (
+        data.get("current_validated_private_holdout_task_count") != validated_private_holdout_task_count
+        and not public_view
+    ):
         unmet.append(
             "current_validated_private_holdout_task_count must match validated private holdout task count"
         )
     if data.get("required_total_task_count") != 100:
         unmet.append("required_total_task_count must be 100")
     expected_additional = max(0, 100 - current_total)
-    if data.get("minimum_additional_tasks_required") != expected_additional:
+    if data.get("minimum_additional_tasks_required") != expected_additional and not public_view:
         unmet.append(
             f"minimum_additional_tasks_required must be {expected_additional} for the current task counts"
         )
@@ -942,13 +1002,17 @@ def _validate_v1_scale_roadmap(
             )
         else:
             splits.add(str(split))
-        if wave.get("status") not in {"planned", "design", "blocked-on-private-pack"}:
-            unmet.append(f"{wave_id}: status must be planned, design, or blocked-on-private-pack")
+        allowed_statuses = {"planned", "design", "blocked-on-private-pack"}
+        if evidence_status == "validated_private_holdout_counts":
+            allowed_statuses.add("validated-maintainer-only")
+        if wave.get("status") not in allowed_statuses:
+            unmet.append(f"{wave_id}: status must be one of: {', '.join(sorted(allowed_statuses))}")
         planned_task_count = wave.get("planned_task_count")
         if not isinstance(planned_task_count, int) or planned_task_count <= 0:
             unmet.append(f"{wave_id}: planned_task_count must be a positive integer")
             planned_task_count = 0
-        planned_additional += planned_task_count
+        if wave.get("status") != "validated-maintainer-only" or public_view:
+            planned_additional += planned_task_count
         families = wave.get("families")
         if (
             not isinstance(families, list)
@@ -1259,7 +1323,7 @@ def _validate_hosted_execution_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_inputs = sorted(required_input_set - input_set)
     if missing_inputs:
         unmet.append("required_private_inputs missing: " + ", ".join(missing_inputs))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in required_inputs):
         unmet.append("required_private_inputs cannot contain placeholders")
 
     modes = data.get("execution_modes")
@@ -1335,7 +1399,7 @@ def _validate_hosted_execution_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_rules = sorted(required_rules - rule_set)
     if missing_rules:
         unmet.append("publication_rules missing: " + ", ".join(missing_rules))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in publication_rules):
         unmet.append("publication_rules cannot contain placeholders")
 
     return {
@@ -1357,6 +1421,8 @@ def _validate_hosted_execution_evidence(
         return {"passed": False, "path": HOSTED_EXECUTION_EVIDENCE_PATH, "unmet": unmet}
     if data.get("template_only") is True or data.get("schema_version") == "submission-runner-smoke-template-v1":
         unmet.append("submission-runner smoke template is not release-candidate hosted execution evidence")
+    unmet.extend(_private_operation_public_safety_errors(data))
+    unmet.extend(_recursive_unresolved_placeholders(data))
 
     if data.get("evidence_status") == "blocked":
         if data.get("schema_version") != HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION:
@@ -1364,13 +1430,13 @@ def _validate_hosted_execution_evidence(
         if data.get("blocked_gate") != "hosted_or_containerized_submission_execution":
             unmet.append("blocked_gate must be hosted_or_containerized_submission_execution")
         for field in ("blocker", "next_action"):
-            if not _nonempty_string(data.get(field)) or _placeholder(data.get(field)):
+            if not _nonempty_string(data.get(field)) or _unresolved_placeholder(data.get(field)):
                 unmet.append(f"{field} is required")
         required_inputs = data.get("required_release_inputs")
         if (
             not isinstance(required_inputs, list)
             or not required_inputs
-            or any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs)
+            or any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in required_inputs)
         ):
             unmet.append("required_release_inputs must list concrete missing release inputs")
         rehearsal = data.get("last_verified_public_rehearsal")
@@ -1401,7 +1467,7 @@ def _validate_hosted_execution_evidence(
             "unmet": list(dict.fromkeys(unmet)),
         }
 
-    expected_sha = benchmark_source_sha or _current_commit_sha()
+    expected_sha = benchmark_source_sha
     unmet.extend(
         validate_smoke_evidence(
             data,
@@ -1419,7 +1485,7 @@ def _validate_hosted_execution_evidence(
         unmet.append("submission-runner smoke result must be passed")
     if data.get("execution_scope") != "release_candidate":
         unmet.append("submission-runner smoke execution_scope must be release_candidate")
-    if data.get("benchmark_source_sha") != expected_sha:
+    if expected_sha is not None and data.get("benchmark_source_sha") != expected_sha:
         unmet.append("benchmark_source_sha must match release benchmark_source_sha")
     if private_pack_fingerprint_sha256 is None:
         unmet.append("active private pack fingerprint is required for hosted smoke evidence")
@@ -1763,7 +1829,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_inputs = sorted(required_input_set - input_set)
     if missing_inputs:
         unmet.append("required_inputs missing: " + ", ".join(missing_inputs))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in required_inputs):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in required_inputs):
         unmet.append("required_inputs cannot contain placeholders")
 
     commands = data.get("required_commands")
@@ -1774,7 +1840,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_commands = sorted(set(REQUIRED_RELEASE_VALIDATION_COMMANDS) - command_set)
     if missing_commands:
         unmet.append("required_commands missing: " + ", ".join(missing_commands))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in commands):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in commands):
         unmet.append("required_commands cannot contain placeholders")
 
     evidence_fields = data.get("required_evidence_fields")
@@ -1798,7 +1864,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_fields = sorted(required_fields - field_set)
     if missing_fields:
         unmet.append("required_evidence_fields missing: " + ", ".join(missing_fields))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in evidence_fields):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in evidence_fields):
         unmet.append("required_evidence_fields cannot contain placeholders")
 
     acceptance_checks = data.get("acceptance_checks")
@@ -1822,7 +1888,7 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_acceptance = sorted(required_acceptance - acceptance_set)
     if missing_acceptance:
         unmet.append("acceptance_checks missing: " + ", ".join(missing_acceptance))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in acceptance_checks):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in acceptance_checks):
         unmet.append("acceptance_checks cannot contain placeholders")
 
     publication_rules = data.get("publication_rules")
@@ -1843,13 +1909,61 @@ def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
     missing_rules = sorted(required_rules - rule_set)
     if missing_rules:
         unmet.append("publication_rules missing: " + ", ".join(missing_rules))
-    if any(not _nonempty_string(item) or _placeholder(item) for item in publication_rules):
+    if any(not _nonempty_string(item) or _unresolved_placeholder(item) for item in publication_rules):
         unmet.append("publication_rules cannot contain placeholders")
 
     return {
         "passed": not unmet,
         "path": RELEASE_VALIDATION_RUNBOOK_PATH,
         "unmet": list(dict.fromkeys(unmet)),
+    }
+
+
+def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str, Any]:
+    unmet: list[str] = []
+
+    integration = validate_harbor_integration()
+    if not integration["passed"]:
+        unmet.extend(f"harbor integration contract: {error}" for error in integration["errors"])
+
+    blockers = validate_harbor_adapter_blockers()
+    if not blockers["passed"]:
+        unmet.extend(f"harbor adapter blocker record: {error}" for error in blockers["errors"])
+
+    templates = validate_harbor_adapter_templates()
+    if not templates["passed"]:
+        unmet.extend(f"harbor adapter template artifacts: {error}" for error in templates["errors"])
+
+    preflight = check_harbor_local_execution(discover_harbor_cli=not public_view)
+    if preflight.get("generated_skeleton_validated") is not True:
+        unmet.append("Harbor local preflight did not validate a generated public skeleton")
+    if preflight.get("harbor_execution_verified") is not False:
+        unmet.append("Harbor local preflight must not claim Harbor execution")
+    if "not Harbor execution evidence" not in str(preflight.get("public_claim_boundary", "")):
+        unmet.append("Harbor local preflight must preserve non-evidence claim boundary")
+
+    for path in (
+        HARBOR_ADAPTER_CONTRACT_PATH,
+        HARBOR_ADAPTER_BLOCKERS_PATH,
+        HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+        HARBOR_ADAPTER_METADATA_TEMPLATE_PATH,
+        HARBOR_ADAPTER_PARITY_TEMPLATE_PATH,
+        HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
+        HARBOR_INTEGRATION_RUNBOOK_PATH,
+        HARBOR_INTEGRATION_VALIDATOR_PATH,
+        HARBOR_LOCAL_PREFLIGHT_PATH,
+    ):
+        if not (ROOT / path).exists():
+            unmet.append(f"missing Harbor repo-side artifact: {path}")
+
+    return {
+        "blocked_until": preflight.get("blocked_until", []),
+        "harbor_cli_found": preflight.get("harbor_cli_found"),
+        "harbor_execution_verified": preflight.get("harbor_execution_verified"),
+        "passed": not unmet,
+        "ready_for_local_harbor_run": preflight.get("ready_for_local_harbor_run"),
+        "skeleton_validated": preflight.get("generated_skeleton_validated"),
+        "unmet": unmet,
     }
 
 
@@ -1867,6 +1981,15 @@ def _benchmark_source_sha_from_release_evidence(release_evidence_path: Path | No
     return value if _sha(value) else None
 
 
+def _benchmark_source_sha_from_hosted_smoke() -> str | None:
+    try:
+        data = load_json(ROOT / HOSTED_EXECUTION_EVIDENCE_PATH)
+    except Exception:
+        return None
+    value = data.get("benchmark_source_sha") if isinstance(data, dict) else None
+    return value if _sha(value) else None
+
+
 def validate_v1_readiness(
     release_evidence_path: Path | None = None,
     *,
@@ -1874,7 +1997,11 @@ def validate_v1_readiness(
 ) -> dict[str, Any]:
     gates: list[dict[str, Any]] = []
     target_sha = _current_commit_sha()
-    benchmark_source_sha = _benchmark_source_sha_from_release_evidence(release_evidence_path) or target_sha
+    benchmark_source_sha = (
+        _benchmark_source_sha_from_release_evidence(release_evidence_path)
+        or _benchmark_source_sha_from_hosted_smoke()
+        or target_sha
+    )
 
     manifest_result = validate_patterns([str(ROOT / "tasks" / "*" / "*.json")])
     registry_result = validate_registry()
@@ -1994,6 +2121,30 @@ def validate_v1_readiness(
         governance_unmet,
     )
 
+    harbor_repo_side = _validate_harbor_repo_side_target(public_view=public_view)
+    _add_gate(
+        gates,
+        "harbor_repo_side_target_specified",
+        bool(harbor_repo_side["passed"]),
+        [
+            HARBOR_INTEGRATION_RUNBOOK_PATH,
+            HARBOR_ADAPTER_CONTRACT_PATH,
+            HARBOR_ADAPTER_BLOCKERS_PATH,
+            HARBOR_ADAPTER_METADATA_TEMPLATE_PATH,
+            HARBOR_ADAPTER_PARITY_TEMPLATE_PATH,
+            HARBOR_INTEGRATION_VALIDATOR_PATH,
+            HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
+            HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
+            HARBOR_LOCAL_PREFLIGHT_PATH,
+            f"harbor_cli_found={harbor_repo_side['harbor_cli_found']}",
+            f"generated_skeleton_validated={harbor_repo_side['skeleton_validated']}",
+            f"harbor_execution_verified={harbor_repo_side['harbor_execution_verified']}",
+            f"ready_for_local_harbor_run={harbor_repo_side['ready_for_local_harbor_run']}",
+            f"blocked_until={harbor_repo_side['blocked_until']}",
+        ],
+        list(harbor_repo_side["unmet"]),
+    )
+
     hosted_result = _validate_hosted_execution_evidence(
         benchmark_source_sha=benchmark_source_sha,
         private_pack_fingerprint_sha256=active_private_pack_fingerprint,
@@ -2002,6 +2153,20 @@ def validate_v1_readiness(
     hosted_unmet = list(hosted_result["unmet"])
     if not hosted_runbook["passed"]:
         hosted_unmet.extend(hosted_runbook["unmet"])
+    hosted_stale_private_inputs = any(
+        item
+        in {
+            "benchmark_source_sha does not match expected source SHA",
+            "private_pack_fingerprint_sha256 does not match expected active pack",
+            "benchmark_source_sha must match release benchmark_source_sha",
+            "private_pack_fingerprint_sha256 must match the active private pack fingerprint",
+        }
+        for item in hosted_unmet
+    )
+    if hosted_stale_private_inputs:
+        hosted_unmet = [
+            "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
+        ]
     _add_gate(
         gates,
         "hosted_or_containerized_submission_execution",
@@ -2076,6 +2241,7 @@ def validate_v1_readiness(
     scale_roadmap = _validate_v1_scale_roadmap(
         public_task_count=public_task_count,
         validated_private_holdout_task_count=validated_private_holdout_task_count,
+        public_view=public_view,
     )
     scale_unmet: list[str] = []
     if total_task_count < 100:

@@ -61,18 +61,18 @@ AuthZBench-SaaS does not claim to measure:
 ## Current v1-Prep Public Split
 
 - 6 synthetic SaaS apps
-- 54 public tasks
-- 21 vulnerable tasks
-- 33 secure-control tasks
-- 19 denial controls and 14 authorized-allow controls
+- 60 public tasks
+- 24 vulnerable tasks
+- 36 secure-control tasks
+- 21 denial controls and 15 authorized-allow controls
 - billing entitlement and support ticket reassignment expansion slices
-- current 54-task scripted sanity baseline
-- five repeated current 54-task public no-tools model-family baselines: Qwen
+- current 60-task scripted sanity baseline
+- five repeated stale 54-task public no-tools model-family baselines: Qwen
   with explicit command/output failure diagnostics, Claude Haiku 4.5 and Claude
   Sonnet 4.6 with zero adapter, runner, and invalid-submission failures, GLM-5
   with one retained outer runner failure in run 1 and a clean 54/54 artifact run
   2, and Claude Opus 4.6 with complete zero-failure task artifacts
-- one repeated current 54-task public live HTTP Kiro `claude-sonnet-4.6`
+- one repeated stale 54-task public live HTTP Kiro `claude-sonnet-4.6`
   tool-agent baseline with 54/54 target-request correlation in both runs
 - five repeated 49-task public no-tools Kiro model-family baselines, now stale
   after 54-task reruns
@@ -112,9 +112,9 @@ mixed with current evidence without a compatibility label.
   Public runs should still be treated separately from protected private
   evaluation.
 - Five 49-task public no-tools Kiro model-family baselines exist as repeated
-  diagnostic evidence, but they are stale for the current 54-task split.
+  diagnostic evidence, but they are stale for the current 60-task split.
 - Repeated 54-task public no-tools Qwen, Claude Haiku 4.5, Claude Sonnet 4.6,
-  GLM-5, and Claude Opus 4.6 baselines are current. Qwen's command/output
+  GLM-5, and Claude Opus 4.6 baselines are stale. Qwen's command/output
   failures, Haiku's repeated authorized-allow false report, Sonnet's two
   different support-control false reports, GLM's retained runner failure, and
   Opus's zero-failure artifact pair are part of the reported results; these
@@ -122,7 +122,7 @@ mixed with current evidence without a compatibility label.
 - One 49-task public live HTTP Kiro tool-agent baseline exists with 49/49
   target-request correlation in both runs, but it is stale for the current
   54-task split.
-- One current 54-task public live HTTP Kiro `claude-sonnet-4.6` tool-agent
+- One stale 54-task public live HTTP Kiro `claude-sonnet-4.6` tool-agent
   baseline exists with 54/54 target-request correlation in both runs, zero
   planner/parser failures, zero invalid submissions, and zero secure-control
   false reports. It is public-split diagnostic evidence only, not private
@@ -130,16 +130,16 @@ mixed with current evidence without a compatibility label.
 - Boundary-reasoning calibration on the historical 49-task public tool-agent
   pair shows that exploit-proven submissions often used alternate keys or
   runtime identifiers instead of the oracle-compatible boundary vocabulary. The
-  current 54-task live tool-agent pair repeats the high-exploit-proof,
+  stale 54-task live tool-agent pair repeats the high-exploit-proof,
   zero-boundary-credit pattern, but it has not had a separate calibration study.
   The zero boundary-reasoning credit should not be retroactively relaxed under
   `score-policy-v1`.
 - The repeated 46-task public live HTTP tool-agent baseline remains auditable as
-  frozen v0.0 evidence, but it is stale for the current 54-task split. The older
+  frozen v0.0 evidence, but it is stale for the current 60-task split. The older
   44-task baselines are retained as stale public-split snapshots only.
 - Baseline registry validation is present and keeps the frozen v0.0 snapshot
-  auditable while reporting five current 54-task no-tools families and one
-  current 54-task live HTTP tool-agent family for the active public split.
+  auditable while reporting five stale 54-task no-tools families and one
+  stale 54-task live HTTP tool-agent family for the previous 54-task public split.
 - Stable leaderboard submission validation is present. A source-backed
   protected private no-tools row with runner-emitted fingerprint provenance is
   eligible as release-candidate schema evidence. An older reconstructed

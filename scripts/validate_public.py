@@ -141,6 +141,17 @@ def run_container_smoke(cwd: Path) -> None:
 def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke: bool) -> None:
     run([sys.executable, "-Wd", "-m", "unittest", "discover", "-s", "tests"], cwd)
     run([sys.executable, "-m", "authzbench.validate_manifests", "--task", "tasks/*/*.json"], cwd)
+    run(
+        [
+            sys.executable,
+            "scripts/validate_task_quality_gate.py",
+            "--contract",
+            "artifact/task-quality-gate-contract.json",
+            "--task",
+            "tasks/*/*.json",
+        ],
+        cwd,
+    )
     run([sys.executable, "scripts/validate_baseline_registry.py"], cwd)
     run(
         [
@@ -163,6 +174,11 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         ],
         cwd,
     )
+    run([sys.executable, "scripts/validate_harbor_adapter_blockers.py"], cwd)
+    run([sys.executable, "scripts/validate_harbor_adapter_templates.py"], cwd)
+    run([sys.executable, "scripts/validate_harbor_integration.py"], cwd)
+    run([sys.executable, "scripts/check_harbor_local_execution.py"], cwd)
+    run([sys.executable, "scripts/validate_harbor_local_evidence.py"], cwd)
     run([sys.executable, "scripts/generate_task_quality_matrix.py"], cwd)
     run(["git", "diff", "--exit-code", "--", "docs/task-quality-matrix.json", "docs/task-quality-matrix.md"], cwd)
     run([sys.executable, "scripts/generate_benchmark_charts.py"], cwd)

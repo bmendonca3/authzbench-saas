@@ -24,10 +24,21 @@ def _boundary_matches(actual: Any, expected: dict[str, Any]) -> bool:
     return _contains_subset(actual, expected)
 
 
+def _meaningful_body_contains(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, (dict, list, str)):
+        return bool(value)
+    return True
+
+
 def _control_matches(response: dict[str, Any], control: dict[str, Any], body_contains: Any | None = None) -> bool:
-    if response["status"] != control["status"]:
+    status = control.get("status")
+    if isinstance(status, int) and response["status"] != status:
         return False
     if body_contains is not None and not _contains_subset(response["body"], body_contains):
+        return False
+    if not isinstance(status, int) and not _meaningful_body_contains(body_contains):
         return False
     return True
 

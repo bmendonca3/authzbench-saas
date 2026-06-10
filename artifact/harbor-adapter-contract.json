@@ -1,0 +1,222 @@
+{
+  "schema_version": "harbor-adapter-contract-v1",
+  "evidence_status": "implementation_target",
+  "public_claim_boundary": "This contract is not Harbor execution evidence, not Harbor acceptance, not hosted leaderboard readiness, and not v1 readiness. It defines the public-safe SDK adapter target for future verified Harbor runs.",
+  "public_sources": [
+    "https://github.com/harbor-framework/harbor",
+    "https://www.harborframework.com/docs/run-jobs/run-evals",
+    "https://www.harborframework.com/docs/tasks",
+    "https://www.harborframework.com/docs/run-jobs/results-and-artifacts"
+  ],
+  "local_run_template": "cd <generated-harbor-dataset-path> && harbor run -c run_authzbench_saas.yaml --yes",
+  "dataset_shape": {
+    "source_of_truth": "AuthZBench-SaaS task manifests and rendered task context",
+    "task_toml_schema_version": "1.3",
+    "dataset_root_files": [
+      "dataset.toml",
+      "dataset-manifest.json",
+      "run_authzbench_saas.yaml"
+    ],
+    "task_directory_files": [
+      "instruction.md",
+      "task.toml",
+      "environment/Dockerfile",
+      "verifier/task_manifest.json",
+      "solution/solve.sh",
+      "tests/test.sh"
+    ],
+    "public_task_inputs": [
+      "rendered context",
+      "public-safe task metadata",
+      "declared harness type",
+      "timeout and resource policy"
+    ],
+    "private_task_inputs": [
+      "rendered context only for the agent",
+      "scorer-controlled private manifests",
+      "active private-pack fingerprint"
+    ]
+  },
+  "adapter_components": [
+    {
+      "name": "dataset_builder",
+      "required": true,
+      "responsibility": "Build Harbor task directories from AuthZBench-SaaS manifests without duplicating benchmark truth."
+    },
+    {
+      "name": "task_context_renderer",
+      "required": true,
+      "responsibility": "Render the same context contract used by python3 -m authzbench.run."
+    },
+    {
+      "name": "runner_bridge",
+      "required": true,
+      "responsibility": "Invoke the Harbor no-tools or tool-agent lane with rendered context and an artifact output path."
+    },
+    {
+      "name": "output_collector",
+      "required": true,
+      "responsibility": "Collect the agent submission from /logs/artifacts/submission.json or the declared Harbor artifact path."
+    },
+    {
+      "name": "verifier_scorer_bridge",
+      "required": true,
+      "responsibility": "Run AuthZBench-SaaS scorer-controlled replay and translate the result into Harbor verifier output."
+    },
+    {
+      "name": "metadata_normalizer",
+      "required": true,
+      "responsibility": "Emit benchmark source SHA, benchmark fingerprint, comparability key, harness type, model, agent, tool access, timeout, source-summary hashes, and private-pack metadata when applicable."
+    },
+    {
+      "name": "artifact_redaction_policy",
+      "required": true,
+      "responsibility": "Keep private manifests, raw private outputs, captures, credentials, local paths, routes, seeds, and oracles out of tracked public artifacts."
+    },
+    {
+      "name": "dataset_skeleton_builder",
+      "required": true,
+      "responsibility": "Generate a public-only Harbor-shaped dataset skeleton with instruction.md, task.toml, environment context, verifier manifest, and tests/test.sh without claiming Harbor execution."
+    },
+    {
+      "name": "reference_run_config",
+      "required": true,
+      "responsibility": "Emit a public-safe run_authzbench_saas.yaml reference config for future Harbor oracle/structure checks without claiming execution."
+    }
+  ],
+  "lanes": [
+    {
+      "name": "no_tools",
+      "required": true,
+      "agent_input": "instruction-only rendered context",
+      "agent_output": "structured AuthZBench-SaaS submission.json",
+      "scoring_rule": "vulnerable tasks require replayable finding evidence; secure controls require findings: []"
+    },
+    {
+      "name": "live_http_tool_agent",
+      "required": true,
+      "agent_input": "rendered context plus live target service access",
+      "agent_output": "structured AuthZBench-SaaS submission.json plus optional public-safe plan/probe artifacts",
+      "scoring_rule": "scorer-owned backend replay plus target-request coverage when request logging is available",
+      "service_orchestration": [
+        "target service image or compose source",
+        "startup healthcheck",
+        "agent network policy",
+        "request-correlation identity"
+      ]
+    }
+  ],
+  "artifact_mapping": [
+    {
+      "harbor_artifact": "job/config.json",
+      "authzbench_use": "run configuration, dataset version, agent, model, and environment provider"
+    },
+    {
+      "harbor_artifact": "job/result.json",
+      "authzbench_use": "aggregate status, trial count, and pass/fail summary"
+    },
+    {
+      "harbor_artifact": "trial/agent/trajectory.json",
+      "authzbench_use": "agent trajectory evidence for debugging and tool-use audit"
+    },
+    {
+      "harbor_artifact": "trial/verifier/reward.json",
+      "authzbench_use": "Harbor reward derived from AuthZBench-SaaS scorer output"
+    },
+    {
+      "harbor_artifact": "trial/artifacts/submission.json",
+      "authzbench_use": "agent submission consumed by the scorer bridge"
+    }
+  ],
+  "required_run_metadata": [
+    "benchmark_source_sha",
+    "benchmark_fingerprint",
+    "comparability_key",
+    "harness_type",
+    "model",
+    "agent",
+    "tool_access",
+    "timeout_seconds",
+    "source_summary_hashes",
+    "target_request_coverage_rate",
+    "private_pack_version",
+    "private_pack_fingerprint_sha256",
+    "redaction_status",
+    "privacy_scan_status"
+  ],
+  "protected_private_requirements": [
+    "agent receives rendered context only",
+    "private manifests are readable only by scorer-controlled code",
+    "submitter private-manifest read denial is recorded",
+    "raw private evidence is written only to ignored or protected storage",
+    "public outputs are redacted summaries only"
+  ],
+  "blocked_until": [
+    "exact Harbor SDK/package APIs are integrated",
+    "a local Harbor run passes against a generated public dataset",
+    "active and shadow/candidate private packs are validated with rotation metadata",
+    "release-candidate hosted or containerized smoke passes against the active private pack",
+    "external review lanes are complete",
+    "strict release evidence exists"
+  ],
+  "expected_adapter_package": {
+    "evidence_status": "implementation_target",
+    "claim_boundary": "Expected package/module surface only; not implemented Harbor SDK integration or local Harbor execution evidence.",
+    "package_layout": [
+      "pyproject.toml",
+      "README.md",
+      "adapter_metadata.json",
+      "parity_experiment.json",
+      "dataset.toml",
+      "run_authzbench_saas.yaml",
+      "src/authzbench_saas_harbor/__init__.py",
+      "src/authzbench_saas_harbor/adapter.py",
+      "src/authzbench_saas_harbor/main.py",
+      "src/authzbench_saas_harbor/task-template/task.toml",
+      "src/authzbench_saas_harbor/task-template/instruction.md",
+      "src/authzbench_saas_harbor/task-template/environment/Dockerfile",
+      "src/authzbench_saas_harbor/task-template/solution/solve.sh",
+      "src/authzbench_saas_harbor/task-template/tests/test.sh"
+    ],
+    "module_entrypoint": "uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>",
+    "required_cli_flags": [
+      "--output-dir",
+      "--limit",
+      "--overwrite",
+      "--task-ids"
+    ],
+    "repo_side_compatibility_helper": "scripts/build_harbor_dataset_skeleton.py supports --output-dir, --limit, --overwrite, and --task-ids as a public-safe skeleton-builder compatibility target.",
+    "blocked_until": [
+      "package layout is implemented in a real Harbor adapter checkout",
+      "adapter metadata and parity files are produced from real Harbor runs",
+      "generated tasks pass a verified local Harbor run"
+    ]
+  },
+  "public_template_artifacts": [
+    {
+      "path": "artifact/harbor-adapter-metadata.template.json",
+      "claim_boundary": "Template only; not Harbor adapter metadata evidence or execution evidence."
+    },
+    {
+      "path": "artifact/harbor-parity-experiment.template.json",
+      "claim_boundary": "Template only; not Harbor parity evidence or execution evidence."
+    }
+  ],
+  "repo_side_helpers": [
+    {
+      "path": "scripts/build_harbor_dataset_skeleton.py",
+      "status": "public_skeleton_builder",
+      "claim_boundary": "Generates Harbor-shaped public task directories only; does not run Harbor and does not export private manifests."
+    },
+    {
+      "path": "scripts/validate_harbor_dataset_skeleton.py",
+      "status": "public_skeleton_validator",
+      "claim_boundary": "Validates generated public skeleton structure and redaction boundary only; does not run Harbor."
+    },
+    {
+      "path": "scripts/validate_harbor_integration.py",
+      "status": "contract_validator",
+      "claim_boundary": "Validates adapter planning metadata only; does not run Harbor."
+    }
+  ]
+}

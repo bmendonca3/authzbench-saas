@@ -35,13 +35,14 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Area | Current state |
 | --- | --- |
 | Public apps | 6 synthetic SaaS targets |
-| Public tasks | 54 total: 21 vulnerable, 33 secure controls |
-| Control mix | 19 denial controls, 14 authorized-allow controls |
-| Baselines | Current 54-task scripted sanity plus repeated Qwen, Haiku, Sonnet, GLM, Opus no-tools evidence and repeated live HTTP Sonnet tool-agent evidence; 49-task model/tool-agent evidence remains stale; v0.0 46-task snapshot preserved |
+| Public tasks | 60 total: 24 vulnerable, 36 secure controls |
+| Control mix | 21 denial controls, 15 authorized-allow controls |
+| Baselines | Current 60-task scripted sanity only; repeated 54-task Qwen, Haiku, Sonnet, GLM, Opus no-tools evidence and repeated live HTTP Sonnet tool-agent evidence are stale until rerun; v0.0 46-task snapshot preserved |
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
+| Harbor integration | Public-safe adapter contract, skeleton builder, blockers, and runbook only; no verified Harbor execution yet |
 | Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
-| Not included | Hosted leaderboard, rotating multi-pack holdouts, v1/community claims |
+| Not included | Hosted leaderboard, verified Harbor adapter/run, rotating multi-pack holdouts, v1/community claims |
 
 Public checkouts intentionally do not include private holdout manifests. That is
 part of the contamination-control design, not a missing file.
@@ -66,19 +67,19 @@ Start here if you are reviewing the benchmark:
 
 - 6 local SaaS fixtures: project management, billing, support, file sharing,
   API tokens, and audit settings
-- 54 public task manifests with seeded tenants, users, roles, objects, tokens,
+- 60 public task manifests with seeded tenants, users, roles, objects, tokens,
   scopes, routes, and controls
 - deterministic scorer-owned backend replay
 - Docker targets with request-log correlation for live HTTP agents
 
 ### Evidence and Baselines
 
-- current 54-task scripted sanity baseline proving the expanded public split,
+- current 60-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- current repeated 54-task no-tools public baselines across Qwen, Claude Haiku
+- stale repeated 54-task no-tools public baselines across Qwen, Claude Haiku
   4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6; public-split evidence
   only
-- current repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+- stale repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
   one plan/probe artifact per task, 54/54 target-request correlation in both
   runs, zero planner or parser failures, and zero secure-control false reports;
   public-split evidence only
@@ -94,6 +95,9 @@ Start here if you are reviewing the benchmark:
   fingerprints, and comparability keys
 - public-safe benchmark charts, task-quality matrix, benchmark card, release
   gates, privacy checks, and fresh-clone validation
+- task-quality gate contract, Harbor adapter contract, Harbor skeleton builder,
+  Harbor readiness blockers, and Harbor integration runbook; these preserve
+  public-safe target shapes and explicitly do not claim Harbor execution
 - v1 governance, run-bundle, private-rotation, hosted-submission, external
   review, paper-readiness, and release-candidate runbooks/templates; these are
   specifications and validator contracts, not hosted-leaderboard evidence
@@ -305,7 +309,7 @@ Important interpretation:
   model families and a repeated live HTTP tool-agent family. They are now stale
   after the 54-task support-reassignment expansion and cannot support current
   comparison until rerun.
-- The current 54-task split has repeated no-tools Qwen, Claude Haiku 4.5,
+- The stale 54-task split has repeated no-tools Qwen, Claude Haiku 4.5,
   Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families, plus a repeated live
   HTTP Claude Sonnet 4.6 tool-agent family with 54/54 target-request
   correlation in both runs. This closes the stable v1-prep public-evidence
@@ -314,7 +318,7 @@ Important interpretation:
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
-  vocabulary required for full vulnerable-task credit. The current 54-task
+  vocabulary required for full vulnerable-task credit. The stale 54-task
   live tool-agent pair repeats the same exploit-proof versus boundary-credit
   pattern, but it is not a new calibration study.
 - Stale 44-task baselines are retained for historical context only.
@@ -399,6 +403,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
 - [`docs/boundary-reasoning-calibration-study.md`](docs/boundary-reasoning-calibration-study.md): current boundary calibration
 - [`docs/v1-community-submission-governance.md`](docs/v1-community-submission-governance.md): future submission governance
+- [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md): Harbor adapter target and non-evidence boundary
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task-quality review rubric
 - [`docs/task-quality-matrix.md`](docs/task-quality-matrix.md): public task-quality matrix
 - [`docs/v0-release-plan.md`](docs/v0-release-plan.md): v0 release criteria

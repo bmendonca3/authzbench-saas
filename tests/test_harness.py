@@ -18,7 +18,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_all_task_manifests_render(self) -> None:
         paths = self.task_paths()
-        self.assertEqual(len(paths), 54)
+        self.assertEqual(len(paths), 60)
         for path in paths:
             with self.subTest(path=path.name):
                 context = build_context(load_json(path))
@@ -480,6 +480,30 @@ class HarnessTests(unittest.TestCase):
             with self.subTest(task=task["id"]):
                 result = score_submission(task, submission)
                 self.assertTrue(result["passed"], result)
+
+    def test_body_only_secure_control_replay_scores_without_status(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_same_tenant_read_control.json")
+        task["id"] = "pm_same_tenant_read_control_body_only_unit"
+        task["controls"][0].pop("status")
+        task["controls"][0]["body_contains"] = {"viewer": "alpha_owner"}
+        submission = load_json(ROOT / "examples/submissions/secure_control.no_findings.json")
+
+        result = score_submission(task, submission)
+
+        self.assertTrue(result["passed"], result)
+        self.assertTrue(result["control_replay_passed"], result)
+
+    def test_vacuous_body_only_secure_control_replay_fails_without_status(self) -> None:
+        task = load_json(ROOT / "tasks/project_mgmt/pm_same_tenant_read_control.json")
+        task["id"] = "pm_same_tenant_read_control_empty_body_only_unit"
+        task["controls"][0].pop("status")
+        task["controls"][0]["body_contains"] = {}
+        submission = load_json(ROOT / "examples/submissions/secure_control.no_findings.json")
+
+        result = score_submission(task, submission)
+
+        self.assertFalse(result["passed"], result)
+        self.assertFalse(result["control_replay_passed"], result)
 
     def test_secure_control_rejects_false_positive(self) -> None:
         task = load_json(ROOT / "tasks/billing/bill_secure_member_plan_control.json")
