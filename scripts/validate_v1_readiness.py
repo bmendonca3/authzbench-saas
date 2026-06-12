@@ -182,6 +182,22 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "artifact/expected-output/v1-readiness-public-view.json",
     "scripts/validate_v1_readiness.py",
     "tests/test_v1_readiness_validator.py",
+    # Harbor adapter v2 implementation paths: these are post-source evidence/tooling
+    # files that do not change the benchmark source, tasks, scoring, or baselines.
+    "artifact/harbor-adapter-smoke.json",
+    "artifact/harbor-parity-experiment.json",
+    "scripts/run_harbor_adapter_smoke.py",
+    "scripts/run_harbor_parity_experiment.py",
+    "scripts/validate_harbor_adapter_blockers.py",
+    "scripts/validate_harbor_adapter_metadata.py",
+    "scripts/validate_harbor_dataset.py",
+    "scripts/validate_harbor_parity_experiment.py",
+    "tests/test_harbor_adapter_build.py",
+    "tests/test_harbor_parity_evidence.py",
+    "tests/test_harbor_redaction.py",
+    "tests/test_harbor_scorer_bridge.py",
+    "tests/test_validate_harbor_adapter_blockers.py",
+    ".gitignore",
     # Claim-safe release framing docs: updated after source pin to clarify
     # v1 internal-RC vs v2 external-validation boundaries without changing
     # benchmark source, tasks, scoring, or baselines.
@@ -197,6 +213,8 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
 POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_sources/",
     "leaderboard_submissions/",
+    "artifact/harbor-dataset-public-smoke/",
+    "authzbench_harbor/",
 )
 
 
