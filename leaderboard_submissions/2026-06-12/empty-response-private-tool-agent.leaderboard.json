@@ -3,7 +3,7 @@
   "authorized_allow_control_task_count": 6,
   "authorized_allow_pass_rate": 0.6667,
   "baseline_kind": "tool_agent_baseline",
-  "benchmark_commit_sha": "26294482654c87fcbc1fd0f20f813a64f5abbcc7",
+  "benchmark_commit_sha": "e8e86cbc85b070294d1363aca3fed1a8374aee8f",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 6,
     "control_task_count": 12,
@@ -20,7 +20,7 @@
   "benchmark_fingerprint_provenance": "runner-emitted",
   "benchmark_version": "v1",
   "boundary_reasoning_pass_rate": 0.0,
-  "comparability_key": "authzbench-cmp-v1:29caccc629c120e0b49fa2eaa5d835251c4bad72da884637f91834c361d41cb9",
+  "comparability_key": "authzbench-cmp-v1:8cc3f1b7909c4ab03bb2a89b68cbb5af083606fb2097aa1fa6115465ee38e8a2",
   "control_execution_pass_rate": 0.8333,
   "control_false_report_rate": 0.0,
   "control_task_count": 12,
@@ -42,21 +42,21 @@
   "public_task_count": 0,
   "repeat_evidence": {
     "aggregation": "primary_run",
-    "primary_run_id": "empty-response-private-tool-agent-2629448-run1-redacted",
+    "primary_run_id": "empty-response-private-tool-agent-e8e86cb-run1-redacted",
     "source_run_ids": [
-      "empty-response-private-tool-agent-2629448-run1-redacted",
-      "empty-response-private-tool-agent-2629448-run2-redacted"
+      "empty-response-private-tool-agent-e8e86cb-run1-redacted",
+      "empty-response-private-tool-agent-e8e86cb-run2-redacted"
     ],
     "variance_metric": "mean_score"
   },
   "run_count": 2,
-  "run_id": "empty-response-private-tool-agent-2629448-run1-redacted",
+  "run_id": "empty-response-private-tool-agent-e8e86cb-run1-redacted",
   "safety_violations": 0,
   "source_run_summaries": [
-    "leaderboard_sources/empty-response-private-tool-agent-2629448-run1-redacted-source-summary.json",
-    "leaderboard_sources/empty-response-private-tool-agent-2629448-run2-redacted-source-summary.json"
+    "leaderboard_sources/empty-response-private-tool-agent-e8e86cb-run1-redacted-source-summary.json",
+    "leaderboard_sources/empty-response-private-tool-agent-e8e86cb-run2-redacted-source-summary.json"
   ],
-  "source_run_summary": "leaderboard_sources/empty-response-private-tool-agent-2629448-run1-redacted-source-summary.json",
+  "source_run_summary": "leaderboard_sources/empty-response-private-tool-agent-e8e86cb-run1-redacted-source-summary.json",
   "split": "private-holdout",
   "target_request_coverage_rate": 1.0,
   "task_count": 24,
