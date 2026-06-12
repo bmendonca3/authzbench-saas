@@ -1,6 +1,6 @@
 {
   "baseline_registry_validation": "passed; v0_baseline_ready=true; v0_release_snapshot_ready=true",
-  "benchmark_source_sha": "2f439eedc246bcc07e1ec10559db9a3a14537e89",
+  "benchmark_source_sha": "4b0bfa330a70c25cecc147026726f5f6357da4d6",
   "claim_boundary": "This file records internally validated v1 release-candidate evidence. External review, SaaS-provider validation, hosted leaderboard readiness, and platform acceptance are not claimed. Those are explicitly deferred to v2 and tracked in docs/v2-external-validation-roadmap.md.",
   "commands": {
     "git diff --check": {
@@ -64,12 +64,12 @@
       "passed": true
     }
   },
-  "commit_sha": "2f439eedc246bcc07e1ec10559db9a3a14537e89",
+  "commit_sha": "4b0bfa330a70c25cecc147026726f5f6357da4d6",
   "deterministic_private_rows_note": "Deterministic empty-response rows (empty-response-private-no-tools, empty-response-private-tool-agent) validate private-holdout execution, source-summary provenance, privacy boundaries, and leaderboard schema plumbing. They are not model capability claims. row_purpose field is set to plumbing-evidence in all deterministic leaderboard row files.",
-  "exact_head_ci_conclusion": "pending",
-  "exact_head_ci_head_sha": "2f439eedc246bcc07e1ec10559db9a3a14537e89",
-  "exact_head_ci_run_id": "pending-new-head-ci",
-  "exact_head_ci_url": "pending-new-head-ci",
+  "exact_head_ci_conclusion": "success",
+  "exact_head_ci_head_sha": "4b0bfa330a70c25cecc147026726f5f6357da4d6",
+  "exact_head_ci_run_id": "27403423759",
+  "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27403423759",
   "exact_head_ci_workflow_name": "Validate AuthZBench-SaaS",
   "external_review_status": "deferred to v2; not a v1 gate; tracked in docs/v2-external-validation-roadmap.md",
   "harbor_smoke_evidence": "one-task local Harbor smoke recorded; full adapter parity deferred to v2",
