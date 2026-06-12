@@ -3,7 +3,7 @@
 Status: public-safe intake form for independent reviewers. This file helps a
 reviewer return evidence in the same shape that
 `docs/reviews/external-review-summary.json` and
-`scripts/validate_v1_readiness.py` require. It is not review evidence by
+its validator require. It is not review evidence by
 itself.
 
 ## Reviewer Response Form
@@ -57,8 +57,8 @@ run provenance, and run-bundle evidence.
 - If the reviewer reports no findings, record one explicit no-finding decision
   with `decision: rejected` only when there is a concrete reason no code or doc
   change is needed.
-- Run `python3 scripts/validate_v1_readiness.py --allow-incomplete` after
-  updating the summary.
+- Run structured validation (e.g., using parser helpers in `validate_v1_readiness.py`) after
+  updating the summary to ensure format compliance for future v2 milestones.
 
 ## Public-Safety Rules
 

@@ -75,5 +75,10 @@
     "The exact_head_ci_run_id must match exact_head_ci_url, exact_head_ci_head_sha must match commit_sha, and exact_head_ci_workflow_name must be Validate AuthZBench-SaaS.",
     "The private_pack_fingerprint_sha256 must match the active pack fingerprint from validated rotation metadata.",
     "Do not include private task bodies, task IDs, routes, seeds, raw outputs, captures, credentials, or local absolute paths."
+  ],
+  "blocker_reminders": [
+    "This template is rejected by validate_v1_readiness.py when passed as --release-evidence.",
+    "Populate a maintainer-only external JSON after exact-head CI and private-pack validation succeed.",
+    "Never set v1_ready true in public tracked artifacts without all ten gates passing."
   ]
 }

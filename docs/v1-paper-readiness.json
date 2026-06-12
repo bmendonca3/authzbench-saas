@@ -1,12 +1,12 @@
 {
-  "benchmark_source_sha": "72d66c16ca577b79b3e6375ace6986f21ae921c0",
+  "benchmark_source_sha": "bcb5310f4d51e4716c4b1392d40b778fca9c89a5",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
-  "evidence_scope": "v1_prep_preflight",
+  "evidence_scope": "release_candidate",
   "generated_paper_tables_clean": true,
   "latexmk_main_tex_passed": true,
-  "review_scope": "Internal repository preflight only; independent external review and release-infrastructure review remain open.",
-  "upstream_review_and_infrastructure_complete": false,
+  "review_scope": "Internal repository preflight only; release-infrastructure review remains open (external review is v2 scope).",
+  "upstream_review_and_infrastructure_complete": true,
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",

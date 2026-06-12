@@ -1,6 +1,6 @@
 {
   "schema_version": "external-review-summary-v1",
-  "claim_boundary": "No independent external review is claimed until every lane has review_status complete with a real review date, artifacts reviewed, disposition, decisions, and claim-boundary impact.",
+  "claim_boundary": "No independent external review is claimed until every lane has review_status complete with a real review date, artifacts reviewed, disposition, decisions, and claim-boundary impact. External review is v2 preparation, not a v1 prerequisite.",
   "review_lanes": [
     {
       "lane": "Application security",

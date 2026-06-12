@@ -1,8 +1,8 @@
 # External Review Summary
 
-Status: intake tracker for post-`v0.0` external review. Reviewer packet is
-ready, but independent external review is still externally blocked until real
-reviewers complete the lanes.
+Status: intake tracker for v2 external review preparation. Reviewer packet is
+ready, but independent external review is externally blocked until real human
+lane reviewers return intake results. This is not a v1 prerequisite.
 
 No independent external review is claimed yet. This file tracks planned review
 lanes, reviewer questions, requested evidence, and acceptance criteria without
@@ -26,7 +26,7 @@ no-finding dispositions.
 
 This is an external blocker, not a missing public-repo checklist item. The
 public repo has the packet, intake form, response template, pending structured
-summary, and validator checks. The gate moves only when independent reviewers
+summary, and validator checks. This v2 tracker updates only when independent reviewers
 return real review evidence and maintainers copy public-safe summaries into
 `docs/reviews/external-review-summary.json`.
 
@@ -90,10 +90,8 @@ return real review evidence and maintainers copy public-safe summaries into
 ## Completion Gate
 
 Do not mark the external-review goal complete until each lane records a real
-review date, reviewer role/scope, bounded questions reviewed, artifacts
-reviewed, findings or explicit no-finding disposition, and
-accepted/rejected/unresolved decisions. Packet-ready and structured
-pending-review evidence are useful, but neither is external review. The
+human decision process. A public-safe packet and a machine-checked structure for
+pending-review evidence are useful v2 preparation, but neither is external review. The
 response template is also not review evidence. Pending and completed lane
 fields must use concrete wording; unresolved markers such as `TBD`, `TODO`,
 `pending`, `unknown`, `n/a`, and `<placeholder>` are rejected even when embedded

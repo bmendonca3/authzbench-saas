@@ -587,7 +587,9 @@ def _recompute_from_tasks(summary: dict[str, Any], errors: list[str]) -> dict[st
         )
         if authorized_allow_controls
         else None,
-        "false_positive_rate": round(sum(1 for item in controls if item.get("passed") is not True) / len(controls), 4)
+        "false_positive_rate": round(
+            sum(1 for item in controls if task_int(item, "submission_finding_count") > 0) / len(controls), 4
+        )
         if controls
         else None,
         "mean_score": round(sum(task_float(item, "score") for item in tasks) / task_count, 4) if task_count else 0,

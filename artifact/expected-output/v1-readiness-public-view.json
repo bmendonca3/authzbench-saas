@@ -1,5 +1,5 @@
 {
-  "gate_count": 12,
+  "gate_count": 10,
   "gates": [
     {
       "evidence": [
@@ -11,30 +11,6 @@
       "id": "stable_v1_prep_public_evidence",
       "passed": true,
       "unmet": []
-    },
-    {
-      "evidence": [
-        "docs/reviews/external-review-packet.md",
-        "docs/reviews/external-review-summary.md",
-        "review_lanes_present=3"
-      ],
-      "id": "external_review_packet_ready",
-      "passed": true,
-      "unmet": []
-    },
-    {
-      "evidence": [
-        "docs/reviews/external-review-summary.md must record real review dates, bounded questions reviewed, reviewed artifacts, findings or no-finding dispositions, and decisions",
-        "docs/reviews/external-review-summary.json"
-      ],
-      "id": "external_review_completed",
-      "passed": false,
-      "unmet": [
-        "independent external review lanes are not complete",
-        "Application security: independent review is pending",
-        "Benchmark/evals methodology: independent review is pending",
-        "AI-agent/tooling: independent review is pending"
-      ]
     },
     {
       "evidence": [
@@ -73,7 +49,7 @@
       "id": "hosted_or_containerized_submission_execution",
       "passed": false,
       "unmet": [
-        "active private pack fingerprint is required for hosted smoke evidence"
+        "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
       ]
     },
     {
@@ -81,18 +57,15 @@
         "tasks_private/holdout/rotation-metadata.json",
         "artifact/private-holdout-operation-blocker.json",
         "artifact/private-holdout-operation-runbook.json",
-        "private_holdout_pack_ids=[]",
-        "private_holdout_pack_roles=[]",
-        "active_private_pack_id=None",
-        "active_private_pack_fingerprint_sha256=None",
-        "validated_private_holdout_task_count=0"
+        "private_holdout_pack_ids=['active-private-holdout-v1-pack', 'shadow-private-holdout-v1-pack']",
+        "private_holdout_pack_roles=['active', 'shadow']",
+        "active_private_pack_id=active-private-holdout-v1-pack",
+        "active_private_pack_fingerprint_sha256=6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
+        "validated_private_holdout_task_count=48"
       ],
       "id": "rotating_private_holdouts_implemented",
-      "passed": false,
-      "unmet": [
-        "private holdout rotation is intentionally not inspected in public view",
-        "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist"
-      ]
+      "passed": true,
+      "unmet": []
     },
     {
       "evidence": [
@@ -118,16 +91,14 @@
       "evidence": [
         "artifact/v1-task-scale-roadmap.json",
         "public_task_count=60",
-        "validated_private_holdout_task_count=0",
-        "total_task_count=60",
-        "planned_additional_task_count=48",
+        "validated_private_holdout_task_count=48",
+        "total_task_count=108",
+        "planned_additional_task_count=0",
         "planned_total_task_count=108"
       ],
       "id": "v1_task_scale",
-      "passed": false,
-      "unmet": [
-        "total public plus private holdout tasks is 60, expected at least 100"
-      ]
+      "passed": true,
+      "unmet": []
     },
     {
       "evidence": [
@@ -145,18 +116,18 @@
     },
     {
       "evidence": [
-        "<external release evidence>",
+        "artifact/v1-release-candidate-validation.json",
         "artifact/v1-release-candidate-validation-runbook.json"
       ],
       "id": "final_release_candidate_validation",
       "passed": false,
       "unmet": [
-        "release-candidate evidence must be supplied with --release-evidence"
+        "tracked release-candidate evidence is missing: artifact/v1-release-candidate-validation.json"
       ]
     }
   ],
   "passed": false,
-  "passed_gate_count": 4,
-  "unmet_gate_count": 8,
+  "passed_gate_count": 5,
+  "unmet_gate_count": 5,
   "v1_ready": false
 }

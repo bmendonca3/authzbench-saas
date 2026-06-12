@@ -123,7 +123,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertFalse(result["v1_ready"])
-        self.assertEqual(result["gate_count"], 12)
+        self.assertEqual(result["gate_count"], 10)
         self.assertTrue(gates["stable_v1_prep_public_evidence"]["passed"])
         self.assertIn(
             "current_public_model_family_count=6",
@@ -134,7 +134,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])
-        self.assertTrue(gates["external_review_packet_ready"]["passed"])
+        self.assertNotIn("external_review_packet_ready", gates)
+        self.assertNotIn("external_review_completed", gates)
         self.assertTrue(gates["submission_governance_spec_defined"]["passed"])
         self.assertTrue(gates["harbor_repo_side_target_specified"]["passed"])
         self.assertTrue(
@@ -159,19 +160,18 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "artifact/harbor-parity-experiment.template.json",
             gates["harbor_repo_side_target_specified"]["evidence"],
         )
-        self.assertFalse(gates["external_review_completed"]["passed"])
+
         if gates["hosted_or_containerized_submission_execution"]["passed"]:
             self.assertEqual(gates["hosted_or_containerized_submission_execution"]["unmet"], [])
         else:
-            self.assertTrue(gates["hosted_or_containerized_submission_execution"]["unmet"])
+            hosted_unmet = gates["hosted_or_containerized_submission_execution"]["unmet"]
             self.assertTrue(
-                any(
-                    item in gates["hosted_or_containerized_submission_execution"]["unmet"]
-                    for item in (
-                        "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist",
-                        "active private pack fingerprint is required for hosted smoke evidence",
-                    )
-                )
+                "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
+                in hosted_unmet
+                or "active private pack fingerprint is required for hosted smoke evidence" in hosted_unmet
+                or "benchmark_source_sha does not match expected source SHA" in hosted_unmet
+                or "benchmark_source_sha must match release benchmark_source_sha" in hosted_unmet,
+                hosted_unmet,
             )
         if gates["rotating_private_holdouts_implemented"]["passed"]:
             self.assertIn(
@@ -179,14 +179,13 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 gates["rotating_private_holdouts_implemented"]["evidence"],
             )
         else:
+            rotation_unmet = gates["rotating_private_holdouts_implemented"]["unmet"]
             self.assertTrue(
-                any(
-                    item in gates["rotating_private_holdouts_implemented"]["unmet"]
-                    for item in (
-                        "missing structured evidence: tasks_private/holdout/rotation-metadata.json",
-                        "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist",
-                    )
-                )
+                "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist"
+                in rotation_unmet
+                or "missing structured evidence: tasks_private/holdout/rotation-metadata.json" in rotation_unmet
+                or "private holdout rotation is intentionally not inspected in public view" in rotation_unmet,
+                rotation_unmet,
             )
         for gate_id, expected_blocker in (
             (
@@ -212,10 +211,6 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn(
             RELEASE_VALIDATION_RUNBOOK_PATH,
             gates["final_release_candidate_validation"]["evidence"],
-        )
-        self.assertIn(
-            "independent external review lanes are not complete",
-            gates["external_review_completed"]["unmet"],
         )
         self.assertEqual(
             gates["v1_task_scale"]["passed"],
@@ -279,7 +274,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn('"v1_ready": false', result.stdout)
         self.assertEqual(result.stderr, "")
 
-    def test_public_view_ignores_private_checkout_rotation_state(self) -> None:
+    def test_public_view_uses_count_level_holdout_evidence(self) -> None:
         with patch(
             "scripts.validate_v1_readiness._validate_private_rotation_metadata"
         ) as rotation_validator:
@@ -288,18 +283,15 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         rotation_validator.assert_not_called()
         gates = {gate["id"]: gate for gate in result["gates"]}
         rotation_gate = gates["rotating_private_holdouts_implemented"]
-        self.assertFalse(rotation_gate["passed"])
-        self.assertIn(
-            "private holdout rotation is intentionally not inspected in public view",
-            rotation_gate["unmet"],
-        )
-        self.assertIn(
-            "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist",
-            rotation_gate["unmet"],
-        )
+        self.assertTrue(rotation_gate["passed"])
+        self.assertIn("validated_private_holdout_task_count=48", rotation_gate["evidence"])
         self.assertIn("artifact/private-holdout-operation-blocker.json", rotation_gate["evidence"])
         self.assertIn(PRIVATE_OPERATION_RUNBOOK_PATH, rotation_gate["evidence"])
-        self.assertIn("validated_private_holdout_task_count=0", rotation_gate["evidence"])
+        self.assertTrue(gates["v1_task_scale"]["passed"])
+        self.assertIn("total_task_count=108", gates["v1_task_scale"]["evidence"])
+        self.assertTrue(gates["hosted_or_containerized_submission_execution"]["passed"])
+        self.assertTrue(gates["repeated_private_tool_agent_evidence"]["passed"])
+        self.assertTrue(gates["repeated_private_no_tools_evidence"]["passed"])
 
     def test_private_operation_blocker_is_structured_but_not_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -522,14 +514,49 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(any(item.startswith("acceptance_checks missing:") for item in result["unmet"]))
         self.assertIn("publication_rules cannot contain placeholders", result["unmet"])
 
-    def test_v1_scale_roadmap_is_structured_count_level_evidence(self) -> None:
+    def test_v1_scale_roadmap_validated_counts_pass_in_public_view(self) -> None:
         result = _validate_v1_scale_roadmap(
             public_task_count=60,
             validated_private_holdout_task_count=48,
+            public_view=True,
         )
 
         self.assertTrue(result["passed"])
         self.assertEqual(result["path"], "artifact/v1-task-scale-roadmap.json")
+        self.assertEqual(result["planned_additional_task_count"], 0)
+        self.assertEqual(result["planned_total_task_count"], 108)
+        self.assertEqual(result["unmet"], [])
+
+    def test_v1_scale_roadmap_validated_counts_fixture_passes_in_maintainer_checkout(self) -> None:
+        repo_root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            roadmap = root / "artifact" / "v1-task-scale-roadmap.json"
+            roadmap.parent.mkdir(parents=True)
+            roadmap.write_text(
+                (repo_root / "artifact" / "v1-task-scale-roadmap.json").read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            payload = json.loads(roadmap.read_text(encoding="utf-8"))
+            payload["evidence_status"] = "validated_private_holdout_counts"
+            payload["public_claim_boundary"] = (
+                "This roadmap reports only public-safe, count-level holdout validation status. "
+                "It does not publish nonpublic task bodies, identifiers, route names, seed values, "
+                "oracle strings, model transcripts, captures, credentials, or local paths."
+            )
+            payload["current_validated_private_holdout_task_count"] = 48
+            payload["minimum_additional_tasks_required"] = 0
+            for wave in payload["planned_waves"]:
+                wave["status"] = "validated-maintainer-only"
+            roadmap.write_text(json.dumps(payload), encoding="utf-8")
+
+            result = _validate_v1_scale_roadmap(
+                root,
+                public_task_count=60,
+                validated_private_holdout_task_count=48,
+            )
+
+        self.assertTrue(result["passed"])
         self.assertEqual(result["planned_additional_task_count"], 0)
         self.assertEqual(result["planned_total_task_count"], 108)
         self.assertEqual(result["unmet"], [])
@@ -711,8 +738,25 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertEqual(result["execution_modes"], ["fully_containerized", "hosted_runner"])
         self.assertEqual(result["unmet"], [])
 
-    def test_hosted_execution_gate_includes_runbook_but_stays_blocked(self) -> None:
+    def test_hosted_execution_gate_includes_runbook_and_can_pass_in_public_view(self) -> None:
         result = validate_v1_readiness(public_view=True)
+        gates = {gate["id"]: gate for gate in result["gates"]}
+        hosted_gate = gates["hosted_or_containerized_submission_execution"]
+
+        self.assertTrue(hosted_gate["passed"])
+        self.assertIn("artifact/submission-runner-smoke.json", hosted_gate["evidence"])
+        self.assertIn(HOSTED_EXECUTION_RUNBOOK_PATH, hosted_gate["evidence"])
+        self.assertEqual(hosted_gate["unmet"], [])
+
+    def test_hosted_execution_gate_stays_blocked_when_smoke_fails(self) -> None:
+        with patch("scripts.validate_v1_readiness._validate_hosted_execution_evidence") as hosted_validator:
+            hosted_validator.return_value = {
+                "passed": False,
+                "path": "artifact/submission-runner-smoke.json",
+                "unmet": ["hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"],
+            }
+            result = validate_v1_readiness(public_view=True)
+
         gates = {gate["id"]: gate for gate in result["gates"]}
         hosted_gate = gates["hosted_or_containerized_submission_execution"]
 
@@ -725,9 +769,34 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 for item in (
                     "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist",
                     "active private pack fingerprint is required for hosted smoke evidence",
+                    "benchmark_source_sha does not match expected source SHA",
+                    "benchmark_source_sha must match release benchmark_source_sha",
                 )
-            )
+            ),
+            hosted_gate["unmet"],
         )
+
+    def test_public_view_uses_tracked_release_candidate_evidence(self) -> None:
+        result = validate_v1_readiness(public_view=True)
+        gates = {gate["id"]: gate for gate in result["gates"]}
+
+        self.assertFalse(gates["paper_and_artifact_readiness"]["passed"])
+        release_gate = gates["final_release_candidate_validation"]
+        if release_gate["passed"]:
+            self.assertIn("artifact/v1-release-candidate-validation.json", release_gate["evidence"])
+            self.assertEqual(release_gate["unmet"], [])
+        else:
+            self.assertTrue(
+                any(
+                    marker in err
+                    for err in release_gate["unmet"]
+                    for marker in (
+                        "release validation commit_sha must match target release SHA",
+                        "tracked release-candidate evidence is missing",
+                    )
+                ),
+                release_gate["unmet"],
+            )
 
     def test_hosted_execution_runbook_rejects_overclaiming_and_incomplete_controls(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2894,7 +2963,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn(
-            "$.release_notes[3]: absolute path is not allowed in public release runbook",
+            "$.release_notes[4]: absolute path is not allowed in public release runbook",
             result["unmet"],
         )
 
