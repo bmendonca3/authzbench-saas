@@ -1,13 +1,13 @@
 {
   "schema_version": "v1-release-candidate-validation-v1",
-  "commit_sha": "c9b22b9d09ad18546e30fe7d3a89bce724d6e694",
+  "commit_sha": "7b213792ae82242a478c7eadafb64914163382ca",
   "benchmark_source_sha": "bd7500657595603f94fb1ac599dfb0ff1be217df",
   "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
   "exact_head_ci_conclusion": "success",
-  "exact_head_ci_run_id": "27425999724",
-  "exact_head_ci_head_sha": "c9b22b9d09ad18546e30fe7d3a89bce724d6e694",
+  "exact_head_ci_run_id": "27426272964",
+  "exact_head_ci_head_sha": "7b213792ae82242a478c7eadafb64914163382ca",
   "exact_head_ci_workflow_name": "Validate AuthZBench-SaaS",
-  "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27425999724",
+  "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27426272964",
   "pushed_commit": true,
   "commands": {
     "python3 -m unittest discover -s tests": {
