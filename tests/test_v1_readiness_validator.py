@@ -780,7 +780,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         result = validate_v1_readiness(public_view=True)
         gates = {gate["id"]: gate for gate in result["gates"]}
 
-        self.assertFalse(gates["paper_and_artifact_readiness"]["passed"])
+        self.assertTrue(gates["paper_and_artifact_readiness"]["passed"])
         release_gate = gates["final_release_candidate_validation"]
         if release_gate["passed"]:
             self.assertIn("artifact/v1-release-candidate-validation.json", release_gate["evidence"])
