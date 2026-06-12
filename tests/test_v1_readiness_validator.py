@@ -2709,7 +2709,10 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             )
 
         self.assertFalse(result["passed"])
-        self.assertIn("schema_version must be v1-release-candidate-validation-v1", result["unmet"])
+        self.assertTrue(
+            any("schema_version must be" in msg for msg in result["unmet"]),
+            f"Expected schema_version error in unmet: {result['unmet']}",
+        )
 
     def test_release_candidate_evidence_can_pass_with_exact_ci_url_and_command_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

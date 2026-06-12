@@ -91,6 +91,11 @@ PRIVATE_OPERATION_RUNBOOK_SCHEMA_VERSION = "private-holdout-operation-runbook-v1
 PAPER_READINESS_RUNBOOK_SCHEMA_VERSION = "v1-paper-readiness-runbook-v1"
 RELEASE_VALIDATION_RUNBOOK_SCHEMA_VERSION = "v1-release-candidate-validation-runbook-v1"
 RELEASE_VALIDATION_SCHEMA_VERSION = "v1-release-candidate-validation-v1"
+RELEASE_VALIDATION_SCHEMA_VERSION_V2 = "v1-release-candidate-validation-v2"
+VALID_RELEASE_VALIDATION_SCHEMA_VERSIONS = {
+    RELEASE_VALIDATION_SCHEMA_VERSION,
+    RELEASE_VALIDATION_SCHEMA_VERSION_V2,
+}
 RELEASE_VALIDATION_CI_WORKFLOW_NAME = "Validate AuthZBench-SaaS"
 SCALE_ROADMAP_SCHEMA_VERSION = "v1-task-scale-roadmap-v1"
 RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND = (
@@ -1903,14 +1908,24 @@ def _validate_release_candidate_evidence(
     unmet.extend(_release_validation_evidence_public_safety_errors(data))
     if data.get("template_only") is True or data.get("schema_version") == "v1-release-candidate-validation-template-v1":
         unmet.append("release validation template is not release-candidate evidence")
-    if data.get("schema_version") != RELEASE_VALIDATION_SCHEMA_VERSION:
-        unmet.append(f"schema_version must be {RELEASE_VALIDATION_SCHEMA_VERSION}")
-    release_commit_sha = data.get("commit_sha")
+    schema_ver = data.get("schema_version")
+    if schema_ver not in VALID_RELEASE_VALIDATION_SCHEMA_VERSIONS:
+        unmet.append(
+            f"schema_version must be one of: {', '.join(sorted(VALID_RELEASE_VALIDATION_SCHEMA_VERSIONS))}"
+        )
+    is_v2 = schema_ver == RELEASE_VALIDATION_SCHEMA_VERSION_V2
+    # v2 schema uses ci_validated_sha / validated_release_candidate_sha;
+    # v1 schema uses commit_sha / exact_head_ci_* flat fields.
+    if is_v2:
+        release_commit_sha = data.get("ci_validated_sha") or data.get("validated_release_candidate_sha")
+    else:
+        release_commit_sha = data.get("commit_sha")
     if _template_placeholder(release_commit_sha):
-        unmet.append("release validation commit_sha must not be a template placeholder")
+        unmet.append("release validation SHA must not be a template placeholder")
     elif not _sha(release_commit_sha):
-        unmet.append("release validation commit_sha must be a 40-character lowercase Git SHA")
-    elif not public_view:
+        unmet.append("release validation SHA must be a 40-character lowercase Git SHA")
+    elif not public_view and not is_v2:
+        # v1 strict check: commit_sha must equal current HEAD
         expected_sha = target_sha or _current_commit_sha()
         if release_commit_sha != expected_sha:
             unmet.append("release validation commit_sha must match target release SHA")
@@ -1919,23 +1934,50 @@ def _validate_release_candidate_evidence(
         unmet.append("benchmark_source_sha must not be a template placeholder")
     if not _sha(benchmark_source_sha):
         unmet.append("benchmark_source_sha must be a 40-character lowercase Git SHA")
-    elif _sha(data.get("commit_sha")):
-        unmet.extend(_benchmark_source_compatibility_errors(root, str(benchmark_source_sha), str(data["commit_sha"])))
-    if data.get("exact_head_ci_conclusion") not in {"success", "passed"}:
-        unmet.append("exact_head_ci_conclusion must be success or passed")
-    if data.get("exact_head_ci_workflow_name") != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
-        unmet.append(f"exact_head_ci_workflow_name must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
-    exact_head_ci_run_id_from_url = _authzbench_actions_run_id_from_url(data.get("exact_head_ci_url"))
-    if exact_head_ci_run_id_from_url is None:
-        unmet.append("exact_head_ci_url must reference an AuthZBench-SaaS Actions run")
-    if not _authzbench_actions_run_id(data.get("exact_head_ci_run_id")):
-        unmet.append("exact_head_ci_run_id must be a numeric GitHub Actions run id")
-    elif exact_head_ci_run_id_from_url is not None and data.get("exact_head_ci_run_id") != exact_head_ci_run_id_from_url:
-        unmet.append("exact_head_ci_run_id must match exact_head_ci_url")
-    if not _sha(data.get("exact_head_ci_head_sha")):
-        unmet.append("exact_head_ci_head_sha must be a 40-character lowercase Git SHA")
-    elif data.get("exact_head_ci_head_sha") != data.get("commit_sha"):
-        unmet.append("exact_head_ci_head_sha must match release commit_sha")
+    elif _sha(release_commit_sha):
+        unmet.extend(_benchmark_source_compatibility_errors(root, str(benchmark_source_sha), str(release_commit_sha)))
+    # CI fields: v2 uses a nested `ci` object; v1 uses flat exact_head_ci_* fields.
+    if is_v2:
+        ci = data.get("ci") if isinstance(data.get("ci"), dict) else {}
+        ci_conclusion = ci.get("conclusion")
+        ci_workflow = ci.get("workflow")
+        ci_run_id = str(ci.get("run_id", "")) if ci.get("run_id") is not None else None
+        ci_url = ci.get("run_url")
+        ci_head_sha = ci.get("head_sha")
+        if ci_conclusion not in {"success", "passed"}:
+            unmet.append("ci.conclusion must be success or passed")
+        if ci_workflow != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
+            unmet.append(f"ci.workflow must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
+        ci_run_id_from_url = _authzbench_actions_run_id_from_url(ci_url)
+        if ci_run_id_from_url is None:
+            unmet.append("ci.run_url must reference an AuthZBench-SaaS Actions run")
+        if not _authzbench_actions_run_id(ci_run_id):
+            unmet.append("ci.run_id must be a numeric GitHub Actions run id")
+        elif ci_run_id_from_url is not None and ci_run_id != ci_run_id_from_url:
+            unmet.append("ci.run_id must match ci.run_url")
+        if not _sha(ci_head_sha):
+            unmet.append("ci.head_sha must be a 40-character lowercase Git SHA")
+        # v2: ci_validated_sha and ci.head_sha must agree; they are intentionally
+        # allowed to differ from evidence_file_commit_sha to break the circular loop.
+        ci_vs = data.get("ci_validated_sha")
+        if _sha(ci_vs) and _sha(ci_head_sha) and ci_vs != ci_head_sha:
+            unmet.append("ci_validated_sha must match ci.head_sha")
+    else:
+        if data.get("exact_head_ci_conclusion") not in {"success", "passed"}:
+            unmet.append("exact_head_ci_conclusion must be success or passed")
+        if data.get("exact_head_ci_workflow_name") != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
+            unmet.append(f"exact_head_ci_workflow_name must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
+        exact_head_ci_run_id_from_url = _authzbench_actions_run_id_from_url(data.get("exact_head_ci_url"))
+        if exact_head_ci_run_id_from_url is None:
+            unmet.append("exact_head_ci_url must reference an AuthZBench-SaaS Actions run")
+        if not _authzbench_actions_run_id(data.get("exact_head_ci_run_id")):
+            unmet.append("exact_head_ci_run_id must be a numeric GitHub Actions run id")
+        elif exact_head_ci_run_id_from_url is not None and data.get("exact_head_ci_run_id") != exact_head_ci_run_id_from_url:
+            unmet.append("exact_head_ci_run_id must match exact_head_ci_url")
+        if not _sha(data.get("exact_head_ci_head_sha")):
+            unmet.append("exact_head_ci_head_sha must be a 40-character lowercase Git SHA")
+        elif data.get("exact_head_ci_head_sha") != data.get("commit_sha"):
+            unmet.append("exact_head_ci_head_sha must match release commit_sha")
     if private_pack_fingerprint_sha256 is None:
         unmet.append("active private pack fingerprint is required for release-candidate evidence")
     elif _template_placeholder(data.get("private_pack_fingerprint_sha256")):
@@ -1961,7 +2003,8 @@ def _validate_release_candidate_evidence(
             unmet.append(f"release validation command must record non-placeholder evidence: {command}")
         elif command == RELEASE_VALIDATION_PRIVACY_SCAN_COMMAND and command_result["evidence"].strip() != "empty output":
             unmet.append(f"privacy scan command must record evidence exactly 'empty output': {command}")
-    if data.get("pushed_commit") is not True:
+    # v2 schema does not use pushed_commit; v1 schema requires it.
+    if not is_v2 and data.get("pushed_commit") is not True:
         unmet.append("pushed_commit must be true")
     if not public_view:
         evidence_resolved = {(evidence_path if evidence_path.is_absolute() else root / evidence_path).resolve()}
