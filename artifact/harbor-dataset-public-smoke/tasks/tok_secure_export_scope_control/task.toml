@@ -1,0 +1,45 @@
+schema_version = "1.3"
+
+[task]
+name = "authzbench-saas/tok_secure_export_scope_control"
+description = "AuthZBench-SaaS public Harbor skeleton task for api_tokens"
+authors = [{ name = "bmendonca3" }]
+keywords = ["authzbench-saas", "authorization", "harbor-compatible"]
+
+[metadata.authzbench]
+skeleton_schema_version = "harbor-dataset-skeleton-v1"
+id = "tok_secure_export_scope_control"
+app = "api_tokens"
+source_task_path = "tasks/api_tokens/tok_secure_export_scope_control.json"
+harness_lane = "no_tools"
+private_execution = false
+harbor_execution_verified = false
+claim_boundary = "Generated public dataset skeleton only; not Harbor execution evidence or v1 readiness."
+required_artifacts = ["/logs/artifacts/submission.json", "/logs/artifacts/score.json", "/logs/artifacts/reward.json", "/logs/artifacts/reward.txt"]
+service_notes = ["no_tools lane uses rendered context only", "live_http_tool_agent lane requires target services and request correlation", "verifier/scorer owns replay and oracle access"]
+
+[verifier]
+timeout_sec = 120.0
+environment_mode = "separate"
+network_mode = "no-network"
+
+[agent]
+timeout_sec = 120.0
+network_mode = "no-network"
+allowed_hosts = []
+
+[environment]
+network_mode = "no-network"
+os = "linux"
+cpus = 1
+memory_mb = 2048
+
+[metadata.authzbench.verifier]
+test_script = "tests/test.sh"
+scorer_contract = "v0-candidate-authz-evidence"
+submission_path = "/logs/artifacts/submission.json"
+score_output_path = "/logs/artifacts/score.json"
+harbor_reward_json_path = "/logs/verifier/reward.json"
+harbor_reward_text_path = "/logs/verifier/reward.txt"
+public_reward_json_path = "/logs/artifacts/reward.json"
+public_reward_text_path = "/logs/artifacts/reward.txt"
