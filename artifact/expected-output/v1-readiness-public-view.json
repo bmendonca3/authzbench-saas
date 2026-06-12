@@ -67,7 +67,7 @@
     },
     {
       "evidence": [
-        "eligible_private_tool_agent_rows=[{'path': 'leaderboard_submissions/2026-06-12/empty-response-private-tool-agent.leaderboard.json', 'harness_type': 'tool-agent', 'run_count': 2, 'model': 'deterministic-empty-response-tool-probe', 'benchmark_commit_sha': 'bcb5310f4d51e4716c4b1392d40b778fca9c89a5', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': 1.0, 'source_private_path_denial': True}]"
+        "eligible_private_tool_agent_rows=[{'path': 'leaderboard_submissions/2026-06-12/empty-response-private-tool-agent.leaderboard.json', 'harness_type': 'tool-agent', 'run_count': 2, 'model': 'deterministic-empty-response-tool-probe', 'benchmark_commit_sha': 'e8e86cbc85b070294d1363aca3fed1a8374aee8f', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': 1.0, 'source_private_path_denial': True}]"
       ],
       "id": "repeated_private_tool_agent_evidence",
       "passed": true,
@@ -75,7 +75,7 @@
     },
     {
       "evidence": [
-        "eligible_private_no_tools_rows=[{'path': 'leaderboard_submissions/2026-06-12/empty-response-private-no-tools.leaderboard.json', 'harness_type': 'no-tools-model', 'run_count': 2, 'model': 'deterministic-empty-response-no-tools', 'benchmark_commit_sha': 'bcb5310f4d51e4716c4b1392d40b778fca9c89a5', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': None, 'source_private_path_denial': True}]"
+        "eligible_private_no_tools_rows=[{'path': 'leaderboard_submissions/2026-06-12/empty-response-private-no-tools.leaderboard.json', 'harness_type': 'no-tools-model', 'run_count': 2, 'model': 'deterministic-empty-response-no-tools', 'benchmark_commit_sha': 'e8e86cbc85b070294d1363aca3fed1a8374aee8f', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': None, 'source_private_path_denial': True}]"
       ],
       "id": "repeated_private_no_tools_evidence",
       "passed": true,
