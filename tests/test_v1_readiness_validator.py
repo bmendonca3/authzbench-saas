@@ -681,7 +681,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
     def test_expected_output_fixture_mismatch_fails_even_when_incomplete_is_allowed(self) -> None:
         # This test verifies that a fixture with only {"v1_ready": true} (incomplete)
         # causes a mismatch failure because the actual output has many more fields.
-        # The actual v1_ready value reflects the current release-candidate state.
+        # The actual v1_ready value reflects the current release-candidate state
+        # (false while release-candidate evidence is pending).
         with tempfile.TemporaryDirectory() as tmp:
             fixture = Path(tmp) / "expected.json"
             fixture.write_text('{"v1_ready": true}\n', encoding="utf-8")
@@ -701,7 +702,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             )
 
         self.assertEqual(result.returncode, 1)
-        self.assertIn('"v1_ready": true', result.stdout)
+        self.assertIn('"v1_ready":', result.stdout)
         self.assertIn("does not match expected fixture", result.stderr)
 
     def test_hosted_smoke_requires_structured_passed_result(self) -> None:
