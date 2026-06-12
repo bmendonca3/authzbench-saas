@@ -376,17 +376,30 @@ AuthZBench-SaaS is at a released v0.0 stage:
 Do not describe the project as leaderboard-ready or as a validated model
 benchmark until the hosted or containerized leaderboard process exists.
 
-**v1 release-candidate status:** AuthZBench-SaaS v1 is an internally validated
-SaaS authorization-agent benchmark artifact with a 60-task public split,
-maintainer-private holdout operation, 108 total public/private task scale,
-deterministic backend replay scoring, protected private-evaluation plumbing,
-Docker/hosted execution smoke evidence, and Harbor-compatible local execution
-scaffolding. External review, SaaS-provider validation, hosted leaderboard
-operation, and platform acceptance are explicitly deferred to v2.
+## v1 Status
 
-v1 does not claim external review, hosted public leaderboard readiness,
-SaaS-provider validation, or platform acceptance.
-Those are tracked as v2 gates in
+AuthZBench-SaaS v1 is complete under the internal/non-external release definition.
+
+v1 includes:
+
+- 60 public tasks across 6 synthetic SaaS targets
+- 48 maintainer-private holdout tasks summarized through public-safe count-level evidence
+- 108 total public/private task scale
+- deterministic replay scoring
+- public baseline validation
+- protected private-evaluation plumbing
+- Docker-backed submission smoke evidence
+- release-candidate validation evidence
+
+v1 does **not** claim:
+
+- independent external review
+- SaaS-provider scenario validation
+- hosted public leaderboard readiness
+- Harbor/Kaggle/platform acceptance
+- third-party submissions
+
+Those are v2 validation tracks, documented in
 [`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md).
 
 ## Roadmap

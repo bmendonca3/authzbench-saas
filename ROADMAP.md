@@ -201,9 +201,9 @@ Next improvements:
 - [x] Add a public-safe Harbor adapter target contract, skeleton builder, and
       blocker record without claiming Harbor execution.
 
-## Milestone 5: v1 Internal Release-Candidate
+## Milestone 5: v1 Internal Release — Complete
 
-Status: infrastructure validated; external validation deferred to v2.
+Status: complete. All v1 internal release gates are met; external validation deferred to v2.
 
 v1 does not claim external review, hosted public leaderboard readiness,
 SaaS-provider validation, or platform acceptance.
@@ -234,7 +234,7 @@ Deferred to v2:
 - [ ] Harbor/Kaggle/platform acceptance
 - [ ] third-party submissions
 
-## Milestone 6: Research-Grade v2 (External Validation)
+## Milestone 6: v2 External Validation
 
 Status: future.
 
@@ -277,7 +277,7 @@ For release-facing sections, preserve a short public-safe review artifact under
 - `alpha/pre-v0`: development state before a clean first release
 - `v0.0-candidate`: strict v0 evidence exists, but final tag has not landed
 - `v0.0`: first evidence-backed release snapshot
-- `v1-RC`: internally validated release-candidate infrastructure; 108 public/private task scale; external review, SaaS validation, and platform acceptance are v2 gates
+- `v1-RC` / `v1.0-internal`: internally validated release-candidate infrastructure; 108 public/private task scale; external review, SaaS validation, and platform acceptance are v2 gates
 - `v2`: externally reviewed, scaled, research-grade benchmark
 
 Do not call the project leaderboard-ready until the hosted or containerized

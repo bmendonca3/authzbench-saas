@@ -1,14 +1,27 @@
 {
-  "schema_version": "v1-release-candidate-validation-v1",
-  "commit_sha": "72a4f2aa265d151714c1b7b33efac78271648b0b",
+  "schema_version": "v1-release-candidate-validation-v2",
+  "schema_note": "validated_release_candidate_sha is the commit CI actually validated. ci_validated_sha must match the GitHub Actions run head_sha. evidence_file_commit_sha is the commit that stores this file. These are intentionally different — the evidence file cannot validate itself.",
+  "validated_release_candidate_sha": "72a4f2aa265d151714c1b7b33efac78271648b0b",
+  "ci_validated_sha": "cd0f796d17a7064dc2aa1d76febc92af68c21019",
+  "evidence_file_commit_sha": null,
   "benchmark_source_sha": "bd7500657595603f94fb1ac599dfb0ff1be217df",
   "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
-  "exact_head_ci_conclusion": "success",
-  "exact_head_ci_run_id": "27426362534",
-  "exact_head_ci_head_sha": "72a4f2aa265d151714c1b7b33efac78271648b0b",
-  "exact_head_ci_workflow_name": "Validate AuthZBench-SaaS",
-  "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27426362534",
-  "pushed_commit": true,
+  "release_tag": "v1.0-internal",
+  "release_tag_sha": "cd0f796d17a7064dc2aa1d76febc92af68c21019",
+  "final_release_tag_sha": null,
+  "evidence_status": "release_candidate",
+  "public_claim_boundary": "This evidence supports AuthZBench-SaaS v1 under the internal/non-external release definition. It does not claim independent external review, SaaS-provider validation, hosted public leaderboard readiness, Kaggle acceptance, Harbor acceptance, or third-party submissions.",
+  "external_review_status": "deferred_to_v2",
+  "external_review_claimed": false,
+  "saas_provider_validation_claimed": false,
+  "platform_acceptance_claimed": false,
+  "ci": {
+    "workflow": "Validate AuthZBench-SaaS",
+    "run_id": "27426442681",
+    "run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27426442681",
+    "head_sha": "cd0f796d17a7064dc2aa1d76febc92af68c21019",
+    "conclusion": "success"
+  },
   "commands": {
     "python3 -m unittest discover -s tests": {
       "passed": true,
@@ -65,5 +78,21 @@
       "exit_code": 0,
       "evidence": "empty output"
     }
-  }
+  },
+  "private_artifact_policy": {
+    "private_manifests_tracked": false,
+    "raw_private_results_tracked": false,
+    "raw_captures_tracked": false,
+    "credentials_tracked": false,
+    "local_absolute_paths_tracked": false
+  },
+  "v2_deferred_gates": [
+    "independent AppSec review",
+    "independent benchmark/evals methodology review",
+    "independent AI-agent/tooling review",
+    "SaaS-provider scenario validation",
+    "hosted public leaderboard",
+    "Kaggle/Harbor/platform acceptance",
+    "third-party submissions"
+  ]
 }
