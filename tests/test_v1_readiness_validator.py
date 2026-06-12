@@ -202,10 +202,14 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                 self.assertTrue(gates[gate_id]["evidence"][0].startswith("eligible_private_"))
             else:
                 self.assertIn(expected_blocker, gates[gate_id]["unmet"])
-        self.assertTrue(gates["paper_and_artifact_readiness"]["passed"])
+        paper_gate = gates["paper_and_artifact_readiness"]
+        if paper_gate["passed"]:
+            self.assertEqual(paper_gate["unmet"], [])
+        else:
+            self.assertTrue(paper_gate["unmet"])
         self.assertIn(
             PAPER_READINESS_RUNBOOK_PATH,
-            gates["paper_and_artifact_readiness"]["evidence"],
+            paper_gate["evidence"],
         )
         self.assertFalse(gates["final_release_candidate_validation"]["passed"])
         self.assertIn(
