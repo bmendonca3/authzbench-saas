@@ -1,13 +1,13 @@
 # External Review Packet
 
-Status: ready-to-send packet for independent reviewers. No external review is
+Status: ready-to-send packet for independent reviewers (v2 preparation). No external review is
 claimed until findings or explicit no-finding dispositions are recorded in
 `docs/reviews/external-review-summary.md`.
 
 ## Review Lanes
 
-AuthZBench-SaaS needs three independent review lanes before stronger v1 or
-community-benchmark claims are fair:
+AuthZBench-SaaS needs three independent review lanes to reach its v2/post-v1
+credibility goals:
 
 - Application security: task realism, BOLA/BFLA quality, role/scope/sharing
   boundary quality, and false-positive controls.

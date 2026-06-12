@@ -1,21 +1,18 @@
 {
   "schema_version": "private-holdout-operation-blocker-v1",
   "evidence_status": "blocked",
-  "public_claim_boundary": "This file is structured blocker evidence only. It does not publish private holdout manifests and does not claim v1 private operation.",
+  "public_claim_boundary": "This file is structured blocker evidence only. It does not publish private holdout manifests. Count-level public evidence is reported separately from the clean-clone current_public_view snapshot.",
   "blocked_gates": [
-    "rotating_private_holdouts_implemented",
     "repeated_private_tool_agent_evidence",
-    "repeated_private_no_tools_evidence",
-    "v1_task_scale"
+    "repeated_private_no_tools_evidence"
   ],
-  "blocker": "v1/community readiness requires maintainer-only active and shadow/candidate private packs, active-pack fingerprinting, repeated private tool-agent and no-tools rows, and at least 100 validated total tasks. Those private inputs are intentionally absent from the public checkout.",
+  "blocker": "Public checkout omits gitignored private manifests. Count-level holdout validation is published via public-safe summaries and the scale roadmap; repeated private leaderboard rows remain gated until public-view readiness confirms eligible tracked rows.",
   "next_actions": [
-    "stage one active private pack and one shadow or candidate private pack under the ignored maintainer-only holdout root",
-    "validate each pack with the holdout-pack validator and rotation metadata validation",
-    "compute the active pack fingerprint from canonical private manifests",
-    "run repeated private no-tools and tool-agent baselines under protected execution",
-    "publish only redacted source summaries and eligible leaderboard rows tied to the active pack fingerprint",
-    "expand public and protected private task count to at least 100 validated tasks before v1/community release"
+    "keep active and shadow private packs under the gitignored maintainer holdout root",
+    "rerun holdout-pack validation after any private manifest change and refresh public-safe summaries",
+    "keep repeated private leaderboard rows aligned to benchmark_source_sha and active pack fingerprint",
+    "regenerate artifact/expected-output/v1-readiness-public-view.json from validate_v1_readiness.py --public-view",
+    "complete external review before claiming v2_ready"
   ],
   "required_private_inputs": [
     "active private pack",
@@ -32,14 +29,73 @@
     "total_task_count": 60,
     "required_total_task_count": 100
   },
+  "count_level_public_evidence": {
+    "reference_scope": "maintainer-validated-public-safe-summary-2026-06-11",
+    "active_pack_id": "active-private-holdout-v1-pack",
+    "shadow_pack_id": "shadow-private-holdout-v1-pack",
+    "active_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
+    "shadow_pack_fingerprint_sha256": "e0d0c8ca2e7247cf4a8407d40e960363fe803ba2e3cb363fc872509395963eab",
+    "active_pack_holdout_validation_passed": true,
+    "shadow_pack_holdout_validation_passed": true,
+    "validated_private_holdout_task_count": 48,
+    "validation_summary_paths": [
+      "artifact/private-holdout-active-public-summary.json",
+      "artifact/private-holdout-shadow-public-summary.json"
+    ]
+  },
   "last_verified_public_readiness": {
     "reference_scope": "prior_public_checkpoint",
-    "commit_sha": "5d76970ecefb0c4959834e4f7acd81e8b51e11d9",
+    "commit_sha": "6de71d9ff23028c3b9a661396c996dea8b7a6cc3",
     "ci_run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27151712736",
     "ci_run_id": "27151712736",
     "workflow": "Validate AuthZBench-SaaS",
     "v1_ready": false,
-    "passed_gate_count": 3,
+    "passed_gate_count": 4,
     "unmet_gate_count": 8
+  },
+  "maintainer_validation_checkpoint": {
+    "reference_scope": "maintainer-only-local-2026-06-11",
+    "public_checkout_rotation_metadata_present": false,
+    "public_checkout_tracked_holdout_manifests": 0,
+    "maintainer_pack_staging_observed": true,
+    "active_pack_holdout_validation_passed": true,
+    "shadow_pack_holdout_validation_passed": true,
+    "holdout_validation_summary": {
+      "active_pack": {
+        "manifest_count": 24,
+        "private_holdout_count": 24,
+        "vulnerable_count": 12,
+        "control_count": 12,
+        "denial_control_count": 6,
+        "authorized_allow_control_count": 6,
+        "route_variant_count": 24,
+        "decoy_variant_count": 24,
+        "leaderboard_suitable": true,
+        "passed": true,
+        "errors": []
+      },
+      "shadow_pack": {
+        "manifest_count": 24,
+        "private_holdout_count": 24,
+        "vulnerable_count": 12,
+        "control_count": 12,
+        "denial_control_count": 6,
+        "authorized_allow_control_count": 6,
+        "route_variant_count": 24,
+        "decoy_variant_count": 24,
+        "leaderboard_suitable": true,
+        "passed": true,
+        "errors": []
+      }
+    },
+    "active_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
+    "shadow_pack_fingerprint_sha256": "e0d0c8ca2e7247cf4a8407d40e960363fe803ba2e3cb363fc872509395963eab",
+    "rotation_metadata_wired_in_maintainer_checkout": true,
+    "rotation_metadata_matches_public_checkout": false,
+    "validated_private_holdout_task_count": 48,
+    "protected_execution_source_summaries_present": true,
+    "eligible_private_tool_agent_rows": 0,
+    "eligible_private_no_tools_rows": 0,
+    "repeated_private_leaderboard_blocker": "waiting for eligible repeated private leaderboard rows"
   }
 }

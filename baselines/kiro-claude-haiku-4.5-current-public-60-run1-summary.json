@@ -36,7 +36,7 @@
   "fallback_probe_total": 0,
   "false_positive_rate": 0.0278,
   "harness_type": "no-tools-model",
-  "interpretation": "Current v1-prep 54-task public split no-tools Claude Haiku 4.5 baseline through the hardened Kiro adapter. This is repeated public-split diagnostic evidence, not private-holdout, leaderboard-eligible, or v1 release evidence.",
+  "interpretation": "Current v1-prep 60-task public split no-tools Claude Haiku 4.5 baseline through the hardened Kiro adapter. This is repeated public-split diagnostic evidence, not private-holdout, leaderboard-eligible, or v1 release evidence.",
   "invalid_submission_count": 0,
   "invalid_submission_rate": 0.0,
   "kiro_command_failure_count": 0,

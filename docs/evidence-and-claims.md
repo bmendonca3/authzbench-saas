@@ -28,7 +28,7 @@ cards, LinkedIn posts, or external-review notes.
 | v1 readiness checklist | v1 task expansion has a documented startup gate, stale-baseline policy, validation commands, and rerun matrix | v1 release readiness, new current model comparisons, or hosted leaderboard operation |
 | v1/community submission governance | submission states, eligibility gates, run-bundle expectations, private-pack rotation, tie/stale-score rules, appeals, and hosted/containerized flow requirements are defined | that hosted or containerized evaluation is implemented, smoked, or open for third-party submissions |
 | Harbor adapter contract, skeleton builder, blockers, and runbook | the repository has a public-safe Harbor-compatible target shape, local skeleton generator, validation checks, and explicit blocker record | Harbor SDK integration, Harbor platform acceptance, passing Harbor execution, parity evidence, or v1 readiness |
-| external review packet | the repository has a public-safe packet ready for AppSec, benchmark/evals, and AI-agent/tooling reviewers | that independent external review has happened |
+| external review packet (v2 prep) | the repository has a public-safe packet ready for AppSec, benchmark/evals, and AI-agent/tooling reviewers | that independent external review has happened or is required for v1 |
 
 ## Approved Public Framing
 
@@ -58,7 +58,7 @@ Avoid:
 - `production vulnerability discovery benchmark`
 - `private holdouts are publicly reproducible`
 - `public-split scores are final rankings`
-- `external review complete` unless reviewer dispositions are recorded
+- `external review complete` unless reviewer dispositions are recorded (it remains optional for v1)
 - `Harbor execution verified`
 - `Harbor accepted` or `Harbor endorsed`
 

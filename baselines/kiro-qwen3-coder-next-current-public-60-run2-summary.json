@@ -26,7 +26,7 @@
   "denial_control_task_count": 21,
   "diagnostic_semantics": {
     "agent_timeout_seconds": 60,
-    "model_output_failure_fallback": "An inner Kiro command or JSON-extraction failure writes {\"findings\": []}; the valid fallback submission remains in the 54-task scored denominator and can pass a secure control or fail a vulnerable task.",
+    "model_output_failure_fallback": "An inner Kiro command or JSON-extraction failure writes {\"findings\": []}; the valid fallback submission remains in the 60-task scored denominator and can pass a secure control or fail a vulnerable task.",
     "model_output_failure_scope": "task-level adapter invocations",
     "runner_timeout_seconds": 75
   },
@@ -36,7 +36,7 @@
   "fallback_probe_total": 0,
   "false_positive_rate": 0.0,
   "harness_type": "no-tools-model",
-  "interpretation": "Current v1-prep 54-task public split no-tools Qwen baseline through the Kiro adapter. This repeated public-split evidence includes explicit task-level adapter and runner failure diagnostics; it is not private-holdout, leaderboard-eligible, or v1 release evidence.",
+  "interpretation": "Current v1-prep 60-task public split no-tools Qwen baseline through the Kiro adapter. This repeated public-split evidence includes explicit task-level adapter and runner failure diagnostics; it is not private-holdout, leaderboard-eligible, or v1 release evidence.",
   "invalid_submission_count": 0,
   "invalid_submission_rate": 0.0,
   "kiro_command_failure_count": 7,

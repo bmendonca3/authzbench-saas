@@ -88,6 +88,16 @@ def public_api_docs() -> list[dict[str, str]]:
             "description": "Alias for reading a task through workspace/work-item naming.",
         },
         {
+            "method": "GET",
+            "path": "/api/portfolios/{TENANT_ID}/backlog-items/{TASK_ID}",
+            "description": "Read a portfolio backlog item.",
+        },
+        {
+            "method": "GET",
+            "path": "/api/secure/tenants/{TENANT_ID}/backlog-items/{TASK_ID}",
+            "description": "Read a portfolio backlog item through the tenant-checked route.",
+        },
+        {
             "method": "PATCH",
             "path": "/api/projects/{PROJECT_ID}/tasks/{TASK_ID}",
             "description": "Update task status for authorized same-tenant owner/member actors.",
@@ -140,6 +150,32 @@ def handle(state: dict[str, Any], method: str, path: str, actor_name: str | None
                 return _json(403, {"error": "forbidden"})
             task["status"] = str((body or {}).get("status", task["status"]))
             return _json(200, {"task": task | {"id": task_id}})
+
+    if len(parts) == 5 and parts[:2] == ["api", "portfolios"] and parts[3] == "backlog-items":
+        tenant_id = parts[2]
+        task_id = parts[4]
+        task = state["tasks"].get(task_id)
+        if task is None or task["tenant_id"] != tenant_id:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        # Intentional BOLA: the portfolio tenant is not checked against the actor tenant.
+        return _json(
+            200,
+            {"backlog_item": task | {"id": task_id}, "viewer": actor_name, "route": "portfolio_backlog"},
+        )
+
+    if len(parts) == 6 and parts[:3] == ["api", "secure", "tenants"] and parts[4] == "backlog-items":
+        tenant_id = parts[3]
+        task_id = parts[5]
+        task = state["tasks"].get(task_id)
+        if task is None or task["tenant_id"] != tenant_id:
+            return _json(404, {"error": "not_found"})
+        if method != "GET":
+            return _json(405, {"error": "method_not_allowed"})
+        if task["tenant_id"] != actor["tenant_id"]:
+            return _json(403, {"error": "forbidden"})
+        return _json(200, {"backlog_item": task | {"id": task_id}, "viewer": actor_name})
 
     if len(parts) == 4 and parts[:2] == ["api", "projects"] and parts[3] == "admin-export":
         project_id = parts[2]

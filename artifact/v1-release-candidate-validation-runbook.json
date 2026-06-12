@@ -1,7 +1,7 @@
 {
   "schema_version": "v1-release-candidate-validation-runbook-v1",
   "evidence_status": "runbook",
-  "public_claim_boundary": "This runbook is not release-candidate validation evidence. It defines the final evidence collection procedure, but final_release_candidate_validation remains incomplete until an external release evidence JSON is supplied to validate_v1_readiness.py with every required command passed.",
+  "public_claim_boundary": "This runbook is not release-candidate validation evidence. final_release_candidate_validation remains incomplete until external release evidence is supplied with --release-evidence and every required command passes.",
   "required_inputs": [
     "release commit sha",
     "benchmark source sha",
@@ -67,6 +67,21 @@
   "release_notes": [
     "A passing runbook check only proves that the release-candidate validation procedure is specified.",
     "The final gate requires validate_v1_readiness.py --release-evidence <external-json> without --allow-incomplete.",
-    "The tracked template artifact/v1-release-candidate-validation.template.json is rejected as release evidence."
+    "The tracked template artifact/v1-release-candidate-validation.template.json is rejected as release evidence.",
+    "Strict v1_ready requires the final command without --allow-incomplete and with real --release-evidence."
+  ],
+  "final_v1_ready_command_sequence": [
+    "python3 scripts/validate_public.py --include-scripted-baseline",
+    "python3 scripts/validate_v0_release.py",
+    "python3 scripts/validate_baseline_registry.py",
+    "python3 scripts/validate_task_quality_gate.py --contract artifact/task-quality-gate-contract.json --task 'tasks/*/*.json'",
+    "python3 scripts/validate_harbor_adapter_blockers.py",
+    "python3 scripts/validate_harbor_adapter_templates.py",
+    "python3 scripts/validate_harbor_integration.py",
+    "python3 scripts/check_harbor_local_execution.py",
+    "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary",
+    "artifact/run-public-validation.sh",
+    "python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json",
+    "python3 scripts/validate_v1_readiness.py --release-evidence <external-release-evidence.json>"
   ]
 }

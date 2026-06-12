@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "6c0371bb3b1174e7b6d9e06f077e52066c8a2476",
+  "benchmark_source_sha": "bcb5310f4d51e4716c4b1392d40b778fca9c89a5",
   "cleanup_completed": true,
   "command": "python3 scripts/containerized_submission_smoke.py --private-pack REDACTED_PROTECTED_PACK --output PUBLIC_SAFE_EVIDENCE",
   "container_constraints": [
@@ -15,7 +15,7 @@
   "execution_scope": "release_candidate",
   "isolation_model": "docker-bind-rendered-context-only",
   "privacy_scan_passed": true,
-  "private_pack_fingerprint_sha256": "dc56c9c32cf281a7e3f68866243c1d11835b0020ced1e73c571875f18efde8b3",
+  "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
   "private_pack_version": "2026-06-09-active-v1",
   "public_output_private_artifacts_included": false,
   "result": "passed",

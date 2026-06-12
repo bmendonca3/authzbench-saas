@@ -43,6 +43,7 @@ PRIMARY_FIELDS = (
     "target_request_coverage_rate",
     "mean_score",
     "safety_violations",
+    "private_pack_fingerprint_sha256",
 )
 
 
