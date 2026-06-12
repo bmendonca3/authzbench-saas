@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "bcb5310f4d51e4716c4b1392d40b778fca9c89a5",
+  "benchmark_source_sha": "63fcfcc6319a0eeef94205bca78a53cd5711a2ad",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "release_candidate",
@@ -20,6 +20,6 @@
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
-    "verified_on": "2026-06-08"
+    "verified_on": "2026-06-12"
   }
 }
