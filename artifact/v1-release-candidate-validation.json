@@ -8,7 +8,7 @@
   "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
   "release_tag": "v1.0-internal",
   "release_tag_sha": "cd0f796d17a7064dc2aa1d76febc92af68c21019",
-  "final_release_tag_sha": null,
+  "final_release_tag_sha": "bd6c6a9dcc69d35c872ccb540b0605a2fa358dba",
   "post_evidence_main_ci": {
     "head_sha": "e09be2a1ac390653980a480f9a32b5c3ff8f2918",
     "run_id": "27427649106",
