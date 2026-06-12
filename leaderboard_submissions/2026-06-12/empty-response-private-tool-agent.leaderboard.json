@@ -3,7 +3,7 @@
   "authorized_allow_control_task_count": 6,
   "authorized_allow_pass_rate": 0.6667,
   "baseline_kind": "tool_agent_baseline",
-  "benchmark_commit_sha": "bcb5310f4d51e4716c4b1392d40b778fca9c89a5",
+  "benchmark_commit_sha": "26294482654c87fcbc1fd0f20f813a64f5abbcc7",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 6,
     "control_task_count": 12,
@@ -18,9 +18,9 @@
     "vulnerable_task_count": 12
   },
   "benchmark_fingerprint_provenance": "runner-emitted",
-  "benchmark_version": "alpha-0.0.1-public-scaffold-local",
+  "benchmark_version": "v1",
   "boundary_reasoning_pass_rate": 0.0,
-  "comparability_key": "authzbench-cmp-v1:ca4578fd0275172d355ab993a953ffe8ca5c7ea143efef0f393c4629b87bc7f4",
+  "comparability_key": "authzbench-cmp-v1:29caccc629c120e0b49fa2eaa5d835251c4bad72da884637f91834c361d41cb9",
   "control_execution_pass_rate": 0.8333,
   "control_false_report_rate": 0.0,
   "control_task_count": 12,
@@ -42,21 +42,21 @@
   "public_task_count": 0,
   "repeat_evidence": {
     "aggregation": "primary_run",
-    "primary_run_id": "empty-response-private-tool-agent-bcb5310-run1-redacted-redacted",
+    "primary_run_id": "empty-response-private-tool-agent-2629448-run1-redacted",
     "source_run_ids": [
-      "empty-response-private-tool-agent-bcb5310-run1-redacted-redacted",
-      "empty-response-private-tool-agent-bcb5310-run2-redacted-redacted"
+      "empty-response-private-tool-agent-2629448-run1-redacted",
+      "empty-response-private-tool-agent-2629448-run2-redacted"
     ],
-    "variance_metric": "v0_mean_score"
+    "variance_metric": "mean_score"
   },
   "run_count": 2,
-  "run_id": "empty-response-private-tool-agent-bcb5310-run1-redacted-redacted",
+  "run_id": "empty-response-private-tool-agent-2629448-run1-redacted",
   "safety_violations": 0,
   "source_run_summaries": [
-    "leaderboard_sources/empty-response-private-tool-agent-bcb5310-run1-redacted-source-summary.json",
-    "leaderboard_sources/empty-response-private-tool-agent-bcb5310-run2-redacted-source-summary.json"
+    "leaderboard_sources/empty-response-private-tool-agent-2629448-run1-redacted-source-summary.json",
+    "leaderboard_sources/empty-response-private-tool-agent-2629448-run2-redacted-source-summary.json"
   ],
-  "source_run_summary": "leaderboard_sources/empty-response-private-tool-agent-bcb5310-run1-redacted-source-summary.json",
+  "source_run_summary": "leaderboard_sources/empty-response-private-tool-agent-2629448-run1-redacted-source-summary.json",
   "split": "private-holdout",
   "target_request_coverage_rate": 1.0,
   "task_count": 24,
