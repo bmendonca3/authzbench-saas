@@ -200,6 +200,11 @@ Next improvements:
 - [x] Add clear rules for reruns, ties, stale scores, and task-pack rotations.
 - [x] Add a public-safe Harbor adapter target contract, skeleton builder, and
       blocker record without claiming Harbor execution.
+- [x] Implement full Harbor adapter path: adapter package, CLI, scorer bridge,
+      redaction helpers, local 6-task smoke, native-vs-Harbor parity experiment,
+      dataset validator, and adapter metadata/parity validators.
+      Harbor platform acceptance, Kaggle acceptance, hosted leaderboard operation,
+      and third-party submissions remain v2 gates.
 
 ## Milestone 5: v1 Internal Release — Complete
 

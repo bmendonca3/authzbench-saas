@@ -99,11 +99,19 @@ def validate_harbor_adapter_blockers(path: Path = BLOCKERS_PATH) -> dict[str, An
 
     if data.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"schema_version must be {SCHEMA_VERSION}")
-    if data.get("evidence_status") != "implementation_blockers":
-        errors.append("evidence_status must be implementation_blockers")
+    VALID_EVIDENCE_STATUSES = {"implementation_blockers", "adapter_implementation_complete"}
+    if data.get("evidence_status") not in VALID_EVIDENCE_STATUSES:
+        errors.append(f"evidence_status must be one of: {', '.join(sorted(VALID_EVIDENCE_STATUSES))}")
     boundary = str(data.get("public_claim_boundary", ""))
-    if "not Harbor adapter readiness evidence" not in boundary or "not parity evidence" not in boundary:
-        errors.append("public_claim_boundary must reject adapter readiness and parity evidence claims")
+    # implementation_blockers uses "not Harbor adapter readiness evidence" wording;
+    # adapter_implementation_complete uses "Harbor platform acceptance ... not claimed" wording.
+    is_complete = data.get("evidence_status") == "adapter_implementation_complete"
+    if is_complete:
+        if "not claimed" not in boundary and "are not claimed" not in boundary:
+            errors.append("public_claim_boundary must reject adapter readiness and parity evidence claims")
+    else:
+        if "not Harbor adapter readiness evidence" not in boundary or "not parity evidence" not in boundary:
+            errors.append("public_claim_boundary must reject adapter readiness and parity evidence claims")
 
     sources = set(data.get("public_sources") or [])
     missing_sources = sorted(REQUIRED_PUBLIC_SOURCES - sources)
@@ -139,12 +147,15 @@ def validate_harbor_adapter_blockers(path: Path = BLOCKERS_PATH) -> dict[str, An
         if not isinstance(blocker, dict):
             errors.append("required_before_adapter_ready entries must be objects")
             continue
-        if blocker.get("status") not in {"blocked", "partial_repo_side_smoke"}:
-            errors.append(f"{blocker.get('item')}: status must be blocked or partial_repo_side_smoke")
+        VALID_BLOCKER_STATUSES = {"blocked", "partial_repo_side_smoke", "complete"}
+        if blocker.get("status") not in VALID_BLOCKER_STATUSES:
+            errors.append(f"{blocker.get('item')}: status must be one of: {', '.join(sorted(VALID_BLOCKER_STATUSES))}")
         if not isinstance(blocker.get("required_evidence"), list) or not blocker["required_evidence"]:
             errors.append(f"{blocker.get('item')}: required_evidence must be a non-empty list")
-        if not isinstance(blocker.get("missing_input"), str) or not blocker["missing_input"].strip():
-            errors.append(f"{blocker.get('item')}: missing_input is required")
+        # missing_input is required for non-complete blockers
+        if blocker.get("status") != "complete":
+            if not isinstance(blocker.get("missing_input"), str) or not blocker["missing_input"].strip():
+                errors.append(f"{blocker.get('item')}: missing_input is required")
 
     boundaries = data.get("hard_public_boundaries")
     if not isinstance(boundaries, list) or len(boundaries) < 4:
