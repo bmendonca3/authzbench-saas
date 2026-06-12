@@ -1,0 +1,69 @@
+{
+  "schema_version": "v1-release-candidate-validation-v1",
+  "commit_sha": "c9b22b9d09ad18546e30fe7d3a89bce724d6e694",
+  "benchmark_source_sha": "bd7500657595603f94fb1ac599dfb0ff1be217df",
+  "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
+  "exact_head_ci_conclusion": "success",
+  "exact_head_ci_run_id": "27425999724",
+  "exact_head_ci_head_sha": "c9b22b9d09ad18546e30fe7d3a89bce724d6e694",
+  "exact_head_ci_workflow_name": "Validate AuthZBench-SaaS",
+  "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27425999724",
+  "pushed_commit": true,
+  "commands": {
+    "python3 -m unittest discover -s tests": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "python3 scripts/validate_public.py --include-scripted-baseline": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "python3 scripts/validate_v0_release.py": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "python3 scripts/validate_baseline_registry.py": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "python3 scripts/generate_paper_tables.py": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "git diff --exit-code -- paper/shared": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "git diff --check": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "run/27425999724"
+    },
+    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs": {
+      "passed": true,
+      "exit_code": 0,
+      "evidence": "empty output"
+    }
+  }
+}
