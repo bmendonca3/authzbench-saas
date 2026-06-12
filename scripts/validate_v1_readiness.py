@@ -177,6 +177,14 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "artifact/expected-output/v1-readiness-public-view.json",
     "scripts/validate_v1_readiness.py",
     "tests/test_v1_readiness_validator.py",
+    # Claim-safe release framing docs: updated after source pin to clarify
+    # v1 internal-RC vs v2 external-validation boundaries without changing
+    # benchmark source, tasks, scoring, or baselines.
+    "README.md",
+    "ROADMAP.md",
+    "docs/goal.md",
+    "docs/reviews/external-review-summary.md",
+    "docs/v2-external-validation-roadmap.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
