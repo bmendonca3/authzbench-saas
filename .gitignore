@@ -8,6 +8,9 @@ results/
 captures/
 tasks_private/holdout/
 docs/reviews/panel-logs/
+harbor-jobs/
+.harbor/
+**/harbor-jobs/
 .kiro/
 paper/ieee-sp/*.aux
 paper/ieee-sp/*.bbl

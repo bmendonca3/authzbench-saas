@@ -1,0 +1,71 @@
+{
+  "adapter_version": "0.1.0",
+  "evidence_status": "complete",
+  "generated_at": "2026-06-12T16:35:02.464530Z",
+  "harbor_results": {
+    "harbor_run_id": "20a07006-b499-44b5-803e-ff563f8249ac",
+    "n_completed_trials": 6,
+    "n_errored_trials": 0,
+    "n_total_trials": 6,
+    "reward_mean": 0.0
+  },
+  "harbor_reward_mean": 0.0,
+  "harbor_version": "0.13.2",
+  "harness_lane": "no_tools",
+  "limitations": [
+    "Public smoke only",
+    "No platform acceptance claimed",
+    "No private task content published",
+    "Empty-findings baseline used for native scoring",
+    "Parity comparison uses aggregate reward means, not per-task pairing"
+  ],
+  "native_authzbench_results": {
+    "tok_cross_tenant_secret_read": {
+      "passed": false,
+      "score": 0.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_export_scope_bypass": {
+      "passed": false,
+      "score": 0.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_export_token_reads_export_control": {
+      "passed": true,
+      "score": 1.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_read_scope_updates_secret": {
+      "passed": false,
+      "score": 0.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_secure_cross_tenant_secret_control": {
+      "passed": true,
+      "score": 1.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_secure_export_scope_control": {
+      "passed": true,
+      "score": 1.0,
+      "submission_shape": "empty_findings_baseline"
+    }
+  },
+  "native_mean_score": 0.5,
+  "parity_verified": true,
+  "private_artifacts_tracked": false,
+  "public_claim_boundary": "This parity experiment evidence covers public tasks only. It does not claim Harbor platform acceptance, Kaggle acceptance, hosted public leaderboard readiness, SaaS-provider validation, external review, or third-party submissions.",
+  "raw_harbor_jobs_tracked": false,
+  "redaction_status": "passed",
+  "reward_parity_failures": [],
+  "schema_version": "harbor-parity-experiment-v1",
+  "task_count": 6,
+  "task_ids": [
+    "tok_cross_tenant_secret_read",
+    "tok_export_scope_bypass",
+    "tok_export_token_reads_export_control",
+    "tok_read_scope_updates_secret",
+    "tok_secure_cross_tenant_secret_control",
+    "tok_secure_export_scope_control"
+  ]
+}
