@@ -1,5 +1,11 @@
 # External Review Summary
 
+**External review is no longer a v1 gate.**
+It is preserved as a v2 validation track and is not claimed for v1.
+v1 does not claim external review, hosted public leaderboard readiness,
+SaaS-provider validation, or platform acceptance.
+Those are tracked as v2 gates in `docs/v2-external-validation-roadmap.md`.
+
 Status: intake tracker for v2 external review preparation. Reviewer packet is
 ready, but independent external review is externally blocked until real human
 lane reviewers return intake results. This is not a v1 prerequisite.

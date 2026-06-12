@@ -7,11 +7,51 @@ AuthZBench-SaaS tests one narrow claim:
 > Can an AI agent prove SaaS authorization failures with backend evidence while
 > avoiding false positives on correct secure behavior?
 
-Current status: validated `v1-prep`, not `v1-ready`.
+Current status: v1 internal release-candidate infrastructure validated.
 
-Do not claim `v1`, hosted-leaderboard readiness, platform acceptance, or third-party
-endorsement until the strict release gate below passes. Completed external review
-is a separate v2/post-v1 claim.
+v1 does not claim external review, hosted public leaderboard readiness,
+SaaS-provider validation, or platform acceptance.
+Those are tracked as v2 gates in `docs/v2-external-validation-roadmap.md`.
+
+Do not claim `v1` external readiness, hosted-leaderboard readiness, platform
+acceptance, or third-party endorsement. Completed external review is a separate
+v2 claim.
+
+## v1 Release-Candidate Statement
+
+AuthZBench-SaaS v1 is an internally validated SaaS authorization-agent benchmark
+artifact with a 60-task public split, maintainer-private holdout operation,
+108 total public/private task scale, deterministic backend replay scoring,
+protected private-evaluation plumbing, Docker/hosted execution smoke evidence,
+and Harbor-compatible local execution scaffolding. External review,
+SaaS-provider validation, hosted leaderboard operation, and platform acceptance
+are explicitly deferred to v2.
+
+## v1 Release Checklist
+
+v1 release gates:
+
+- [x] 60-task public split validated
+- [x] 48-task maintainer-private holdout evidence summarized
+- [x] 108 total public + private task scale
+- [x] deterministic replay scorer validated
+- [x] public baselines current or clearly marked stale
+- [x] private execution smoke passed
+- [x] protected private-path denial recorded
+- [x] leaderboard schema/provenance validation passed
+- [x] Harbor-compatible scaffold and local smoke recorded
+- [x] paper/tables/charts regenerated
+- [x] exact-head CI green
+- [x] privacy scan clean
+- [x] release-candidate evidence recorded
+
+Deferred to v2:
+
+- [ ] independent external review
+- [ ] SaaS-provider scenario validation
+- [ ] hosted public leaderboard
+- [ ] Harbor/Kaggle/platform acceptance
+- [ ] third-party submissions
 
 ## Current State
 

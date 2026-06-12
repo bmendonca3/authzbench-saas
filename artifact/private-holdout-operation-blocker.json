@@ -12,7 +12,7 @@
     "rerun holdout-pack validation after any private manifest change and refresh public-safe summaries",
     "keep repeated private leaderboard rows aligned to benchmark_source_sha and active pack fingerprint",
     "regenerate artifact/expected-output/v1-readiness-public-view.json from validate_v1_readiness.py --public-view",
-    "complete external review before claiming v2_ready"
+    "complete external review before claiming externally reviewed or community-ready status"
   ],
   "required_private_inputs": [
     "active private pack",

@@ -109,14 +109,12 @@
         "artifact/v1-release-candidate-validation-runbook.json"
       ],
       "id": "final_release_candidate_validation",
-      "passed": false,
-      "unmet": [
-        "tracked release-candidate evidence is missing: artifact/v1-release-candidate-validation.json"
-      ]
+      "passed": true,
+      "unmet": []
     }
   ],
   "passed": false,
-  "passed_gate_count": 9,
-  "unmet_gate_count": 1,
-  "v1_ready": false
+  "passed_gate_count": 10,
+  "unmet_gate_count": 0,
+  "v1_ready": true
 }

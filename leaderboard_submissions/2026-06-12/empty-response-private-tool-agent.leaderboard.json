@@ -49,6 +49,8 @@
     ],
     "variance_metric": "mean_score"
   },
+  "row_purpose": "plumbing-evidence",
+  "row_purpose_note": "This row validates private-holdout execution, source-summary provenance, privacy boundaries, and leaderboard schema plumbing. It is not a model capability claim.",
   "run_count": 2,
   "run_id": "empty-response-private-tool-agent-e8e86cb-run1-redacted",
   "safety_violations": 0,
