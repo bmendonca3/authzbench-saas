@@ -1,7 +1,7 @@
 {
   "schema_version": "v1-task-scale-roadmap-v1",
   "evidence_status": "validated_private_holdout_counts",
-  "public_claim_boundary": "This roadmap reports only public-safe, count-level holdout validation status. It does not publish nonpublic task bodies, identifiers, route names, seed values, oracle strings, model transcripts, captures, credentials, or local paths.",
+  "public_claim_boundary": "Count-level private holdout evidence only. This roadmap reports validated maintainer-only pack counts and does not publish private task bodies, IDs, routes, seeds, or oracle details.",
   "current_public_task_count": 60,
   "current_validated_private_holdout_task_count": 48,
   "required_total_task_count": 100,
@@ -55,8 +55,8 @@
     "chart and table regeneration"
   ],
   "release_notes": [
-    "Count this roadmap only as public-safe scale evidence when it matches maintainer-only rotation metadata validator output.",
-    "Do not compare old public baselines as current after any task or scoring change.",
-    "Publish only count-level planning details until private packs are validated in maintainer-only checkout."
+    "Validated counts reflect maintainer-only holdout-pack validation for active plus shadow packs (24 + 24 private tasks).",
+    "Public checkout still omits private manifests; only count-level summaries are published.",
+    "Do not compare old public baselines as current after any task or scoring change."
   ]
 }

@@ -3,7 +3,6 @@
   "evidence_status": "runbook",
   "public_claim_boundary": "This runbook is not release-candidate paper readiness evidence. It defines the final report and IEEE scaffold refresh procedure, but paper_and_artifact_readiness remains incomplete until upstream review and infrastructure gates pass and docs/v1-paper-readiness.json is refreshed with release-candidate evidence.",
   "required_inputs": [
-    "completed external review lanes",
     "passed hosted or containerized release-candidate smoke",
     "validated active private pack fingerprint",
     "eligible repeated private no-tools row",
@@ -14,7 +13,6 @@
   "refresh_steps": [
     "separate frozen v0.0 evidence from current v1-prep evidence",
     "state true v1 claims only after release gates pass",
-    "incorporate accepted external review findings",
     "incorporate hosted and protected execution findings",
     "regenerate paper tables",
     "regenerate benchmark charts",

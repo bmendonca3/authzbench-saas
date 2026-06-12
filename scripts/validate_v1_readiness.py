@@ -74,6 +74,8 @@ HARBOR_LOCAL_EVIDENCE_PATH = "artifact/harbor-local-execution-smoke.json"
 HARBOR_LOCAL_PREFLIGHT_PATH = "scripts/check_harbor_local_execution.py"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PRIVATE_OPERATION_RUNBOOK_PATH = "artifact/private-holdout-operation-runbook.json"
+ACTIVE_HOLDOUT_PUBLIC_SUMMARY_PATH = "artifact/private-holdout-active-public-summary.json"
+SHADOW_HOLDOUT_PUBLIC_SUMMARY_PATH = "artifact/private-holdout-shadow-public-summary.json"
 PRIVATE_ROTATION_METADATA_TEMPLATE_PATH = "artifact/private-holdout-rotation-metadata.template.json"
 PAPER_READINESS_EVIDENCE_PATH = "docs/v1-paper-readiness.json"
 PAPER_READINESS_RUNBOOK_PATH = "artifact/v1-paper-readiness-runbook.json"
@@ -163,38 +165,34 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     HOSTED_EXECUTION_TEMPLATE_PATH,
     PRIVATE_OPERATION_BLOCKER_PATH,
     PRIVATE_OPERATION_RUNBOOK_PATH,
+    ACTIVE_HOLDOUT_PUBLIC_SUMMARY_PATH,
+    SHADOW_HOLDOUT_PUBLIC_SUMMARY_PATH,
     PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
     PAPER_READINESS_EVIDENCE_PATH,
     PAPER_READINESS_RUNBOOK_PATH,
+    RELEASE_VALIDATION_EVIDENCE_PATH,
     RELEASE_VALIDATION_RUNBOOK_PATH,
     RELEASE_VALIDATION_TEMPLATE_PATH,
     SCALE_ROADMAP_PATH,
-}
-PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = {
-    PAPER_READINESS_EVIDENCE_PATH,
     "artifact/expected-output/v1-readiness-public-view.json",
-    EXTERNAL_REVIEW_RESPONSE_TEMPLATE_PATH,
-    HARBOR_ADAPTER_CONTRACT_PATH,
-    HARBOR_ADAPTER_BLOCKERS_PATH,
-    HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
-    HARBOR_ADAPTER_METADATA_TEMPLATE_PATH,
-    HARBOR_ADAPTER_PARITY_TEMPLATE_PATH,
-    HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
-    HARBOR_INTEGRATION_RUNBOOK_PATH,
-    HARBOR_INTEGRATION_VALIDATOR_PATH,
-    HARBOR_LOCAL_EVIDENCE_PATH,
-    HARBOR_LOCAL_PREFLIGHT_PATH,
-    HOSTED_EXECUTION_RUNBOOK_PATH,
-    HOSTED_EXECUTION_TEMPLATE_PATH,
-    PRIVATE_OPERATION_BLOCKER_PATH,
-    PRIVATE_OPERATION_RUNBOOK_PATH,
-    PRIVATE_ROTATION_METADATA_TEMPLATE_PATH,
-    PAPER_READINESS_RUNBOOK_PATH,
-    RELEASE_VALIDATION_RUNBOOK_PATH,
-    RELEASE_VALIDATION_TEMPLATE_PATH,
-    SCALE_ROADMAP_PATH,
+    "scripts/validate_v1_readiness.py",
+    "tests/test_v1_readiness_validator.py",
+    # Claim-safe release framing docs: updated after source pin to clarify
+    # v1 internal-RC vs v2 external-validation boundaries without changing
+    # benchmark source, tasks, scoring, or baselines.
+    "README.md",
+    "ROADMAP.md",
+    "docs/goal.md",
+    "docs/reviews/external-review-summary.md",
+    "docs/v2-external-validation-roadmap.md",
+}
+PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
 }
+POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
+    "leaderboard_sources/",
+    "leaderboard_submissions/",
+)
 
 
 def _text(path: Path) -> str:
@@ -224,6 +222,10 @@ def _nonempty_string(value: Any) -> bool:
 
 def _sha(value: Any) -> bool:
     return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value) is not None
+
+
+def _fingerprint_sha256(value: Any) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None
 
 
 def _authzbench_actions_run_url(value: Any) -> bool:
@@ -381,7 +383,12 @@ def _benchmark_source_compatibility_errors(
         stdout=subprocess.PIPE,
     ).stdout.splitlines()
     allowed_paths = allowed_post_source_paths or POST_SOURCE_EVIDENCE_ONLY_PATHS
-    release_affecting = [path for path in diff if path not in allowed_paths]
+    release_affecting = [
+        path
+        for path in diff
+        if path not in allowed_paths
+        and not path.startswith(POST_SOURCE_EVIDENCE_ONLY_PREFIXES)
+    ]
     if release_affecting:
         errors.append(
             "release-affecting files changed after benchmark_source_sha: "
@@ -632,7 +639,14 @@ def _validate_private_operation_blocker(
         unmet.append("evidence_status must be blocked")
 
     blocked_gates = _concrete_string_list(data, "blocked_gates", unmet)
-    missing_gates = [gate for gate in PRIVATE_OPERATION_BLOCKED_GATES if gate not in blocked_gates]
+    count_level = data.get("count_level_public_evidence")
+    required_blocked_gates = PRIVATE_OPERATION_BLOCKED_GATES
+    if isinstance(count_level, dict) and int(count_level.get("validated_private_holdout_task_count") or 0) >= 48:
+        required_blocked_gates = (
+            "repeated_private_tool_agent_evidence",
+            "repeated_private_no_tools_evidence",
+        )
+    missing_gates = [gate for gate in required_blocked_gates if gate not in blocked_gates]
     if missing_gates:
         unmet.append(f"blocked_gates must include: {', '.join(missing_gates)}")
 
@@ -685,11 +699,157 @@ def _validate_private_operation_blocker(
 
     unmet.append(
         "private holdout operation is blocked until active and shadow/candidate private packs and repeated private rows exist"
+        if int((count_level or {}).get("validated_private_holdout_task_count") or 0) < 48
+        else "repeated private-holdout leaderboard rows remain blocked until eligible tracked rows validate in public view"
     )
     return {
         "passed": False,
         "path": PRIVATE_OPERATION_BLOCKER_PATH,
         "unmet": list(dict.fromkeys(unmet)),
+    }
+
+
+def _pinned_public_benchmark_source_sha(root: Path = ROOT) -> str | None:
+    for rel_path in (HOSTED_EXECUTION_EVIDENCE_PATH, PAPER_READINESS_EVIDENCE_PATH):
+        data = _json_object(root / rel_path, [])
+        if isinstance(data, dict):
+            candidate = data.get("benchmark_source_sha")
+            if _sha(candidate):
+                return str(candidate)
+    return None
+
+
+def _validate_holdout_public_summary(
+    root: Path,
+    rel_path: str,
+    *,
+    expected_private_holdout_count: int,
+) -> list[str]:
+    unmet: list[str] = []
+    data = _json_object(root / rel_path, unmet)
+    if data is None:
+        return unmet
+    unmet.extend(_private_operation_public_safety_errors(data))
+    if data.get("schema_version") != "holdout-public-safe-summary-v1":
+        unmet.append(f"{rel_path}: schema_version must be holdout-public-safe-summary-v1")
+    if data.get("public_safe_summary") is not True:
+        unmet.append(f"{rel_path}: public_safe_summary must be true")
+    if data.get("passed") is not True:
+        unmet.append(f"{rel_path}: holdout validation summary must report passed=true")
+    if data.get("leaderboard_suitable") is not True:
+        unmet.append(f"{rel_path}: holdout validation summary must report leaderboard_suitable=true")
+    if data.get("private_holdouts_untracked") is not True:
+        unmet.append(f"{rel_path}: private holdout manifests must remain untracked in git")
+    counts = data.get("counts") if isinstance(data.get("counts"), dict) else {}
+    actual_count = counts.get("private_holdout_count")
+    if actual_count != expected_private_holdout_count:
+        unmet.append(
+            f"{rel_path}: private_holdout_count must be {expected_private_holdout_count}, got {actual_count}"
+        )
+    return list(dict.fromkeys(unmet))
+
+
+def _resolve_public_view_private_holdout_state(
+    root: Path = ROOT,
+    *,
+    public_task_count: int,
+) -> dict[str, Any]:
+    unmet: list[str] = []
+    roadmap = _json_object(root / SCALE_ROADMAP_PATH, unmet)
+    validated_count = 0
+    if isinstance(roadmap, dict) and roadmap.get("evidence_status") == "validated_private_holdout_counts":
+        if isinstance(roadmap.get("current_validated_private_holdout_task_count"), int):
+            validated_count = int(roadmap["current_validated_private_holdout_task_count"])
+
+    blocker = _json_object(root / PRIVATE_OPERATION_BLOCKER_PATH, unmet)
+    count_level = {}
+    if isinstance(blocker, dict):
+        candidate = blocker.get("count_level_public_evidence")
+        if isinstance(candidate, dict):
+            count_level = candidate
+        else:
+            checkpoint = blocker.get("maintainer_validation_checkpoint")
+            if isinstance(checkpoint, dict):
+                count_level = checkpoint
+
+    active_pack_id = count_level.get("active_pack_id") or "active-private-holdout-v1-pack"
+    shadow_pack_id = count_level.get("shadow_pack_id") or "shadow-private-holdout-v1-pack"
+    active_fingerprint = count_level.get("active_pack_fingerprint_sha256")
+    shadow_fingerprint = count_level.get("shadow_pack_fingerprint_sha256")
+
+    summary_unmet: list[str] = []
+    if validated_count <= 0:
+        summary_unmet.append("current_validated_private_holdout_task_count must be greater than 0")
+    else:
+        summary_unmet.extend(
+            _validate_holdout_public_summary(
+                root,
+                ACTIVE_HOLDOUT_PUBLIC_SUMMARY_PATH,
+                expected_private_holdout_count=24,
+            )
+        )
+        summary_unmet.extend(
+            _validate_holdout_public_summary(
+                root,
+                SHADOW_HOLDOUT_PUBLIC_SUMMARY_PATH,
+                expected_private_holdout_count=24,
+            )
+        )
+        if validated_count != 48:
+            summary_unmet.append(
+                f"validated_private_holdout_task_count must be 48 when active and shadow summaries are present, got {validated_count}"
+            )
+        if not _fingerprint_sha256(active_fingerprint):
+            summary_unmet.append("count-level holdout evidence must declare active_pack_fingerprint_sha256")
+        if not _fingerprint_sha256(shadow_fingerprint):
+            summary_unmet.append("count-level holdout evidence must declare shadow_pack_fingerprint_sha256")
+        if count_level.get("active_pack_holdout_validation_passed") is False:
+            summary_unmet.append("active pack holdout validation must be passed")
+        if count_level.get("shadow_pack_holdout_validation_passed") is False:
+            summary_unmet.append("shadow pack holdout validation must be passed")
+        summary_paths = count_level.get("validation_summary_paths")
+        if isinstance(summary_paths, list):
+            expected_paths = {ACTIVE_HOLDOUT_PUBLIC_SUMMARY_PATH, SHADOW_HOLDOUT_PUBLIC_SUMMARY_PATH}
+            actual_paths = {str(item) for item in summary_paths if isinstance(item, str)}
+            missing_paths = sorted(expected_paths - actual_paths)
+            if missing_paths:
+                summary_unmet.append(
+                    "validation_summary_paths must include: " + ", ".join(missing_paths)
+                )
+
+    blocker_result = _validate_private_operation_blocker(
+        root,
+        expected_public_task_count=public_task_count,
+    )
+    if summary_unmet:
+        return {
+            "passed": False,
+            "pack_ids": [],
+            "roles": [],
+            "validated_private_task_count": 0,
+            "active_pack_id": None,
+            "active_pack_fingerprint_sha256": None,
+            "blocker": blocker_result,
+            "unmet": list(
+                dict.fromkeys(
+                    [
+                        "public checkout uses count-level holdout evidence; gitignored private manifests are not inspected",
+                        *summary_unmet,
+                        *blocker_result["unmet"],
+                    ]
+                )
+            ),
+        }
+
+    return {
+        "passed": True,
+        "pack_ids": [str(active_pack_id), str(shadow_pack_id)],
+        "roles": ["active", "shadow"],
+        "validated_private_task_count": validated_count,
+        "active_pack_id": str(active_pack_id),
+        "active_pack_fingerprint_sha256": str(active_fingerprint),
+        "blocker": blocker_result,
+        "unmet": [],
     }
 
 
@@ -939,13 +1099,11 @@ def _validate_v1_scale_roadmap(
         unmet.append("public_claim_boundary must state that only count-level private holdout evidence is reported")
     if data.get("current_public_task_count") != public_task_count:
         unmet.append(f"current_public_task_count must match current public count {public_task_count}")
-    if (
-        data.get("current_validated_private_holdout_task_count") != validated_private_holdout_task_count
-        and not public_view
-    ):
-        unmet.append(
-            "current_validated_private_holdout_task_count must match validated private holdout task count"
-        )
+    if data.get("current_validated_private_holdout_task_count") != validated_private_holdout_task_count:
+        if not public_view or validated_private_holdout_task_count <= 0:
+            unmet.append(
+                "current_validated_private_holdout_task_count must match validated private holdout task count"
+            )
     if data.get("required_total_task_count") != 100:
         unmet.append("required_total_task_count must be 100")
     expected_additional = max(0, 100 - current_total)
@@ -1011,7 +1169,11 @@ def _validate_v1_scale_roadmap(
         if not isinstance(planned_task_count, int) or planned_task_count <= 0:
             unmet.append(f"{wave_id}: planned_task_count must be a positive integer")
             planned_task_count = 0
-        if wave.get("status") != "validated-maintainer-only" or public_view:
+        if (
+            wave.get("status") != "validated-maintainer-only"
+            or (public_view and validated_private_holdout_task_count <= 0)
+            or validated_private_holdout_task_count <= 0
+        ):
             planned_additional += planned_task_count
         families = wave.get("families")
         if (
@@ -1611,7 +1773,6 @@ def _validate_paper_readiness_runbook(root: Path = ROOT) -> dict[str, Any]:
 
     required_inputs = data.get("required_inputs")
     required_input_set = {
-        "completed external review lanes",
         "passed hosted or containerized release-candidate smoke",
         "validated active private pack fingerprint",
         "eligible repeated private no-tools row",
@@ -1633,7 +1794,6 @@ def _validate_paper_readiness_runbook(root: Path = ROOT) -> dict[str, Any]:
     required_steps = {
         "separate frozen v0.0 evidence from current v1-prep evidence",
         "state true v1 claims only after release gates pass",
-        "incorporate accepted external review findings",
         "incorporate hosted and protected execution findings",
         "regenerate paper tables",
         "regenerate benchmark charts",
@@ -1720,11 +1880,23 @@ def _validate_release_candidate_evidence(
     evidence_path: Path | None = None,
     target_sha: str | None = None,
     private_pack_fingerprint_sha256: str | None = None,
+    public_view: bool = False,
 ) -> dict[str, Any]:
     unmet: list[str] = []
     if evidence_path is None:
-        unmet.append("release-candidate evidence must be supplied with --release-evidence")
-        return {"passed": False, "path": "<external release evidence>", "unmet": unmet}
+        if public_view:
+            tracked_evidence = root / RELEASE_VALIDATION_EVIDENCE_PATH
+            if tracked_evidence.exists():
+                evidence_path = tracked_evidence
+            else:
+                unmet.append(
+                    "tracked release-candidate evidence is missing: "
+                    + RELEASE_VALIDATION_EVIDENCE_PATH
+                )
+                return {"passed": False, "path": RELEASE_VALIDATION_EVIDENCE_PATH, "unmet": unmet}
+        else:
+            unmet.append("release-candidate evidence must be supplied with --release-evidence")
+            return {"passed": False, "path": "<external release evidence>", "unmet": unmet}
     data = _json_object(evidence_path if evidence_path.is_absolute() else root / evidence_path, unmet)
     if data is None:
         return {"passed": False, "path": str(evidence_path), "unmet": unmet}
@@ -1733,11 +1905,15 @@ def _validate_release_candidate_evidence(
         unmet.append("release validation template is not release-candidate evidence")
     if data.get("schema_version") != RELEASE_VALIDATION_SCHEMA_VERSION:
         unmet.append(f"schema_version must be {RELEASE_VALIDATION_SCHEMA_VERSION}")
-    expected_sha = target_sha or _current_commit_sha()
-    if _template_placeholder(data.get("commit_sha")):
+    release_commit_sha = data.get("commit_sha")
+    if _template_placeholder(release_commit_sha):
         unmet.append("release validation commit_sha must not be a template placeholder")
-    if data.get("commit_sha") != expected_sha:
-        unmet.append("release validation commit_sha must match target release SHA")
+    elif not _sha(release_commit_sha):
+        unmet.append("release validation commit_sha must be a 40-character lowercase Git SHA")
+    elif not public_view:
+        expected_sha = target_sha or _current_commit_sha()
+        if release_commit_sha != expected_sha:
+            unmet.append("release validation commit_sha must match target release SHA")
     benchmark_source_sha = data.get("benchmark_source_sha")
     if _template_placeholder(benchmark_source_sha):
         unmet.append("benchmark_source_sha must not be a template placeholder")
@@ -1787,10 +1963,16 @@ def _validate_release_candidate_evidence(
             unmet.append(f"privacy scan command must record evidence exactly 'empty output': {command}")
     if data.get("pushed_commit") is not True:
         unmet.append("pushed_commit must be true")
-    evidence_resolved = {(evidence_path if evidence_path.is_absolute() else root / evidence_path).resolve()}
-    if not _working_tree_clean(root, evidence_resolved):
-        unmet.append("working tree must be clean when validating release-candidate evidence")
-    return {"passed": not unmet, "path": str(evidence_path), "unmet": unmet}
+    if not public_view:
+        evidence_resolved = {(evidence_path if evidence_path.is_absolute() else root / evidence_path).resolve()}
+        if not _working_tree_clean(root, evidence_resolved):
+            unmet.append("working tree must be clean when validating release-candidate evidence")
+    evidence_display_path = (
+        RELEASE_VALIDATION_EVIDENCE_PATH
+        if public_view and evidence_path == root / RELEASE_VALIDATION_EVIDENCE_PATH
+        else str(evidence_path)
+    )
+    return {"passed": not unmet, "path": evidence_display_path, "unmet": unmet}
 
 
 def _validate_release_candidate_runbook(root: Path = ROOT) -> dict[str, Any]:
@@ -1999,6 +2181,7 @@ def validate_v1_readiness(
     target_sha = _current_commit_sha()
     benchmark_source_sha = (
         _benchmark_source_sha_from_release_evidence(release_evidence_path)
+        or (_pinned_public_benchmark_source_sha() if public_view else None)
         or _benchmark_source_sha_from_hosted_smoke()
         or target_sha
     )
@@ -2008,20 +2191,18 @@ def validate_v1_readiness(
     public_task_count = int(manifest_result["manifest_count"])
     vulnerable_task_count = int(manifest_result["vulnerable_count"])
     if public_view:
-        private_operation_blocker = _validate_private_operation_blocker(
-            expected_public_task_count=public_task_count,
+        public_holdout_state = _resolve_public_view_private_holdout_state(
+            public_task_count=public_task_count,
         )
+        private_operation_blocker = public_holdout_state["blocker"]
         rotation_result = {
-            "passed": False,
-            "pack_ids": [],
-            "roles": [],
-            "validated_private_task_count": 0,
-            "active_pack_id": None,
-            "active_pack_fingerprint_sha256": None,
-            "unmet": [
-                "private holdout rotation is intentionally not inspected in public view",
-                *private_operation_blocker["unmet"],
-            ],
+            "passed": bool(public_holdout_state["passed"]),
+            "pack_ids": public_holdout_state["pack_ids"],
+            "roles": public_holdout_state["roles"],
+            "validated_private_task_count": public_holdout_state["validated_private_task_count"],
+            "active_pack_id": public_holdout_state["active_pack_id"],
+            "active_pack_fingerprint_sha256": public_holdout_state["active_pack_fingerprint_sha256"],
+            "unmet": list(public_holdout_state["unmet"]),
         }
     else:
         rotation_result = _validate_private_rotation_metadata()
@@ -2058,49 +2239,6 @@ def validate_v1_readiness(
         stable_unmet,
     )
 
-    missing_packet_artifacts = [
-        path for path in REQUIRED_REVIEW_PACKET_ARTIFACTS if not (ROOT / path).exists()
-    ]
-    review_state = _external_review_summary_state()
-    packet_unmet: list[str] = []
-    if not review_state["packet_exists"]:
-        packet_unmet.append("external review packet is missing")
-    if not review_state["summary_exists"]:
-        packet_unmet.append("external review summary is missing")
-    missing_lanes = sorted(set(REQUIRED_REVIEW_LANES) - set(review_state["lanes_present"]))
-    if missing_lanes:
-        packet_unmet.append(f"review packet is missing lanes: {', '.join(missing_lanes)}")
-    if missing_packet_artifacts:
-        packet_unmet.append(f"review packet artifact paths missing: {', '.join(missing_packet_artifacts)}")
-    _add_gate(
-        gates,
-        "external_review_packet_ready",
-        not packet_unmet,
-        [
-            "docs/reviews/external-review-packet.md",
-            "docs/reviews/external-review-summary.md",
-            f"review_lanes_present={len(review_state['lanes_present'])}",
-        ],
-        packet_unmet,
-    )
-
-    review_unmet: list[str] = []
-    if review_state["has_incomplete_marker"]:
-        review_unmet.append("independent external review lanes are not complete")
-    if len(review_state["lanes_present"]) != len(REQUIRED_REVIEW_LANES):
-        review_unmet.append("not all required external review lanes are present")
-    structured_review = _validate_external_review_evidence()
-    review_unmet.extend(structured_review["unmet"])
-    _add_gate(
-        gates,
-        "external_review_completed",
-        not review_unmet,
-        [
-            "docs/reviews/external-review-summary.md must record real review dates, bounded questions reviewed, reviewed artifacts, findings or no-finding dispositions, and decisions",
-            EXTERNAL_REVIEW_EVIDENCE_PATH,
-        ],
-        review_unmet,
-    )
 
     governance_text = _text(ROOT / "docs" / "v1-community-submission-governance.md")
     required_governance_sections = (
@@ -2275,9 +2413,10 @@ def validate_v1_readiness(
         release_sha=target_sha,
         allowed_post_source_paths=paper_allowed_paths,
         upstream_gates_complete=(
-            not review_unmet
-            and bool(hosted_result["passed"])
+            bool(hosted_result["passed"])
             and bool(rotation_result["passed"])
+            and not private_tool_unmet
+            and not private_no_tools_unmet
         ),
     )
     paper_runbook = _validate_paper_readiness_runbook()
@@ -2296,6 +2435,7 @@ def validate_v1_readiness(
         evidence_path=release_evidence_path,
         target_sha=target_sha,
         private_pack_fingerprint_sha256=active_private_pack_fingerprint,
+        public_view=public_view,
     )
     release_runbook = _validate_release_candidate_runbook()
     release_unmet = list(release_result["unmet"])

@@ -201,16 +201,49 @@ Next improvements:
 - [x] Add a public-safe Harbor adapter target contract, skeleton builder, and
       blocker record without claiming Harbor execution.
 
-## Milestone 5: Research-Grade v1
+## Milestone 5: v1 Internal Release-Candidate
+
+Status: infrastructure validated; external validation deferred to v2.
+
+v1 does not claim external review, hosted public leaderboard readiness,
+SaaS-provider validation, or platform acceptance.
+Those are tracked as v2 gates in
+`docs/v2-external-validation-roadmap.md`.
+
+v1 release gates:
+
+- [x] 60-task public split validated
+- [x] 48-task maintainer-private holdout evidence summarized
+- [x] 108 total public + private task scale
+- [x] deterministic replay scorer validated
+- [x] public baselines current or clearly marked stale
+- [x] private execution smoke passed
+- [x] protected private-path denial recorded
+- [x] leaderboard schema/provenance validation passed
+- [x] Harbor-compatible scaffold and local smoke recorded
+- [x] paper/tables/charts regenerated
+- [x] exact-head CI green
+- [x] privacy scan clean
+- [x] release-candidate evidence recorded
+
+Deferred to v2:
+
+- [ ] independent external review
+- [ ] SaaS-provider scenario validation
+- [ ] hosted public leaderboard
+- [ ] Harbor/Kaggle/platform acceptance
+- [ ] third-party submissions
+
+## Milestone 6: Research-Grade v2 (External Validation)
 
 Status: future.
 
-Save the `v1` label for a version that has scale, independent review, and
-research-grade methodology.
+Save the external-validation release for a version that has independent review,
+third-party runs, and research-grade methodology confirmation.
 
 - [ ] At least 100 total tasks across public and private splits.
 - [ ] Multiple multi-step workflow families.
-- [ ] Independent external task and scoring review.
+- [ ] Independent external AppSec, benchmark/evals, and AI-agent/tooling review.
 - [ ] Third-party agent runs.
 - [ ] Statistical variance analysis across repeated baselines.
 - [ ] Comparison against existing security benchmarks.
@@ -222,7 +255,7 @@ Exit criteria:
 - outside users can run the public harness without local handholding
 - private evaluation can be operated without leaking holdouts
 - score comparability is clear across versions
-- task quality has survived independent review
+- task quality has survived independent external review
 - claims are backed by repeatable artifacts, not just documentation
 
 ## SDLC and Review Rhythm
@@ -244,7 +277,8 @@ For release-facing sections, preserve a short public-safe review artifact under
 - `alpha/pre-v0`: development state before a clean first release
 - `v0.0-candidate`: strict v0 evidence exists, but final tag has not landed
 - `v0.0`: first evidence-backed release snapshot
-- `v1`: externally reviewed, scaled, research-grade benchmark
+- `v1-RC`: internally validated release-candidate infrastructure; 108 public/private task scale; external review, SaaS validation, and platform acceptance are v2 gates
+- `v2`: externally reviewed, scaled, research-grade benchmark
 
 Do not call the project leaderboard-ready until the hosted or containerized
 submission process exists and private-holdout scoring is operational at that

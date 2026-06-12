@@ -1,0 +1,47 @@
+{
+  "counts": {
+    "app_count": 6,
+    "authorized_allow_control_count": 6,
+    "control_count": 12,
+    "decoy_variant_count": 24,
+    "denial_control_count": 6,
+    "manifest_count": 24,
+    "max_tasks_per_app": 4,
+    "private_holdout_count": 24,
+    "public_structure_overlap_count": 0,
+    "rehearsal_manifest_count": 0,
+    "route_variant_count": 24,
+    "vulnerable_count": 12
+  },
+  "git_tracked_holdout_manifest_count": 0,
+  "git_tracking_check_available": true,
+  "leaderboard_suitable": true,
+  "notes": "This summary is intentionally count-level only. Do not publish private holdout manifests, seeds, routes, oracle bodies, raw diagnostics, or run artifacts.",
+  "passed": true,
+  "private_holdouts_untracked": true,
+  "public_safe_summary": true,
+  "publication_safety": {
+    "contains_oracle_bodies": false,
+    "contains_private_diagnostics": false,
+    "contains_private_file_paths": false,
+    "contains_route_paths": false,
+    "contains_task_ids": false,
+    "contains_task_seeds": false
+  },
+  "schema_version": "holdout-public-safe-summary-v1",
+  "v0_shape_requirements": {
+    "max_count": 30,
+    "max_per_app": 8,
+    "min_apps": 6,
+    "min_authorized_allow_controls": 4,
+    "min_controls": 8,
+    "min_count": 20,
+    "min_decoy_variants": 6,
+    "min_denial_controls": 4,
+    "min_route_variants": 6,
+    "min_vulnerable": 12,
+    "preferred_count": 24
+  },
+  "validation_error_count": 0,
+  "validation_warning_count": 0
+}

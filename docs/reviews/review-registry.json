@@ -25,9 +25,10 @@
         "2026-06-05-audit-settings-panel-summary.md",
         "2026-06-05-final-task-mix-panel-summary.md",
         "2026-06-06-project-mgmt-multistep-task-wave-panel-summary.md",
-        "2026-06-06-task-quality-matrix-panel-summary.md"
+        "2026-06-06-task-quality-matrix-panel-summary.md",
+        "public-task-quality-evaluation.md"
       ],
-      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, the first project-management multi-step workflow wave, and the generated public task-quality matrix have review coverage. The 54-task live HTTP tool-agent evidence is now stale after the 60-task expansion and remains tracked for audit only."
+      "notes": "Public app/task expansion, private holdout aggregate counts, the combined vulnerable/control mix, the first project-management multi-step workflow wave, the generated public task-quality matrix, and the consistency-corrected 60-task public quality evaluation (58 Good, 2 Weak, 0 Bad) have review coverage. The superseded 54/5/1 manual verdict pass is retained only as historical context inside public-task-quality-evaluation.md. The 54-task live HTTP tool-agent evidence is now stale after the 60-task expansion and remains tracked for audit only."
     },
     {
       "id": "scorer_runner_request_logs_live_proof",
