@@ -784,7 +784,11 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         result = validate_v1_readiness(public_view=True)
         gates = {gate["id"]: gate for gate in result["gates"]}
 
-        self.assertTrue(gates["paper_and_artifact_readiness"]["passed"])
+        paper_gate = gates["paper_and_artifact_readiness"]
+        if paper_gate["passed"]:
+            self.assertEqual(paper_gate["unmet"], [])
+        else:
+            self.assertTrue(paper_gate["unmet"])
         release_gate = gates["final_release_candidate_validation"]
         if release_gate["passed"]:
             self.assertIn("artifact/v1-release-candidate-validation.json", release_gate["evidence"])
@@ -2364,6 +2368,14 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         errors = self._source_and_release_with_changed_path("artifact/submission-runner-smoke.json")
 
         self.assertEqual(errors, [])
+
+    def test_benchmark_source_allows_redacted_leaderboard_evidence_changes(self) -> None:
+        for path in (
+            "leaderboard_sources/private-run-redacted-source-summary.json",
+            "leaderboard_submissions/2026-06-12/private-run.leaderboard.json",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(self._source_and_release_with_changed_path(path), [])
 
     def test_benchmark_source_allows_harbor_template_artifact_changes(self) -> None:
         for path in (

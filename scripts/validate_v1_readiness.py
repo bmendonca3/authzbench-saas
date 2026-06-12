@@ -181,6 +181,10 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
 }
+POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
+    "leaderboard_sources/",
+    "leaderboard_submissions/",
+)
 
 
 def _text(path: Path) -> str:
@@ -371,7 +375,12 @@ def _benchmark_source_compatibility_errors(
         stdout=subprocess.PIPE,
     ).stdout.splitlines()
     allowed_paths = allowed_post_source_paths or POST_SOURCE_EVIDENCE_ONLY_PATHS
-    release_affecting = [path for path in diff if path not in allowed_paths]
+    release_affecting = [
+        path
+        for path in diff
+        if path not in allowed_paths
+        and not path.startswith(POST_SOURCE_EVIDENCE_ONLY_PREFIXES)
+    ]
     if release_affecting:
         errors.append(
             "release-affecting files changed after benchmark_source_sha: "
