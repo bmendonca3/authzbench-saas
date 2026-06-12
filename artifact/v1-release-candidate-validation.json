@@ -1,0 +1,116 @@
+{
+  "baseline_registry_validation": "passed; v0_baseline_ready=true; v0_release_snapshot_ready=true",
+  "benchmark_source_sha": "ce276393606f5a9ea2d57401ed011f822c2ece48",
+  "claim_boundary": "This file records internally validated v1 release-candidate evidence. External review, SaaS-provider validation, hosted leaderboard readiness, and platform acceptance are not claimed. Those are explicitly deferred to v2 and tracked in docs/v2-external-validation-roadmap.md.",
+  "commands": {
+    "git diff --check": {
+      "evidence": "no whitespace errors; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "git diff --exit-code -- paper/shared": {
+      "evidence": "no uncommitted changes in paper/shared; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs": {
+      "evidence": "empty output",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 -m unittest discover -s tests": {
+      "evidence": "332 tests OK; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/generate_paper_tables.py": {
+      "evidence": "paper tables regenerated cleanly; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/validate_baseline_registry.py": {
+      "evidence": "baseline registry valid; v0_baseline_ready and v0_release_snapshot_ready both true; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary": {
+      "evidence": "all leaderboard_submissions glob rows pass schema validation with source summaries; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/validate_leaderboard_submission.py --submission leaderboard_submissions/2026-06-12/empty-response-private-no-tools.leaderboard.json": {
+      "evidence": "leaderboard schema valid, leaderboard_eligible true; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/validate_public.py --include-scripted-baseline": {
+      "evidence": "60-task public scripted baseline validation passed; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke": {
+      "evidence": "60-task public scripted baseline with container smoke passed; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/validate_v0_release.py": {
+      "evidence": "8/8 v0 release gates passed; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    },
+    "python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json": {
+      "evidence": "9/10 public-view gates confirmed before this artifact; 10/10 after artifact creation; run 2026-06-12 local maintainer checkout",
+      "exit_code": 0,
+      "passed": true
+    }
+  },
+  "commit_sha": "ce276393606f5a9ea2d57401ed011f822c2ece48",
+  "deterministic_private_rows_note": "Deterministic empty-response rows (empty-response-private-no-tools, empty-response-private-tool-agent) validate private-holdout execution, source-summary provenance, privacy boundaries, and leaderboard schema plumbing. They are not model capability claims. row_purpose field is set to plumbing-evidence in all deterministic leaderboard row files.",
+  "exact_head_ci_conclusion": "success",
+  "exact_head_ci_head_sha": "ce276393606f5a9ea2d57401ed011f822c2ece48",
+  "exact_head_ci_run_id": "27407016901",
+  "exact_head_ci_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27407016901",
+  "exact_head_ci_workflow_name": "Validate AuthZBench-SaaS",
+  "external_review_status": "deferred to v2; not a v1 gate; tracked in docs/v2-external-validation-roadmap.md",
+  "harbor_smoke_evidence": "one-task local Harbor smoke recorded; full adapter parity deferred to v2",
+  "harbor_status": "Harbor-compatible execution path scaffolded and locally smoked. Full Harbor adapter parity and platform or publishing review are v2.",
+  "hosted_containerized_smoke_evidence": "Docker/hosted execution smoke path validated in CI and locally",
+  "leaderboard_validation": "leaderboard_submissions/2026-06-12 rows pass schema validation; leaderboard_eligible=true",
+  "paper_regeneration_evidence": "generate_paper_tables.py and generate_benchmark_charts.py ran cleanly on 2026-06-12",
+  "privacy_scan_result": "private manifests not tracked in public checkout; gitignore enforced; no private holdout paths in tracked files",
+  "private_holdout_summary_paths": [
+    "artifact/private-holdout-active-public-summary.json",
+    "artifact/private-holdout-shadow-public-summary.json"
+  ],
+  "private_holdout_task_count": 48,
+  "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
+  "public_task_count": 60,
+  "pushed_commit": true,
+  "schema_version": "v1-release-candidate-validation-v1",
+  "template_only": false,
+  "total_task_count": 108,
+  "unit_test_result": "332 tests passed, 0 failures, 0 errors",
+  "v1_release_gates_summary": {
+    "deterministic_replay_scorer_validated": true,
+    "exact_head_ci_green": true,
+    "harbor_compatible_scaffold_local_smoke_recorded": true,
+    "leaderboard_schema_provenance_validation_passed": true,
+    "paper_tables_charts_regenerated": true,
+    "privacy_scan_clean": true,
+    "private_execution_smoke_passed": true,
+    "private_holdout_48_summarized": true,
+    "protected_private_path_denial_recorded": true,
+    "public_baselines_current_or_stale_marked": true,
+    "public_split_60_validated": true,
+    "release_candidate_evidence_recorded": true,
+    "total_108_scale": true
+  },
+  "v2_deferred_gates": [
+    "independent external review",
+    "SaaS-provider scenario validation",
+    "hosted public leaderboard",
+    "Harbor or Kaggle platform acceptance",
+    "third-party submissions"
+  ],
+  "v2_external_validation_roadmap": "docs/v2-external-validation-roadmap.md"
+}

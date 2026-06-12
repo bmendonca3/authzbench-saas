@@ -630,6 +630,131 @@ class LeaderboardSubmissionTests(unittest.TestCase):
         self.assertFalse(result["leaderboard_eligible"], result)
         self.assertTrue(any("source_run_summary is required" in error for error in result["errors"]), result)
 
+    def _make_dummy_submission(self, findings: int) -> tuple[dict, dict]:
+        data = copy.deepcopy(load_json(EXAMPLE))
+        tasks = [
+            {
+                "task_id": "vulnerable",
+                "expected_vulnerable": True,
+                "score": 1,
+                "passed": True,
+                "invalid_submission": False,
+                "submission_finding_count": 0,
+                "control_replay_passed": True,
+                "exploit_proof": 1,
+                "boundary_reasoning": 1,
+                "safety": 1,
+            },
+            {
+                "task_id": "denial",
+                "expected_vulnerable": False,
+                "control_type": "denial",
+                "score": 0,
+                "passed": False,
+                "invalid_submission": False,
+                "submission_finding_count": findings,
+                "control_replay_passed": True if findings else False,
+                "safety": 1,
+            },
+            {
+                "task_id": "allow",
+                "expected_vulnerable": False,
+                "control_type": "authorized_allow",
+                "score": 1,
+                "passed": True,
+                "invalid_submission": False,
+                "submission_finding_count": 0,
+                "control_replay_passed": True,
+                "safety": 1,
+            }
+        ]
+
+        data.update({
+            "agent": "unit-agent",
+            "model": "unit-model",
+            "baseline_kind": "model_baseline",
+            "harness_type": "no-tools-model",
+            "benchmark_version": "unit-version",
+            "benchmark_commit_sha": "abc123",
+            "run_id": "unit-run",
+            "task_count": 3,
+            "public_task_count": 3,
+            "private_holdout_task_count": 0,
+            "vulnerable_task_count": 1,
+            "control_task_count": 2,
+            "denial_control_task_count": 1,
+            "authorized_allow_control_task_count": 1,
+            "v0_passed_count": 2,
+            "v0_mean_score": round(2/3, 4),
+            "invalid_submission_count": 0,
+            "invalid_submission_rate": 0.0,
+            "exploit_proven_task_count": 1,
+            "exploit_proven_success_rate": 1.0,
+            "vulnerable_full_pass_count": 1,
+            "control_execution_pass_rate": 1.0 if findings else 0.5,
+            "control_false_report_rate": 0.5 if findings else 0.0,
+            "false_positive_rate": 0.5 if findings else 0.0,
+            "authorized_allow_pass_rate": 1.0,
+            "boundary_reasoning_pass_rate": 1.0,
+            "target_request_coverage_rate": None,
+            "mean_score": round(2/3, 4),
+            "source_run_summary": "summary.json",
+            "source_run_summaries": ["summary.json"],
+        })
+
+        data["benchmark_fingerprint"].update({
+            "task_count": 3,
+            "vulnerable_task_count": 1,
+            "control_task_count": 2,
+            "denial_control_task_count": 1,
+            "authorized_allow_control_task_count": 1,
+        })
+        data["repeat_evidence"]["primary_run_id"] = "unit-run"
+        data["repeat_evidence"]["source_run_ids"] = ["unit-run"]
+        data["comparability_key"] = comparability_key(data)
+
+        source = {
+            field: data[field]
+            for field in (
+                "agent", "model", "harness_type", "benchmark_version", "benchmark_commit_sha",
+                "task_count", "vulnerable_task_count", "control_task_count", "denial_control_task_count",
+                "authorized_allow_control_task_count", "v0_metric_profile", "v0_passed_count", "v0_mean_score",
+                "invalid_submission_count", "invalid_submission_rate", "exploit_proven_task_count", "exploit_proven_success_rate",
+                "vulnerable_full_pass_count", "control_false_report_rate", "control_execution_pass_rate", "authorized_allow_pass_rate",
+                "false_positive_rate", "boundary_reasoning_pass_rate", "target_request_coverage_rate", "mean_score"
+            )
+        }
+        source["benchmark_fingerprint"] = data["benchmark_fingerprint"]
+        source["run_id"] = data["run_id"]
+        source["tasks"] = tasks
+        return data, source
+
+    def test_recomputed_false_positive_rate_ignores_execution_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            data, source = self._make_dummy_submission(findings=0)
+
+            source_path = tmp_path / "summary.json"
+            source_path.write_text(json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            path = _write_submission(tmp_path, data)
+
+            result = validate_submission(path, require_source_summary=True)
+
+        self.assertTrue(result["passed"], result)
+
+    def test_recomputed_false_positive_rate_counts_findings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            data, source = self._make_dummy_submission(findings=1)
+
+            source_path = tmp_path / "summary.json"
+            source_path.write_text(json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            path = _write_submission(tmp_path, data)
+
+            result = validate_submission(path, require_source_summary=True)
+
+        self.assertTrue(result["passed"], result)
+
 
 if __name__ == "__main__":
     unittest.main()

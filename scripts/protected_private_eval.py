@@ -407,6 +407,7 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "planner_failure_count": summary.get("planner_failure_count"),
         "planner_parse_error_count": summary.get("planner_parse_error_count"),
         "private_holdout_task_count": summary.get("task_count"),
+        "private_pack_fingerprint_sha256": summary.get("private_pack_fingerprint_sha256"),
         "protected_execution": {
             "agent_cwd": protected.get("agent_cwd"),
             "agent_received": protected.get("agent_received"),
@@ -456,6 +457,7 @@ def run_protected_private_eval(
     harness_type: str | None,
     target_log_dir: Path | None = None,
     run_id: str | None = None,
+    private_pack_fingerprint_sha256: str | None = None,
 ) -> dict[str, Any]:
     run_id = run_id or _utc_run_id()
     run_dir = results_dir / run_id
@@ -565,6 +567,7 @@ def run_protected_private_eval(
         model=model,
         harness_type=harness_type,
     )
+    summary["private_pack_fingerprint_sha256"] = private_pack_fingerprint_sha256
     summary["benchmark_fingerprint"] = benchmark_fingerprint(
         [
             (
@@ -586,7 +589,7 @@ def run_protected_private_eval(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run private holdouts without exposing manifests to agent cwd.")
-    parser.add_argument("--task", action="append", default=["tasks_private/holdout/**/*.json"])
+    parser.add_argument("--task", action="append")
     parser.add_argument("--agent-cmd", required=True)
     parser.add_argument("--results-dir", default="results/protected-private-eval")
     parser.add_argument("--timeout-seconds", type=int, default=60)
@@ -597,11 +600,12 @@ def main() -> int:
     parser.add_argument("--harness-type")
     parser.add_argument("--target-log-dir", help="Directory containing target-side <app>.jsonl logs to correlate per task.")
     parser.add_argument("--run-id")
+    parser.add_argument("--private-pack-fingerprint-sha256")
     parser.add_argument("--redacted-summary-output")
     args = parser.parse_args()
 
     summary = run_protected_private_eval(
-        args.task,
+        args.task or ["tasks_private/holdout/**/*.json"],
         agent_cmd=args.agent_cmd,
         results_dir=Path(args.results_dir),
         timeout_seconds=args.timeout_seconds,
@@ -612,6 +616,7 @@ def main() -> int:
         harness_type=args.harness_type,
         target_log_dir=Path(args.target_log_dir).resolve() if args.target_log_dir else None,
         run_id=args.run_id,
+        private_pack_fingerprint_sha256=args.private_pack_fingerprint_sha256,
     )
     if args.redacted_summary_output:
         output = Path(args.redacted_summary_output)

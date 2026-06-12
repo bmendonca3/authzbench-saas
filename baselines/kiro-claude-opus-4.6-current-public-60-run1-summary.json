@@ -36,7 +36,7 @@
   "fallback_probe_total": 0,
   "false_positive_rate": 0.0,
   "harness_type": "no-tools-model",
-  "interpretation": "Current 54-task public split no-tools Claude Opus 4.6 baseline through the Kiro adapter. Public-split evidence only; not private-holdout, leaderboard-eligible, or v1 release evidence.",
+  "interpretation": "Current 60-task public split no-tools Claude Opus 4.6 baseline through the Kiro adapter. Public-split evidence only; not private-holdout, leaderboard-eligible, or v1 release evidence.",
   "invalid_submission_count": 0,
   "invalid_submission_rate": 0.0,
   "kiro_command_failure_count": 0,

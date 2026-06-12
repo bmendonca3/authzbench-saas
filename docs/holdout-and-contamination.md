@@ -158,3 +158,38 @@ Add procedural randomization for:
 - Version every benchmark release.
 - Keep a change log for added, removed, or modified tasks.
 - Re-run baseline agents after every scorer or task change.
+
+## Private Leaderboard Evidence Requirements (v1-readiness blocker)
+
+The public checkout intentionally ships **zero** validated private-holdout tasks,
+**zero** eligible private leaderboard rows, and **zero** protected-execution
+source summaries suitable for private ranking claims. Until maintainer-only work
+closes those gaps, treat the following as hard requirements—not optional polish:
+
+1. **Active and shadow packs** — One active private pack and one shadow or
+   candidate pack must exist only under the gitignored maintainer holdout root,
+   pass holdout-pack validation (including control, denial, and authorized-allow
+   minimums), and report `leaderboard_suitable: true` before any count-level
+   private evidence is claimed in public artifacts.
+2. **Rotation metadata** — Rotation metadata must be written only in the
+   maintainer holdout root, match validated pack fingerprints, and never appear
+   in tracked public Git paths (`git ls-files` for the holdout tree must stay
+   empty in public checkouts).
+3. **Protected execution summaries** — Repeated private no-tools and tool-agent
+   runs must produce redacted source summaries that record
+   `host_private_paths_denied`, share one benchmark fingerprint with the active
+   pack, and reach `run_count >= 2` before leaderboard submission.
+4. **Eligible leaderboard rows** — Public artifacts may reference **counts and
+   blockers only**. Do not fabricate `leaderboard_submissions/**/*.json` rows,
+   synthetic run summaries, or release-candidate CI JSON for private splits.
+   Eligible rows must validate with
+   `validate_leaderboard_submission.py --require-source-summary` and tie to the
+   active pack fingerprint.
+5. **Publication boundary** — Public docs, charts, and registry entries may
+   describe private leaderboard **policy and blockers**; they must not publish
+   private task bodies, seeds, routes, raw captures, or non-redacted diagnostics.
+
+Structured blocker evidence for the current public view lives in
+`artifact/private-holdout-operation-blocker.json` and
+`artifact/private-holdout-operation-runbook.json`. Those files document what is
+missing; they are not substitutes for real private rows.

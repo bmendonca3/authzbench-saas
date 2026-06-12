@@ -41,8 +41,8 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 | Scoring | Deterministic backend replay plus v0 evidence metrics |
 | Private holdouts | Maintainer-only, ignored from public Git history |
 | Harbor integration | Public-safe adapter contract, skeleton builder, blockers, and runbook only; no verified Harbor execution yet |
-| Release status | v0.0 released; hosted leaderboard and v1/community claims remain future work |
-| Not included | Hosted leaderboard, verified Harbor adapter/run, rotating multi-pack holdouts, v1/community claims |
+| Release status | v0.0 released; v1 internal release-candidate infrastructure validated; hosted leaderboard, SaaS-provider validation, and external review are v2 gates |
+| Not included | Hosted leaderboard, verified Harbor adapter/run, rotating multi-pack holdouts, external review, SaaS-provider validation, Kaggle or Harbor platform acceptance |
 
 Public checkouts intentionally do not include private holdout manifests. That is
 part of the contamination-control design, not a missing file.
@@ -376,14 +376,27 @@ AuthZBench-SaaS is at a released v0.0 stage:
 Do not describe the project as leaderboard-ready or as a validated model
 benchmark until the hosted or containerized leaderboard process exists.
 
+**v1 release-candidate status:** AuthZBench-SaaS v1 is an internally validated
+SaaS authorization-agent benchmark artifact with a 60-task public split,
+maintainer-private holdout operation, 108 total public/private task scale,
+deterministic backend replay scoring, protected private-evaluation plumbing,
+Docker/hosted execution smoke evidence, and Harbor-compatible local execution
+scaffolding. External review, SaaS-provider validation, hosted leaderboard
+operation, and platform acceptance are explicitly deferred to v2.
+
+v1 does not claim external review, hosted public leaderboard readiness,
+SaaS-provider validation, or platform acceptance.
+Those are tracked as v2 gates in
+[`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md).
+
 ## Roadmap
 
 The next path is:
 
 1. Expand multi-step workflow realism across more app families.
 2. Implement rotating private holdout packs.
-3. Complete independent external review.
-4. Build and smoke-test a hosted or fully containerized submission path.
+3. Complete independent external review (v2 gate).
+4. Build and smoke-test a hosted or fully containerized submission path (v2 gate).
 5. Keep release docs and claim boundaries synchronized after every tagged
    release.
 
