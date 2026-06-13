@@ -5,6 +5,7 @@
   "public_claim_boundary": "Template only; not Harbor parity evidence, not Harbor execution evidence, not external review evidence, and not v1 readiness.",
   "adapter_name": "authzbench-saas-harbor",
   "dataset_name": "authzbench-saas-public-skeleton",
+  "parity_methodology": "per_task_pairing",
   "parity_verified": false,
   "harbor_execution_verified": false,
   "comparison_scope": "future_verified_runs_only",
@@ -35,5 +36,15 @@
     "generated dataset passes a real Harbor run",
     "matching original AuthZBench-SaaS run evidence exists",
     "parity rows are computed from real run artifacts"
-  ]
+  ],
+  "required_match_rate": 1.0,
+  "reward_tolerance": 1e-05,
+  "methodology_note": "Template for newly generated parity evidence. Generator emits parity_methodology='per_task_pairing', evidence_status='current', and all per-task reward/score maps. Recompute parity_verified from per-task data, not from aggregate means.",
+  "harbor_per_task_rewards": {},
+  "native_per_task_scores": {},
+  "per_task_match": {},
+  "per_task_match_count": 0,
+  "per_task_match_rate": 0.0,
+  "per_task_disagreements": [],
+  "parity_match_threshold": 1.0
 }
