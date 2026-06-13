@@ -224,6 +224,46 @@ or local work that the maintainer controls.
 - [ ] Stable version tag. Evidence: release-time action; requires user input on tag string.
 - [ ] Archived artifacts with hashes. Evidence: release-time action; requires user input on archive strategy.
 
+
+## v1.1-prep cohort
+
+The v1.1-prep cohort in `tasks_v11_prep/` demonstrates the
+`multi_step_discovery` task type and plan-4.2 categories the public
+60-task split does not cover:
+
+- `sup_bfla_viewer_updates_assigned_ticket_status_discovery` (team
+  membership boundary in support)
+- `bill_bfla_member_disables_export_entitlement_discovery` (billing
+  plan entitlement downgrade)
+- `fs_team_membership_cross_workspace_discovery` (team membership
+  boundary in file_sharing)
+
+The cohort is validated in isolation by
+`tests/test_v11_prep_multistep_discovery.py` and is documented in
+`tasks_v11_prep/README.md`. It does not enter the public 60-task
+count, the public 60-task live baseline summaries, or the private
+holdout count. Promoting the cohort into the public split is a v1.1
+release-time action that requires regenerating the public live
+baselines to the new public count and re-pinning the v1-readiness
+fixture.
+
+## v1.1 promotion checklist
+
+To promote the v1.1-prep cohort into the public split:
+
+- [ ] Move the three task files from `tasks_v11_prep/` into the
+  appropriate `tasks/<app>/` directory.
+- [ ] Update `docs/task-taxonomy.md` and `artifact/task-taxonomy.json`
+  with the new public count.
+- [ ] Re-run the public 60-task live baselines (six families x two
+  runs) and refresh `baselines/kiro-*-current-public-63-run{1,2}-summary.json`.
+- [ ] Update `artifact/expected-output/v1-readiness-public-view.json`
+  with `public_task_count=63`.
+- [ ] Update `artifact/v1-task-scale-roadmap.json` to reflect the new
+  count and refresh the planned-waves list.
+- [ ] Update `docs/v1-readiness-checklist.md` to mark the v1.1
+  promotion items as complete and re-run the v1-readiness gate.
+
 ## Notes for the next release
 
 The following items are release-time actions that require explicit user
