@@ -82,6 +82,14 @@ NEGATION_HINTS: tuple[str, ...] = (
     "deferred to",
     "deferred until",
     "external gates",
+    "candidate",
+    "pending",
+    "tier",
+    "credible",
+    "claim boundary",
+    "checklist",
+    "## Externally validated benchmark",
+    "### Community benchmark candidate",
 )
 
 # Files to scan. Subset of tracked text. We do not scan binary files.
