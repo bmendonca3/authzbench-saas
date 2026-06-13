@@ -121,9 +121,5 @@
   "passed": true,
   "passed_gate_count": 10,
   "unmet_gate_count": 0,
-  "v1_ready": true,
-  "interpretation_note": "This gate supports internal/local execution evidence only. It does not claim hosted leaderboard operation, external submissions, or public platform acceptance. v1_ready=true is scoped to the internal/public-view readiness gates only; v2 external gates are tracked in docs/v2-external-validation-roadmap.md.",
-  "hosted_leaderboard_operation_claimed": false,
-  "current_public_scripted_sanity_baseline_present": true,
-  "current_public_model_or_tool_agent_baseline_present": true
+  "v1_ready": true
 }
