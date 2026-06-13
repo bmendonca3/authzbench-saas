@@ -14,7 +14,7 @@
         "artifact/expected-output/v1-readiness-public-view.json"
       ],
       "description": "Public-view v1 readiness fixture match",
-      "elapsed_seconds": 0.243,
+      "elapsed_seconds": 0.233,
       "id": "v1_readiness",
       "passed": true,
       "returncode": 0,
@@ -41,7 +41,7 @@
         "--check"
       ],
       "description": "Task oracle audit (schema gate)",
-      "elapsed_seconds": 0.04,
+      "elapsed_seconds": 0.041,
       "id": "task_oracle_audit",
       "passed": true,
       "returncode": 0,
@@ -68,7 +68,7 @@
         "--require-current-public"
       ],
       "description": "Baseline variance and confidence",
-      "elapsed_seconds": 0.059,
+      "elapsed_seconds": 0.06,
       "id": "baseline_variance",
       "passed": true,
       "returncode": 0,
@@ -84,7 +84,7 @@
         "-q"
       ],
       "description": "Harbor non-claim test",
-      "elapsed_seconds": 0.255,
+      "elapsed_seconds": 0.254,
       "id": "harbor_claim_boundary",
       "passed": true,
       "returncode": 0,

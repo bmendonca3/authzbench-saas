@@ -81,6 +81,13 @@ multistep pair. The note about "Agent must inspect token scopes before
 attempting export" is satisfied by the api_tokens baseline expectations
 on `meridian_read_token` and `meridian_write_token` scope metadata.
 
+A v1.1-prep cohort of three additional `multi_step_discovery` tasks
+lives in `tasks_v11_prep/`. The cohort demonstrates the discovery
+pattern for plan-4.2 categories the public 60-task split does not
+cover, and is validated in isolation by
+`tests/test_v11_prep_multistep_discovery.py`. The v1.1-prep cohort
+is documented in `tasks_v11_prep/README.md`.
+
 ## Why a new public task is not added here
 
 The current public split is locked at 60 tasks. Every public baseline
