@@ -206,6 +206,20 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/goal.md",
     "docs/reviews/external-review-summary.md",
     "docs/v2-external-validation-roadmap.md",
+    # Claim-boundary wording fixes: updated after source pin to rename
+    # ambiguous readiness gates, add the canonical single-table claim ledger,
+    # and split the scripted sanity baseline from the model/tool-agent
+    # baseline. These do not change benchmark source, tasks, scoring, or
+    # baselines, only the framing and forbidden-phrase enforcement.
+    "docs/current-claim-boundary.md",
+    "docs/benchmark-card.md",
+    "docs/evidence-and-claims.md",
+    "docs/releases/v1.0-internal.md",
+    "docs/v0-release-plan.md",
+    "scripts/check_claim_boundary.py",
+    "scripts/validate_baseline_registry.py",
+    "scripts/validate_public.py",
+    "tests/test_claim_boundary_check.py",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
