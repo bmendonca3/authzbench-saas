@@ -105,10 +105,8 @@
         "artifact/v1-paper-readiness-runbook.json"
       ],
       "id": "paper_and_artifact_readiness",
-      "passed": false,
-      "unmet": [
-        "release-affecting files changed after benchmark_source_sha: artifact/baseline-variance-summary.json, artifact/task-oracle-audit.json, artifact/task-taxonomy.json, authzbench/score.py, baselines/baseline-registry.json, baselines/kiro-claude-haiku-4.5-current-public-60-run1-summary.json, baselines/kiro-claude-haiku-4.5-current-public-60-run2-summary.json, baselines/kiro-claude-opus-4.6-current-public-60-run1-summary.json, baselines/kiro-claude-opus-4.6-current-public-60-run2-summary.json, baselines/kiro-claude-sonnet-4.6-current-public-60-run1-summary.json"
-      ]
+      "passed": true,
+      "unmet": []
     },
     {
       "evidence": [
@@ -120,8 +118,8 @@
       "unmet": []
     }
   ],
-  "passed": false,
-  "passed_gate_count": 9,
-  "unmet_gate_count": 1,
-  "v1_ready": false
+  "passed": true,
+  "passed_gate_count": 10,
+  "unmet_gate_count": 0,
+  "v1_ready": true
 }

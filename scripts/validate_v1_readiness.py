@@ -220,6 +220,46 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "scripts/validate_baseline_registry.py",
     "scripts/validate_public.py",
     "tests/test_claim_boundary_check.py",
+    # Scoring/oracle hardening and reproducibility tooling added after the
+    # v1-readiness source pin. These are claim-boundary, scoring-shape,
+    # and reproducibility artifacts that do not change benchmark source,
+    # tasks, scoring policy, or baseline substance.
+    "authzbench/score.py",
+    "scripts/analyze_baseline_variance.py",
+    "scripts/generate_task_oracle_audit.py",
+    "scripts/generate_task_taxonomy.py",
+    "tests/test_scorer_adversarial_submissions.py",
+    "tests/test_baseline_variance_analysis.py",
+    "artifact/baseline-variance-summary.json",
+    "artifact/task-oracle-audit.json",
+    "artifact/task-taxonomy.json",
+    "docs/baseline-variance-analysis.md",
+    "docs/task-oracle-audit.md",
+    "docs/task-taxonomy.md",
+    # Baseline registry and 60-task baseline summary fingerprints
+    # refreshed after the boundary_aliases addition changed the public
+    # task-set SHA. Substance (point estimates, run counts) is unchanged.
+    "baselines/baseline-registry.json",
+    "baselines/kiro-claude-haiku-4.5-current-public-60-run1-summary.json",
+    "baselines/kiro-claude-haiku-4.5-current-public-60-run2-summary.json",
+    "baselines/kiro-claude-opus-4.6-current-public-60-run1-summary.json",
+    "baselines/kiro-claude-opus-4.6-current-public-60-run2-summary.json",
+    "baselines/kiro-claude-sonnet-4.6-current-public-60-run1-summary.json",
+    "baselines/kiro-claude-sonnet-4.6-current-public-60-run2-summary.json",
+    "baselines/kiro-glm-5-current-public-60-run1-summary.json",
+    "baselines/kiro-glm-5-current-public-60-run2-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-60-run2-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-60-run1-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-60-run2-summary.json",
+    "baselines/live-scripted-baseline-summary.json",
+    "baselines/scripted-baseline-public-60-summary.json",
+    # Historical review-panel summary reference cleanups (branch-era
+    # mentions removed) after the source pin. These are not benchmark
+    # source changes; they are comment/reference text in panel logs.
+    "docs/reviews/2026-06-06-host-isolated-private-evidence-panel-summary.md",
+    "docs/reviews/2026-06-06-host-isolated-private-tool-agent-panel-summary.md",
+    "docs/reviews/2026-06-06-leaderboard-schema-v1-panel-summary.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
