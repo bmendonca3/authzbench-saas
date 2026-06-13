@@ -1,0 +1,16 @@
+# AuthZBench-SaaS requirements lock
+# This benchmark scaffold ships pure-stdlib Python 3.11+ for the
+# authzbench/ package and the apps/ fixtures. There is no required
+# third-party runtime dependency for the public validation surface.
+#
+# The apps/ FastAPI / Flask / external dep list is intentionally
+# empty; everything the public split needs ships in the Python
+# standard library. CI installs the project in editable mode via
+# `pip install -e .` and that is the only step needed to run the
+# public validation, the claim-boundary check, the task oracle
+# audit, the task taxonomy report, the baseline variance report, and
+# the public-view readiness fixture match.
+#
+# Keeping the lock file explicit (even when it pins no third-party
+# deps) lets a reviewer answer "what was the runtime at the time
+# of this release?" with one file open.

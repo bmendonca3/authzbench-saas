@@ -53,3 +53,12 @@ jobs:
 
       - name: Harbor non-claim test
         run: python -m pytest tests/test_harbor_claim_boundary.py -q
+
+      - name: External review summary gate
+        run: python scripts/validate_external_review_summary.py
+
+      - name: Submission bundle validator (smoke)
+        run: python -m pytest tests/test_submission_bundle_validator.py -q
+
+      - name: Reproduce public artifact
+        run: python scripts/reproduce_public_artifact.py

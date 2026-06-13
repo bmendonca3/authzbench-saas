@@ -260,6 +260,47 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/reviews/2026-06-06-host-isolated-private-evidence-panel-summary.md",
     "docs/reviews/2026-06-06-host-isolated-private-tool-agent-panel-summary.md",
     "docs/reviews/2026-06-06-leaderboard-schema-v1-panel-summary.md",
+    # Reviewer / governance / claim-boundary wording and tooling
+    # added after the source pin. These do not change benchmark
+    # source, tasks, scoring, or baselines; they add the
+    # reviewer walkthrough, lifecycle policy, controlled review
+    # protocol, leaderboard anti-gaming policy, eligibility tiers,
+    # glossary, benchmark comparison, inspect-one-task guide, the
+    # external review registry, the external review summary
+    # validator, the external review packets and schemas, the
+    # reviewer-side runner Dockerfile and env files, the artifact
+    # index, the submission bundle validator and its test, the
+    # Harbor non-claim test, the new CI workflow steps, and the
+    # claim-boundary text updates.
+    ".github/workflows/validate.yml",
+    "artifact/INDEX.md",
+    "artifact/harbor-adapter-readiness-blockers.json",
+    "artifact/expected-output/v1-readiness-public-view.json",
+    "docs/benchmark-comparison.md",
+    "docs/container-digests.md",
+    "docs/glossary.md",
+    "docs/inspect-one-task.md",
+    "docs/leaderboard-anti-gaming-policy.md",
+    "docs/leaderboard-schema.md",
+    "docs/private-holdout-lifecycle.md",
+    "docs/private-review-protocol.md",
+    "docs/reviewer-walkthrough.md",
+    "docs/reviews/appsec-review-packet.md",
+    "docs/reviews/benchmark-methodology-review-packet.md",
+    "docs/reviews/agent-tooling-review-packet.md",
+    "docs/reviews/external-review-registry.json",
+    "docs/reviews/schemas/appsec-review.schema.json",
+    "docs/reviews/schemas/evals-review.schema.json",
+    "docs/reviews/schemas/agent-tooling-review.schema.json",
+    "scripts/reproduce_public_artifact.py",
+    "scripts/validate_submission_bundle.py",
+    "scripts/validate_external_review_summary.py",
+    "tests/test_submission_bundle_validator.py",
+    "tests/test_harbor_claim_boundary.py",
+    "Dockerfile",
+    ".python-version",
+    "requirements.lock",
+    ".env.example",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
