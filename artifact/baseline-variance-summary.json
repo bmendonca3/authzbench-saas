@@ -84,9 +84,9 @@
           },
           "model_family": "kiro-qwen",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.9833,
+            "changed_verdict_count": 1,
+            "task_count": 60
           },
           "release_suitability": "current_public_split",
           "run_count": 2,
@@ -172,9 +172,9 @@
           },
           "model_family": "kiro-claude-haiku",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 60
           },
           "release_suitability": "current_public_split",
           "run_count": 2,
@@ -260,9 +260,9 @@
           },
           "model_family": "kiro-claude-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.9667,
+            "changed_verdict_count": 2,
+            "task_count": 60
           },
           "release_suitability": "current_public_split",
           "run_count": 2,
@@ -348,9 +348,9 @@
           },
           "model_family": "kiro-glm",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 60
           },
           "release_suitability": "current_public_split",
           "run_count": 2,
@@ -436,9 +436,9 @@
           },
           "model_family": "kiro-claude-opus",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 60
           },
           "release_suitability": "current_public_split",
           "run_count": 2,
@@ -531,9 +531,9 @@
           },
           "model_family": "kiro-live-tool-agent-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 60
           },
           "release_suitability": "current_public_split",
           "run_count": 2,
@@ -809,9 +809,9 @@
           },
           "model_family": "kiro-qwen",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.9815,
+            "changed_verdict_count": 1,
+            "task_count": 54
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -897,9 +897,9 @@
           },
           "model_family": "kiro-claude-haiku",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 54
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -985,9 +985,9 @@
           },
           "model_family": "kiro-claude-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.963,
+            "changed_verdict_count": 2,
+            "task_count": 54
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1073,9 +1073,9 @@
           },
           "model_family": "kiro-glm",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 54
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1161,9 +1161,9 @@
           },
           "model_family": "kiro-claude-opus",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 54
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1249,9 +1249,9 @@
           },
           "model_family": "kiro-live-tool-agent-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 54
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1425,9 +1425,9 @@
           },
           "model_family": "kiro-claude-haiku",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 49
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1513,9 +1513,9 @@
           },
           "model_family": "kiro-claude-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 49
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1601,9 +1601,9 @@
           },
           "model_family": "kiro-qwen",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.9796,
+            "changed_verdict_count": 1,
+            "task_count": 49
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1689,9 +1689,9 @@
           },
           "model_family": "kiro-glm",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.9796,
+            "changed_verdict_count": 1,
+            "task_count": 49
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1777,9 +1777,9 @@
           },
           "model_family": "kiro-claude-opus",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 49
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -1865,9 +1865,9 @@
           },
           "model_family": "kiro-live-tool-agent-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 49
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -2041,9 +2041,9 @@
           },
           "model_family": "kiro-qwen",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 46
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -2129,9 +2129,9 @@
           },
           "model_family": "kiro-claude-haiku",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.9783,
+            "changed_verdict_count": 1,
+            "task_count": 46
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -2217,9 +2217,9 @@
           },
           "model_family": "kiro-claude-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
+            "agreement_rate": 0.9783,
+            "changed_verdict_count": 1,
+            "task_count": 46
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -2305,9 +2305,9 @@
           },
           "model_family": "kiro-glm",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 46
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
@@ -2393,9 +2393,9 @@
           },
           "model_family": "kiro-live-tool-agent-sonnet",
           "per_task_agreement": {
-            "agreement_rate": null,
+            "agreement_rate": 1.0,
             "changed_verdict_count": 0,
-            "task_count": 0
+            "task_count": 46
           },
           "release_suitability": "current_public_stale",
           "run_count": 2,
