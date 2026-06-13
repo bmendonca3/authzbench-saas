@@ -1,0 +1,1532 @@
+{
+  "entries": [
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "tenant",
+        "token"
+      ],
+      "control_types": [
+        "alias_route",
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "tok_cross_tenant_secret_read",
+      "manifest_path": "tasks/api_tokens/tok_cross_tenant_secret_read.json",
+      "route_patterns": [
+        "alias_route",
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "token"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "tok_export_scope_bypass",
+      "manifest_path": "tasks/api_tokens/tok_export_scope_bypass.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route",
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "token"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": false,
+      "id": "tok_export_token_reads_export_control",
+      "manifest_path": "tasks/api_tokens/tok_export_token_reads_export_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route",
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "token"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "tok_read_scope_updates_secret",
+      "manifest_path": "tasks/api_tokens/tok_read_scope_updates_secret.json",
+      "route_patterns": [
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "tenant",
+        "token"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": false,
+      "id": "tok_secure_cross_tenant_secret_control",
+      "manifest_path": "tasks/api_tokens/tok_secure_cross_tenant_secret_control.json",
+      "route_patterns": [
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "token"
+      ],
+      "control_types": [
+        "decoy_endpoint",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_with_decoy",
+        "token_scope_reasoning",
+        "false_positive_trap_heavy"
+      ],
+      "expected_vulnerable": false,
+      "id": "tok_secure_export_scope_control",
+      "manifest_path": "tasks/api_tokens/tok_secure_export_scope_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route",
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "tenant",
+        "token"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": false,
+      "id": "tok_secure_same_tenant_secret_control",
+      "manifest_path": "tasks/api_tokens/tok_secure_same_tenant_secret_control.json",
+      "route_patterns": [
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "token"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": false,
+      "id": "tok_secure_write_scope_control",
+      "manifest_path": "tasks/api_tokens/tok_secure_write_scope_control.json",
+      "route_patterns": [
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "tenant",
+        "token"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "tok_vault_alias_cross_tenant_secret_read",
+      "manifest_path": "tasks/api_tokens/tok_vault_alias_cross_tenant_secret_read.json",
+      "route_patterns": [
+        "alias_route",
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "api_tokens",
+      "boundary_types": [
+        "token"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": false,
+      "id": "tok_write_token_rotates_secret_control",
+      "manifest_path": "tasks/api_tokens/tok_write_token_rotates_secret_control.json",
+      "route_patterns": [
+        "token_auth_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "aud_admin_updates_security_settings_control",
+      "manifest_path": "tasks/audit_settings/aud_admin_updates_security_settings_control.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "unclassified_or_other"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "aud_auditor_downloads_export_control",
+      "manifest_path": "tasks/audit_settings/aud_auditor_downloads_export_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "aud_auditor_reads_own_audit_control",
+      "manifest_path": "tasks/audit_settings/aud_auditor_reads_own_audit_control.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org",
+        "role"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "aud_bfla_member_disables_sso",
+      "manifest_path": "tasks/audit_settings/aud_bfla_member_disables_sso.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org",
+        "role"
+      ],
+      "control_types": [
+        "decoy_endpoint",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_with_decoy",
+        "false_positive_trap_heavy"
+      ],
+      "expected_vulnerable": true,
+      "id": "aud_bfla_member_downloads_audit_export",
+      "manifest_path": "tasks/audit_settings/aud_bfla_member_downloads_audit_export.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass",
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "alias_route",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "aud_bola_nimbus_reads_quasar_audit_log",
+      "manifest_path": "tasks/audit_settings/aud_bola_nimbus_reads_quasar_audit_log.json",
+      "route_patterns": [
+        "alias_route",
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BOLA",
+        "cross_tenant_read",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "aud_event_alias_cross_org_log_read",
+      "manifest_path": "tasks/audit_settings/aud_event_alias_cross_org_log_read.json",
+      "route_patterns": [
+        "alias_route",
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "aud_member_export_preview_denial_control",
+      "manifest_path": "tasks/audit_settings/aud_member_export_preview_denial_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass",
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "audit_settings",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "aud_secure_cross_org_audit_control",
+      "manifest_path": "tasks/audit_settings/aud_secure_cross_org_audit_control.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "role",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "bill_account_entitlements_alias_plan_change",
+      "manifest_path": "tasks/billing/bill_account_entitlements_alias_plan_change.json",
+      "route_patterns": [
+        "alias_route",
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass",
+        "entitlement_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_admin_entitlement_access_control",
+      "manifest_path": "tasks/billing/bill_admin_entitlement_access_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass",
+        "entitlement_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_admin_export_denies_member_control",
+      "manifest_path": "tasks/billing/bill_admin_export_denies_member_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass",
+        "token_scope_bypass",
+        "entitlement_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_admin_plan_access_control",
+      "manifest_path": "tasks/billing/bill_admin_plan_access_control.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "entitlement_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "role",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "bill_bfla_member_enables_export_entitlement",
+      "manifest_path": "tasks/billing/bill_bfla_member_enables_export_entitlement.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "cross_tenant_read",
+        "role_bypass",
+        "token_scope_bypass",
+        "entitlement_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "role",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "alias_route",
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "bill_bfla_member_plan_change",
+      "manifest_path": "tasks/billing/bill_bfla_member_plan_change.json",
+      "route_patterns": [
+        "alias_route",
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass",
+        "entitlement_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "role",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "bill_bfla_member_reads_plan_settings",
+      "manifest_path": "tasks/billing/bill_bfla_member_reads_plan_settings.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass",
+        "entitlement_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "role",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "bill_bfla_peer_member_plan_change",
+      "manifest_path": "tasks/billing/bill_bfla_peer_member_plan_change.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass",
+        "entitlement_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "vulnerable_proof"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_cross_org_invoice_control",
+      "manifest_path": "tasks/billing/bill_cross_org_invoice_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "vulnerable_proof"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_cross_org_plan_write_control",
+      "manifest_path": "tasks/billing/bill_cross_org_plan_write_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "role_bypass",
+        "entitlement_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "authorized_allow_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_same_org_invoice_read_control",
+      "manifest_path": "tasks/billing/bill_same_org_invoice_read_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_secure_member_entitlement_control",
+      "manifest_path": "tasks/billing/bill_secure_member_entitlement_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass",
+        "token_scope_bypass",
+        "entitlement_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "decoy_endpoint",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_with_decoy",
+        "false_positive_trap_heavy"
+      ],
+      "expected_vulnerable": false,
+      "id": "bill_secure_member_plan_control",
+      "manifest_path": "tasks/billing/bill_secure_member_plan_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass",
+        "token_scope_bypass",
+        "entitlement_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [
+        "share_link"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "state_changing"
+      ],
+      "expected_vulnerable": false,
+      "id": "fs_active_share_link_control",
+      "manifest_path": "tasks/file_sharing/fs_active_share_link_control.json",
+      "route_patterns": [
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass",
+        "stale_share_link"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [
+        "role",
+        "share_link"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "state_changing"
+      ],
+      "expected_vulnerable": true,
+      "id": "fs_bfla_viewer_creates_public_link",
+      "manifest_path": "tasks/file_sharing/fs_bfla_viewer_creates_public_link.json",
+      "route_patterns": [
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass",
+        "stale_share_link"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [],
+      "control_types": [
+        "alias_route",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "fs_bola_northstar_reads_apex_file",
+      "manifest_path": "tasks/file_sharing/fs_bola_northstar_reads_apex_file.json",
+      "route_patterns": [
+        "alias_route"
+      ],
+      "vulnerability_classes": [
+        "BOLA",
+        "cross_tenant_read",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "fs_same_workspace_file_read_control",
+      "manifest_path": "tasks/file_sharing/fs_same_workspace_file_read_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "fs_secure_cross_workspace_file_control",
+      "manifest_path": "tasks/file_sharing/fs_secure_cross_workspace_file_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [
+        "share_link"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "state_changing"
+      ],
+      "expected_vulnerable": false,
+      "id": "fs_secure_expired_share_link_control",
+      "manifest_path": "tasks/file_sharing/fs_secure_expired_share_link_control.json",
+      "route_patterns": [
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass",
+        "stale_share_link"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [],
+      "control_types": [
+        "decoy_endpoint",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_with_decoy",
+        "state_changing",
+        "false_positive_trap_heavy"
+      ],
+      "expected_vulnerable": false,
+      "id": "fs_secure_viewer_share_control",
+      "manifest_path": "tasks/file_sharing/fs_secure_viewer_share_control.json",
+      "route_patterns": [
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "file_sharing",
+      "boundary_types": [
+        "share_link"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "state_changing"
+      ],
+      "expected_vulnerable": true,
+      "id": "fs_stale_expired_share_link_access",
+      "manifest_path": "tasks/file_sharing/fs_stale_expired_share_link_access.json",
+      "route_patterns": [
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "role_bypass",
+        "stale_share_link"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "pm_bola_owner_reads_beta_task",
+      "manifest_path": "tasks/project_mgmt/pm_bola_owner_reads_beta_task.json",
+      "route_patterns": [
+        "nested_project_object"
+      ],
+      "vulnerability_classes": [
+        "BOLA",
+        "cross_tenant_read"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project",
+        "user"
+      ],
+      "control_types": [
+        "alias_route",
+        "decoy_endpoint",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_with_decoy",
+        "false_positive_trap_heavy"
+      ],
+      "expected_vulnerable": true,
+      "id": "pm_bola_read_alpha_from_beta",
+      "manifest_path": "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json",
+      "route_patterns": [
+        "nested_project_object",
+        "alias_route",
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "BOLA",
+        "cross_tenant_read",
+        "role_bypass",
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project",
+        "user"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "pm_bola_read_beta_from_alpha",
+      "manifest_path": "tasks/project_mgmt/pm_bola_read_beta_from_alpha.json",
+      "route_patterns": [
+        "nested_project_object"
+      ],
+      "vulnerability_classes": [
+        "BOLA",
+        "cross_tenant_read",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project"
+      ],
+      "control_types": [
+        "vulnerable_proof"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "pm_cross_tenant_write_control",
+      "manifest_path": "tasks/project_mgmt/pm_cross_tenant_write_control.json",
+      "route_patterns": [
+        "nested_project_object"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "cross_tenant_write",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project"
+      ],
+      "control_types": [
+        "decoy_endpoint",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_with_decoy",
+        "multi_step_discovery",
+        "false_positive_trap_heavy"
+      ],
+      "expected_vulnerable": true,
+      "id": "pm_multistep_beta_update_then_alpha_alias_read",
+      "manifest_path": "tasks/project_mgmt/pm_multistep_beta_update_then_alpha_alias_read.json",
+      "route_patterns": [
+        "nested_project_object",
+        "alias_route",
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "role_bypass",
+        "token_scope_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "multi_step_discovery"
+      ],
+      "expected_vulnerable": false,
+      "id": "pm_multistep_owner_update_control",
+      "manifest_path": "tasks/project_mgmt/pm_multistep_owner_update_control.json",
+      "route_patterns": [
+        "nested_project_object"
+      ],
+      "vulnerability_classes": [
+        "unclassified_or_other"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project"
+      ],
+      "control_types": [
+        "authorized_allow_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "pm_same_tenant_read_control",
+      "manifest_path": "tasks/project_mgmt/pm_same_tenant_read_control.json",
+      "route_patterns": [
+        "nested_project_object"
+      ],
+      "vulnerability_classes": [
+        "unclassified_or_other"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "pm_secure_cross_tenant_read_control",
+      "manifest_path": "tasks/project_mgmt/pm_secure_cross_tenant_read_control.json",
+      "route_patterns": [
+        "nested_project_object"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "project_mgmt",
+      "boundary_types": [
+        "tenant",
+        "project"
+      ],
+      "control_types": [
+        "vulnerable_proof"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "pm_viewer_write_control",
+      "manifest_path": "tasks/project_mgmt/pm_viewer_write_control.json",
+      "route_patterns": [
+        "nested_project_object"
+      ],
+      "vulnerability_classes": [
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "state_changing"
+      ],
+      "expected_vulnerable": false,
+      "id": "sup_admin_reassignment_control",
+      "manifest_path": "tasks/support/sup_admin_reassignment_control.json",
+      "route_patterns": [
+        "admin_route",
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "reassignment_abuse"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "sup_agent_status_only_update_control",
+      "manifest_path": "tasks/support/sup_agent_status_only_update_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "unclassified_or_other"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org",
+        "role"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "sup_bfla_viewer_closes_ticket",
+      "manifest_path": "tasks/support/sup_bfla_viewer_closes_ticket.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "alias_route",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "sup_bola_acme_reads_orbit_ticket",
+      "manifest_path": "tasks/support/sup_bola_acme_reads_orbit_ticket.json",
+      "route_patterns": [
+        "alias_route"
+      ],
+      "vulnerability_classes": [
+        "BOLA",
+        "cross_tenant_read"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "state_changing"
+      ],
+      "expected_vulnerable": false,
+      "id": "sup_cross_org_assignment_control",
+      "manifest_path": "tasks/support/sup_cross_org_assignment_control.json",
+      "route_patterns": [
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "reassignment_abuse"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org",
+        "role"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": true,
+      "id": "sup_invite_agent_creates_admin_invite",
+      "manifest_path": "tasks/support/sup_invite_agent_creates_admin_invite.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org",
+        "role"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "multi_step_discovery",
+        "state_changing"
+      ],
+      "expected_vulnerable": true,
+      "id": "sup_multistep_agent_status_then_admin_reassignment",
+      "manifest_path": "tasks/support/sup_multistep_agent_status_then_admin_reassignment.json",
+      "route_patterns": [
+        "alias_route",
+        "admin_route",
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "cross_tenant_read",
+        "role_bypass",
+        "reassignment_abuse"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "state_changing"
+      ],
+      "expected_vulnerable": false,
+      "id": "sup_secure_agent_assignment_control",
+      "manifest_path": "tasks/support/sup_secure_agent_assignment_control.json",
+      "route_patterns": [
+        "mutation_route"
+      ],
+      "vulnerability_classes": [
+        "reassignment_abuse"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "decoy_endpoint",
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_with_decoy",
+        "false_positive_trap_heavy"
+      ],
+      "expected_vulnerable": false,
+      "id": "sup_secure_agent_invite_control",
+      "manifest_path": "tasks/support/sup_secure_agent_invite_control.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "token_scope_bypass"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "sup_secure_cross_org_ticket_control",
+      "manifest_path": "tasks/support/sup_secure_cross_org_ticket_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
+        "org"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "single_step_obvious"
+      ],
+      "expected_vulnerable": false,
+      "id": "sup_secure_viewer_status_control",
+      "manifest_path": "tasks/support/sup_secure_viewer_status_control.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "role_bypass"
+      ]
+    }
+  ],
+  "per_app_vulnerability_class_matrix": {
+    "api_tokens": {
+      "audit_admin_exposure": 3,
+      "cross_tenant_read": 3,
+      "token_scope_bypass": 10
+    },
+    "audit_settings": {
+      "BFLA": 2,
+      "BOLA": 1,
+      "audit_admin_exposure": 7,
+      "cross_tenant_read": 3,
+      "role_bypass": 3,
+      "token_scope_bypass": 3,
+      "unclassified_or_other": 1
+    },
+    "billing": {
+      "BFLA": 5,
+      "audit_admin_exposure": 5,
+      "cross_tenant_read": 3,
+      "entitlement_bypass": 11,
+      "role_bypass": 11,
+      "token_scope_bypass": 5
+    },
+    "file_sharing": {
+      "BFLA": 1,
+      "BOLA": 1,
+      "cross_tenant_read": 2,
+      "role_bypass": 8,
+      "stale_share_link": 4
+    },
+    "project_mgmt": {
+      "BOLA": 3,
+      "audit_admin_exposure": 2,
+      "cross_tenant_read": 6,
+      "cross_tenant_write": 1,
+      "role_bypass": 6,
+      "token_scope_bypass": 2,
+      "unclassified_or_other": 2
+    },
+    "support": {
+      "BFLA": 3,
+      "BOLA": 1,
+      "cross_tenant_read": 4,
+      "reassignment_abuse": 4,
+      "role_bypass": 4,
+      "token_scope_bypass": 1,
+      "unclassified_or_other": 1
+    }
+  },
+  "schema_version": "task-taxonomy-v1",
+  "summary": {
+    "boundary_type_counts": {
+      "org": 33,
+      "plan_entitlement": 11,
+      "project": 9,
+      "role": 11,
+      "share_link": 4,
+      "tenant": 13,
+      "token": 10,
+      "user": 2
+    },
+    "control_type_counts": {
+      "alias_route": 6,
+      "authorized_allow_control": 14,
+      "decoy_endpoint": 7,
+      "denial_control": 54,
+      "vulnerable_proof": 4
+    },
+    "difficulty_counts": {
+      "false_positive_trap_heavy": 7,
+      "multi_step_discovery": 3,
+      "single_step_obvious": 30,
+      "single_step_with_decoy": 7,
+      "state_changing": 9,
+      "token_scope_reasoning": 15
+    },
+    "route_pattern_counts": {
+      "admin_route": 28,
+      "alias_route": 11,
+      "direct_object_id": 9,
+      "export_route": 14,
+      "mutation_route": 9,
+      "nested_project_object": 9,
+      "token_auth_route": 10
+    },
+    "task_count": 60,
+    "vulnerability_class_counts": {
+      "BFLA": 11,
+      "BOLA": 6,
+      "audit_admin_exposure": 17,
+      "cross_tenant_read": 21,
+      "cross_tenant_write": 1,
+      "entitlement_bypass": 11,
+      "reassignment_abuse": 4,
+      "role_bypass": 32,
+      "stale_share_link": 4,
+      "token_scope_bypass": 21,
+      "unclassified_or_other": 4
+    }
+  },
+  "tasks_dir": "tasks"
+}
