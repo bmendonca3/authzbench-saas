@@ -4,6 +4,10 @@ AuthZBench-SaaS should be easy to audit without overstating what the current
 repo proves. Use this matrix when writing README text, release notes, benchmark
 cards, LinkedIn posts, or external-review notes.
 
+> **See also:** [`docs/current-claim-boundary.md`](current-claim-boundary.md) for
+> the single canonical claim table, and the CI-enforced forbidden-phrase check
+> at `scripts/check_claim_boundary.py`.
+
 ## Current Claim Matrix
 
 | Evidence | What It Proves | What It Does Not Prove |

@@ -6,7 +6,10 @@
         "public_task_count=60",
         "vulnerable_task_count=24",
         "current_public_model_family_count=6",
-        "has_current_public_tool_agent_baseline=True"
+        "current_public_scripted_sanity_baseline_present=True",
+        "current_public_model_or_tool_agent_baseline_present=True",
+        "has_current_public_scripted_sanity_baseline=True",
+        "has_current_public_model_or_tool_agent_baseline=True"
       ],
       "id": "stable_v1_prep_public_evidence",
       "passed": true,
@@ -44,9 +47,11 @@
     {
       "evidence": [
         "artifact/submission-runner-smoke.json",
-        "artifact/hosted-submission-execution-runbook.json"
+        "artifact/hosted-submission-execution-runbook.json",
+        "interpretation_note=This gate supports the local/containerized submission smoke only. It does not claim hosted leaderboard operation, external submissions, or platform acceptance. hosted_leaderboard_operation_claimed=false.",
+        "hosted_leaderboard_operation_claimed=false"
       ],
-      "id": "hosted_or_containerized_submission_execution",
+      "id": "local_or_containerized_submission_smoke",
       "passed": true,
       "unmet": []
     },
@@ -116,5 +121,9 @@
   "passed": true,
   "passed_gate_count": 10,
   "unmet_gate_count": 0,
-  "v1_ready": true
+  "v1_ready": true,
+  "interpretation_note": "This gate supports internal/local execution evidence only. It does not claim hosted leaderboard operation, external submissions, or public platform acceptance. v1_ready=true is scoped to the internal/public-view readiness gates only; v2 external gates are tracked in docs/v2-external-validation-roadmap.md.",
+  "hosted_leaderboard_operation_claimed": false,
+  "current_public_scripted_sanity_baseline_present": true,
+  "current_public_model_or_tool_agent_baseline_present": true
 }

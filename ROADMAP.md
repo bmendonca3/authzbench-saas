@@ -74,10 +74,12 @@ industry research. It needs independent review, reproducibility evidence,
 variance analysis, comparison against existing security benchmarks, and a paper
 or technical report.
 
-**Level 3: community benchmark.** A benchmark people can submit to and track
-over time. It needs a public submission pipeline, hosted or fully containerized
-evaluation, rotating holdouts, multiple task packs, external contributors, and
-leaderboard governance.
+**Level 3: submission-open benchmark.** A benchmark people can submit to and
+track over time. It needs a public submission pipeline, hosted or fully
+containerized evaluation, rotating holdouts, multiple task packs, external
+contributors, and leaderboard governance. This is the v2 / external lane; it
+is not in the `v1.0-internal` release scope and uses the forbidden-phrase
+list in `docs/current-claim-boundary.md` to gate the wording.
 
 ## Completed Release Path: v0.0
 
