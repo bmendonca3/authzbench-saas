@@ -14,7 +14,7 @@
         "artifact/expected-output/v1-readiness-public-view.json"
       ],
       "description": "Public-view v1 readiness fixture match",
-      "elapsed_seconds": 0.233,
+      "elapsed_seconds": 0.243,
       "id": "v1_readiness",
       "passed": true,
       "returncode": 0,
@@ -27,7 +27,7 @@
         "scripts/check_claim_boundary.py"
       ],
       "description": "Claim-boundary forbidden-phrase CI check",
-      "elapsed_seconds": 0.235,
+      "elapsed_seconds": 0.237,
       "id": "claim_boundary",
       "passed": true,
       "returncode": 0,
@@ -68,7 +68,7 @@
         "--require-current-public"
       ],
       "description": "Baseline variance and confidence",
-      "elapsed_seconds": 0.06,
+      "elapsed_seconds": 0.059,
       "id": "baseline_variance",
       "passed": true,
       "returncode": 0,
