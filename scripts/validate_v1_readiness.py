@@ -317,6 +317,8 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/multi-step-discovery-task-spec.md",
     "docs/harbor-parity-per-task-contract.md",
     "artifact/historical/harbor-parity-experiment-aggregate-means.json",
+    "docs/v1-readiness-checklist.md",
+    "scripts/check_claim_boundary.py",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
