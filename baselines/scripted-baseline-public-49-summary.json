@@ -5,17 +5,17 @@
   "authorized_allow_pass_rate": 1.0,
   "benchmark_commit_sha": "26a555c7c3dfa13994c0a8c561eb5ce9038a0644",
   "benchmark_fingerprint": {
-    "authorized_allow_control_task_count": 12,
-    "control_task_count": 29,
-    "denial_control_task_count": 17,
+    "authorized_allow_control_task_count": 15,
+    "control_task_count": 36,
+    "denial_control_task_count": 21,
     "evidence_contract_version": "evidence-requirements-v1",
     "schema_version": "benchmark-fingerprint-v1",
     "score_policy_version": "score-policy-v1",
     "scorer_contract": "v0-candidate-authz-evidence",
-    "task_count": 49,
+    "task_count": 60,
     "task_path_set_sha256": "b95c49dab30a4688d8e613cb611f50712c031e213838c0922651924a90a19448",
-    "task_set_sha256": "6ec0ddb1e9f480bc35763548120006e0b5439b9fbd485577df19063441ff9141",
-    "vulnerable_task_count": 20
+    "task_set_sha256": "819bafd412efcea1ad8bda9694a69aa48e8b5046b0c3589e21a786334426d977",
+    "vulnerable_task_count": 24
   },
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
   "boundary_reasoning_pass_rate": 1.0,

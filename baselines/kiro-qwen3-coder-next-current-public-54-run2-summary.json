@@ -5,17 +5,17 @@
   "authorized_allow_pass_rate": 1.0,
   "benchmark_commit_sha": "4b454ce39e796cd88339e8d701a1357bb19904a3",
   "benchmark_fingerprint": {
-    "authorized_allow_control_task_count": 14,
-    "control_task_count": 33,
-    "denial_control_task_count": 19,
+    "authorized_allow_control_task_count": 15,
+    "control_task_count": 36,
+    "denial_control_task_count": 21,
     "evidence_contract_version": "evidence-requirements-v1",
     "schema_version": "benchmark-fingerprint-v1",
     "score_policy_version": "score-policy-v1",
     "scorer_contract": "v0-candidate-authz-evidence",
-    "task_count": 54,
+    "task_count": 60,
     "task_path_set_sha256": "f499a2d3cd6cb50af1321cdcc934c6965f2f1e2d996379876bb4ce7807ff31ec",
-    "task_set_sha256": "f8d19cb89d347d1397f85bf978e6b7b232e8a2f1307fc2ac6ba02674e5c23c9f",
-    "vulnerable_task_count": 21
+    "task_set_sha256": "819bafd412efcea1ad8bda9694a69aa48e8b5046b0c3589e21a786334426d977",
+    "vulnerable_task_count": 24
   },
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
   "boundary_reasoning_pass_rate": 0.0,
@@ -24,22 +24,83 @@
   "control_false_report_rate": 0.0,
   "control_task_count": 33,
   "denial_control_task_count": 19,
+  "diagnostic_semantics": {
+    "agent_timeout_seconds": 60,
+    "model_output_failure_fallback": "An inner Kiro command or JSON-extraction failure writes {\"findings\": []}; the valid fallback submission remains in the 54-task scored denominator and can pass a secure control or fail a vulnerable task.",
+    "model_output_failure_scope": "task-level adapter invocations",
+    "runner_timeout_seconds": 75
+  },
   "executed_tool_probe_total": 0,
   "exploit_proven_success_rate": 0.1429,
   "exploit_proven_task_count": 3,
   "fallback_probe_total": 0,
   "false_positive_rate": 0.0,
   "harness_type": "no-tools-model",
+  "interpretation": "Current v1-prep 54-task public split no-tools Qwen baseline through the Kiro adapter. This repeated public-split evidence includes explicit task-level adapter and runner failure diagnostics; it is not private-holdout, leaderboard-eligible, or v1 release evidence.",
   "invalid_submission_count": 0,
   "invalid_submission_rate": 0.0,
+  "kiro_command_failure_count": 7,
   "mean_score": 0.6528,
+  "missing_submission_json_count": 5,
   "model": "qwen3-coder-next",
+  "model_output_failure_count": 12,
+  "model_output_failures": [
+    {
+      "failure_type": "kiro command failed",
+      "task_id": "aud_bfla_member_disables_sso"
+    },
+    {
+      "failure_type": "kiro command failed",
+      "task_id": "bill_cross_org_plan_write_control"
+    },
+    {
+      "failure_type": "kiro command failed",
+      "task_id": "fs_bola_northstar_reads_apex_file"
+    },
+    {
+      "failure_type": "model output did not contain a JSON object",
+      "task_id": "fs_stale_expired_share_link_access"
+    },
+    {
+      "failure_type": "kiro command failed",
+      "task_id": "pm_bola_read_beta_from_alpha"
+    },
+    {
+      "failure_type": "model output did not contain a JSON object",
+      "task_id": "sup_cross_org_assignment_control"
+    },
+    {
+      "failure_type": "model output did not contain a JSON object",
+      "task_id": "sup_multistep_agent_status_then_admin_reassignment"
+    },
+    {
+      "failure_type": "model output did not contain a JSON object",
+      "task_id": "sup_secure_cross_org_ticket_control"
+    },
+    {
+      "failure_type": "model output did not contain a JSON object",
+      "task_id": "tok_export_token_reads_export_control"
+    },
+    {
+      "failure_type": "kiro command failed",
+      "task_id": "tok_secure_cross_tenant_secret_control"
+    },
+    {
+      "failure_type": "kiro command failed",
+      "task_id": "tok_secure_write_scope_control"
+    },
+    {
+      "failure_type": "kiro command failed",
+      "task_id": "tok_write_token_rotates_secret_control"
+    }
+  ],
   "model_tool_plan_artifact_count": 0,
   "passed_count": 33,
   "per_task_tool_probe_artifact_count": 0,
   "planner_failure_count": 0,
   "planner_parse_error_count": 0,
   "run_id": "20260607T182230239765Z-c21a56a0",
+  "runner_agent_failure_count": 0,
   "submitted_finding_total": 0,
   "target_log_dir": null,
   "target_request_correlated_task_count": null,
@@ -1025,66 +1086,5 @@
   "v0_passed_count": 33,
   "vulnerable_full_pass_count": 0,
   "vulnerable_safety_pass_rate": 1.0,
-  "vulnerable_task_count": 21,
-  "interpretation": "Current v1-prep 54-task public split no-tools Qwen baseline through the Kiro adapter. This repeated public-split evidence includes explicit task-level adapter and runner failure diagnostics; it is not private-holdout, leaderboard-eligible, or v1 release evidence.",
-  "diagnostic_semantics": {
-    "agent_timeout_seconds": 60,
-    "model_output_failure_scope": "task-level adapter invocations",
-    "model_output_failure_fallback": "An inner Kiro command or JSON-extraction failure writes {\"findings\": []}; the valid fallback submission remains in the 54-task scored denominator and can pass a secure control or fail a vulnerable task.",
-    "runner_timeout_seconds": 75
-  },
-  "model_output_failure_count": 12,
-  "model_output_failures": [
-    {
-      "failure_type": "kiro command failed",
-      "task_id": "aud_bfla_member_disables_sso"
-    },
-    {
-      "failure_type": "kiro command failed",
-      "task_id": "bill_cross_org_plan_write_control"
-    },
-    {
-      "failure_type": "kiro command failed",
-      "task_id": "fs_bola_northstar_reads_apex_file"
-    },
-    {
-      "failure_type": "model output did not contain a JSON object",
-      "task_id": "fs_stale_expired_share_link_access"
-    },
-    {
-      "failure_type": "kiro command failed",
-      "task_id": "pm_bola_read_beta_from_alpha"
-    },
-    {
-      "failure_type": "model output did not contain a JSON object",
-      "task_id": "sup_cross_org_assignment_control"
-    },
-    {
-      "failure_type": "model output did not contain a JSON object",
-      "task_id": "sup_multistep_agent_status_then_admin_reassignment"
-    },
-    {
-      "failure_type": "model output did not contain a JSON object",
-      "task_id": "sup_secure_cross_org_ticket_control"
-    },
-    {
-      "failure_type": "model output did not contain a JSON object",
-      "task_id": "tok_export_token_reads_export_control"
-    },
-    {
-      "failure_type": "kiro command failed",
-      "task_id": "tok_secure_cross_tenant_secret_control"
-    },
-    {
-      "failure_type": "kiro command failed",
-      "task_id": "tok_secure_write_scope_control"
-    },
-    {
-      "failure_type": "kiro command failed",
-      "task_id": "tok_write_token_rotates_secret_control"
-    }
-  ],
-  "kiro_command_failure_count": 7,
-  "missing_submission_json_count": 5,
-  "runner_agent_failure_count": 0
+  "vulnerable_task_count": 21
 }
