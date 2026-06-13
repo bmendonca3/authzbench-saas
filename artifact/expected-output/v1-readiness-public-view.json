@@ -107,7 +107,7 @@
       "id": "paper_and_artifact_readiness",
       "passed": false,
       "unmet": [
-        "release-affecting files changed after benchmark_source_sha: artifact/baseline-variance-summary.json, artifact/task-oracle-audit.json, artifact/task-taxonomy.json, authzbench/score.py, baselines/baseline-registry.json, baselines/kiro-claude-haiku-4.5-current-public-46-run1-summary.json, baselines/kiro-claude-haiku-4.5-current-public-46-run2-summary.json, baselines/kiro-claude-haiku-4.5-current-public-49-run1-summary.json, baselines/kiro-claude-haiku-4.5-current-public-49-run2-summary.json, baselines/kiro-claude-haiku-4.5-current-public-54-run1-summary.json"
+        "release-affecting files changed after benchmark_source_sha: artifact/baseline-variance-summary.json, artifact/task-oracle-audit.json, artifact/task-taxonomy.json, authzbench/score.py, baselines/baseline-registry.json, baselines/kiro-claude-haiku-4.5-current-public-60-run1-summary.json, baselines/kiro-claude-haiku-4.5-current-public-60-run2-summary.json, baselines/kiro-claude-opus-4.6-current-public-60-run1-summary.json, baselines/kiro-claude-opus-4.6-current-public-60-run2-summary.json, baselines/kiro-claude-sonnet-4.6-current-public-60-run1-summary.json"
       ]
     },
     {
