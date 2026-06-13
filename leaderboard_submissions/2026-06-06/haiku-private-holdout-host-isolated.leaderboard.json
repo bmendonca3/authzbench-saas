@@ -5,17 +5,17 @@
   "baseline_kind": "model_baseline",
   "benchmark_commit_sha": "fb9e4c792abec779a6ac00150e8b67e964247774",
   "benchmark_fingerprint": {
-    "authorized_allow_control_task_count": 6,
-    "control_task_count": 12,
-    "denial_control_task_count": 6,
+    "authorized_allow_control_task_count": 15,
+    "control_task_count": 36,
+    "denial_control_task_count": 21,
     "evidence_contract_version": "evidence-requirements-v1",
     "schema_version": "benchmark-fingerprint-v1",
     "score_policy_version": "score-policy-v1",
     "scorer_contract": "v0-candidate-authz-evidence",
-    "task_count": 24,
+    "task_count": 60,
     "task_path_set_sha256": "2bbac56c08635de598fe613d7f53c337772767a82fbb38a4aa30b11199f236ad",
-    "task_set_sha256": "5aeb385ecd7c21bc30b2e9682c3fef72219b13b43df35fc9abc44d3c338a4498",
-    "vulnerable_task_count": 12
+    "task_set_sha256": "819bafd412efcea1ad8bda9694a69aa48e8b5046b0c3589e21a786334426d977",
+    "vulnerable_task_count": 24
   },
   "benchmark_fingerprint_provenance": "runner-emitted",
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
