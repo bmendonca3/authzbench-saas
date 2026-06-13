@@ -58,3 +58,7 @@ false-positive threshold. Eligible rows should then be sorted by:
 
 This avoids rewarding agents that either report every sensitive route or submit
 empty findings for every task.
+
+## See also
+
+- [`docs/scoring-examples.md`](scoring-examples.md) — concrete worked examples of every per-task verdict shape.
