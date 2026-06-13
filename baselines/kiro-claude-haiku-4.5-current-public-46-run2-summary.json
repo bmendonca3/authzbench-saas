@@ -14,7 +14,7 @@
     "scorer_contract": "v0-candidate-authz-evidence",
     "task_count": 46,
     "task_path_set_sha256": "705ced2256ffc530976ca951be8237c84ec0c4076f30605dfc03bcec0ae64246",
-    "task_set_sha256": "v0.0-snapshot-preserved-by-registry-public-split",
+    "task_set_sha256": "bebf48014a90e2e63c4e45f7e8734570c8711548d6c7e9058153f21a0d71c196",
     "vulnerable_task_count": 19
   },
   "benchmark_version": "alpha-0.0.1-public-scaffold-local",
