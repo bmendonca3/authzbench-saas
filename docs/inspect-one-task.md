@@ -185,3 +185,7 @@ The full transcript is what the
 [`scripts/validate_leaderboard_submission.py`](../scripts/validate_leaderboard_submission.py)
 validator uses to compute the row's comparability key, repeat
 evidence, and target-request coverage rate.
+
+## See also
+
+- [`docs/scoring-examples.md`](scoring-examples.md) — concrete worked examples of every per-task verdict shape.
