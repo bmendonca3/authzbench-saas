@@ -57,6 +57,15 @@ review, SaaS-provider validation, hosted leaderboard readiness, or platform
 acceptance. See [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md) and
 [`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md).
 
+The current maturity label is **credible v1 internal benchmark; credible
+community-benchmark candidate pending external validation**. Do not
+paraphrase this as "externally validated", "leaderboard-grade", "Harbor
+accepted", "SOTA security benchmark", or "production vulnerability
+discovery benchmark". The canonical single-table claim ledger lives at
+[`docs/current-claim-boundary.md`](docs/current-claim-boundary.md), and
+the CI-enforced forbidden-phrase check at
+`scripts/check_claim_boundary.py` fails the build on wording drift.
+
 ## What This Is
 
 A benchmark for evaluating whether AI agents can reason about SaaS
@@ -582,6 +591,31 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution rules
 - [`SECURITY.md`](SECURITY.md): safe handling guidance
 - [`CITATION.cff`](CITATION.cff): citation metadata
+
+## Limitations
+
+1. The target apps are synthetic.
+2. The public split is inspectable and not leaderboard-grade by itself.
+3. Private holdouts are maintainer-controlled, not platform-governed.
+4. Baselines must be current to support comparisons; the n=2 repeated
+   95% CIs are a coarse ordering signal, not a hard bound.
+5. External AppSec / SaaS-provider validation is deferred to v2.
+6. The benchmark measures SaaS authorization proof quality, not
+   broad cyber capability.
+
+## Contribution
+
+AuthZBench-SaaS contributes a deterministic local benchmark scaffold
+for evaluating AI-agent SaaS authorization reasoning, with replayable
+exploit evidence, secure-control false-positive checks, private
+holdout governance, claim-boundary discipline, and early
+Harbor-compatible adapter support.
+
+It does not claim to be the definitive benchmark for SaaS
+security agents. The plan in
+[`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md)
+is what closes the gap between the credible v1 internal benchmark
+label and externally validated benchmark status.
 
 ## License
 
