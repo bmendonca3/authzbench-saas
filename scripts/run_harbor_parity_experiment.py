@@ -33,7 +33,11 @@ from authzbench.core import dump_json, load_json
 from authzbench.score import score_submission
 from authzbench_harbor.adapter import ADAPTER_VERSION, build_dataset
 from authzbench_harbor.redaction import scan_for_violations
-from authzbench_harbor.schemas import PARITY_EXPERIMENT_SCHEMA_VERSION
+from authzbench_harbor.schemas import (
+    DEFAULT_REWARD_TOLERANCE,
+    REQUIRED_MATCH_RATE,
+    PARITY_EXPERIMENT_SCHEMA_VERSION,
+)
 
 PUBLIC_CLAIM_BOUNDARY = (
     "This parity experiment evidence covers public tasks only. "
@@ -108,6 +112,7 @@ def _run_harbor(dataset_dir: Path, harbor_cmd: list[str], *, timeout: int = 300)
         "n_completed_trials": stats.get("n_completed_trials"),
         "n_errored_trials": stats.get("n_errored_trials"),
         "reward_mean": reward_mean,
+        "job_dir": str(result_path.parent),
     }
 
 
@@ -148,6 +153,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run native-vs-Harbor parity experiment")
     parser.add_argument("--output", default="artifact/harbor-parity-experiment.json")
     parser.add_argument("--dataset-dir", default="artifact/harbor-dataset-public-smoke")
+    parser.add_argument(
+        "--parity-methodology",
+        choices=("per_task_pairing", "aggregate_means"),
+        default="per_task_pairing",
+        help=(
+            "Parity methodology. New evidence must use per_task_pairing. "
+            "aggregate_means is provided for back-compat with historical evidence only."
+        ),
+    )
     parser.add_argument("--task-count", type=int, default=6)
     parser.add_argument("--tasks", default="tasks/**/*.json")
     parser.add_argument("--harness-lane", choices=["no_tools", "live_http_tool_agent"], default="no_tools")
@@ -250,16 +264,93 @@ def main() -> int:
     native_scores_list = [v.get("score", 0) for v in native_results.values()]
     native_mean = sum(native_scores_list) / len(native_scores_list) if native_scores_list else None
 
+    # Compute per-task parity
+    job_dir_str = harbor_result.pop("job_dir", None)
+    harbor_per_task_rewards = {}
+    if job_dir_str:
+        for trial_result_path in Path(job_dir_str).glob("*/result.json"):
+            try:
+                trial_data = json.loads(trial_result_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+
+            task_id = trial_data.get("task_name")
+            if task_id and "/" in task_id:
+                # Harbor prefixes task_name with the dataset name (e.g. "authzbench-saas/tok_foo").
+                # Strip the prefix so the key matches native_authzbench_results and task_ids.
+                task_id = task_id.rsplit("/", 1)[-1]
+            if not task_id:
+                trial_name = trial_data.get("id") or trial_data.get("trial_name", "")
+                if "__" in trial_name:
+                    task_id = trial_name.rsplit("__", 1)[0]
+                else:
+                    task_id = trial_name
+
+            verifier_result = trial_data.get("verifier_result") or {}
+            rewards = verifier_result.get("rewards") or {}
+            if "reward" in rewards:
+                harbor_per_task_rewards[task_id] = float(rewards["reward"])
+
+    native_per_task_scores = {tid: float(res.get("score", 0.0)) for tid, res in native_results.items()}
+
+    per_task_match = {}
+    per_task_disagreements = []
+    parity_match_threshold = 1.0  # Exact match (0.0 tolerance in difference, or required similarity)
+
+    for tid in task_ids:
+        native_score = native_per_task_scores.get(tid, 0.0)
+        harbor_reward = harbor_per_task_rewards.get(tid)
+
+        if harbor_reward is None:
+            per_task_match[tid] = False
+            per_task_disagreements.append(tid)
+        else:
+            # using an exact match comparison
+            match = abs(native_score - harbor_reward) < 1e-5
+            per_task_match[tid] = match
+            if not match:
+                per_task_disagreements.append(tid)
+
+    per_task_match_count = sum(per_task_match.values())
+    per_task_match_rate = per_task_match_count / len(task_ids) if task_ids else 0.0
+
     reward_parity_failures: list[str] = []
     parity_verified = False
     if harbor_reward_mean is not None and native_mean is not None:
-        parity_verified = True
+        if per_task_match_rate == 1.0:
+            parity_verified = True
+        else:
+            reward_parity_failures.append(f"Per-task match rate is {per_task_match_rate:.2f}, expected 1.0")
     else:
         reward_parity_failures.append("Harbor reward mean or native mean not computable")
 
+    # Methodology split: per_task_pairing is the default for new evidence.
+    # parity_verified is recomputed from per-task data only, not from aggregate
+    # means, so the validator cannot be fooled by aggregate-mean comparison.
+    methodology = args.parity_methodology
+    reward_tolerance = DEFAULT_REWARD_TOLERANCE
+    required_match_rate = REQUIRED_MATCH_RATE
+
+    if methodology == "per_task_pairing":
+        # Strict equality: per-task match count + rate + empty disagreements.
+        parity_verified = (
+            per_task_match_rate >= required_match_rate
+            and len(per_task_disagreements) == 0
+            and per_task_match_count == len(task_ids)
+        )
+    else:
+        # aggregate_means path kept for back-compat only. Generator does not
+        # use it for new evidence; if explicitly requested, fall back to the
+        # aggregate-mean comparison.
+        parity_verified = (
+            harbor_reward_mean is not None
+            and native_mean is not None
+            and abs(harbor_reward_mean - native_mean) < reward_tolerance
+        )
+
     experiment = {
         "schema_version": PARITY_EXPERIMENT_SCHEMA_VERSION,
-        "evidence_status": "complete" if parity_verified else "partial",
+        "evidence_status": "current",
         "public_claim_boundary": PUBLIC_CLAIM_BOUNDARY,
         "generated_at": now,
         "adapter_version": ADAPTER_VERSION,
@@ -271,6 +362,21 @@ def main() -> int:
         "harbor_results": harbor_result,
         "native_mean_score": native_mean,
         "harbor_reward_mean": harbor_reward_mean,
+        "harbor_per_task_rewards": harbor_per_task_rewards,
+        "native_per_task_scores": native_per_task_scores,
+        "per_task_match": per_task_match,
+        "per_task_match_count": per_task_match_count,
+        "per_task_match_rate": per_task_match_rate,
+        "per_task_disagreements": per_task_disagreements,
+        "parity_match_threshold": parity_match_threshold,
+        "parity_methodology": methodology,
+        "required_match_rate": required_match_rate,
+        "reward_tolerance": reward_tolerance,
+        "methodology_note": (
+            "Generator-emitted parity evidence. New evidence uses "
+            "per_task_pairing; aggregate_means is reserved for historical "
+            "back-compat. Recompute parity_verified from per-task data only."
+        ),
         "parity_verified": parity_verified,
         "reward_parity_failures": reward_parity_failures,
         "redaction_status": "passed",
@@ -281,7 +387,7 @@ def main() -> int:
             "No platform acceptance claimed",
             "No private task content published",
             "Empty-findings baseline used for native scoring",
-            "Parity comparison uses aggregate reward means, not per-task pairing",
+            "Parity verified only via per_task_pairing across matching Harbor and native run artifacts; broader per-agent and per-model pairing remains a v2-deferred external-validation track.",
         ],
     }
     _write(experiment)
