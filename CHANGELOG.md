@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Added a docs polish pass for the v1.0-internal release and the repo-side
+  local Harbor adapter merge: `docs/index.md` (documentation map), `docs/artifact-index.md`
+  (public-safe artifact index), `docs/validation-commands.md` (validation
+  commands), and `docs/releases/v1.0-internal.md` (v1 release note).
+- Clarified the scoped meaning of `v1_ready: true` in
+  `artifact/expected-output/v1-readiness-public-view.json` in `README.md`,
+  `docs/evidence-and-claims.md`, `docs/harbor-integration-runbook.md`, and
+  `docs/releases/v1.0-internal.md` to make clear that it is scoped to the
+  internal/public-view readiness gates only and does not assert external
+  acceptance.
+- Added a row to `docs/evidence-and-claims.md` for the Harbor parity
+  methodology field (PR #22) distinguishing `per_task_pairing` (default for
+  new evidence) from `aggregate_means` (historical only).
+- Added `.env`, `.env.*`, and `*.env` to `.gitignore` and added a privacy
+  note to `CONTRIBUTING.md` listing the ignored public-safe paths.
 - Added a public-safe Harbor adapter contract, skeleton builder, blocker
   record, template validators, local preflight, and runbook while preserving the
   no-Harbor-execution claim boundary.

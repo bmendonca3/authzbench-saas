@@ -41,7 +41,13 @@ Do not describe this as:
 - a hosted leaderboard;
 - completed external review;
 - passing private hosted execution;
-- `v1-ready` evidence.
+- `v1-ready` evidence in the external sense.
+
+`v1_ready: true` in `artifact/expected-output/v1-readiness-public-view.json`
+is scoped to the internal/public-view readiness gates only. It does not
+assert Harbor acceptance or any other external validation. See
+[`evidence-and-claims.md`](evidence-and-claims.md) and
+[`v2-external-validation-roadmap.md`](v2-external-validation-roadmap.md).
 
 The adapter remains blocked until exact Harbor SDK/package APIs are integrated
 and tested against a real Harbor local run.
