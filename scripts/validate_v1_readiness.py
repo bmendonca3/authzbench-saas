@@ -556,7 +556,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         if pack_id in seen_ids:
             unmet.append(f"duplicate private pack id: {pack_id}")
         seen_ids.add(str(pack_id))
-        if role not in {"active", "shadow", "candidate"}:
+        if role not in {"active", "shadow", "candidate", "retired"}:
             unmet.append(f"{pack_id}: role must be active, shadow, or candidate")
         version = pack.get("version")
         if not _nonempty_string(version) or _placeholder(version) or _template_placeholder(version):
@@ -580,6 +580,12 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
             pack_path.resolve().relative_to(holdout_root.resolve())
         except ValueError:
             unmet.append(f"{pack_id}: path must be under tasks_private/holdout")
+            continue
+        # Retired packs are not required to have a live directory; they are
+        # held for legacy audit and external review reproducibility only. The
+        # pack directory check is enforced for active / shadow / candidate
+        # packs, which are the ones the scorer actually uses.
+        if role == "retired":
             continue
         if not pack_path.is_dir():
             unmet.append(f"{pack_id}: pack directory does not exist")
