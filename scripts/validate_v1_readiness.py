@@ -293,6 +293,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/reviews/schemas/evals-review.schema.json",
     "docs/reviews/schemas/agent-tooling-review.schema.json",
     "scripts/reproduce_public_artifact.py",
+    "artifact/reproduction/public-reproduction-summary.json",
     "scripts/validate_submission_bundle.py",
     "scripts/validate_external_review_summary.py",
     "tests/test_submission_bundle_validator.py",
@@ -301,6 +302,21 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     ".python-version",
     "requirements.lock",
     ".env.example",
+    # Section 4.3/4.4/6 follow-on: realism notes per app, multi-step discovery
+    # task spec, Harbor parity per-task pairing contract, and the historical
+    # aggregate-means artifact moved to artifact/historical/. These are
+    # framing or contract docs and a per-task pairing contract stub; they do
+    # not change benchmark source, tasks, scoring, or baselines.
+    "docs/realism-notes/README.md",
+    "docs/realism-notes/api_tokens.md",
+    "docs/realism-notes/audit_settings.md",
+    "docs/realism-notes/billing.md",
+    "docs/realism-notes/file_sharing.md",
+    "docs/realism-notes/project_mgmt.md",
+    "docs/realism-notes/support.md",
+    "docs/multi-step-discovery-task-spec.md",
+    "docs/harbor-parity-per-task-contract.md",
+    "artifact/historical/harbor-parity-experiment-aggregate-means.json",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",

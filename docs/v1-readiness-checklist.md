@@ -177,3 +177,75 @@ The v1 startup slice is complete when:
 
 The next slice should implement the first small task family and immediately
 mark affected baselines stale for v1 comparison.
+
+## v1 Final Done Checklist (section 12)
+
+The fix-plan section 12 splits the v1 done criteria into three tiers.
+This checklist records the current status of each item, the evidence
+path, and whether the item is release-time work, external-party work,
+or local work that the maintainer controls.
+
+### Internal v1 complete
+
+- [x] 60 public tasks. Evidence: `tasks/*/*.json`; `artifact/expected-output/v1-readiness-public-view.json` shows `public_task_count=60`.
+- [x] 48 private holdout tasks by protected evidence. Evidence: `tasks_private/holdout/`; `artifact/v1-task-scale-roadmap.json` shows `current_validated_private_holdout_task_count=48`.
+- [x] Deterministic scorer. Evidence: `authzbench/score.py`; `tests/test_scorer_adversarial_submissions.py` (17/17).
+- [x] Public validation. Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`; CI step in `.github/workflows/validate.yml`.
+- [x] Private artifact exclusion. Evidence: `scripts/redact_protected_private.py`; `docs/private-holdout-lifecycle.md`.
+- [x] Claim boundary docs. Evidence: `docs/current-claim-boundary.md`; `docs/benchmark-card.md`; `docs/evidence-and-claims.md`; `scripts/check_claim_boundary.py`.
+- [x] v2 roadmap. Evidence: `docs/v2-external-validation-roadmap.md`.
+- [x] Ambiguous gate names cleaned up. Evidence: `local_or_containerized_submission_smoke`; `hosted_leaderboard_operation_claimed=false`; `has_current_public_scripted_sanity_baseline` and `has_current_public_model_or_tool_agent_baseline` split.
+- [ ] Fresh 60-task public model and tool-agent baselines. Evidence: `baselines/kiro-*-current-public-60-run{1,2}-summary.json` (six families x two runs). Note: the public 60-task evidence is current but is anchored to the locked 60-task public split; per-baseline `expected_task_count=60` is enforced.
+- [x] Task taxonomy generated. Evidence: `docs/task-taxonomy.md`; `artifact/task-taxonomy.json`.
+- [x] Oracle audit generated. Evidence: `docs/task-oracle-audit.md`; `artifact/task-oracle-audit.json`.
+- [x] Adversarial scorer tests added. Evidence: `tests/test_scorer_adversarial_submissions.py` (17/17).
+
+### Community benchmark candidate
+
+- [x] Fresh public and private baselines. Evidence: `baselines/` and `tasks_private/holdout/`.
+- [ ] External AppSec review. Evidence: `docs/reviews/external-review-registry.json` (pending lane); `docs/reviews/appsec-review-packet.md`; `docs/reviews/schemas/appsec-review.schema.json`.
+- [ ] External evals methodology review. Evidence: `docs/reviews/benchmark-methodology-review-packet.md`; `docs/reviews/schemas/evals-review.schema.json`.
+- [ ] External agent and tooling review. Evidence: `docs/reviews/agent-tooling-review-packet.md`; `docs/reviews/schemas/agent-tooling-review.schema.json`.
+- [ ] SaaS-provider or senior AppSec scenario validation. Evidence: pending external engagement.
+- [x] Private holdout lifecycle policy. Evidence: `docs/private-holdout-lifecycle.md`; `tasks_private/holdout/rotation-metadata.json`.
+- [x] Leaderboard eligibility tiers. Evidence: `docs/leaderboard-schema.md`; `docs/leaderboard-anti-gaming-policy.md`.
+- [x] Clean-room reproduction command. Evidence: `python3 scripts/reproduce_public_artifact.py`; `Dockerfile`; `.env.example`; `docs/container-digests.md`.
+- [x] Public artifact index. Evidence: `artifact/INDEX.md`; `docs/artifact-index.md`.
+- [ ] Current per-task Harbor parity, if Harbor is part of the claim. Evidence: `artifact/harbor-parity-experiment.json` (per_task_pairing contract, currently `evidence_status=blocked`); historical aggregate-means run preserved at `artifact/historical/harbor-parity-experiment-aggregate-means.json`. The per_task_pairing map will be populated when a real Harbor run completes.
+
+### Externally validated benchmark
+
+- [ ] All external review lanes complete. Evidence: `docs/reviews/external-review-registry.json` (currently all three pending).
+- [ ] Blocking issues resolved. Evidence: pending external review completion.
+- [ ] Private evaluation governance externally auditable. Evidence: lifecycle policy in place; external audit pending.
+- [ ] Hosted or containerized third-party submission path operational. Evidence: v2 work per the plan.
+- [ ] Multiple third-party submissions or independent reruns. Evidence: requires external parties.
+- [ ] Public release notes with exact claim boundary. Evidence: v1.0-internal release notes in `docs/releases/v1.0-internal.md`; v2 release notes pending external review completion.
+- [ ] Stable version tag. Evidence: release-time action; requires user input on tag string.
+- [ ] Archived artifacts with hashes. Evidence: release-time action; requires user input on archive strategy.
+
+## Notes for the next release
+
+The following items are release-time actions that require explicit user
+input before completion:
+
+1. Stable version tag (e.g. v1.0-internal vs v1.0-community-candidate).
+   The maintainer should pick the tag string and update the
+   `docs/releases/v1.0-internal.md` accordingly.
+2. Archived artifacts with hashes. The maintainer should decide
+   whether the archive is git-tag-only, signed-tarball, or
+   container-image-digest.
+3. Hosted or containerized third-party submission path. This is v2
+   work per the fix plan and is not in the current v1 internal scope.
+
+The following items require external parties:
+
+1. External AppSec, evals methodology, and agent-tooling reviews.
+2. SaaS-provider or senior AppSec scenario validation.
+3. Multiple third-party submissions or independent reruns.
+
+## Claim boundary for this checklist
+
+This checklist is the v1 final-done record. It does not claim hosted
+leaderboard operation, external review completion, or community-scale
+benchmark maturity until each item is checked off with cited evidence.
