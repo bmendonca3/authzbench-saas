@@ -1,5 +1,8 @@
 # Benchmark Card
 
+> **See also:** [`docs/current-claim-boundary.md`](current-claim-boundary.md) for the canonical claim ledger and `scripts/check_claim_boundary.py` for CI-enforced forbidden-phrase checks.
+
+
 ## Name
 
 AuthZBench-SaaS

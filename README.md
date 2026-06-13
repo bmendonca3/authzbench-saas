@@ -12,6 +12,16 @@ The benchmark focuses on a narrow, practical security question:
 > allowed through, and can it stay quiet when access is correctly denied or
 > correctly allowed?
 
+> **v1.0-internal means internally validated benchmark artifact.** It is not
+> a hosted leaderboard, externally validated benchmark, Harbor-accepted or
+> Harbor-endorsed benchmark, SaaS-provider-validated benchmark, production
+> vulnerability discovery benchmark, validated model benchmark, or community
+> benchmark. See the canonical claim table at
+> [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md). The
+> `local_or_containerized_submission_smoke` gate covers the local Docker
+> submission smoke only and explicitly sets
+> `hosted_leaderboard_operation_claimed: false`.
+
 This repository is a **released v0.0 benchmark artifact**. The strict maintainer
 gate has evidence, and the `v0.0` tag is public, but the project is not a hosted
 leaderboard and should not be called a community benchmark yet.
@@ -134,6 +144,9 @@ Full runbook: [`docs/harbor-integration-runbook.md`](docs/harbor-integration-run
   limits
 - [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md) — current
   claim ledger
+- [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md) —
+  canonical single-table claim boundary used in README text, release notes,
+  benchmark card, and external-review notes
 - [`docs/artifact-index.md`](docs/artifact-index.md) — public-safe artifact
   index
 - [`docs/validation-commands.md`](docs/validation-commands.md) — validation
@@ -546,6 +559,9 @@ See [`ROADMAP.md`](ROADMAP.md).
   release note
 - [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim
   ledger: intended use and limits
+- [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md):
+  canonical single-table claim boundary used in README text, release notes,
+  benchmark card, and external-review notes
 - [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim ledger
 - [`docs/authzbench-saas-v0.0-technical-report.md`](docs/authzbench-saas-v0.0-technical-report.md): technical report draft
 - [`docs/authzbench-saas-v1-prep-technical-report.md`](docs/authzbench-saas-v1-prep-technical-report.md): current v1-prep report draft

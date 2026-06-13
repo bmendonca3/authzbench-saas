@@ -1612,8 +1612,8 @@ def _validate_hosted_execution_evidence(
     if data.get("evidence_status") == "blocked":
         if data.get("schema_version") != HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION:
             unmet.append(f"schema_version must be {HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION}")
-        if data.get("blocked_gate") != "hosted_or_containerized_submission_execution":
-            unmet.append("blocked_gate must be hosted_or_containerized_submission_execution")
+        if data.get("blocked_gate") != "local_or_containerized_submission_smoke":
+            unmet.append("blocked_gate must be local_or_containerized_submission_smoke")
         for field in ("blocker", "next_action"):
             if not _nonempty_string(data.get(field)) or _unresolved_placeholder(data.get(field)):
                 unmet.append(f"{field} is required")
@@ -1645,7 +1645,7 @@ def _validate_hosted_execution_evidence(
             unmet.append("last_verified_public_rehearsal.ci_run_id must match ci_run_url")
         if rehearsal.get("workflow") != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
             unmet.append(f"last_verified_public_rehearsal.workflow must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
-        unmet.append("hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist")
+        unmet.append("local/containerized release-candidate smoke is blocked until active private-pack inputs exist")
         return {
             "passed": False,
             "path": HOSTED_EXECUTION_EVIDENCE_PATH,
@@ -2285,8 +2285,8 @@ def validate_v1_readiness(
         stable_unmet.append("baseline registry validation has errors")
     if int(registry_result["current_public_model_family_count"]) < 5:
         stable_unmet.append("fewer than five current public model families are registered")
-    if registry_result["has_current_public_tool_agent_baseline"] is not True:
-        stable_unmet.append("missing current public tool-agent baseline")
+    if registry_result.get("has_current_public_model_or_tool_agent_baseline") is not True:
+        stable_unmet.append("missing current public model-or-tool-agent baseline")
     _add_gate(
         gates,
         "stable_v1_prep_public_evidence",
@@ -2295,7 +2295,10 @@ def validate_v1_readiness(
             f"public_task_count={public_task_count}",
             f"vulnerable_task_count={vulnerable_task_count}",
             f"current_public_model_family_count={registry_result['current_public_model_family_count']}",
-            f"has_current_public_tool_agent_baseline={registry_result['has_current_public_tool_agent_baseline']}",
+            f"current_public_scripted_sanity_baseline_present={registry_result.get('has_current_public_scripted_sanity_baseline')}",
+            f"current_public_model_or_tool_agent_baseline_present={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
+            f"has_current_public_scripted_sanity_baseline={registry_result.get('has_current_public_scripted_sanity_baseline')}",
+            f"has_current_public_model_or_tool_agent_baseline={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
         ],
         stable_unmet,
     )
@@ -2364,13 +2367,18 @@ def validate_v1_readiness(
     )
     if hosted_stale_private_inputs:
         hosted_unmet = [
-            "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
+            "local/containerized release-candidate smoke is blocked until active private-pack inputs exist"
         ]
     _add_gate(
         gates,
-        "hosted_or_containerized_submission_execution",
+        "local_or_containerized_submission_smoke",
         bool(hosted_result["passed"]) and bool(hosted_runbook["passed"]),
-        [hosted_result["path"], hosted_runbook["path"]],
+        [
+            hosted_result["path"],
+            hosted_runbook["path"],
+            "interpretation_note=This gate supports the local/containerized submission smoke only. It does not claim hosted leaderboard operation, external submissions, or platform acceptance. hosted_leaderboard_operation_claimed=false.",
+            "hosted_leaderboard_operation_claimed=false",
+        ],
         hosted_unmet,
     )
 

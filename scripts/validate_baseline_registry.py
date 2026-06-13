@@ -472,6 +472,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
     model_families: set[str] = set()
     current_model_families: set[str] = set()
     has_tool_agent_baseline = False
+    has_current_scripted_sanity_baseline = False
+    has_current_model_or_tool_agent_baseline = False
     repeated_model_baselines = 0
     seen_entry_ids: set[str] = set()
     entries_by_id: dict[str, dict[str, Any]] = {}
@@ -506,6 +508,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
             errors.append(f"{entry_id}: leaderboard_eligible must be boolean")
         if suitability == "current_public_harness_check" and kind != "harness_check":
             errors.append(f"{entry_id}: current_public_harness_check is only valid for harness_check entries")
+        if kind == "harness_check" and suitability == "current_public_harness_check":
+            has_current_scripted_sanity_baseline = True
         if kind == "harness_check" and suitability == "current_public_split":
             errors.append(f"{entry_id}: harness checks must use current_public_harness_check, not current_public_split")
 
@@ -544,8 +548,10 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
                 model_families.add(model_family)
                 if suitability == "current_public_split":
                     current_model_families.add(model_family)
+                    has_current_model_or_tool_agent_baseline = True
             if kind == "tool_agent_baseline" and suitability == "current_public_split":
                 has_tool_agent_baseline = True
+                has_current_model_or_tool_agent_baseline = True
                 missing_tool_fields = sorted(REQUIRED_TOOL_AGENT_SUMMARY_FIELDS - set(summary))
                 if missing_tool_fields:
                     errors.append(
@@ -640,7 +646,9 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         "model_family_count": len(model_families),
         "current_public_model_family_count": len(current_model_families),
         "repeated_model_baseline_count": repeated_model_baselines,
-        "has_current_public_tool_agent_baseline": has_tool_agent_baseline,
+        "has_current_public_tool_agent_baseline": has_tool_agent_baseline,  # legacy alias of has_current_public_model_or_tool_agent_baseline
+        "has_current_public_scripted_sanity_baseline": has_current_scripted_sanity_baseline,
+        "has_current_public_model_or_tool_agent_baseline": has_current_model_or_tool_agent_baseline,
         "v0_baseline_ready": not unmet_v0_requirements,
         "unmet_v0_requirements": unmet_v0_requirements,
         "release_snapshots": release_snapshot_results,
