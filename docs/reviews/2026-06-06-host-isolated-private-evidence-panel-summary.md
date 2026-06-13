@@ -25,7 +25,7 @@ leaderboard row. It did not receive private manifests or raw per-task results.
 ## Panel
 
 Substantive reviews were returned by verified Gemini 3.5 Flash (High), Gemini
-3.1 Pro (High), Kiro `claude-opus-4.8`, and the Codex evidence reviewer.
+3.1 Pro (High), Kiro `claude-opus-4.8`, and the local evidence reviewer.
 Claude Sonnet 4.6 (Thinking) and Claude Opus 4.6 (Thinking) labels were
 verified, but those runs returned no substantive output and were not counted.
 
