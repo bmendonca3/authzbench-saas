@@ -282,6 +282,10 @@ class TestValidateParityExperiment(unittest.TestCase):
             self.assertTrue(result["passed"], f"errors: {result['errors']}")
 
     def test_aggregate_means_verified_allow_flag_passes(self) -> None:
+        # Plan 6.2: aggregate_means with current status is not permitted
+        # even with the allow flag, because the allow flag only relaxes
+        # the aggregate_means + historical_backcompat contract; it does
+        # not permit a current evidence payload to use aggregate_means.
         with tempfile.TemporaryDirectory() as tmp:
             data = _make_task_pairing_payload(
                 methodology="aggregate_means",
@@ -291,7 +295,44 @@ class TestValidateParityExperiment(unittest.TestCase):
             result = validate_parity_experiment(
                 path, allow_aggregate_means=True
             )
+            self.assertFalse(
+                result["passed"],
+                "aggregate_means + current must fail under plan 6.2 even with allow flag",
+            )
+            self.assertTrue(
+                any("evidence_status='current'" in e for e in result["errors"]),
+                f"expected plan-6.2 cross-direction error, got: {result['errors']}",
+            )
+
+    def test_current_evidence_requires_per_task_pairing_methodology(self) -> None:
+        # Plan 6.2 cross-direction validator contract: any payload
+        # declaring evidence_status='current' must also declare
+        # parity_methodology='per_task_pairing'. This applies regardless
+        # of parity_verified.
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload(
+                methodology="per_task_pairing",
+                evidence_status="current",
+            )
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
             self.assertTrue(result["passed"], f"errors: {result['errors']}")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload(
+                methodology="aggregate_means",
+                evidence_status="current",
+            )
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(
+                result["passed"],
+                "current + aggregate_means must fail under plan 6.2",
+            )
+            self.assertTrue(
+                any("evidence_status='current'" in e for e in result["errors"]),
+                f"expected cross-direction error, got: {result['errors']}",
+            )
 
     # --- T14: per_task_pairing missing fields fails ---------------------
 

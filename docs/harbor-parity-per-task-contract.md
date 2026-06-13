@@ -52,8 +52,13 @@ schema `harbor-parity-experiment-v1`. Required fields:
 - `parity_verified=true` requires `parity_methodology=per_task_pairing`
 - `parity_verified=true` requires `evidence_status=current` (or
   `historical_backcompat` with the `aggregate_means` methodology)
+- plan 6.2 cross-direction: any payload with `evidence_status=current`
+  must declare `parity_methodology=per_task_pairing` regardless of
+  whether `parity_verified` is true. This rule is not relaxed by the
+  `--allow-aggregate-means-backcompat` flag.
 - every task in `task_ids` must appear in both
-  `harbor_per_task_rewards` and `native_per_task_scores`
+  `harbor_per_task_rewards` and `native_per_task_scores` (when
+  `parity_methodology=per_task_pairing`)
 - `abs(native - harbor) <= reward_tolerance` for every task when
   `parity_verified=true`
 - `per_task_disagreements` must list every task where the absolute
