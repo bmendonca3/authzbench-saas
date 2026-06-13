@@ -38,3 +38,18 @@ jobs:
 
       - name: Run public validation gates
         run: python scripts/validate_public.py --include-scripted-baseline --include-container-smoke
+
+      - name: Claim-boundary phrase check
+        run: python scripts/check_claim_boundary.py
+
+      - name: Task oracle audit (schema gate)
+        run: python scripts/generate_task_oracle_audit.py --check
+
+      - name: Task taxonomy report
+        run: python scripts/generate_task_taxonomy.py
+
+      - name: Baseline variance and confidence
+        run: python scripts/analyze_baseline_variance.py --require-current-public
+
+      - name: Harbor non-claim test
+        run: python -m pytest tests/test_harbor_claim_boundary.py -q
