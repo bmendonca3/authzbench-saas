@@ -50,10 +50,10 @@ FORBIDDEN_PHRASES: tuple[str, ...] = (
     "SOTA security benchmark",
 )
 
-# Substrings that, when found in the surrounding context of a forbidden phrase,
-# signal that the phrase is being used in a non-claim way. The matching is
-# simple and intentional: negation words, "Avoid" markers, "Forbidden",
-# "not claim", "does not claim", "do not describe", and the like.
+# Substrings that, when found on the same line or paragraph as a forbidden
+# phrase, signal that the phrase is being used in a non-claim way. Keep these
+# specific: broad words like "no" or "without" can appear in unrelated prose and
+# accidentally allow a nearby overclaim.
 NEGATION_HINTS: tuple[str, ...] = (
     "Avoid",
     "avoid list",
@@ -69,8 +69,6 @@ NEGATION_HINTS: tuple[str, ...] = (
     "did not",
     "should not",
     "shouldn't",
-    "no ",
-    "without",
     "never",
     "not be",
     "not be called",
@@ -82,7 +80,7 @@ NEGATION_HINTS: tuple[str, ...] = (
     "remain optional",
     "deferred to",
     "deferred until",
-    "v2 ",
+    "external gates",
 )
 
 # Files to scan. Subset of tracked text. We do not scan binary files.
@@ -125,10 +123,10 @@ def _is_allow_context(line: str, prev_lines: list[str], next_lines: list[str]) -
         if prev.startswith("# "):
             break
 
-    # Allow if the surrounding context (3 lines before, current line, 3 after)
-    # contains an Avoid / Forbidden / negation hint.
-    window = "\n".join(prev_lines[-3:] + [line] + next_lines[:3])
-    lowered = window.lower()
+    # Allow if the current line itself contains an Avoid / Forbidden / negation
+    # hint. Multi-line negated paragraphs are handled by
+    # `_paragraph_contains_negation` in the main scanner.
+    lowered = line.lower()
     for hint in NEGATION_HINTS:
         if hint.lower() in lowered:
             return True
@@ -160,7 +158,7 @@ def _scan_text_file(path: Path) -> list[tuple[int, str, str]]:
             ):
                 allowed = True
             if not allowed:
-                window = "\n".join(lines[max(0, idx - 3):idx] + [line] + lines[idx + 1:idx + 4])
+                window = line
                 for hint in NEGATION_HINTS:
                     if hint.lower() in window.lower():
                         allowed = True
