@@ -73,6 +73,7 @@ NEGATION_HINTS: tuple[str, ...] = (
     "not be",
     "not be called",
     "not claim",
+    "not ",
     "does not claim",
     "do not claim",
     "did not claim",
