@@ -101,6 +101,29 @@ class ClaimBoundaryCheckTests(unittest.TestCase):
             result = _run_check(root)
         self.assertTrue(result["passed"], result)
 
+    def test_unrelated_nearby_negation_does_not_allow_forbidden_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "readme.md").write_text(
+                "No setup required.\n\n"
+                "This benchmark is an externally validated community benchmark.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/readme.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("externally validated", phrases)
+        self.assertIn("community benchmark", phrases)
+
     def test_forbidden_phrase_in_forbidden_table_column_passes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
