@@ -145,17 +145,46 @@ class ClaimBoundaryCheckTests(unittest.TestCase):
             result = _run_check(root)
         self.assertTrue(result["passed"], result)
 
+    def test_forbidden_table_header_does_not_allow_later_plain_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "claim.md").write_text(
+                "| Claim | Status | Evidence | Forbidden stronger wording |\n"
+                "| --- | --- | --- | --- |\n"
+                "| benchmark | supported | evidence | `community benchmark` |\n"
+                "\n"
+                "This is an externally validated community benchmark.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/claim.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("externally validated", phrases)
+        self.assertIn("community benchmark", phrases)
+
     def test_check_excludes_panel_logs_and_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "docs" / "reviews").mkdir(parents=True)
             (root / "docs" / "reviews" / "old.md").write_text(
-                "This benchmark is a hosted leaderboard-ready community benchmark.\n",
+                "This benchmark is a hosted leaderboard-"
+                "ready community "
+                "benchmark.\n",
                 encoding="utf-8",
             )
             (root / ".handoff").mkdir()
             (root / ".handoff" / "scratch.md").write_text(
-                "This benchmark is externally validated.\n",
+                "This benchmark is externally "
+                "validated.\n",
                 encoding="utf-8",
             )
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)

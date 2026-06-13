@@ -129,7 +129,22 @@ def _agreement_rate(per_run_verdicts: list[dict[str, bool]]) -> dict[str, Any]:
 
 
 def _per_task_verdicts(summary: dict[str, Any]) -> dict[str, bool]:
-    return {}
+    verdicts: dict[str, bool] = {}
+    tasks = summary.get("tasks")
+    if not isinstance(tasks, list):
+        return verdicts
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+        task_id = task.get("task_id")
+        if not isinstance(task_id, str) or not task_id:
+            continue
+        for verdict_key in ("passed", "v0_passed", "v0_verdict"):
+            verdict = task.get(verdict_key)
+            if isinstance(verdict, bool):
+                verdicts[task_id] = verdict
+                break
+    return verdicts
 
 
 def analyze_registry(

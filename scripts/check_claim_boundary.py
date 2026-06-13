@@ -114,14 +114,16 @@ def _is_allow_context(line: str, prev_lines: list[str], next_lines: list[str]) -
         if re.search(r"`[^`]*" + re.escape("placeholder") + r"[^`]*`", stripped):
             return True
 
-    # Allow in a markdown table row whose header is "Forbidden stronger wording".
-    # Walk back at most 50 lines looking for a header that introduces this
-    # column.
-    for prev in prev_lines[-50:]:
-        if "Forbidden stronger wording" in prev:
-            return True
-        if prev.startswith("# "):
-            break
+    # Allow in a markdown table row whose contiguous table header is
+    # "Forbidden stronger wording".
+    if stripped.startswith("|"):
+        for prev in reversed(prev_lines):
+            if not prev.strip() or prev.lstrip().startswith("#"):
+                break
+            if not prev.lstrip().startswith("|"):
+                break
+            if "Forbidden stronger wording" in prev:
+                return True
 
     # Allow if the current line itself contains an Avoid / Forbidden / negation
     # hint. Multi-line negated paragraphs are handled by
@@ -164,13 +166,18 @@ def _scan_text_file(path: Path) -> list[tuple[int, str, str]]:
                         allowed = True
                         break
             if not allowed:
-                # Allow in the canonical "Forbidden stronger wording" table column.
-                for prev in lines[max(0, idx - 50):idx]:
-                    if "Forbidden stronger wording" in prev:
-                        allowed = True
-                        break
-                    if prev.startswith("# "):
-                        break
+                # Allow in the canonical "Forbidden stronger wording" table
+                # column, but only while the current line is still inside that
+                # contiguous markdown table.
+                if stripped.startswith("|"):
+                    for prev in reversed(lines[:idx]):
+                        if not prev.strip() or prev.lstrip().startswith("#"):
+                            break
+                        if not prev.lstrip().startswith("|"):
+                            break
+                        if "Forbidden stronger wording" in prev:
+                            allowed = True
+                            break
             if not allowed:
                 # Allow in a paragraph (blockquote, list, or paragraph) that
                 # contains a negation hint. We define a paragraph as a run of
