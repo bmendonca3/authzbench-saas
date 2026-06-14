@@ -82,12 +82,6 @@ NEGATION_HINTS: tuple[str, ...] = (
     "deferred to",
     "deferred until",
     "external gates",
-    "candidate",
-    "pending",
-    "tier",
-    "credible",
-    "claim boundary",
-    "checklist",
     "## Externally validated benchmark",
     "### Community benchmark candidate",
 )
@@ -107,6 +101,15 @@ SKIP_DIRS: tuple[str, ...] = (
     ".kiro",
     "docs/checkpoints",
     "docs/reviews",
+)
+
+# Test files whose source intentionally embeds forbidden phrases as
+# fixtures. The claim-boundary test is a corpus, not claim text, so it
+# is excluded from the scan. Any new test file that intentionally
+# embeds forbidden phrases must be added here with a one-line comment
+# explaining why.
+SKIP_TEST_FILES: tuple[str, ...] = (
+    "tests/test_claim_boundary_check.py",
 )
 
 
@@ -274,6 +277,8 @@ def _git_tracked_files(root: Path) -> list[Path]:
         skip_prefixes = ("docs/reviews/",)
         rel_str = str(path.relative_to(root))
         if any(rel_str.startswith(prefix) for prefix in skip_prefixes):
+            continue
+        if rel_str in SKIP_TEST_FILES:
             continue
         if path.suffix.lower() not in SCAN_EXTENSIONS:
             continue

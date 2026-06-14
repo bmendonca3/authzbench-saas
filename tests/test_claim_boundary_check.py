@@ -198,6 +198,59 @@ class ClaimBoundaryCheckTests(unittest.TestCase):
             result = _run_check(root)
         self.assertTrue(result["passed"], result)
 
+    def test_credible_candidate_claim_is_rejected(self) -> None:
+        """A sentence that wraps all three overclaim phrases in
+        non-negation soft-language ('credible', 'candidate', etc.) must
+        still be rejected. Prior to tightening NEGATION_HINTS, the
+        over-broad hints 'candidate', 'credible', 'tier', 'pending',
+        'claim boundary', and 'checklist' caused this sentence to be
+        incorrectly allowed.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "readme.md").write_text(
+                "AuthZBench-SaaS is a credible externally validated "
+                "community benchmark candidate.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/readme.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root, check=True, text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("externally validated", phrases)
+        self.assertIn("community benchmark", phrases)
+
+    def test_maturity_label_phrase_still_passes(self) -> None:
+        """Tightening NEGATION_HINTS must not block the canonical
+        maturity label 'credible v1 internal benchmark' that the
+        project uses as the v1 internal release-candidate framing.
+        The word 'credible' should be permitted here because the
+        sentence does not contain any forbidden phrase in claim
+        position.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "readme.md").write_text(
+                "AuthZBench-SaaS v1 is a credible internal benchmark "
+                "for SaaS authorization reasoning.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/readme.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root, check=True, text=True,
+            )
+            result = _run_check(root)
+        self.assertTrue(result["passed"], result)
+
 
 if __name__ == "__main__":
     unittest.main()

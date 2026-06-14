@@ -280,6 +280,14 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/container-digests.md",
     "docs/glossary.md",
     "docs/inspect-one-task.md",
+    # Score-policy, score-stability-policy, and the new scoring-examples
+    # doc land here so post-source evidence-only checks accept the
+    # reviewer-facing score-shape clarifications. These are scoring-shape
+    # and reviewer-wording docs; they do not change benchmark source,
+    # tasks, scoring policy, or baseline substance.
+    "docs/score-policy.md",
+    "docs/score-stability-policy.md",
+    "docs/scoring-examples.md",
     "docs/leaderboard-anti-gaming-policy.md",
     "docs/leaderboard-schema.md",
     "docs/private-holdout-lifecycle.md",
