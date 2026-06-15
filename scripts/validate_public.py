@@ -180,6 +180,7 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         cwd,
     )
     run([sys.executable, "scripts/check_claim_boundary.py"], cwd)
+    run([sys.executable, "scripts/check_v1_overclaim.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_adapter_blockers.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_adapter_templates.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_integration.py"], cwd)
