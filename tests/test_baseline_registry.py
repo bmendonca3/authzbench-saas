@@ -685,6 +685,85 @@ class BaselineRegistryTests(unittest.TestCase):
             result,
         )
 
+    def test_current_entry_without_provenance_fields_fails_hard(self) -> None:
+        """A current_public_split entry that lacks any of the required
+        provenance fields (model_name, model_version, scaffold_name,
+        run_date, evidence_status) must be rejected with a hard
+        error, not just a warning. This is the
+        goal-external-validation-coverage.md objective-1 hard CI
+        gate.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            current = _baseline_by_id(registry, CURRENT_QWEN_60_ID)
+            for field in (
+                "model_name",
+                "model_version",
+                "scaffold_name",
+                "run_date",
+                "evidence_status",
+            ):
+                current.pop(field, None)
+            registry_path.write_text(
+                json.dumps(registry, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any(
+                "missing required provenance fields" in error
+                and CURRENT_QWEN_60_ID in error
+                for error in result["errors"]
+            ),
+            result,
+        )
+
+    def test_stale_entry_missing_provenance_emits_warning_only(self) -> None:
+        """A stale entry (current_public_stale or legacy_snapshot)
+        is allowed to use the legacy field set. Missing provenance
+        fields on a stale entry must surface as a warning, not a
+        hard error, so legacy evidence rows still validate.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            stale = _baseline_by_id(registry, STALE_QWEN_ID)
+            for field in (
+                "model_name",
+                "model_version",
+                "scaffold_name",
+                "run_date",
+                "evidence_status",
+            ):
+                stale.pop(field, None)
+            registry_path.write_text(
+                json.dumps(registry, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertTrue(
+            any(
+                "historical entry missing provenance fields" in warning
+                and STALE_QWEN_ID in warning
+                for warning in result["warnings"]
+            ),
+            result,
+        )
+        self.assertFalse(
+            any(
+                "missing required provenance fields" in error
+                and STALE_QWEN_ID in error
+                for error in result["errors"]
+            ),
+            result,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

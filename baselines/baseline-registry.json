@@ -15,7 +15,12 @@
       "release_suitability": "current_public_harness_check",
       "requires_rerun_before_current_comparison": false,
       "run_count": 1,
-      "summary_path": "scripted-baseline-public-60-summary.json"
+      "summary_path": "scripted-baseline-public-60-summary.json",
+      "evidence_status": "current",
+      "run_date": "2026-06-09",
+      "model_name": "n/a",
+      "model_version": "n/a",
+      "scaffold_name": "scripted_baseline_agent"
     },
     {
       "capability_baseline": true,
@@ -36,7 +41,12 @@
         "kiro-qwen3-coder-next-current-public-60-run2-summary.json"
       ],
       "run_count": 2,
-      "summary_path": "kiro-qwen3-coder-next-current-public-60-run1-summary.json"
+      "summary_path": "kiro-qwen3-coder-next-current-public-60-run1-summary.json",
+      "evidence_status": "current",
+      "run_date": "2026-06-09",
+      "model_name": "qwen3-coder-next",
+      "model_version": "v1.0-internal",
+      "scaffold_name": "kiro_baseline_agent"
     },
     {
       "capability_baseline": true,
@@ -57,7 +67,12 @@
         "kiro-claude-haiku-4.5-current-public-60-run2-summary.json"
       ],
       "run_count": 2,
-      "summary_path": "kiro-claude-haiku-4.5-current-public-60-run1-summary.json"
+      "summary_path": "kiro-claude-haiku-4.5-current-public-60-run1-summary.json",
+      "evidence_status": "current",
+      "run_date": "2026-06-09",
+      "model_name": "claude-haiku-4.5",
+      "model_version": "v1.0-internal",
+      "scaffold_name": "kiro_baseline_agent"
     },
     {
       "capability_baseline": true,
@@ -78,7 +93,12 @@
         "kiro-claude-sonnet-4.6-current-public-60-run2-summary.json"
       ],
       "run_count": 2,
-      "summary_path": "kiro-claude-sonnet-4.6-current-public-60-run1-summary.json"
+      "summary_path": "kiro-claude-sonnet-4.6-current-public-60-run1-summary.json",
+      "evidence_status": "current",
+      "run_date": "2026-06-09",
+      "model_name": "claude-sonnet-4.6",
+      "model_version": "v1.0-internal",
+      "scaffold_name": "kiro_baseline_agent"
     },
     {
       "capability_baseline": true,
@@ -99,7 +119,12 @@
         "kiro-glm-5-current-public-60-run2-summary.json"
       ],
       "run_count": 2,
-      "summary_path": "kiro-glm-5-current-public-60-run1-summary.json"
+      "summary_path": "kiro-glm-5-current-public-60-run1-summary.json",
+      "evidence_status": "current",
+      "run_date": "2026-06-09",
+      "model_name": "glm-5",
+      "model_version": "v1.0-internal",
+      "scaffold_name": "kiro_baseline_agent"
     },
     {
       "capability_baseline": true,
@@ -120,7 +145,12 @@
         "kiro-claude-opus-4.6-current-public-60-run2-summary.json"
       ],
       "run_count": 2,
-      "summary_path": "kiro-claude-opus-4.6-current-public-60-run1-summary.json"
+      "summary_path": "kiro-claude-opus-4.6-current-public-60-run1-summary.json",
+      "evidence_status": "current",
+      "run_date": "2026-06-09",
+      "model_name": "claude-opus-4.6",
+      "model_version": "v1.0-internal",
+      "scaffold_name": "kiro_baseline_agent"
     },
     {
       "capability_baseline": true,
@@ -141,7 +171,12 @@
         "kiro-live-tool-agent-sonnet-current-public-60-run2-summary.json"
       ],
       "run_count": 2,
-      "summary_path": "kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json"
+      "summary_path": "kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json",
+      "evidence_status": "current",
+      "run_date": "2026-06-09",
+      "model_name": "claude-sonnet-4.6",
+      "model_version": "v1.0-internal",
+      "scaffold_name": "kiro_live_tool_agent"
     },
     {
       "capability_baseline": false,

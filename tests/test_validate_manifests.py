@@ -182,5 +182,96 @@ class ManifestValidationTests(unittest.TestCase):
         self.assertTrue(any("tasks_private/holdout manifests must use split=private_holdout" in error for error in result["errors"]), result)
 
 
+    def test_every_public_task_has_objective_oracle_boundary_and_controls(self) -> None:
+        """Hard pytest gate for the goal-external-validation-coverage.md
+        objective-2 mandatory-field set. Every public task must carry:
+
+          * objective (string)
+          * oracle.status (integer)
+          * oracle.body_contains (object or array)
+          * expected_boundary (object, for vulnerable tasks; denial
+            or authorized_allow control_type, for secure tasks)
+          * at least one denial control AND at least one
+            authorized-allow control across the public split
+            (the per-task gate is: vulnerable tasks need a denial
+            control, secure tasks need the right control_type).
+        """
+        from pathlib import Path as _P
+
+        from authzbench.core import load_json as _load_json
+
+        public_dir = _P(__file__).resolve().parents[1] / "tasks"
+        task_files = sorted(public_dir.glob("*/*.json"))
+        self.assertGreaterEqual(len(task_files), 60)
+
+        seen_ids: set[str] = set()
+        denial_control_count = 0
+        authorized_allow_control_count = 0
+        for path in task_files:
+            data = _load_json(path)
+            task_id = data.get("id", path.stem)
+
+            # 1. objective must be a non-empty string.
+            objective = data.get("objective")
+            self.assertIsInstance(
+                objective, str,
+                f"{path}: objective must be a string (got {type(objective).__name__})",
+            )
+            self.assertGreater(
+                len(objective.strip()), 0,
+                f"{path}: objective must be non-empty",
+            )
+
+            # 2. oracle.status and oracle.body_contains must both exist.
+            oracle = data.get("oracle")
+            self.assertIsInstance(
+                oracle, dict,
+                f"{path} ({task_id}): oracle must be a dict",
+            )
+            self.assertIsInstance(
+                oracle.get("status"), int,
+                f"{path} ({task_id}): oracle.status must be an integer",
+            )
+            self.assertIn(
+                "body_contains", oracle,
+                f"{path} ({task_id}): oracle.body_contains is required",
+            )
+
+            # 3. expected_boundary / control_type: vulnerable tasks
+            #    must carry expected_boundary; secure tasks must set
+            #    control_type to denial or authorized_allow.
+            if data.get("expected_vulnerable") is True:
+                self.assertIsInstance(
+                    data.get("expected_boundary"), dict,
+                    f"{path} ({task_id}): vulnerable task must include expected_boundary",
+                )
+            else:
+                ct = data.get("control_type")
+                self.assertIn(
+                    ct, ("denial", "authorized_allow"),
+                    f"{path} ({task_id}): secure task must set control_type to denial or authorized_allow",
+                )
+                if ct == "denial":
+                    denial_control_count += 1
+                elif ct == "authorized_allow":
+                    authorized_allow_control_count += 1
+
+            # 4. The split must have unique ids.
+            self.assertNotIn(task_id, seen_ids, f"duplicate task id: {task_id}")
+            seen_ids.add(task_id)
+
+        # Whole-split counters: at least one of each control type must
+        # exist in the public 60-task set. This is the reviewer-facing
+        # proof that denial AND authorized-allow controls are present.
+        self.assertGreaterEqual(
+            denial_control_count, 1,
+            f"public split must include at least 1 denial control; got {denial_control_count}",
+        )
+        self.assertGreaterEqual(
+            authorized_allow_control_count, 1,
+            f"public split must include at least 1 authorized_allow control; got {authorized_allow_control_count}",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

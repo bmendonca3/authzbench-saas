@@ -1,9 +1,9 @@
 {
   "overall_passed": true,
-  "passed_step_count": 6,
+  "passed_step_count": 7,
   "root": "/Users/brianmendonca/Documents/authzbench-saas",
   "schema_version": "public-reproduction-v1",
-  "step_count": 6,
+  "step_count": 7,
   "steps": [
     {
       "command": [
@@ -14,7 +14,7 @@
         "artifact/expected-output/v1-readiness-public-view.json"
       ],
       "description": "Public-view v1 readiness fixture match",
-      "elapsed_seconds": 0.242,
+      "elapsed_seconds": 0.25,
       "id": "v1_readiness",
       "passed": true,
       "returncode": 0,
@@ -27,7 +27,7 @@
         "scripts/check_claim_boundary.py"
       ],
       "description": "Claim-boundary forbidden-phrase CI check",
-      "elapsed_seconds": 0.241,
+      "elapsed_seconds": 0.244,
       "id": "claim_boundary",
       "passed": true,
       "returncode": 0,
@@ -41,7 +41,7 @@
         "--check"
       ],
       "description": "Task oracle audit (schema gate)",
-      "elapsed_seconds": 0.041,
+      "elapsed_seconds": 0.043,
       "id": "task_oracle_audit",
       "passed": true,
       "returncode": 0,
@@ -54,7 +54,7 @@
         "scripts/generate_task_taxonomy.py"
       ],
       "description": "Task taxonomy report",
-      "elapsed_seconds": 0.042,
+      "elapsed_seconds": 0.044,
       "id": "task_taxonomy",
       "passed": true,
       "returncode": 0,
@@ -68,7 +68,7 @@
         "--require-current-public"
       ],
       "description": "Baseline variance and confidence",
-      "elapsed_seconds": 0.06,
+      "elapsed_seconds": 0.063,
       "id": "baseline_variance",
       "passed": true,
       "returncode": 0,
@@ -84,12 +84,30 @@
         "-q"
       ],
       "description": "Harbor non-claim test",
-      "elapsed_seconds": 0.256,
+      "elapsed_seconds": 0.267,
       "id": "harbor_claim_boundary",
       "passed": true,
       "returncode": 0,
       "stderr_tail": "",
       "stdout_tail": "..                                                                       [100%]\n2 passed in 0.07s"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_scorer_adversarial_submissions.py",
+        "-q",
+        "--collect-only",
+        "-q"
+      ],
+      "description": "Adversarial scorer test count (objective-3 reachability gate)",
+      "elapsed_seconds": 0.214,
+      "id": "scorer_adversarial",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "tests/test_scorer_adversarial_submissions.py: 19\n"
     }
   ]
 }
