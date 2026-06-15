@@ -5,19 +5,34 @@
   "app": "billing",
   "boundary_aliases": {
     "attacker_actor": [
-      "atlas_member"
+      "atlas_member",
+      "atlas member",
+      "atlas-membership actor",
+      "org member"
     ],
     "entitlement": [
-      "audit_exports"
+      "audit_exports",
+      "audit export",
+      "audit-exports entitlement",
+      "audit_log_export"
     ],
     "operation": [
-      "downgrade"
+      "downgrade",
+      "disable",
+      "turn off",
+      "revoke entitlement"
     ],
     "org": [
-      "atlas"
+      "atlas",
+      "atlas org",
+      "atlas-organization",
+      "organization atlas"
     ],
     "required_role": [
-      "admin"
+      "admin",
+      "administrator",
+      "org admin",
+      "org-admin role"
     ]
   },
   "controls": [

@@ -133,7 +133,6 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
         "boundary_exact_match": False,
         "boundary_semantic_match": False,
         "boundary_schema_mismatch": False,
-        "boundary_wrong": False,
         "evidence_chain_complete": False,
         "observations": [],
         "transcript": [],

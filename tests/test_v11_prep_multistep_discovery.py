@@ -151,5 +151,81 @@ class V11PrepCohortTests(unittest.TestCase):
             )
 
 
+class V11PrepBoundaryAliasTests(unittest.TestCase):
+    """Goal-external-validation-coverage.md objective-4 boundary
+    synonym support. Every v1.1-prep task with a ``boundary_aliases``
+    field must allow the alias-promoted path to fire when a finding
+    uses one of the published synonyms. The strict subset path is
+    reserved for the canonical expected tokens.
+    """
+
+    def test_each_v11_prep_task_boundary_alias_list_has_real_synonyms(self) -> None:
+        """At least one alias per key must differ from the exact
+        expected value. A synonym list that only contains the
+        expected value exercises nothing new.
+        """
+        for path in ROOT.glob(V11_PREP_GLOB):
+            task = load_json(path)
+            aliases = task.get("boundary_aliases") or {}
+            self.assertTrue(aliases, f"{path.name}: missing boundary_aliases")
+            expected = task.get("expected_boundary") or {}
+            for key, expected_value in expected.items():
+                alias_list = aliases.get(key) or []
+                self.assertIn(
+                    expected_value,
+                    alias_list,
+                    f"{path.name}: boundary_aliases[{key!r}] must include the exact value",
+                )
+                non_canonical = [
+                    a for a in alias_list if a != expected_value
+                ]
+                self.assertGreater(
+                    len(non_canonical),
+                    0,
+                    f"{path.name}: boundary_aliases[{key!r}] only contains the exact value; add at least one real synonym",
+                )
+
+    def test_fs_team_membership_alias_promotes_to_semantic_match(self) -> None:
+        """``fs_team_membership_cross_workspace_discovery`` carries
+        a real synonym alias list. A finding whose boundary uses
+        ``"apex workspace"`` instead of the exact ``"apex"`` token
+        must fire ``boundary_semantic_match=True`` and not the
+        strict subset path.
+        """
+        path = ROOT / "tasks_v11_prep/file_sharing/fs_team_membership_cross_workspace_discovery.json"
+        task = load_json(path)
+        refs = build_context(task)["refs"]
+        # Build a submission with the canonical structure but with
+        # synonym phrasing on the boundary.
+        boundary = {
+            "attacker_actor": "northstar viewer",
+            "required_membership": "apex workspace",
+            "victim_workspace": "apex workspace",
+        }
+        submission = {
+            "findings": [
+                {
+                    "claim": task["oracle"]["claim"],
+                    "evidence": _build_valid_submission(task, refs)["findings"][0]["evidence"],
+                    "boundary": boundary,
+                    "impact": "synonym phrasing boundary",
+                }
+            ]
+        }
+        result = score_submission(task, submission)
+        self.assertTrue(
+            result.get("boundary_semantic_match"),
+            f"expected boundary_semantic_match=True, got {result}",
+        )
+        self.assertFalse(
+            result.get("boundary_exact_match"),
+            f"synonyms must not fire strict subset match, got {result}",
+        )
+        self.assertFalse(
+            result.get("boundary_schema_mismatch"),
+            f"synonyms must not be flagged as a mismatch, got {result}",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

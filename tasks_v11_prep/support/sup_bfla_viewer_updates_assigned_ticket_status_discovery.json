@@ -8,13 +8,22 @@
   ],
   "boundary_aliases": {
     "attacker_actor": [
-      "acme_viewer"
+      "acme_viewer",
+      "acme viewer",
+      "acme-org viewer",
+      "acme read-only actor"
     ],
     "org": [
-      "acme"
+      "acme",
+      "acme org",
+      "organization acme",
+      "acme-org tenant"
     ],
     "required_assignment": [
-      "self"
+      "ticket_assignee",
+      "assigned agent",
+      "self",
+      "ticket assignee"
     ]
   },
   "claim": "viewer_can_update_ticket_status_via_team_membership_bypass",
