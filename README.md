@@ -130,6 +130,23 @@ v2 external gates tracked explicitly.
 Full claim ledger: [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md).
 v1 release note: [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md).
 
+## Release Evidence Validation
+
+The default `python3 scripts/validate_v1_readiness.py` invocation is an
+internal preflight only: it runs the ten internal gates and reports
+`v1_ready: false` until the strict release-evidence gate is supplied.
+True v1 readiness requires the tracked validator to be run with the
+external release evidence file, kept outside public Git per the
+completion gate in [`docs/goal.md`](docs/goal.md):
+
+```bash
+python3 scripts/validate_v1_readiness.py --release-evidence docs/release-evidence.json
+```
+
+Without `--release-evidence`, the `final_release_candidate_validation`
+gate fails closed with `v1_ready: false`. Do not infer or synthesize
+external release evidence from public artifacts.
+
 ## Harbor Adapter
 
 - Repo-side local adapter path: implemented
@@ -518,6 +535,8 @@ gates only.
 
 ## v1 Status
 
+v1 internal release-candidate infrastructure validated.
+
 AuthZBench-SaaS v1 is complete under the internal/non-external release definition.
 
 v1 includes:
@@ -532,6 +551,8 @@ v1 includes:
 - release-candidate validation evidence
 
 v1 does **not** claim:
+
+v1 does not claim external review, hosted public leaderboard readiness, SaaS-provider validation, or platform acceptance.
 
 - independent external review
 - SaaS-provider scenario validation

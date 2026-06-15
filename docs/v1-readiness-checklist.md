@@ -165,6 +165,24 @@ git ls-files tasks_private/holdout results captures docs/reviews/panel-logs
 Add Docker/container smoke when app routes, fixtures, request logging, or live
 HTTP tool-agent behavior changes.
 
+## Release Evidence Validation
+
+The default `python3 scripts/validate_v1_readiness.py` invocation is an
+internal preflight only: it runs the ten internal gates and reports
+`v1_ready: false` until the strict release-evidence gate is supplied.
+True v1 readiness requires the tracked validator to be run with the
+external release evidence file, kept outside public Git per the
+completion gate in [`docs/goal.md`](../goal.md):
+
+```bash
+python3 scripts/validate_v1_readiness.py --release-evidence docs/release-evidence.json
+```
+
+Without `--release-evidence`, the `final_release_candidate_validation`
+gate fails closed with `v1_ready: false`. Do not infer or synthesize
+external release evidence from public artifacts; the validator already
+fails closed with a reviewer-readable diagnostic in that case.
+
 ## v1 Startup Exit Criteria
 
 The v1 startup slice is complete when:
