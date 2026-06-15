@@ -10,6 +10,22 @@ from authzbench.core import load_json, runner_integrity_envelope
 from scripts.validate_leaderboard_submission import ROOT, comparability_key, validate_submission
 
 
+def _active_private_pack_fingerprint() -> str:
+    """Return the role=active private pack fingerprint from the
+    rotation metadata. The leaderboard submission validator
+    (objective-5) requires every leaderboard-eligible
+    private-holdout or combined submission to point at this
+    fingerprint.
+    """
+    from authzbench.core import load_json as _load
+
+    rotation = _load(ROOT / "tasks_private" / "holdout" / "rotation-metadata.json")
+    for pack in rotation.get("packs", []):
+        if pack.get("role") == "active":
+            return str(pack["fingerprint_sha256"])
+    raise RuntimeError("no active private pack in rotation-metadata.json")
+
+
 EXAMPLE = ROOT / "examples" / "leaderboard" / "scripted-sanity-public.leaderboard.json"
 RELEASE_CANDIDATE = ROOT / "leaderboard_submissions" / "2026-06-05" / "haiku-private-holdout.leaderboard.json"
 
@@ -538,6 +554,7 @@ class LeaderboardSubmissionTests(unittest.TestCase):
                 "variance_metric": "v0_mean_score",
             }
             data["split"] = "private-holdout"
+            data["private_pack_fingerprint_sha256"] = _active_private_pack_fingerprint()
             data["comparability_key"] = comparability_key(data)
             data["source_run_summary"] = "summary.json"
             data["source_run_summaries"] = ["repeat-summary.json", "summary.json"]
@@ -754,6 +771,109 @@ class LeaderboardSubmissionTests(unittest.TestCase):
             result = validate_submission(path, require_source_summary=True)
 
         self.assertTrue(result["passed"], result)
+
+
+    def test_leaderboard_eligible_private_holdout_requires_active_pack_fingerprint(self) -> None:
+        """Goal-external-validation-coverage.md objective-5 hard CI
+        gate. A leaderboard-eligible private-holdout submission must
+        carry a private_pack_fingerprint_sha256 that matches the
+        role=active pack in
+        tasks_private/holdout/rotation-metadata.json.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            data = copy.deepcopy(load_json(EXAMPLE))
+            data["baseline_kind"] = "model_baseline"
+            data["harness_type"] = "no-tools-model"
+            data["split"] = "private-holdout"
+            data["public_task_count"] = 0
+            data["private_holdout_task_count"] = 24
+            data["leaderboard_eligible"] = True
+            data["private_pack_fingerprint_sha256"] = (
+                "0" * 64  # deliberately not a real fingerprint
+            )
+            data["comparability_key"] = comparability_key(data)
+            path = _write_submission(tmp_path, data)
+            result = validate_submission(path)
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any(
+                "private_pack_fingerprint_sha256" in error
+                and "does not match any known pack" in error
+                for error in result["errors"]
+            ),
+            result,
+        )
+
+    def test_leaderboard_eligible_private_holdout_rejects_shadow_pack(self) -> None:
+        """Pointing a leaderboard-eligible private-holdout submission
+        at a shadow pack (role != active) is a hard error, even if
+        the fingerprint is otherwise valid.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            from authzbench.core import load_json as _load
+
+            rotation = _load(ROOT / "tasks_private" / "holdout" / "rotation-metadata.json")
+            shadow_fp = next(
+                p["fingerprint_sha256"]
+                for p in rotation["packs"]
+                if p.get("role") == "shadow"
+            )
+            data = copy.deepcopy(load_json(EXAMPLE))
+            data["baseline_kind"] = "model_baseline"
+            data["harness_type"] = "no-tools-model"
+            data["split"] = "private-holdout"
+            data["public_task_count"] = 0
+            data["private_holdout_task_count"] = 24
+            data["leaderboard_eligible"] = True
+            data["private_pack_fingerprint_sha256"] = shadow_fp
+            data["comparability_key"] = comparability_key(data)
+            path = _write_submission(tmp_path, data)
+            result = validate_submission(path)
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any(
+                "only role=active packs are eligible" in error
+                for error in result["errors"]
+            ),
+            result,
+        )
+
+    def test_non_eligible_private_holdout_without_fingerprint_warns_only(self) -> None:
+        """A non-leaderboard-eligible private-holdout submission
+        (i.e. legacy evidence row) is allowed to omit the
+        fingerprint; the validator emits a warning, not a hard
+        error.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            data = copy.deepcopy(load_json(EXAMPLE))
+            data["baseline_kind"] = "model_baseline"
+            data["harness_type"] = "no-tools-model"
+            data["split"] = "private-holdout"
+            data["public_task_count"] = 0
+            data["private_holdout_task_count"] = 24
+            data["leaderboard_eligible"] = False
+            data.pop("private_pack_fingerprint_sha256", None)
+            data["comparability_key"] = comparability_key(data)
+            path = _write_submission(tmp_path, data)
+            result = validate_submission(path)
+        self.assertTrue(
+            any(
+                "private_pack_fingerprint_sha256" in warning
+                and "non-leaderboard-eligible legacy evidence" in warning
+                for warning in result["warnings"]
+            ),
+            result,
+        )
+        self.assertFalse(
+            any(
+                "must declare private_pack_fingerprint_sha256" in error
+                for error in result["errors"]
+            ),
+            result,
+        )
 
 
 if __name__ == "__main__":

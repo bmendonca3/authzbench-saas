@@ -38,6 +38,7 @@
   "median_duration_seconds": null,
   "model": "claude-haiku-4.5",
   "private_holdout_task_count": 24,
+  "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
   "public_task_count": 0,
   "repeat_evidence": {
     "aggregation": "primary_run",

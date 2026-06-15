@@ -67,6 +67,19 @@ STEPS: tuple[dict[str, Any], ...] = (
         "description": "Harbor non-claim test",
         "command": ["python3", "-m", "pytest", "tests/test_harbor_claim_boundary.py", "-q"],
     },
+    {
+        "id": "scorer_adversarial",
+        "description": "Adversarial scorer test count (objective-3 reachability gate)",
+        "command": [
+            "python3",
+            "-m",
+            "pytest",
+            "tests/test_scorer_adversarial_submissions.py",
+            "-q",
+            "--collect-only",
+            "-q",
+        ],
+    },
 )
 
 
@@ -142,13 +155,17 @@ def main() -> int:
     if args.json:
         print(json.dumps(summary, indent=2, sort_keys=True))
     else:
+        try:
+            output_label = str(args.output.relative_to(root))
+        except ValueError:
+            output_label = str(args.output)
         if overall_passed:
             print(
-                f"reproduction ok: {summary['passed_step_count']}/{summary['step_count']} steps passed; summary at {args.output.relative_to(root)}"
+                f"reproduction ok: {summary['passed_step_count']}/{summary['step_count']} steps passed; summary at {output_label}"
             )
         else:
             print(
-                f"reproduction FAILED: {summary['passed_step_count']}/{summary['step_count']} steps passed; summary at {args.output.relative_to(root)}",
+                f"reproduction FAILED: {summary['passed_step_count']}/{summary['step_count']} steps passed; summary at {output_label}",
                 file=sys.stderr,
             )
             for step in step_results:
