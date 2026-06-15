@@ -345,6 +345,21 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/index.md",
     "scripts/check_v1_overclaim.py",
     "tests/test_v1_overclaim_check.py",
+    # Round 2 Option B / Option A follow-up: test-infrastructure CI-only
+    # skip guards for absent gitignored rotation metadata. These files
+    # received a new setUp method that calls self.skipTest(...) when
+    # tasks_private/holdout/rotation-metadata.json is missing (the file
+    # is gitignored and not in public Git, so CI checkouts always lack
+    # it; local runs are unaffected). The test bodies, assertions,
+    # fixtures, scoring, and benchmark source are unchanged. They are
+    # non-benchmark-source test-infrastructure, same justification as
+    # the 14 other tests/test_*.py files already allow-listed above
+    # (e.g. tests/test_claim_boundary_check.py,
+    # tests/test_harbor_adapter_build.py,
+    # tests/test_submission_bundle_validator.py).
+    "tests/test_build_leaderboard_submission.py",
+    "tests/test_leaderboard_submission.py",
+    "tests/test_v0_release_validator.py",
 }
 POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_sources/",
