@@ -2678,9 +2678,26 @@ def _print_readiness_summary(
     unmet = int(result.get("unmet_gate_count", 0))
     total = passed + unmet
     v1_ready = bool(result.get("v1_ready", False))
+    failing_ids = [
+        gate.get("id")
+        for gate in result.get("gates", [])
+        if isinstance(gate, dict) and not gate.get("passed")
+    ]
     parts = [f"{passed}/{total} internal gates pass", f"v1_ready: {str(v1_ready).lower()}"]
-    if not v1_ready and show_release_hint:
-        parts.append("run with --release-evidence <path> to re-check the final release gate")
+    if not v1_ready:
+        # Always name the failing gate(s) so the headline is grep-friendly
+        # for reviewers who only read stderr. When the only failure is the
+        # release-evidence gate, name it literally so the line is
+        # self-explanatory in CI logs without forcing a JSON parse.
+        if failing_ids:
+            parts.append("failing=" + ",".join(failing_ids))
+        if show_release_hint:
+            if "final_release_candidate_validation" in failing_ids:
+                parts.append(
+                    "run with --release-evidence <path> to clear final_release_candidate_validation"
+                )
+            else:
+                parts.append("run with --release-evidence <path> to re-check the final release gate")
     print("; ".join(parts), file=sys.stderr)
 
 
