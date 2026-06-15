@@ -28,3 +28,12 @@ paper/ieee-sp/*.pdf
 .env
 .env.*
 *.env
+
+# Local strict v1 release-evidence file. The v0.0 release evidence registry
+# (docs/release-evidence.json, schema release-evidence-v1) is a tracked public-
+# safe record of the v0.0 tag and must NOT be ignored. The v1 strict release
+# evidence file lives outside public Git per the completion gate in docs/goal.md
+# and the Release Evidence Validation section in docs/v1-readiness-checklist.md;
+# a future local filename would conventionally be docs/release-evidence.v1.json
+# (or similar) and is ignored here as a guardrail.
+docs/release-evidence.v1.json

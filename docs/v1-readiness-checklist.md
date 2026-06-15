@@ -183,6 +183,17 @@ gate fails closed with `v1_ready: false`. Do not infer or synthesize
 external release evidence from public artifacts; the validator already
 fails closed with a reviewer-readable diagnostic in that case.
 
+For a one-line reviewer-readable summary of the headline verdict, add
+`--summary` (default invocation is silent on stderr so test contracts
+that pipe the JSON dump stay unchanged):
+
+```bash
+python3 scripts/validate_v1_readiness.py --summary
+```
+
+The summary stderr line names the failing gate(s) when `v1_ready: false`,
+so the headline verdict is grep-friendly in CI logs without parsing JSON.
+
 ## v1 Startup Exit Criteria
 
 The v1 startup slice is complete when:
