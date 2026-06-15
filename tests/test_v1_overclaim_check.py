@@ -91,6 +91,25 @@ class V1OverclaimCheckTests(unittest.TestCase):
             self.assertEqual(run["returncode"], 0, msg=run["stderr"])
             self.assertTrue(run["result"]["passed"])
 
+    def test_python_literal_with_type_annotation_does_not_flag(self) -> None:
+        # Regression test: the detector must skip a tuple/list/dict whose
+        # assignment carries a type annotation, e.g.
+        # `POSITIVE_V1_OVERCLAIM_PHRASES: tuple[str, ...] = (...)`.
+        # Without this, the detector flags its own phrase list.
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            (cwd / "scripts").mkdir()
+            (cwd / "scripts" / "detect_overclaims.py").write_text(
+                "POSITIVE_V1_OVERCLAIM_PHRASES: tuple[str, ...] = (\n"
+                '    "externally reviewed",\n'
+                '    "hosted leaderboard ready",\n'
+                ")\n"
+            )
+            _init_temp_git_repo(cwd)
+            run = _run_check(cwd)
+            self.assertEqual(run["returncode"], 0, msg=run["stderr"])
+            self.assertTrue(run["result"]["passed"])
+
     def test_positive_claim_is_flagged(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cwd = Path(tmp)
