@@ -336,6 +336,15 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
     "docs/goal-external-validation-coverage.md",
+    # Round 1 / 1.5 claim-boundary doc tighten + reviewer-readable readiness
+    # summary work. CHANGELOG.md and docs/index.md are CHANGELOG and label
+    # text only; scripts/check_v1_overclaim.py and its test are the new
+    # positive-claim over-claim checker. None change benchmark source, tasks,
+    # scoring policy, or baseline substance.
+    "CHANGELOG.md",
+    "docs/index.md",
+    "scripts/check_v1_overclaim.py",
+    "tests/test_v1_overclaim_check.py",
 }
 POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_sources/",
