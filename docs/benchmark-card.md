@@ -9,10 +9,15 @@ AuthZBench-SaaS
 
 ## Current Status
 
+v1 internal release-candidate infrastructure validated.
+
 Released v0.0 benchmark artifact. The current split is useful for local
 integration, methodology review, and early baseline comparison, and the strict
 maintainer gate has release evidence. It is not a hosted leaderboard or
 community-scale benchmark.
+
+v1 does not claim external review, hosted public leaderboard readiness, SaaS-provider validation, or platform acceptance. Those are tracked as v2 gates
+in [`docs/v2-external-validation-roadmap.md`](v2-external-validation-roadmap.md).
 
 ## What It Measures
 

@@ -9,6 +9,8 @@ The reference task is
 the same task used in [`inspect-one-task.md`](inspect-one-task.md). It is a
 single-step BOLA where a `beta_member` reads an `alpha` tenant task.
 
+v1 internal release-candidate infrastructure validated. v1 does not claim external review, hosted public leaderboard readiness, SaaS-provider validation, or platform acceptance. See [`docs/current-claim-boundary.md`](current-claim-boundary.md) for the canonical claim ledger and the v2 gate roadmap.
+
 ## Reference task fields used below
 
 ```json

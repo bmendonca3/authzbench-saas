@@ -2662,6 +2662,28 @@ def validate_v1_readiness(
     }
 
 
+def _print_readiness_summary(
+    result: dict[str, Any],
+    public_view: bool,
+    show_release_hint: bool,
+) -> None:
+    """Print a reviewer-readable one-line summary to stderr.
+
+    The full JSON is dumped to stdout. This line makes the headline
+    verdict easy to spot in CI logs and avoids forcing reviewers to
+    parse JSON to see whether v1 is ready. The summary is intentionally
+    additive: it never relaxes a gate or alters the JSON output.
+    """
+    passed = int(result.get("passed_gate_count", 0))
+    unmet = int(result.get("unmet_gate_count", 0))
+    total = passed + unmet
+    v1_ready = bool(result.get("v1_ready", False))
+    parts = [f"{passed}/{total} internal gates pass", f"v1_ready: {str(v1_ready).lower()}"]
+    if not v1_ready and show_release_hint:
+        parts.append("run with --release-evidence <path> to re-check the final release gate")
+    print("; ".join(parts), file=sys.stderr)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate AuthZBench-SaaS v1/community readiness gates.")
     parser.add_argument(
@@ -2684,10 +2706,17 @@ def main() -> int:
         type=Path,
         help="Require the rendered readiness JSON to match this expected-output fixture exactly.",
     )
+    parser.add_argument(
+        "--summary",
+        action="store_true",
+        help="Print a one-line reviewer-readable summary to stderr in addition to the JSON dump on stdout. Off by default so test harnesses and CI see only the JSON contract on stderr.",
+    )
     args = parser.parse_args()
     if args.public_view and args.release_evidence is not None:
         parser.error("--public-view cannot be combined with --release-evidence")
     result = validate_v1_readiness(args.release_evidence, public_view=args.public_view)
+    if getattr(args, "summary", False):
+        _print_readiness_summary(result, public_view=args.public_view, show_release_hint=not args.public_view)
     print(dump_json(result))
     if args.expected_output is not None:
         expected_path = args.expected_output if args.expected_output.is_absolute() else ROOT / args.expected_output

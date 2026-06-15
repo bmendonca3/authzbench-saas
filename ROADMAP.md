@@ -210,10 +210,9 @@ Next improvements:
 
 ## Milestone 5: v1 Internal Release — Complete
 
-Status: complete. All v1 internal release gates are met; external validation deferred to v2.
+Status: complete. v1 internal release-candidate infrastructure validated; external validation deferred to v2.
 
-v1 does not claim external review, hosted public leaderboard readiness,
-SaaS-provider validation, or platform acceptance.
+v1 does not claim external review, hosted public leaderboard readiness, SaaS-provider validation, or platform acceptance.
 Those are tracked as v2 gates in
 `docs/v2-external-validation-roadmap.md`.
 
