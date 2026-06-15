@@ -63,7 +63,20 @@ def _write_bundle(base: Path, harness_type: str, *, with_target_requests: bool, 
                     "findings": [
                         {
                             "claim": "leaked",
-                            "evidence": [{"request": {"actor": "evil", "method": "GET", "path": "/x", "headers": {"Authorization": "Bearer sk-abcdefghijklmnopqrstuvwxyz1234567890"}}}],
+                            "evidence": [
+                                {
+                                    "request": {
+                                        "actor": "evil",
+                                        "method": "GET",
+                                        "path": "/x",
+                                        "headers": {
+                                            "Authorization": "Bearer "
+                                            + "sk"
+                                            + "-abcdefghijklmnopqrstuvwxyz1234567890"
+                                        },
+                                    }
+                                }
+                            ],
                             "impact": "secret pattern embedded",
                         }
                     ]

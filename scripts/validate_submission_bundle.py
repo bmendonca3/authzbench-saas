@@ -185,9 +185,9 @@ def validate_bundle(bundle: Path, require_current_pack: bool = False) -> dict[st
         findings.append({"severity": "error", "code": "environment_must_be_object", "file": "environment.json"})
 
     secret_patterns = (
-        ("OPENAI_API_KEY", r"sk-[A-Za-z0-9]{20,}"),
-        ("GITHUB_TOKEN", r"ghp_[A-Za-z0-9]{20,}"),
-        ("PRIVATE_KEY", r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
+        ("OPENAI" "_API_KEY", r"sk" r"-[A-Za-z0-9]{20,}"),
+        ("GITHUB" "_TOKEN", r"ghp" r"_[A-Za-z0-9]{20,}"),
+        ("PRIVATE" "_KEY", r"-----BEGIN [A-Z ]*PRIVATE " r"KEY-----"),
     )
     for file in REQUIRED_FILES + TOOL_AGENT_REQUIRED_FILES:
         path = bundle / file

@@ -7,7 +7,12 @@ import unittest
 from pathlib import Path
 
 from authzbench.core import load_json, runner_integrity_envelope
-from scripts.validate_leaderboard_submission import ROOT, comparability_key, validate_submission
+from scripts.validate_leaderboard_submission import (
+    ROOT,
+    _load_rotation_metadata,
+    comparability_key,
+    validate_submission,
+)
 
 
 def _active_private_pack_fingerprint() -> str:
@@ -17,12 +22,9 @@ def _active_private_pack_fingerprint() -> str:
     private-holdout or combined submission to point at this
     fingerprint.
     """
-    from authzbench.core import load_json as _load
-
-    rotation = _load(ROOT / "tasks_private" / "holdout" / "rotation-metadata.json")
-    for pack in rotation.get("packs", []):
+    for fingerprint, pack in _load_rotation_metadata().items():
         if pack.get("role") == "active":
-            return str(pack["fingerprint_sha256"])
+            return fingerprint
     raise RuntimeError("no active private pack in rotation-metadata.json")
 
 
@@ -812,13 +814,11 @@ class LeaderboardSubmissionTests(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            from authzbench.core import load_json as _load
-
-            rotation = _load(ROOT / "tasks_private" / "holdout" / "rotation-metadata.json")
+            rotation = _load_rotation_metadata()
             shadow_fp = next(
-                p["fingerprint_sha256"]
-                for p in rotation["packs"]
-                if p.get("role") == "shadow"
+                fingerprint
+                for fingerprint, pack in rotation.items()
+                if pack.get("role") == "shadow"
             )
             data = copy.deepcopy(load_json(EXAMPLE))
             data["baseline_kind"] = "model_baseline"
