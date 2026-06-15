@@ -206,7 +206,7 @@ def _python_literal_line_indices(lines: list[str]) -> set[int]:
         if not in_block:
             # Look for `NAME = (` / `NAME = [` / `NAME = {` opener, with the
             # opener on this line or the previous non-blank line.
-            if re.match(r"^[A-Za-z_][A-Za-z0-9_.]*\s*=\s*[({\[]", stripped):
+            if re.match(r"^[A-Za-z_][A-Za-z0-9_.]*(\s*:\s*[^=]+)?\s*=\s*[({\[]", stripped):
                 in_block = True
                 depth = sum(line.count(c) for c in opens) - sum(line.count(c) for c in closes)
                 if depth > 0:
