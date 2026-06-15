@@ -23,8 +23,9 @@ the right file without opening the full repository.
   public-view v1 readiness fixture. `v1_ready: true` here is scoped to the
   internal/public-view readiness gates only; it does not claim external
   acceptance.
-- [`artifact/release-evidence.json`](release-evidence.json): tracked release
-  evidence registry.
+- [`docs/release-evidence.json`](release-evidence.json): tracked release
+  evidence registry (v0.0 schema; the v1 strict release-evidence file lives
+  outside public Git per the completion gate in [`docs/goal.md`](goal.md)).
 
 ## Task Quality
 
