@@ -132,3 +132,42 @@
 - Added sectional panel-review artifacts and disposition for the v0 roadmap.
 - Added `control_type` to public secure-control manifests and runner summaries
   so denial controls and authorized-allow controls are tracked separately.
+
+## Round 1 (consult loop, branch round-1-claim-boundary-doc-tighten, PR #25)
+
+- Public doc clarity pass on the v1 internal release boundary:
+  `README.md` (new "Release Evidence Validation" section + canonical
+  status phrases in `## v1 Status`), `ROADMAP.md` (Milestone 5 status),
+  `docs/benchmark-card.md` (Current Status), `docs/scoring-examples.md`
+  (header note), and `docs/v1-readiness-checklist.md` (new "Release
+  Evidence Validation" section making the `--release-evidence`
+  invocation explicit).
+- `scripts/validate_v1_readiness.py`: opt-in `--summary` flag whose
+  one-line stderr summary names the failing gate(s) when `v1_ready:
+  false`. The full invocation is
+  `python3 scripts/validate_v1_readiness.py --summary`. Default
+  invocation is unchanged (silent stderr, JSON on stdout) so existing
+  test contracts in `tests/test_v1_readiness_validator.py` (88/88 OK)
+  still pass.
+
+## Round 1.5 amendment (consult loop, PR #25)
+
+- `scripts/validate_v1_readiness.py`: the `--summary` stderr line now
+  literally includes the substring `final_release_candidate_validation`
+  when that is the only failing gate, so the headline verdict is
+  grep-friendly in CI logs without parsing JSON. Additive and
+  non-gate-changing.
+- `scripts/check_v1_overclaim.py` (new): a positive-claim CI check
+  that enforces "no v1 status over-claim" instead of the blunt
+  literal-phrase grep from Round 1. Six phrases (`externally
+  reviewed`, `hosted leaderboard ready`, `platform accepted`,
+  `SaaS-provider validated`, `third-party endorsed`, `v1 external
+  readiness`), with allow contexts for backticks, table cells,
+  v1.1/v2 milestone markers, negation / disclaimer hints (shared
+  vocabulary with `scripts/check_claim_boundary.py`), paragraph-
+  level negation windows, and multi-line Python source-level
+  literals. Wired into `scripts/validate_public.py` and
+  cross-referenced from `docs/v1-readiness-checklist.md`.
+- `tests/test_v1_overclaim_check.py` (new): 6/6 OK, including a
+  regression test for type-annotated Python literal openers
+  (e.g. `POSITIVE_V1_OVERCLAIM_PHRASES: tuple[str, ...] = (...)`).
