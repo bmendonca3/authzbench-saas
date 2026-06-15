@@ -335,6 +335,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
+    "docs/goal-external-validation-coverage.md",
 }
 POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_sources/",
