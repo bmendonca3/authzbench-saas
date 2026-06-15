@@ -2614,11 +2614,15 @@ def validate_v1_readiness(
         scale_unmet,
     )
 
-    paper_allowed_paths = (
-        PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS
-        if release_evidence_path is None
-        else POST_SOURCE_EVIDENCE_ONLY_PATHS
-    )
+    # Always use the paper-readiness-specific allow-list. The previous
+    # behavior (fall back to the narrower POST_SOURCE_EVIDENCE_ONLY_PATHS
+    # in release-evidence mode) was a validator bug: it made the
+    # post-source allow-list added in the round 1 / 1.5 work
+    # (CHANGELOG.md, docs/index.md, scripts/check_v1_overclaim.py,
+    # tests/test_v1_overclaim_check.py) silently ignored exactly when
+    # the user is supplying release evidence. See round 2 amendment in
+    # docs/release-evidence-tracking.md.
+    paper_allowed_paths = PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS
     paper_result = _validate_paper_readiness_evidence(
         benchmark_source_sha=_benchmark_source_sha_from_release_evidence(release_evidence_path),
         release_sha=target_sha,

@@ -14,7 +14,7 @@
         "artifact/expected-output/v1-readiness-public-view.json"
       ],
       "description": "Public-view v1 readiness fixture match",
-      "elapsed_seconds": 0.268,
+      "elapsed_seconds": 0.248,
       "id": "v1_readiness",
       "passed": true,
       "returncode": 0,
@@ -27,7 +27,7 @@
         "scripts/check_claim_boundary.py"
       ],
       "description": "Claim-boundary forbidden-phrase CI check",
-      "elapsed_seconds": 0.249,
+      "elapsed_seconds": 0.246,
       "id": "claim_boundary",
       "passed": true,
       "returncode": 0,
@@ -41,7 +41,7 @@
         "--check"
       ],
       "description": "Task oracle audit (schema gate)",
-      "elapsed_seconds": 0.044,
+      "elapsed_seconds": 0.045,
       "id": "task_oracle_audit",
       "passed": true,
       "returncode": 0,
@@ -54,7 +54,7 @@
         "scripts/generate_task_taxonomy.py"
       ],
       "description": "Task taxonomy report",
-      "elapsed_seconds": 0.045,
+      "elapsed_seconds": 0.044,
       "id": "task_taxonomy",
       "passed": true,
       "returncode": 0,
@@ -68,7 +68,7 @@
         "--require-current-public"
       ],
       "description": "Baseline variance and confidence",
-      "elapsed_seconds": 0.063,
+      "elapsed_seconds": 0.061,
       "id": "baseline_variance",
       "passed": true,
       "returncode": 0,
@@ -84,7 +84,7 @@
         "-q"
       ],
       "description": "Harbor non-claim test",
-      "elapsed_seconds": 0.346,
+      "elapsed_seconds": 0.311,
       "id": "harbor_claim_boundary",
       "passed": true,
       "returncode": 0,
@@ -102,7 +102,7 @@
         "-q"
       ],
       "description": "Adversarial scorer test count (objective-3 reachability gate)",
-      "elapsed_seconds": 0.224,
+      "elapsed_seconds": 0.206,
       "id": "scorer_adversarial",
       "passed": true,
       "returncode": 0,

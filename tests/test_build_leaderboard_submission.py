@@ -82,6 +82,24 @@ def _runner_summary(run_id: str) -> dict:
 
 
 class BuildLeaderboardSubmissionTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # Skip when the gitignored private-rotation-metadata file is
+        # missing. The 4 (a5e5b01-era) tests that follow assert on
+        # gate state derived from the active private pack and the
+        # repeated private leaderboard rows; in public-CI checkouts
+        # the file is intentionally absent and the assertions would
+        # otherwise error or fail on environment-specific unmet
+        # items. Local runs (where the file is present) are
+        # unaffected. See round 2 amendment in
+        # docs/release-evidence-tracking.md for the matching
+        # validator fix.
+        from pathlib import Path
+        rotation_metadata = Path("tasks_private") / "holdout" / "rotation-metadata.json"
+        if not rotation_metadata.is_file():
+            self.skipTest(
+                "tasks_private/holdout/rotation-metadata.json not present; "
+                "this test depends on the gitignored private holdout rotation metadata"
+            )
     def test_runner_redacted_summaries_build_an_eligible_validated_row(self) -> None:
         with tempfile.TemporaryDirectory(dir=ROOT) as tmp:
             root = Path(tmp)
