@@ -68,7 +68,7 @@ Avoid:
 - `hosted leaderboard-ready`
 - `validated model benchmark`
 - `v1/community-scale benchmark`
-- `v1 release-ready`
+- `v1 release-ready` (renamed: `externally validated v1 release` in the canonical claim table)
 - `production vulnerability discovery benchmark`
 - `private holdouts are publicly reproducible`
 - `public-split scores are final rankings`

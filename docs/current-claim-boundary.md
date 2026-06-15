@@ -58,7 +58,7 @@ has been replaced by two more honest fields:
 | Hosted public leaderboard | Not done | `docs/v2-external-validation-roadmap.md`, `artifact/hosted-submission-execution-runbook.json` (runbook only) | "hosted leaderboard-ready", "hosted leaderboard operation" |
 | Harbor / Kaggle / other platform acceptance | Not done | `artifact/harbor-adapter-readiness-blockers.json`, the `harbor_execution_verified=False` evidence line in the public-view fixture | "Harbor accepted", "Harbor endorsed", "Kaggle accepted" |
 | Third-party submissions | Not done | `docs/v1-community-submission-governance.md` (governance only) | "open for third-party submissions", "community submission open" |
-| v1 release-ready | Not done | the v1.0-internal cut exists, but the public-view and release-candidate evidence are not externally validated | "v1 release-ready", "v1.0 released" |
+| externally validated v1 release | Not done | the v1.0-internal cut exists, but the public-view and release-candidate evidence are not externally validated | "v1 release-ready", "v1.0 released", "externally validated v1 release" |
 
 ## How to use this table
 
