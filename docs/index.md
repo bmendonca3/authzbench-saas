@@ -6,17 +6,11 @@ Welcome to the AuthZBench-SaaS documentation. This index maps all public-safe do
 
 ## 🔍 I am a Host Reviewer / Evaluator
 If you are evaluating AuthZBench-SaaS for a Kaggle or Kaggle-like evaluation pilot, start with these host-facing resources:
-* **[Host Review Package](host-review-package.md)**: The central entrypoint for the host packet, questions, and scopes.
-* **[Host Reproducibility Matrix](host-reproducibility-matrix.md)**: Verification statuses, commands, and CI reference logs.
-* **[Kaggle Hosting Model Options](kaggle-hosting-model.md)**: Proposals for data custody, display policy, and evaluation metrics.
-* **[One-Page Benchmark Summary](host-facing-one-page-summary.md)**: A high-level overview of the benchmark's core concepts.
-* **[Host Versioning Note](host-packet-versioning.md)**: Reference hashes, citation formats, and tag policies.
-* **[Host Walkthrough Transcript](host-review-walkthrough-transcript.md)**: Walkthrough script of exact command execution and verification.
-* **[Host Operations Runbook](host-private-leakage-response.md)**: Operational protocols for rotating holdouts and leakage response.
-* **[Evaluation for Hosts](evaluation-for-hosts.md)**: Details on metrics, rewards, and scoring tiers.
-* **[Solution-File Contract](solution-file-contract.md)**: Schema contract for the host-side private solution CSV.
-* **[Privacy and Holdout Custody](privacy-and-holdout-custody.md)**: Defining the boundaries of public-safe and host-only files.
-* **[Host Presentation Checklist](kaggle-presentation-todo.md)**: Status of prep tasks and open host decisions.
+* **[Host Review Package](host/host-review-package.md)**: The central entrypoint for the host packet, questions, and scopes.
+* **[Host Status & Reproducibility Matrix](host/host-status-and-reproducibility.md)**: Live status, reproducibility matrix, and versioning.
+* **[Hosting Model Options](host/hosting-model.md)**: Decisions on data custody, metric details, solution-file contracts, and display policies.
+* **[Host Operations Runbook](host/host-operations-runbook.md)**: Leakage response protocols, privacy boundaries, and rotation guidelines.
+* **[Host Walkthrough Transcript](host/host-review-walkthrough.md)**: Walkthrough script of validator execution.
 
 *Note: Kaggle integration templates (such as rules, FAQ, and drafts) live in [platform/kaggle/](../platform/kaggle/README.md).*
 
