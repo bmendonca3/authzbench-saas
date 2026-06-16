@@ -3,6 +3,17 @@
     "api_tokens"
   ],
   "app": "api_tokens",
+  "boundary_aliases": {
+    "attacker_actor": [
+      "meridian_read_token"
+    ],
+    "required_scope": [
+      "secrets:read"
+    ],
+    "victim_tenant": [
+      "helio"
+    ]
+  },
   "controls": [
     {
       "actor": "meridian_read_token",

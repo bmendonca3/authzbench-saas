@@ -25,7 +25,8 @@ class HarborIntegrationRunbookTests(unittest.TestCase):
             "findings: []",
             "comparability key",
             "private-pack fingerprint",
-            "not yet contain a verified Harbor adapter",
+            "Repo-side adapter compatibility",
+            "python3 -m authzbench_harbor.cli build",
         ]
         missing = [term for term in required_terms if term not in text]
         self.assertEqual(missing, [])
@@ -42,8 +43,8 @@ class HarborIntegrationRunbookTests(unittest.TestCase):
             "appointments/" + "schedules",
         ]
         self.assertEqual([term for term in disallowed if term in lower], [])
-        self.assertIn("not claim Harbor hosted execution", text)
-        self.assertIn("does not yet contain a verified Harbor adapter", text)
+        self.assertIn("does not claim Harbor platform acceptance", text)
+        self.assertIn("are not claimed", text)
 
 
 if __name__ == "__main__":

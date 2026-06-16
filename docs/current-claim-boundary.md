@@ -12,7 +12,7 @@ updated first, and the linked docs are updated to match.
 ## Top-level interpretation note
 
 `v1_ready: true` in
-[`artifact/expected-output/v1-readiness-public-view.json`](artifact/expected-output/v1-readiness-public-view.json)
+[`artifact/expected-output/v1-readiness-public-view.json`](../artifact/expected-output/v1-readiness-public-view.json)
 is scoped to the **internal / public-view** readiness gates only. It is the
 output of the ten internal gates listed in
 [`docs/v1-readiness-checklist.md`](v1-readiness-checklist.md). It does
@@ -45,7 +45,7 @@ has been replaced by two more honest fields:
 | --- | --- | --- | --- |
 | `v1.0-internal` complete | Supported | `docs/releases/v1.0-internal.md`, the ten internal gates listed in `docs/v1-readiness-checklist.md`, and `artifact/expected-output/v1-readiness-public-view.json` | "community benchmark", "externally validated benchmark", "leaderboard-grade benchmark" |
 | 60 public tasks | Supported | `tasks/` (6 apps × 10 tasks), `docs/task-quality-matrix.md`, the v1-prep public split | "leaderboard-grade public split" |
-| 48 private holdout tasks | Supported by fingerprint / count | `tasks_private/holdout/rotation-metadata.json`, `artifact/private-holdout-active-public-summary.json`, the `validated_private_holdout_task_count=48` evidence line in the public-view fixture | "publicly reproducible private holdouts", "open private holdout task list" |
+| 48 private holdout tasks | Supported by fingerprint / count | Maintainer-only rotation metadata, summarized by `artifact/private-holdout-active-public-summary.json`, `artifact/private-holdout-shadow-public-summary.json`, and public-view readiness evidence | "publicly reproducible private holdouts", "open private holdout task list" |
 | Local Harbor adapter path | Supported | `authzbench_harbor/`, `docs/harbor-integration-runbook.md`, `artifact/harbor-adapter-smoke.json`, the parity methodology versioning evidence | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready" |
 | Local / containerized submission smoke | Supported | `artifact/submission-runner-smoke.json`, `artifact/hosted-submission-execution-runbook.json`, the `local_or_containerized_submission_smoke` gate | "hosted leaderboard", "hosted submission operation" |
 | Deterministic backend-replay scorer | Supported | `authzbench/scorer/`, `docs/score-policy.md`, `docs/score-stability-policy.md` | "human-judged scoring", "model-graded scoring" |

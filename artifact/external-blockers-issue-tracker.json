@@ -1,0 +1,80 @@
+{
+  "schema_version": "external-blockers-issue-tracker-v1",
+  "generated_at": "2026-06-16T16:46:00Z",
+  "generated_from_commit": "a85db03",
+  "public_claim_boundary": "This file tracks external blockers for GitHub issue creation. It does not claim resolution of any external dependency.",
+  "issues": [
+    {
+      "id": "EXT-001",
+      "title": "Kaggle Docker execution spec confirmation",
+      "labels": ["external-blocker", "kaggle", "harbor"],
+      "body": "Kaggle needs to confirm the expected container shape, metadata paths, artifact format, and scoring interface for AuthZBench-SaaS. Without this spec, we cannot validate that our Harbor adapter generates compliant containers.\n\nBlocked by: Kaggle/Google platform team\nRepo-side status: Harbor dataset skeleton builder is ready; adapter can be adjusted once spec is provided.\nReference: docs/kaggle-harbor-integration-brief.md",
+      "status": "draft",
+      "external_dependency": "Kaggle/Google"
+    },
+    {
+      "id": "EXT-002",
+      "title": "Kaggle platform acceptance decision",
+      "labels": ["external-blocker", "kaggle"],
+      "body": "Only Kaggle can accept, host, or endorse the benchmark. This issue tracks the platform acceptance decision.\n\nBlocked by: Kaggle/Google\nRepo-side status: Host-review package is ready for review. See docs/host-review-package.md and docs/current-status-for-kaggle.md.\nReference: docs/kaggle-hosting-model.md",
+      "status": "draft",
+      "external_dependency": "Kaggle/Google"
+    },
+    {
+      "id": "EXT-003",
+      "title": "Harbor platform publishing / official review",
+      "labels": ["external-blocker", "harbor"],
+      "body": "Local Harbor parity is verified (6/6 tasks, 100% match rate), but Harbor review/publishing/endorsement is external. This issue tracks the Harbor platform acceptance path.\n\nBlocked by: Harbor platform team\nRepo-side status: Local parity verified. See artifact/harbor-parity-experiment.json.\nReference: artifact/harbor-adapter-readiness-blockers.json (harbor_review_or_publish_path)",
+      "status": "draft",
+      "external_dependency": "Harbor platform"
+    },
+    {
+      "id": "EXT-004",
+      "title": "SaaS-provider / product-security validation",
+      "labels": ["external-blocker", "review"],
+      "body": "Requires actual SaaS or product-security reviewers to validate whether task scenarios reflect real authorization failures. Review packet is ready.\n\nBlocked by: External SaaS-provider / product-security reviewer\nRepo-side status: Review packet created at docs/reviews/saas-provider-review-packet.md.\nReference: docs/reviews/external-review-packet.md",
+      "status": "draft",
+      "external_dependency": "SaaS-provider / product-security reviewer"
+    },
+    {
+      "id": "EXT-005",
+      "title": "Independent AppSec external review",
+      "labels": ["external-blocker", "review"],
+      "body": "An independent AppSec reviewer needs to review task realism, oracle clarity, boundary validity, and false-positive controls. Review packet is ready.\n\nBlocked by: External AppSec reviewer\nRepo-side status: Review packet ready at docs/reviews/appsec-review-packet.md.\nReference: docs/reviews/external-review-packet.md",
+      "status": "draft",
+      "external_dependency": "External AppSec reviewer"
+    },
+    {
+      "id": "EXT-006",
+      "title": "Independent benchmark/evals methodology review",
+      "labels": ["external-blocker", "review"],
+      "body": "An independent evals researcher needs to review split design, scoring semantics, variance framing, and claim boundary. Review packet is ready.\n\nBlocked by: External evals reviewer\nRepo-side status: Review packet ready at docs/reviews/benchmark-methodology-review-packet.md.\nReference: docs/reviews/external-review-packet.md",
+      "status": "draft",
+      "external_dependency": "External evals reviewer"
+    },
+    {
+      "id": "EXT-007",
+      "title": "Independent agent/tooling review",
+      "labels": ["external-blocker", "review"],
+      "body": "An independent agent/tooling reviewer needs to review harness assumptions, tool access, correlation, and agent comparability. Review packet is ready.\n\nBlocked by: External agent/tooling reviewer\nRepo-side status: Review packet ready at docs/reviews/agent-tooling-review-packet.md.\nReference: docs/reviews/external-review-packet.md",
+      "status": "draft",
+      "external_dependency": "External agent/tooling reviewer"
+    },
+    {
+      "id": "EXT-008",
+      "title": "Hosted private holdout execution environment",
+      "labels": ["external-blocker", "kaggle", "private-holdout"],
+      "body": "Requires a host-controlled or maintainer-operated private runner environment to execute private holdout evaluation. Cannot be completed without platform infrastructure.\n\nBlocked by: Kaggle/Google or maintainer infrastructure\nRepo-side status: Private holdout design, custody protocol, and rotation policy are documented. See docs/private-holdout-lifecycle.md and docs/privacy-and-holdout-custody.md.",
+      "status": "draft",
+      "external_dependency": "Kaggle/Google or maintainer"
+    },
+    {
+      "id": "EXT-009",
+      "title": "Third-party participant submissions",
+      "labels": ["external-blocker", "kaggle"],
+      "body": "Requires platform operation and participant onboarding infrastructure. Cannot be completed without a hosted environment.\n\nBlocked by: Platform acceptance and hosted infrastructure\nRepo-side status: Submission schema, validators, and governance documented. See docs/v1-community-submission-governance.md.",
+      "status": "draft",
+      "external_dependency": "Kaggle/Google"
+    }
+  ]
+}

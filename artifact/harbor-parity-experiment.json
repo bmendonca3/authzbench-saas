@@ -1,39 +1,103 @@
 {
-  "blocked_until": [
-    "Harbor CLI/package is installed",
-    "scripts/run_harbor_parity_experiment.py completes a real Harbor run",
-    "matching native AuthZBench-SaaS run evidence exists for the same task ids and benchmark_source_sha",
-    "per-task reward maps are populated from real run artifacts",
-    "per_task_match_rate equals 1.0 within reward_tolerance"
-  ],
-  "evidence_status": "blocked",
-  "harbor_execution_verified": false,
-  "harbor_per_task_rewards": {},
-  "harbor_results": null,
-  "historical_backcompat_pointer": "artifact/historical/harbor-parity-experiment-aggregate-means.json",
+  "adapter_version": "0.1.0",
+  "evidence_status": "current",
+  "generated_at": "2026-06-16T16:26:17.302951Z",
+  "harbor_per_task_rewards": {
+    "tok_cross_tenant_secret_read": 0.0,
+    "tok_export_scope_bypass": 0.0,
+    "tok_export_token_reads_export_control": 1.0,
+    "tok_read_scope_updates_secret": 0.0,
+    "tok_secure_cross_tenant_secret_control": 1.0,
+    "tok_secure_export_scope_control": 1.0
+  },
+  "harbor_results": {
+    "harbor_run_id": "d277f128-0af1-4b48-8d01-3c7b509cda28",
+    "n_completed_trials": 6,
+    "n_errored_trials": 0,
+    "n_total_trials": 6,
+    "reward_mean": 0.5
+  },
+  "harbor_reward_mean": 0.5,
+  "harbor_version": "0.13.2",
+  "harness_lane": "no_tools",
   "limitations": [
     "Public smoke only",
     "No platform acceptance claimed",
     "No private task content published",
-    "Harbor CLI not installed at validation time; per-task pairing not run",
-    "parity_verified is intentionally false until a real Harbor run completes"
+    "Empty-findings baseline used for native scoring",
+    "Parity verified only via per_task_pairing across matching Harbor and native run artifacts; broader per-agent and per-model pairing remains a v2-deferred external-validation track."
   ],
-  "methodology_note": "This file is the current per_task_pairing contract for the parity experiment. Real per-task reward extraction is not yet available because the Harbor CLI is not installed. The historical aggregate-means run is preserved at the historical_backcompat_pointer path for back-compat; do not regenerate parity claims from that file.",
-  "native_authzbench_results": null,
-  "native_per_task_scores": {},
+  "methodology_note": "Generator-emitted parity evidence. New evidence uses per_task_pairing; aggregate_means is reserved for historical back-compat. Recompute parity_verified from per-task data only.",
+  "native_authzbench_results": {
+    "tok_cross_tenant_secret_read": {
+      "passed": false,
+      "score": 0.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_export_scope_bypass": {
+      "passed": false,
+      "score": 0.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_export_token_reads_export_control": {
+      "passed": true,
+      "score": 1.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_read_scope_updates_secret": {
+      "passed": false,
+      "score": 0.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_secure_cross_tenant_secret_control": {
+      "passed": true,
+      "score": 1.0,
+      "submission_shape": "empty_findings_baseline"
+    },
+    "tok_secure_export_scope_control": {
+      "passed": true,
+      "score": 1.0,
+      "submission_shape": "empty_findings_baseline"
+    }
+  },
+  "native_mean_score": 0.5,
+  "native_per_task_scores": {
+    "tok_cross_tenant_secret_read": 0.0,
+    "tok_export_scope_bypass": 0.0,
+    "tok_export_token_reads_export_control": 1.0,
+    "tok_read_scope_updates_secret": 0.0,
+    "tok_secure_cross_tenant_secret_control": 1.0,
+    "tok_secure_export_scope_control": 1.0
+  },
   "parity_match_threshold": 1.0,
   "parity_methodology": "per_task_pairing",
-  "parity_verified": false,
+  "parity_verified": true,
   "per_task_disagreements": [],
-  "per_task_match": {},
-  "per_task_match_count": 0,
-  "per_task_match_rate": null,
+  "per_task_match": {
+    "tok_cross_tenant_secret_read": true,
+    "tok_export_scope_bypass": true,
+    "tok_export_token_reads_export_control": true,
+    "tok_read_scope_updates_secret": true,
+    "tok_secure_cross_tenant_secret_control": true,
+    "tok_secure_export_scope_control": true
+  },
+  "per_task_match_count": 6,
+  "per_task_match_rate": 1.0,
   "private_artifacts_tracked": false,
   "public_claim_boundary": "This parity experiment evidence covers public tasks only. It does not claim Harbor platform acceptance, Kaggle acceptance, hosted public leaderboard readiness, SaaS-provider validation, external review, or third-party submissions.",
   "raw_harbor_jobs_tracked": false,
-  "redaction_status": "not_run",
+  "redaction_status": "passed",
+  "required_match_rate": 1.0,
+  "reward_parity_failures": [],
   "reward_tolerance": 1e-05,
   "schema_version": "harbor-parity-experiment-v1",
-  "task_count": 0,
-  "task_ids": []
+  "task_count": 6,
+  "task_ids": [
+    "tok_cross_tenant_secret_read",
+    "tok_export_scope_bypass",
+    "tok_export_token_reads_export_control",
+    "tok_read_scope_updates_secret",
+    "tok_secure_cross_tenant_secret_control",
+    "tok_secure_export_scope_control"
+  ]
 }

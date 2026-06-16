@@ -5,7 +5,7 @@
   "public_claim_boundary": "Template only; not Harbor adapter metadata evidence, not Harbor execution evidence, not parity evidence, and not v1 readiness.",
   "adapter_name": "authzbench-saas-harbor",
   "dataset_name": "authzbench-saas-public-skeleton",
-  "package_entrypoint": "uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>",
+  "package_entrypoint": "python3 -m authzbench_harbor.cli build --output-dir <generated-harbor-dataset-path>",
   "required_cli_flags": [
     "--output-dir",
     "--limit",
@@ -37,7 +37,7 @@
     "raw_private_artifacts_tracked": false
   },
   "required_before_real_metadata": [
-    "real Harbor adapter package exists in the expected src layout",
+    "real Harbor adapter package exists in the expected authzbench_harbor layout",
     "generated public dataset passes a local Harbor run",
     "adapter metadata is produced from the real adapter package",
     "public-safe privacy scan passes on generated adapter artifacts"

@@ -1,0 +1,12 @@
+name: Scoring Contract Change
+description: Propose a change to the evidence bundle schemas, CSV index columns, or scoring logic.
+title: "[Scoring Proposal]: "
+labels: ["scoring", "proposal"]
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed scoring or contract change
+      description: Describe the changes to the evaluation/evidence contract.
+    validations:
+      required: true

@@ -1,0 +1,17 @@
+name: Host Question
+description: Ask a question about hosting, private evaluation, or platform data boundaries.
+title: "[Question]: "
+labels: ["host-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use this template to ask questions about the host-review package, private holdout custody, or evaluation metrics.
+  - type: textarea
+    id: question
+    attributes:
+      label: What is your question?
+      description: Provide a clear and concise description of what you want to clarify.
+      placeholder: E.g., How should we manage private solution file rotation?
+    validations:
+      required: true

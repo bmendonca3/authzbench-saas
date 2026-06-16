@@ -120,10 +120,10 @@ that no longer matches the active pack are rejected at the
 - The `artifact/INDEX.md` quick-reference lists which row families
   fall under which tier.
 
-The maintainer does not publish the raw failed submission JSON
-without first redacting it. See
-[`docs/privacy-scan-rules.md`](privacy-scan-rules.md) for the
-redaction policy.
+- The maintainer does not publish the raw failed submission JSON
+  without first redacting it. See
+  [`docs/privacy-and-holdout-custody.md`](privacy-and-holdout-custody.md) for the
+  redaction policy.
 
 ## 11. See also
 

@@ -810,7 +810,7 @@ class LeaderboardSubmissionTests(unittest.TestCase):
             data["private_holdout_task_count"] = 24
             data["leaderboard_eligible"] = True
             data["private_pack_fingerprint_sha256"] = (
-                "0" * 64  # deliberately not a real fingerprint
+                "9" * 64  # deliberately not a real fingerprint
             )
             data["comparability_key"] = comparability_key(data)
             path = _write_submission(tmp_path, data)

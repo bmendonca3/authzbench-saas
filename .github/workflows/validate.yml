@@ -38,3 +38,35 @@ jobs:
 
       - name: Run public validation gates
         run: python scripts/validate_public.py --include-scripted-baseline --include-container-smoke
+
+  host-presentation:
+    name: Host presentation checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Show Python version
+        run: python --version
+
+      - name: Run host presentation validator
+        run: python scripts/validate_host_presentation.py
+
+      - name: Build host review bundle
+        run: python scripts/build_host_review_bundle.py --output dist/authzbench-saas-host-review --ref "${{ github.sha }}"
+
+      - name: Validate host review bundle
+        run: python scripts/validate_host_review_bundle.py --bundle-dir dist/authzbench-saas-host-review
+
+      - name: Upload host review bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: authzbench-saas-host-review
+          path: dist/authzbench-saas-host-review

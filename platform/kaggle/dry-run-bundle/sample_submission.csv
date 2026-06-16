@@ -1,0 +1,4 @@
+Id,finding_path,notes
+tok_cross_tenant_secret_read,submissions/tok_cross_tenant_secret_read/submission.json,Vulnerable task example
+tok_secure_cross_tenant_secret_control,submissions/tok_secure_cross_tenant_secret_control/submission.json,Denial control example
+sup_admin_reassignment_control,submissions/sup_admin_reassignment_control/submission.json,Authorized-allow control example

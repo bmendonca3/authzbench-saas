@@ -11,6 +11,10 @@ the right file without opening the full repository.
   use, and known limits.
 - [`docs/evidence-and-claims.md`](evidence-and-claims.md): current claim
   ledger and approved public framing.
+- [`docs/host-review-package.md`](host-review-package.md): Kaggle-like host
+  review entrypoint, package map, and non-claim boundary.
+- [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md):
+  presentation checklist and remaining host decisions.
 
 ## Release Evidence
 
@@ -88,6 +92,27 @@ artifact index and what each tracked artifact is allowed to prove.
   v2 validation lanes, deferred from v1.
 - [`docs/v1-community-submission-governance.md`](v1-community-submission-governance.md):
   submission governance specification (not a live submission pipeline claim).
+
+## Kaggle-Like Host Review
+
+- [`docs/host-review-package.md`](host-review-package.md): one-page host review route and artifact map.
+- [`docs/host-facing-one-page-summary.md`](host-facing-one-page-summary.md): host-facing one-page summary.
+- [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md): concrete host-presentation checklist status.
+- [`docs/kaggle-hosting-model.md`](kaggle-hosting-model.md): hosting models and proposed host-review path.
+- [`docs/evaluation-for-hosts.md`](evaluation-for-hosts.md): scoring and metric explanation.
+- [`docs/solution-file-contract.md`](solution-file-contract.md): public-safe solution-file schema.
+- [`docs/privacy-and-holdout-custody.md`](privacy-and-holdout-custody.md): public/private artifact boundary.
+- [`docs/host-reproducibility-matrix.md`](host-reproducibility-matrix.md): reproducibility matrix.
+- [`docs/host-baseline-summary.md`](host-baseline-summary.md): compact baseline summary.
+- [`docs/host-architecture.md`](host-architecture.md): Mermaid architecture flowchart.
+- [`docs/host-packet-versioning.md`](host-packet-versioning.md): host packet versioning note.
+- [`docs/host-private-leakage-response.md`](host-private-leakage-response.md): runbook for private leakage response.
+- [`docs/host-review-walkthrough-transcript.md`](host-review-walkthrough-transcript.md): walkthrough transcript for host reviewers.
+- [`platform/kaggle/README.md`](../platform/kaggle/README.md): Kaggle integration README.
+- [`platform/kaggle/rules-template.md`](../platform/kaggle/rules-template.md): draft rules template for host discussion.
+- [`platform/kaggle/competition-page-draft.md`](../platform/kaggle/competition-page-draft.md): competition page overview and timelines.
+- [`platform/kaggle/faq.md`](../platform/kaggle/faq.md): FAQ answering host-facing questions.
+- [`platform/kaggle/toy_solution_file.csv`](../platform/kaggle/toy_solution_file.csv): example host-side private solution file.
 
 ## Contributor And Reviewer
 

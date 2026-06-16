@@ -113,8 +113,8 @@ class HarborClaimBoundaryTests(unittest.TestCase):
         from authzbench.core import load_json
 
         blockers = load_json(ROOT / "artifact/harbor-adapter-readiness-blockers.json")
-        self.assertIn("ready_for_harbor_run", blockers)
-        self.assertFalse(blockers["ready_for_harbor_run"])
+        self.assertIn("ready_for_harbor_platform_review", blockers)
+        self.assertFalse(blockers["ready_for_harbor_platform_review"])
         self.assertIn("harbor_acceptance_claimed", blockers)
         self.assertFalse(blockers["harbor_acceptance_claimed"])
 

@@ -22,9 +22,7 @@ The benchmark focuses on a narrow, practical security question:
 > submission smoke only and explicitly sets
 > `hosted_leaderboard_operation_claimed: false`.
 
-This repository is a **released v0.0 benchmark artifact**. The strict maintainer
-gate has evidence, and the `v0.0` tag is public, but the project is not a hosted
-leaderboard and should not be called a community benchmark yet.
+Current repository state: the public v0.0 release tag exists; this branch packages the v1.0-internal internally validated benchmark artifact for Kaggle-like host review. It is not a hosted leaderboard, not externally validated, and not platform accepted.
 
 ## Why This Matters
 
@@ -207,22 +205,23 @@ part of the contamination-control design, not a missing file.
 
 ## For Reviewers
 
-Start here if you are reviewing the benchmark:
+General benchmark reviewers should start with:
 
 1. [`docs/index.md`](docs/index.md): full documentation map.
-2. [`README.md`](README.md): project overview, current status, and supported
-   claims.
-3. [`docs/benchmark-card.md`](docs/benchmark-card.md): benchmark scope and
-   intended use.
-4. [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): claim
-   boundaries.
-5. [`docs/artifact-index.md`](docs/artifact-index.md): what each tracked
-   artifact is allowed to prove.
-6. [`docs/validation-commands.md`](docs/validation-commands.md): public
-   validation set, maintainer strict set, and privacy check.
-7. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md):
-   bounded review questions.
+2. [`README.md`](README.md): project overview, current status, and supported claims.
+3. [`docs/benchmark-card.md`](docs/benchmark-card.md): benchmark scope and intended use.
+4. [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): claim boundaries.
+5. [`docs/artifact-index.md`](docs/artifact-index.md): what each tracked artifact is allowed to prove.
+6. [`docs/validation-commands.md`](docs/validation-commands.md): public validation set, maintainer strict set, and privacy check.
+7. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md): bounded review questions.
 8. [`docs/goal.md`](docs/goal.md): current v1-prep status and remaining gates.
+
+### Kaggle-Like Host Review
+
+If you are a benchmark host or platform reviewer, please start with [`docs/host-review-package.md`](docs/host-review-package.md). That package maps the repository's runner, scorer, public/private split, sample submission shape, and host decisions into one coherent review path without claiming platform acceptance or hosted leaderboard operation.
+
+> [!NOTE]
+> The Python package version (e.g. 0.0.1 in `pyproject.toml`) is a tooling/packaging version. Benchmark release labels such as `v1.0-internal` refer to benchmark evidence and task/scoring readiness, not the PyPI package version.
 
 ## What Is Included
 
@@ -647,7 +646,7 @@ It does not claim to be the definitive benchmark for SaaS
 security agents. The plan in
 [`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md)
 is what closes the gap between the credible v1 internal benchmark
-label and externally validated benchmark status.
+label and v2 validation status.
 
 ## License
 

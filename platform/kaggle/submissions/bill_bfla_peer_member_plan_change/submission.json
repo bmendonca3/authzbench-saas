@@ -1,0 +1,12 @@
+{
+  "schema_version": "authzbench-public-sample-submission-v1",
+  "findings": [
+    {
+      "claim": "billing_bfla_peer_member_plan_change_vulnerable",
+      "evidence": [],
+      "boundary": {},
+      "impact": "Shape-only example; not scored evidence."
+    }
+  ],
+  "leaderboard_eligible": false
+}

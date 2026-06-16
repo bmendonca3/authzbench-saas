@@ -1,0 +1,5 @@
+Id,Usage,expected_vulnerable,control_type,oracle_ref,task_pack_version
+tok_cross_tenant_secret_read,Public,true,,public-oracle:tok_cross_tenant_secret_read,public-2026-06
+tok_secure_cross_tenant_secret_control,Public,false,denial,public-oracle:tok_secure_cross_tenant_secret_control,public-2026-06
+sup_admin_reassignment_control,Public,false,authorized_allow,public-oracle:sup_admin_reassignment_control,public-2026-06
+private-row-placeholder,Private,false,denial,host-controlled,private-pack-version-only
