@@ -6,7 +6,7 @@
   "adapter_version": "0.1.0",
   "adapter_name": "authzbench-saas-harbor",
   "dataset_name": "authzbench-saas-public-skeleton",
-  "package_entrypoint": "uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>",
+  "package_entrypoint": "python3 -m authzbench_harbor.cli build --output-dir <generated-harbor-dataset-path>",
   "required_cli_flags": [
     "--output-dir",
     "--limit",

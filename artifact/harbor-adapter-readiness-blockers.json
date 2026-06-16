@@ -18,7 +18,7 @@
     "https://www.harborframework.com/docs/datasets",
     "https://www.harborframework.com/docs/run-jobs/run-evals"
   ],
-  "ready_for_harbor_run": false,
+  "ready_for_harbor_platform_review": false,
   "repo_side_progress": [
     {
       "claim_boundary": "Generates public Harbor-shaped task directories and a reference run config only; does not run Harbor.",
@@ -121,7 +121,6 @@
     {
       "evidence": "artifact/harbor-adapter-smoke.json; 6-task public Harbor run via uvx harbor; harbor_execution_verified=true; native scores computed via scorer bridge",
       "item": "local_harbor_run",
-      "missing_input": "multi-task submission-producing Harbor adapter run plus comparable original-run evidence",
       "required_evidence": [
         "Harbor CLI/package command available through uvx harbor or harbor on PATH",
         "uvx harbor run -c <generated-public-run-config> --yes command exits successfully with verification enabled, or an equivalent installed harbor command does",

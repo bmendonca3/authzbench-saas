@@ -97,7 +97,7 @@ These items cannot be completed without Kaggle/Harbor platform decisions:
 This brief does not claim:
 
 - Harbor platform acceptance or endorsement
-- Kaggle acceptance or hosted leaderboard operation
+- Kaggle acceptance or host-operated scoring/leaderboard service
 - External validation completion
 - SaaS-provider validation
 - Third-party submissions

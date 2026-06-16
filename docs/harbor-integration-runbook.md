@@ -1,8 +1,9 @@
 # Harbor Integration Runbook
 
-Status: public-safe v1-prep design and implementation target. This file does
-not claim Harbor hosted execution, Harbor acceptance, external review
-completion, hosted leaderboard readiness, or `v1` readiness.
+Status: public-safe v1-prep design and implementation target. This file
+records scoped repo-side Harbor local smoke/parity evidence, but does not claim
+Harbor platform acceptance, external review completion, hosted leaderboard
+readiness, or `v1` external readiness.
 
 ## Public Harbor Facts Used
 
@@ -31,9 +32,10 @@ Public references:
 
 ## Claim Boundary
 
-AuthZBench-SaaS can be shaped as a Harbor-compatible execution target, but this
-repository does not yet contain a verified Harbor adapter or a passing Harbor
-job. The current state is an implementation plan plus local validator hardening.
+Repo-side Harbor compatibility helpers, local Harbor smoke, and local per-task
+reward parity have been verified for the Harbor-compatible execution target
+(see the parity experiment section below). Harbor platform acceptance,
+publishing, and endorsement are external gates and are not claimed.
 
 Do not describe this as:
 
@@ -49,8 +51,10 @@ assert Harbor acceptance or any other external validation. See
 [`evidence-and-claims.md`](evidence-and-claims.md) and
 [`v2-external-validation-roadmap.md`](v2-external-validation-roadmap.md).
 
-The adapter remains blocked until exact Harbor SDK/package APIs are integrated
-and tested against a real Harbor local run.
+Repo-side adapter compatibility, local Harbor smoke, and local per-task parity
+are complete for the public package. The remaining Harbor-specific blockers are
+platform review, publishing, organization sharing, and any host-specific
+packaging requirements.
 
 ## Current Repo-Side Adapter State
 
@@ -58,10 +62,9 @@ This section describes the adapter surface that ships on `main` today,
 distinct from the future packaged SDK adapter target described in the
 sections below. The repository currently ships a `authzbench_harbor/`
 Python package that wraps the skeleton builder and exposes a CLI. The
-package is the *repo-side compatibility helper*, not the packaged Harbor
-SDK adapter that a future Harbor submission would require. The packaged
-SDK adapter target remains the `authzbench_saas_harbor` layout described
-in `artifact/harbor-adapter-contract.json`.
+package is the repo-side compatibility helper described in
+`artifact/harbor-adapter-contract.json`. A future Harbor-hosted publication may
+still require platform-specific wrapping, review, or sharing outside this repo.
 
 Package modules on `main`:
 
@@ -186,9 +189,9 @@ AuthZBench-SaaS scores, so the parity evidence now includes
 `per_task_disagreements`, and `parity_match_threshold`. The aggregate
 mean-only comparison is still present for back-compat.
 
-This section does not claim Harbor execution, Harbor acceptance,
-hosted leaderboard readiness, or v1 readiness. It only describes the
-public-safe adapter surface that exists on `main` today.
+This section claims only scoped local Harbor smoke/parity evidence for the
+public repo-side adapter surface. It does not claim Harbor platform acceptance,
+hosted leaderboard readiness, or v1 external-readiness evidence.
 
 ## Target Dataset Shape
 
@@ -241,20 +244,24 @@ The adapter should fail closed when required metadata is missing. It should not
 invent task outcomes, target-request coverage, private-pack fingerprints, or
 review evidence.
 
-Expected package/module surface for a real adapter checkout:
+Expected package/module surface for the repo-side adapter checkout:
 
-- `pyproject.toml`, `README.md`, `adapter_metadata.json`,
-  `parity_experiment.json`, `dataset.toml`, and `run_authzbench_saas.yaml`;
-- `src/authzbench_saas_harbor/main.py` with a module entrypoint equivalent to
-  `uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>`;
-- `src/authzbench_saas_harbor/adapter.py` for parsing benchmark manifests and
-  generating task directories;
-- task templates for `task.toml`, `instruction.md`,
-  `environment/Dockerfile`, `solution/solve.sh`, and `tests/test.sh`;
-- CLI support for `--output-dir`, `--limit`, `--overwrite`, and `--task-ids`.
+- `authzbench_harbor/__init__.py`, `adapter.py`, `cli.py`, `redaction.py`,
+  `schemas.py`, and `scorer_bridge.py`;
+- `artifact/harbor-adapter-metadata.json`,
+  `artifact/harbor-parity-experiment.json`, and
+  `artifact/harbor-adapter-smoke.json`;
+- generated public smoke dataset files under
+  `artifact/harbor-dataset-public-smoke/`, including `dataset.toml`,
+  `dataset-manifest.json`, and `run_authzbench_saas.yaml`;
+- module entrypoint
+  `python3 -m authzbench_harbor.cli build --output-dir <generated-harbor-dataset-path>`;
+- CLI support for `--output-dir`, `--limit`, `--overwrite`,
+  `--harness-lane`, `--task-id`, and `--task-ids`.
 
-The current repository has a `authzbench_harbor/` package that ships as a *repo-side compatibility wrapper*. It is not yet a packaged Harbor SDK
-adapter:
+The current repository has a `authzbench_harbor/` package that ships as the
+repo-side compatibility wrapper. Harbor platform acceptance and publishing
+remain outside this claim:
 
 See [Current Repo-Side Adapter State](#current-repo-side-adapter-state) above for the CLI surface that ships on `main` today.
 

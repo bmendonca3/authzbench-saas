@@ -1,7 +1,7 @@
 {
   "schema_version": "harbor-adapter-contract-v1",
   "evidence_status": "implementation_target",
-  "public_claim_boundary": "This contract is not Harbor execution evidence, not Harbor acceptance, not hosted leaderboard readiness, and not v1 readiness. It defines the public-safe SDK adapter target for future verified Harbor runs.",
+  "public_claim_boundary": "This contract records the public-safe repo-side Harbor adapter surface and local smoke/parity target. It is not Harbor platform acceptance, not hosted leaderboard readiness, and not v1 external-readiness evidence.",
   "public_sources": [
     "https://github.com/harbor-framework/harbor",
     "https://www.harborframework.com/docs/run-jobs/run-evals",
@@ -152,8 +152,8 @@
     "public outputs are redacted summaries only"
   ],
   "blocked_until": [
-    "exact Harbor SDK/package APIs are integrated",
-    "a local Harbor run passes against a generated public dataset",
+    "Harbor platform review or publishing path is chosen",
+    "host/platform packaging requirements are mapped",
     "active and shadow/candidate private packs are validated with rotation metadata",
     "release-candidate hosted or containerized smoke passes against the active private pack",
     "external review lanes are complete",
@@ -161,35 +161,33 @@
   ],
   "expected_adapter_package": {
     "evidence_status": "implementation_target",
-    "claim_boundary": "Expected package/module surface only; not implemented Harbor SDK integration or local Harbor execution evidence.",
+    "claim_boundary": "Repo-side package/module surface only; not Harbor platform acceptance, hosted execution, or external review evidence.",
     "package_layout": [
-      "pyproject.toml",
-      "README.md",
-      "adapter_metadata.json",
-      "parity_experiment.json",
-      "dataset.toml",
-      "run_authzbench_saas.yaml",
-      "src/authzbench_saas_harbor/__init__.py",
-      "src/authzbench_saas_harbor/adapter.py",
-      "src/authzbench_saas_harbor/main.py",
-      "src/authzbench_saas_harbor/task-template/task.toml",
-      "src/authzbench_saas_harbor/task-template/instruction.md",
-      "src/authzbench_saas_harbor/task-template/environment/Dockerfile",
-      "src/authzbench_saas_harbor/task-template/solution/solve.sh",
-      "src/authzbench_saas_harbor/task-template/tests/test.sh"
+      "authzbench_harbor/__init__.py",
+      "authzbench_harbor/adapter.py",
+      "authzbench_harbor/cli.py",
+      "authzbench_harbor/redaction.py",
+      "authzbench_harbor/schemas.py",
+      "authzbench_harbor/scorer_bridge.py",
+      "artifact/harbor-adapter-metadata.json",
+      "artifact/harbor-parity-experiment.json",
+      "artifact/harbor-adapter-smoke.json",
+      "artifact/harbor-dataset-public-smoke/dataset.toml",
+      "artifact/harbor-dataset-public-smoke/dataset-manifest.json",
+      "artifact/harbor-dataset-public-smoke/run_authzbench_saas.yaml"
     ],
-    "module_entrypoint": "uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>",
+    "module_entrypoint": "python3 -m authzbench_harbor.cli build --output-dir <generated-harbor-dataset-path>",
     "required_cli_flags": [
       "--output-dir",
       "--limit",
       "--overwrite",
       "--task-ids"
     ],
-    "repo_side_compatibility_helper": "scripts/build_harbor_dataset_skeleton.py supports --output-dir, --limit, --overwrite, and --task-ids as a public-safe skeleton-builder compatibility target.",
+    "repo_side_compatibility_helper": "python3 -m authzbench_harbor.cli build supports --output-dir, --limit, --overwrite, --harness-lane, --task-id, and --task-ids as the public-safe repo-side compatibility target.",
     "blocked_until": [
-      "package layout is implemented in a real Harbor adapter checkout",
-      "adapter metadata and parity files are produced from real Harbor runs",
-      "generated tasks pass a verified local Harbor run"
+      "Harbor platform review or publishing path is chosen",
+      "platform packaging requirements are mapped",
+      "public-safe host handoff artifacts are approved"
     ]
   },
   "public_template_artifacts": [

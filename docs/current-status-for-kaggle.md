@@ -6,8 +6,8 @@ requested. It does not claim platform acceptance, hosted leaderboard operation,
 external validation, or third-party submissions.
 
 **Last updated**: 2026-06-16
-**Current commit**: `eeea4be` on branch `kaggle-host-review-package`
-**CI status**: All validation gates passing
+**Current commit**: `a85db03` on branch `kaggle-host-review-package`
+**Local validation**: All gates passing
 
 ---
 
@@ -52,7 +52,7 @@ external validation, or third-party submissions.
 | --- | --- | --- |
 | Docker execution spec | Confirm expected container shape, metadata paths, artifact format, scoring interface | Kaggle |
 | Platform acceptance | Accept or decline to host the benchmark | Kaggle |
-| Hosted leaderboard | Set up leaderboard infrastructure if accepted | Kaggle |
+| Leaderboard infrastructure | Set up hosted scoring and display infrastructure if accepted | Kaggle |
 | Private holdout execution environment | Provide or approve a host-controlled runner for private evaluation | Kaggle / Maintainer |
 
 ---
