@@ -55,7 +55,7 @@ Baseline summaries should be artifact-backed and labeled by split:
 Do not present public-split baseline numbers as final model rankings.
 
 For release-facing metric interpretation, follow
-[`docs/score-policy.md`](docs/score-policy.md) and avoid ranking by legacy
+[`docs/scoring-and-submissions.md`](docs/scoring-and-submissions.md#1-score-policy) and avoid ranking by legacy
 `mean_score` alone.
 
 When task or scorer changes affect comparability, follow

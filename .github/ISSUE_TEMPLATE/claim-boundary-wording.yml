@@ -12,7 +12,7 @@ body:
     attributes:
       label: Claim Verification
       options:
-        - label: I have checked docs/current-claim-boundary.md
+        - label: I have checked docs/claims-and-evidence.md
           required: true
         - label: I am not claiming platform acceptance, hosted leaderboard operation, external validation, or third-party submissions
           required: true

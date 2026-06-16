@@ -58,7 +58,7 @@ the v1 release.
   alpha tenant <-> tenant_alpha).
 - Update the scorer to mark a submission as `boundary_semantic_match` when
   an alias is used while still enforcing the official evaluation keys.
-- Document this behaviour in `docs/score-policy.md` to help reviewers
+- Document this behaviour in `docs/scoring-and-submissions.md` to help reviewers
   interpret diagnostic outputs.
 
 ### 5. Define and document the private holdout lifecycle
@@ -82,7 +82,7 @@ the v1 release.
   into future releases.
 
 ### 7. Clarify leaderboard and submission governance
-- Finalize `docs/leaderboard-schema.md` with eligibility tiers (sanity,
+- Finalize `docs/scoring-and-submissions.md` with eligibility tiers (sanity,
   public diagnostic, private candidate, private eligible, external
   verified) and anti-gaming rules.
 - Implement a submission bundle validator that checks for transcripts,
@@ -179,4 +179,4 @@ After every material change:
   `artifact/hosted-submission-execution-runbook.json`
 - Task scale roadmap: `artifact/v1-task-scale-roadmap.json`
 - v1 internal goal: `docs/goal.md`
-- v2 external-validation roadmap: `docs/v2-external-validation-roadmap.md`
+- v2 external-validation roadmap: `docs/claims-and-evidence.md`

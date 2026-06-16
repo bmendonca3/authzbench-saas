@@ -49,12 +49,12 @@ Baseline and evidence files:
 | Claim | Status | Evidence | Notes |
 | --- | --- | --- | --- |
 | AuthZBench-SaaS v0.0 is a released benchmark artifact. | Supported | `v0.0` tag and GitHub Release; release notes; release evidence | This does not imply hosted leaderboard readiness. |
-| The public split contains 6 synthetic SaaS apps. | Supported | `README.md`, `docs/benchmark-card.md`, task manifests, manifest validator | Apps are local fixtures, not production targets. |
+| The public split contains 6 synthetic SaaS apps. | Supported | `README.md`, `docs/benchmark-spec.md`, task manifests, manifest validator | Apps are local fixtures, not production targets. |
 | The v0.0 public split contains 46 tasks. | Supported | `baselines/baseline-registry.json`, `docs/status.md`, manifest validator | Public tasks are inspectable; live v1-prep has expanded to 54. |
-| The v0.0 public split contains 19 vulnerable tasks and 27 secure controls. | Supported | `baseline-registry.json`, `docs/benchmark-card.md`, `docs/status.md` | v0.0 secure controls include denial and authorized-allow controls. |
+| The v0.0 public split contains 19 vulnerable tasks and 27 secure controls. | Supported | `baseline-registry.json`, `docs/benchmark-spec.md`, `docs/status.md` | v0.0 secure controls include denial and authorized-allow controls. |
 | The control mix is 16 denial controls and 11 authorized-allow controls. | Supported | `baseline-registry.json`, `README.md`, `docs/status.md` | Authorized-allow controls are central to false-positive discipline. |
-| The benchmark uses deterministic backend replay. | Supported | `docs/methodology.md`, `docs/score-policy.md`, scorer and transcript docs | Replay is scorer-owned and stronger than prose-only claims. |
-| Scoring separates exploit proof, boundary reasoning, false positives, control execution, safety, and live-target coverage. | Supported | `docs/score-policy.md`, `docs/result-schema.md`, baseline summaries | `mean_score` is retained only as a compatibility field. |
+| The benchmark uses deterministic backend replay. | Supported | `docs/benchmark-spec.md`, `docs/scoring-and-submissions.md`, scorer and transcript docs | Replay is scorer-owned and stronger than prose-only claims. |
+| Scoring separates exploit proof, boundary reasoning, false positives, control execution, safety, and live-target coverage. | Supported | `docs/scoring-and-submissions.md`, baseline summaries | `mean_score` is retained only as a compatibility field. |
 | Frozen v0.0 public baselines include five repeated model/agent families. | Supported | `baselines/baseline-registry.json`, `docs/baseline-credibility.md` | Four no-tools model families plus one live HTTP tool-agent family; current v1 reruns are pending. |
 | The frozen v0.0 public live HTTP tool-agent has two 46-task runs with full target-request correlation. | Supported | `kiro-live-tool-agent-sonnet-current-public-46*.json`, `docs/baseline-credibility.md` | Public-split evidence only; not current v1 evidence. |
 | Public baselines show exploit replay can succeed while boundary reasoning remains weak. | Supported | Frozen v0.0 public baseline summaries | v0.0 model/tool-agent rows have `boundary_reasoning_pass_rate: 0.0`. |
@@ -66,7 +66,7 @@ Baseline and evidence files:
 
 | Claim | Status | Evidence | Limitation |
 | --- | --- | --- | --- |
-| AuthZBench-SaaS can support leaderboard-style submission validation. | Partially supported | `docs/leaderboard-schema.md`, validation scripts, example rows | No hosted public leaderboard exists yet. |
+| AuthZBench-SaaS can support leaderboard-style submission validation. | Partially supported | `docs/scoring-and-submissions.md`, validation scripts, example rows | No hosted public leaderboard exists yet. |
 | Protected private evaluation supports anti-gaming. | Partially supported | Maintainer-only private pack validation and redacted evidence | Rotating holdouts and broader isolation are still v1 work. |
 | Tool-agent evidence is workflow-real. | Partially supported | Public live HTTP tool-agent runs with target-request correlation | Private repeated tool-agent leaderboard rows are not complete. |
 | Baseline variance can be analyzed. | Partially supported | Repeated current public runs | Statistical analysis is not yet a full research-grade section. |

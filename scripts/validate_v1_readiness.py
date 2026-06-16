@@ -414,6 +414,17 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
     "docs/goal-external-validation-coverage.md",
+    # Post-consolidation stale-reference polish. These are documentation-only
+    # path updates to point reviewer-facing text at the canonical consolidated
+    # docs; they do not change benchmark source, tasks, scoring policy,
+    # baselines, or private-holdout evidence.
+    "CONTRIBUTING.md",
+    "docs/post-v0-todo.md",
+    "docs/release-evidence.json",
+    "docs/reviews/external-review-packet.md",
+    "docs/v1-task-expansion-plan.md",
+    "paper/ieee-sp/README.md",
+    "tasks_private/README.md",
     # Round 1 / 1.5 claim-boundary doc tighten + reviewer-readable readiness
     # summary work. CHANGELOG.md and docs/index.md are CHANGELOG and label
     # text only; scripts/check_v1_overclaim.py and its test are the new

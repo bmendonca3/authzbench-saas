@@ -320,7 +320,7 @@ class DiagnosticFieldReachabilityTests(unittest.TestCase):
     from a public pytest run. This class drives the real scorer on
     the real ``pm_bola_read_alpha_from_beta`` task and on a hand-
     built secure control fixture, then asserts that every field
-    listed in ``docs/scoring-examples.md`` (and the per-task
+    listed in ``docs/scoring-and-submissions.md`` (and the per-task
     result dict) is reachable as a key in at least one public
     pytest result.
     """
@@ -374,7 +374,7 @@ class DiagnosticFieldReachabilityTests(unittest.TestCase):
             )
 
     def test_safety_diagnostic_is_a_subscore(self) -> None:
-        """docs/scoring-examples.md lists ``safety_passed`` as a
+        """docs/scoring-and-submissions.md lists ``safety_passed`` as a
         top-level result field, but the scorer actually emits
         safety as ``subscores['safety']``. This test locks down
         the actual contract: safety is a subscore, not a top-level

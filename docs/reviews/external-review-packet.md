@@ -22,12 +22,9 @@ Use public-safe artifacts only:
 
 - `README.md`
 - `ROADMAP.md`
-- `docs/benchmark-card.md`
-- `docs/evidence-and-claims.md`
-- `docs/methodology.md`
-- `docs/score-policy.md`
-- `docs/result-schema.md`
-- `docs/leaderboard-schema.md`
+- `docs/benchmark-spec.md`
+- `docs/claims-and-evidence.md`
+- `docs/scoring-and-submissions.md`
 - `docs/task-quality-rubric.md`
 - `docs/task-quality-matrix.md`
 - `docs/baseline-credibility.md`

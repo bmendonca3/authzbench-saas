@@ -1,6 +1,6 @@
 """Forbidden-phrase CI check for the AuthZBench-SaaS claim boundary.
 
-The full claim ledger lives in ``docs/current-claim-boundary.md``. This script
+The full claim ledger lives in ``docs/claims-and-evidence.md``. This script
 exists so a wording change that drifts past the Avoid list fails CI before
 reviewers see it.
 """

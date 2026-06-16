@@ -21,8 +21,7 @@ intake form.
 ## Materials
 
 - `docs/agent-evaluator-kit.md`
-- `docs/leaderboard-schema.md` (tool-agent comparability keys)
-- `docs/leaderboard-anti-gaming-policy.md` (tool budget abuse)
+- `docs/scoring-and-submissions.md` (tool-agent comparability keys and tool budget abuse)
 - `docs/harbor-integration-runbook.md`
 - `authzbench/run.py`, `authzbench/score.py`,
   `authzbench/core.py`, `authzbench/render_task.py`

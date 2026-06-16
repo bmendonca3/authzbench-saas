@@ -351,7 +351,7 @@ Version labels:
 - First release-worthy benchmark: `v0`
 - Mature benchmark with external review dispositions recorded: `v2`
   (the v1.0-internal cut is the internal / public-view release; v2 is the
-  external lane tracked in `docs/v2-external-validation-roadmap.md`)
+  external lane tracked in `docs/claims-and-evidence.md`)
 
 This keeps the project honest. The alpha preview was useful because it showed
 the idea and harness. The v0.0 release is useful because it adds enough scale,

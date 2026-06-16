@@ -15,8 +15,8 @@ This decision log tracks key platform configuration choices and policy adoptions
 
 | Decision Area | Available Options | Selected Value | Owner | Date | Rationale | Affected Docs/Scripts | Launch Blocker? |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **Host Model** | Model A (Review Only)<br>Model B (Private Pilot)<br>Model C (CSV Platform Scored) | Model A + Model B (Model C deferred) | Host / Maintainer | | Evidence replay scoring requires runner environment. | `docs/kaggle-hosting-model.md` | **Yes** |
-| **Private Data Custody** | Host-controlled<br>Maintainer-operated | | Host | | Who holds the raw task manifests and keys. | `docs/privacy-and-holdout-custody.md` | **Yes** |
+| **Host Model** | Model A (Review Only)<br>Model B (Private Pilot)<br>Model C (CSV Platform Scored) | Model A + Model B (Model C deferred) | Host / Maintainer | | Evidence replay scoring requires runner environment. | `docs/host/hosting-model.md` | **Yes** |
+| **Private Data Custody** | Host-controlled<br>Maintainer-operated | | Host | | Who holds the raw task manifests and keys. | `docs/private-holdout-lifecycle.md`; `docs/host/host-operations-runbook.md` | **Yes** |
 | **Submission Format** | CSV Index + ZIP Bundle<br>Runner Container Image<br>Direct API Sandbox | CSV Index + ZIP Bundle | Host / Maintainer | | Balance between validation fidelity and ease of platform integration. | `platform/kaggle/sample_submission.csv` | **Yes** |
 | **Public Split Role** | Diagnostic Only<br>Public Leaderboard Scored | Diagnostic Only | Host | | Prevent leaderboard gaming and over-fitting to public tasks. | `platform/kaggle/rules-template.md` | No |
 | **Scorer Location** | Host-operated Sandbox<br>Maintainer Staging Environment | | Host | | Execution safety and secret protection boundary. | `authzbench/score.py` | **Yes** |

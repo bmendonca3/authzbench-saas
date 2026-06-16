@@ -45,6 +45,6 @@ quick-reference for reviewers; the long-form descriptions stay in
   redaction policy.
 - The `v1_ready: true` field is **not** a hosted-leaderboard claim and
   must not be paraphrased as "v1 released", "externally validated", or
-  "community benchmark". See `docs/current-claim-boundary.md` for the
+  "community benchmark". See `docs/claims-and-evidence.md` for the
   canonical claim ledger and the CI-enforced forbidden-phrase list at
   `scripts/check_claim_boundary.py`.

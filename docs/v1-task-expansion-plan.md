@@ -75,5 +75,5 @@ Once task count or scoring semantics change:
 - rerun the scripted harness sanity check;
 - rerun repeated public model/tool-agent families before comparing scores;
 - regenerate public-safe charts and paper tables;
-- update `docs/status.md`, `docs/benchmark-card.md`, and
-  `docs/evidence-and-claims.md`.
+- update `docs/status.md`, `docs/benchmark-spec.md`, and
+  `docs/claims-and-evidence.md`.
