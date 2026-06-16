@@ -393,6 +393,17 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/result-schema.md",
     "docs/task-quality-rubric.md",
     "docs/v1-community-submission-governance.md",
+    # Host-facing docs consolidation. These are documentation relocations and
+    # redirect stubs only; they do not change benchmark source, tasks, scorer
+    # policy, baselines, or private-holdout evidence.
+    "docs/host/README.md",
+    "docs/host/host-review-package.md",
+    "docs/host/host-status-and-reproducibility.md",
+    "docs/host/hosting-model.md",
+    "docs/host/host-operations-runbook.md",
+    "docs/host/host-review-walkthrough.md",
+    "docs/evaluation-for-hosts.md",
+    "docs/solution-file-contract.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
