@@ -406,9 +406,13 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                     errors.append(f"{rel_task_dir}: solution/solve.sh must fail closed until a verified oracle exists")
             elif task_oracle_solution_mode == "secure-control-empty-findings":
                 if task.get("expected_vulnerable") is not False:
-                    errors.append(f"{rel_task_dir}: secure-control oracle solution requires expected_vulnerable=false")
-                if "/logs/artifacts/submission.json" not in solution or '{"findings":[]}' not in solution:
-                    errors.append(f"{rel_task_dir}: secure-control oracle solution must write findings: [] submission")
+                    if "does not include a public oracle solution" not in solution:
+                        errors.append(f"{rel_task_dir}: solution/solve.sh must preserve placeholder oracle boundary")
+                    if "exit 64" not in solution:
+                        errors.append(f"{rel_task_dir}: solution/solve.sh must fail closed until a verified oracle exists")
+                else:
+                    if "/logs/artifacts/submission.json" not in solution or '{"findings":[]}' not in solution:
+                        errors.append(f"{rel_task_dir}: secure-control oracle solution must write findings: [] submission")
             else:
                 errors.append(f"{rel_task_dir}: unsupported oracle solution mode")
             errors.extend(_public_safety_errors(solution, label=f"{rel_task_dir}/solution/solve.sh"))

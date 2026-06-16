@@ -1,23 +1,23 @@
 {
   "adapter_version": "0.1.0",
   "evidence_status": "current",
-  "generated_at": "2026-06-16T16:19:57.773502Z",
+  "generated_at": "2026-06-16T16:26:17.302951Z",
   "harbor_per_task_rewards": {
     "tok_cross_tenant_secret_read": 0.0,
     "tok_export_scope_bypass": 0.0,
-    "tok_export_token_reads_export_control": 0.0,
+    "tok_export_token_reads_export_control": 1.0,
     "tok_read_scope_updates_secret": 0.0,
-    "tok_secure_cross_tenant_secret_control": 0.0,
-    "tok_secure_export_scope_control": 0.0
+    "tok_secure_cross_tenant_secret_control": 1.0,
+    "tok_secure_export_scope_control": 1.0
   },
   "harbor_results": {
-    "harbor_run_id": "b163bed5-ae6b-442a-ab4c-b11cd4042b05",
+    "harbor_run_id": "d277f128-0af1-4b48-8d01-3c7b509cda28",
     "n_completed_trials": 6,
     "n_errored_trials": 0,
     "n_total_trials": 6,
-    "reward_mean": 0.0
+    "reward_mean": 0.5
   },
-  "harbor_reward_mean": 0.0,
+  "harbor_reward_mean": 0.5,
   "harbor_version": "0.13.2",
   "harness_lane": "no_tools",
   "limitations": [
@@ -71,30 +71,24 @@
   },
   "parity_match_threshold": 1.0,
   "parity_methodology": "per_task_pairing",
-  "parity_verified": false,
-  "per_task_disagreements": [
-    "tok_export_token_reads_export_control",
-    "tok_secure_cross_tenant_secret_control",
-    "tok_secure_export_scope_control"
-  ],
+  "parity_verified": true,
+  "per_task_disagreements": [],
   "per_task_match": {
     "tok_cross_tenant_secret_read": true,
     "tok_export_scope_bypass": true,
-    "tok_export_token_reads_export_control": false,
+    "tok_export_token_reads_export_control": true,
     "tok_read_scope_updates_secret": true,
-    "tok_secure_cross_tenant_secret_control": false,
-    "tok_secure_export_scope_control": false
+    "tok_secure_cross_tenant_secret_control": true,
+    "tok_secure_export_scope_control": true
   },
-  "per_task_match_count": 3,
-  "per_task_match_rate": 0.5,
+  "per_task_match_count": 6,
+  "per_task_match_rate": 1.0,
   "private_artifacts_tracked": false,
   "public_claim_boundary": "This parity experiment evidence covers public tasks only. It does not claim Harbor platform acceptance, Kaggle acceptance, hosted public leaderboard readiness, SaaS-provider validation, external review, or third-party submissions.",
   "raw_harbor_jobs_tracked": false,
   "redaction_status": "passed",
   "required_match_rate": 1.0,
-  "reward_parity_failures": [
-    "Per-task match rate is 0.50, expected 1.0"
-  ],
+  "reward_parity_failures": [],
   "reward_tolerance": 1e-05,
   "schema_version": "harbor-parity-experiment-v1",
   "task_count": 6,

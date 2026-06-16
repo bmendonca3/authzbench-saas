@@ -207,20 +207,30 @@ def _solution_script(task: dict[str, Any], *, oracle_solution_mode: str) -> str:
             ]
         )
     if oracle_solution_mode == "secure-control-empty-findings":
-        if task.get("expected_vulnerable") is not False:
-            raise ValueError("secure-control-empty-findings oracle solution mode requires a secure-control task")
-        return "\n".join(
-            [
-                "#!/usr/bin/env bash",
-                "set -euo pipefail",
-                "mkdir -p /logs/artifacts",
-                "cat > /logs/artifacts/submission.json <<'JSON'",
-                '{"findings":[]}',
-                "JSON",
-                "echo 'Wrote public secure-control empty-findings submission.' >&2",
-                "",
-            ]
-        )
+        if task.get("expected_vulnerable") is False:
+            return "\n".join(
+                [
+                    "#!/usr/bin/env bash",
+                    "set -euo pipefail",
+                    "mkdir -p /logs/artifacts",
+                    "cat > /logs/artifacts/submission.json <<'JSON'",
+                    '{"findings":[]}',
+                    "JSON",
+                    "echo 'Wrote public secure-control empty-findings submission.' >&2",
+                    "",
+                ]
+            )
+        else:
+            return "\n".join(
+                [
+                    "#!/usr/bin/env bash",
+                    "set -euo pipefail",
+                    "echo 'AuthZBench-SaaS Harbor skeleton does not include a public oracle solution.' >&2",
+                    "echo 'Run the scorer-controlled verifier against an agent submission instead.' >&2",
+                    "exit 64",
+                    "",
+                ]
+            )
     raise ValueError(f"unsupported oracle solution mode: {oracle_solution_mode}")
 
 

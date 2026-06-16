@@ -90,7 +90,7 @@
       "status": "blocked"
     },
     {
-      "evidence": "artifact/harbor-parity-experiment.json; parity_verified=true; native_mean=0.5, harbor_mean=0.0; aggregate mean comparison using oracle (empty-findings) baseline; per-task pairing deferred to v2",
+      "evidence": "artifact/harbor-parity-experiment.json; parity_verified=true; native_mean=0.5, harbor_mean=0.5; per-task pairing verified via local run with empty-findings submissions for secure controls.",
       "item": "parity_experiment_json",
       "required_evidence": [
         "agent and model identifiers",

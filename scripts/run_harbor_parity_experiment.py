@@ -165,6 +165,11 @@ def main() -> int:
     parser.add_argument("--task-count", type=int, default=6)
     parser.add_argument("--tasks", default="tasks/**/*.json")
     parser.add_argument("--harness-lane", choices=["no_tools", "live_http_tool_agent"], default="no_tools")
+    parser.add_argument(
+        "--oracle-solution-mode",
+        choices=["none", "secure-control-empty-findings"],
+        default="secure-control-empty-findings",
+    )
     parser.add_argument("--rebuild-dataset", action="store_true", help="Rebuild dataset even if it exists")
     args = parser.parse_args()
 
@@ -191,6 +196,7 @@ def main() -> int:
                 harness_lane=args.harness_lane,
                 limit=args.task_count,
                 overwrite=True,
+                oracle_solution_mode=args.oracle_solution_mode,
             )
         except ValueError as exc:
             blocked = {
