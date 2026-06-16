@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Consolidation Notice**: This file is slated for consolidation. Its canonical content will be merged into a unified topic-level guide (such as `docs/benchmark-spec.md` or `docs/scoring-and-submissions.md`) in subsequent consolidation phases.
+
 # Benchmark Card
 
 > **See also:** [`docs/current-claim-boundary.md`](current-claim-boundary.md) for the canonical claim ledger and `scripts/check_claim_boundary.py` for CI-enforced forbidden-phrase checks.
