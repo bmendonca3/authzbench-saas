@@ -27,8 +27,8 @@ secure controls. The host-review package answers seven practical questions:
 - Maintainer-private holdout summaries: 48 tasks summarized publicly, raw
   private holdouts excluded from public Git.
 - Public + private task scale: 108 tasks.
-- Latest host-review candidate commit when this package was added:
-  `433e6ac9c97dc4500a4e055c8d89bfde413c86a8`.
+- Final host-review candidate commit: use the final PR/merge commit and its
+  passing GitHub Actions run before sending a package to a host.
 - Local validation command for the candidate package:
 
 ```bash

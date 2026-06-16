@@ -181,13 +181,13 @@ def _scan_text_file(path: Path) -> list[tuple[int, str, str]]:
                 # contains a negation hint. We define a paragraph as a run of
                 # non-blank lines that share the same blockquote / list / plain
                 # paragraph prefix, bounded by blank lines or headings.
-                allowed = _paragraph_contains_negation(lines, idx)
+                allowed = _paragraph_contains_negation(lines, idx, phrase)
             if not allowed:
                 hits.append((idx + 1, line, phrase))
     return hits
 
 
-def _paragraph_contains_negation(lines: list[str], idx: int) -> bool:
+def _paragraph_contains_negation(lines: list[str], idx: int, phrase: str) -> bool:
     """Return True if the paragraph containing ``lines[idx]`` contains a
     negation hint, after stripping markdown blockquote (``>``), list (``-`` or
     ``*``), and table (``|``) prefixes.
@@ -218,7 +218,7 @@ def _paragraph_contains_negation(lines: list[str], idx: int) -> bool:
     for hint in AVOID_CONTEXT_HINTS:
         if hint.lower() in window.lower():
             return True
-    return any(_window_negates_phrase(window, phrase) for phrase in FORBIDDEN_PHRASES)
+    return _window_negates_phrase(window, phrase)
 
 
 def _window_negates_phrase(window: str, phrase: str) -> bool:
