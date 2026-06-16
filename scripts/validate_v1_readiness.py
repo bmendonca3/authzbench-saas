@@ -386,6 +386,13 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/kaggle-harbor-integration-brief.md",
     "docs/current-status-for-kaggle.md",
     "docs/reviews/saas-provider-review-packet.md",
+    "docs/holdout-and-contamination.md",
+    "docs/holdout-rotation-protocol.md",
+    "docs/methodology.md",
+    "docs/privacy-and-holdout-custody.md",
+    "docs/result-schema.md",
+    "docs/task-quality-rubric.md",
+    "docs/v1-community-submission-governance.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
