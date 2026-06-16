@@ -68,12 +68,14 @@ package to a host.
 1. Read this page and [`docs/kaggle-hosting-model.md`](kaggle-hosting-model.md).
 2. Read [`docs/evaluation-for-hosts.md`](evaluation-for-hosts.md) for the
    scoring story.
-3. Inspect [`platform/kaggle/README.md`](../platform/kaggle/README.md) and
+3. Read [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md) for
+   the host-presentation checklist.
+4. Inspect [`platform/kaggle/README.md`](../platform/kaggle/README.md) and
    [`platform/kaggle/sample_submission.csv`](../platform/kaggle/sample_submission.csv).
-4. Inspect [`docs/solution-file-contract.md`](solution-file-contract.md) for
+5. Inspect [`docs/solution-file-contract.md`](solution-file-contract.md) for
    private solution-file custody rules.
-5. Run the public validation command from a fresh clone.
-6. Check the final candidate commit's GitHub Actions result.
+6. Run the public validation command from a fresh clone.
+7. Check the final candidate commit's GitHub Actions result.
 
 ## Public, Private-Summary, And Host-Controlled Artifacts
 
@@ -105,4 +107,5 @@ public summary.
   maintainer validation commands.
 - [`docs/privacy-and-holdout-custody.md`](privacy-and-holdout-custody.md):
   holdout custody and redaction rules.
-
+- [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md):
+  presentation checklist and remaining host decisions.

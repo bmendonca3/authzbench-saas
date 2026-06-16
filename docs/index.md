@@ -13,6 +13,8 @@ the right file without opening the full repository.
   ledger and approved public framing.
 - [`docs/host-review-package.md`](host-review-package.md): Kaggle-like host
   review entrypoint, package map, and non-claim boundary.
+- [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md):
+  presentation checklist and remaining host decisions.
 
 ## Release Evidence
 
@@ -95,6 +97,8 @@ artifact index and what each tracked artifact is allowed to prove.
 
 - [`docs/host-review-package.md`](host-review-package.md): one-page host
   review route and artifact map.
+- [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md):
+  concrete host-presentation checklist and open decisions.
 - [`docs/kaggle-hosting-model.md`](kaggle-hosting-model.md): viable hosting
   models and recommended host-review path.
 - [`docs/evaluation-for-hosts.md`](evaluation-for-hosts.md): scoring and
