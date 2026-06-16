@@ -31,7 +31,7 @@ inputs, validation steps, acceptance checks, and publication rules.
 
 Before serious public leaderboard claims, maintain a separate private holdout
 pack with 20-30 private tasks, with 24 preferred for balanced coverage, as
-described in `docs/holdout-and-contamination.md`.
+described in `docs/benchmark-spec.md` and `docs/private-holdout-lifecycle.md`.
 
 Local validation command:
 

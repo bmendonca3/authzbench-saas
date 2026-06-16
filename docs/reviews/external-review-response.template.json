@@ -19,8 +19,8 @@
         "docs/reviews/external-review-packet.md",
         "docs/task-quality-matrix.md",
         "docs/task-quality-rubric.md",
-        "docs/evidence-and-claims.md",
-        "docs/benchmark-card.md",
+        "docs/claims-and-evidence.md",
+        "docs/benchmark-spec.md",
         "docs/authzbench-saas-v1-prep-technical-report.md"
       ],
       "disposition": "<findings-or-no_findings>",
@@ -48,10 +48,8 @@
       ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
-        "docs/methodology.md",
-        "docs/score-policy.md",
-        "docs/result-schema.md",
-        "docs/leaderboard-schema.md",
+        "docs/benchmark-spec.md",
+        "docs/scoring-and-submissions.md",
         "docs/baseline-credibility.md",
         "docs/baseline-variance-analysis.md",
         "baselines/baseline-registry.json"
@@ -82,7 +80,7 @@
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
         "docs/agent-evaluator-kit.md",
-        "docs/leaderboard-schema.md",
+        "docs/scoring-and-submissions.md",
         "docs/boundary-reasoning-calibration-study.md",
         "docs/v1-community-submission-governance.md",
         "artifact/run-bundle.md",

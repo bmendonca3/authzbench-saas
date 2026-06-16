@@ -34,8 +34,7 @@ before treating a finding here as evidence of a real production gap.
 
 ## How these notes relate to other docs
 
-- `docs/benchmark-card.md` describes the benchmark at a glance.
-- `docs/methodology.md` describes the scoring and evidence model.
+- `docs/benchmark-spec.md` describes the benchmark scope, thesis, and methodology.
 - `docs/benchmark-comparison.md` compares AuthZBench-SaaS to broader
   benchmarks.
 - `docs/glossary.md` defines BOLA, BFLA, denial control, and other

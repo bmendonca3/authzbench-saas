@@ -94,7 +94,7 @@ runner contract changes:
 - rerun the deterministic scripted sanity baseline first;
 - rerun repeated no-tools model families before model comparisons;
 - rerun repeated live HTTP tool-agent families before tool-agent comparisons;
-- update `docs/status.md`, `docs/evidence-and-claims.md`,
+- update `docs/status.md`, `docs/claims-and-evidence.md`,
   `baselines/baseline-registry.json`, and any paper tables that reference
   current task counts.
 
@@ -238,7 +238,7 @@ or local work that the maintainer controls.
 - [ ] External agent and tooling review. Evidence: `docs/reviews/agent-tooling-review-packet.md`; `docs/reviews/schemas/agent-tooling-review.schema.json`.
 - [ ] SaaS-provider or senior AppSec scenario validation. Evidence: pending external engagement.
 - [x] Private holdout lifecycle policy. Evidence: `docs/private-holdout-lifecycle.md`; `tasks_private/holdout/rotation-metadata.json`.
-- [x] Leaderboard eligibility tiers. Evidence: `docs/leaderboard-schema.md`; `docs/leaderboard-anti-gaming-policy.md`.
+- [x] Leaderboard eligibility tiers. Evidence: `docs/scoring-and-submissions.md`.
 - [x] Clean-room reproduction command. Evidence: `python3 scripts/reproduce_public_artifact.py`; `Dockerfile`; `.env.example`; `docs/container-digests.md`.
 - [x] Public artifact index. Evidence: `artifact/INDEX.md`; `docs/artifact-index.md`.
 - [ ] Current per-task Harbor parity, if Harbor is part of the claim. Evidence: `artifact/harbor-parity-experiment.json` (per_task_pairing contract, currently `evidence_status=blocked`); historical aggregate-means run preserved at `artifact/historical/harbor-parity-experiment-aggregate-means.json`. The per_task_pairing map will be populated when a real Harbor run completes.

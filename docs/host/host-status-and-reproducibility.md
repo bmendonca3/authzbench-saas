@@ -75,7 +75,7 @@ Status: single-page status and reproducibility summary for Kaggle host reviewers
 | **Review Bundle Check** | `python3 scripts/build_host_review_bundle.py --check` | `2026-06-16 15:10 UTC` | Maintainer | macOS / Python 3.11 | `python3 scripts/build_host_review_bundle.py --check` / Regenerate manifest if out of sync |
 | **Public Sample CSV** | `python3 scripts/validate_kaggle_sample_submission.py` | `2026-06-16 15:10 UTC` | Maintainer | macOS / Python 3.11 | `python3 scripts/validate_kaggle_sample_submission.py` / Fix format mismatch |
 | **Dry-Run Bundle** | `python3 scripts/validate_kaggle_dry_run_bundle.py` | `2026-06-16 15:10 UTC` | Maintainer | macOS / Python 3.11 | `python3 scripts/validate_kaggle_dry_run_bundle.py` / Check dry-run files |
-| **Private Holdout Custody** | active/shadow count and fingerprint summaries | Summarized in `docs/privacy-and-holdout-custody.md` | Maintainer | Not applicable | Review custody boundary / Check manifest.json |
+| **Private Holdout Custody** | active/shadow count and fingerprint summaries | Summarized in `docs/private-holdout-lifecycle.md` and `docs/host/host-operations-runbook.md` | Maintainer | Not applicable | Review custody boundary / Check manifest.json |
 | **Host Model** | Model A + Model B (Model C deferred) | Decision recorded in hosting memo | Maintainer | Not applicable | Host accepts or changes proposal |
 
 ### Latest CI Verification Reference

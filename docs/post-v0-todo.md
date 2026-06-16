@@ -68,8 +68,8 @@ release-style or paper-submission claim:
 - `README.md`
 - `ROADMAP.md`
 - `docs/status.md`
-- `docs/benchmark-card.md`
-- `docs/evidence-and-claims.md`
+- `docs/benchmark-spec.md`
+- `docs/claims-and-evidence.md`
 - `docs/release-evidence.json`
 
 ## Verification Commands

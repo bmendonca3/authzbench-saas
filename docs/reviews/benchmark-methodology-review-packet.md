@@ -20,13 +20,9 @@ intake form.
 
 ## Materials
 
-- `docs/methodology.md`
-- `docs/score-policy.md`
+- `docs/benchmark-spec.md`
+- `docs/scoring-and-submissions.md`
 - `docs/score-stability-policy.md`
-- `docs/result-schema.md`
-- `docs/leaderboard-schema.md`
-- `docs/leaderboard-anti-gaming-policy.md`
-- `docs/holdout-and-contamination.md`
 - `docs/holdout-rotation-protocol.md`
 - `docs/v1-community-submission-governance.md`
 - `docs/baseline-credibility.md`
@@ -62,8 +58,8 @@ intake form.
    `sanity / public-diagnostic / private-candidate / private-eligible / external-verified`
    tiers and the tool-agent comparability keys documented well enough
    that a reviewer can verify which rows are comparable?
-7. **Anti-gaming**: Does the
-   `docs/leaderboard-anti-gaming-policy.md` cover the gaming shapes
+7. **Anti-gaming**: Does
+   `docs/scoring-and-submissions.md` cover the gaming shapes
    that an evals methodology reviewer would flag (public task
    memorization, hardcoded task ids, known routes, report-all-routes,
    ignored secure controls, private leakage, malformed output, tool

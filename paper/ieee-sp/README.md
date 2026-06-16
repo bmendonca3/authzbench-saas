@@ -11,8 +11,8 @@ methodology foundation, not as a hosted leaderboard or v1/community benchmark.
 - `docs/authzbench-saas-v1-prep-technical-report.md`
 - `docs/authzbench-saas-v0.0-evidence-map.md`
 - `docs/status.md`
-- `docs/benchmark-card.md`
-- `docs/evidence-and-claims.md`
+- `docs/benchmark-spec.md`
+- `docs/claims-and-evidence.md`
 - `baselines/baseline-registry.json`
 - `docs/task-quality-matrix.json`
 

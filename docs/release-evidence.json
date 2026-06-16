@@ -39,7 +39,7 @@
     "release_notes_source": [
       "README.md",
       "docs/status.md",
-      "docs/benchmark-card.md",
+      "docs/benchmark-spec.md",
       "docs/launch-report.md",
       "CHANGELOG.md",
       "docs/release-notes-v0.0.md"

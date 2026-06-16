@@ -4,7 +4,7 @@
 It is preserved as a v2 validation track and is not claimed for v1.
 v1 does not claim external review, hosted public leaderboard readiness,
 SaaS-provider validation, or platform acceptance.
-Those are tracked as v2 gates in `docs/v2-external-validation-roadmap.md`.
+Those are tracked as v2 gates in `docs/claims-and-evidence.md`.
 
 Status: intake tracker for v2 external review preparation. Reviewer packet is
 ready, but independent external review is externally blocked until real human
@@ -40,9 +40,9 @@ return real review evidence and maintainers copy public-safe summaries into
 
 | Lane | Reviewer status | Requested evidence | Acceptance criteria | Next action |
 | --- | --- | --- | --- | --- |
-| Application security | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, `docs/task-quality-matrix.md`, representative public tasks, scorer controls, `docs/evidence-and-claims.md` | Reviewer can identify whether BOLA/BFLA, role, token-scope, sharing, and admin-action tasks are realistic enough for a benchmark paper; false-positive controls are meaningful; unsafe or ambiguous tasks are flagged. | Recruit reviewer for task realism, authorization-boundary quality, and control quality. |
+| Application security | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, `docs/task-quality-matrix.md`, representative public tasks, scorer controls, `docs/claims-and-evidence.md` | Reviewer can identify whether BOLA/BFLA, role, token-scope, sharing, and admin-action tasks are realistic enough for a benchmark paper; false-positive controls are meaningful; unsafe or ambiguous tasks are flagged. | Recruit reviewer for task realism, authorization-boundary quality, and control quality. |
 | Benchmark/evals methodology | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, technical reports, paper scaffold, `baselines/baseline-registry.json`, `docs/baseline-variance-analysis.md`, validation commands | Reviewer can judge whether task split, scoring semantics, repeated-run evidence, and claim boundary support the paper's stated claims without implying private leaderboard readiness. | Recruit reviewer for split design, scoring validity, variance framing, and release claim limits. |
-| AI-agent/tooling | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, public baseline summaries, live HTTP tool-agent summaries, runner/scorer docs, `docs/leaderboard-schema.md`, `docs/boundary-reasoning-calibration-study.md` | Reviewer can assess whether harness types, tool access, target-request correlation, and comparability keys are described well enough for agent-to-agent comparison. | Recruit reviewer for harness assumptions, tool access, and agent comparability. |
+| AI-agent/tooling | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, public baseline summaries, live HTTP tool-agent summaries, runner/scorer docs, `docs/scoring-and-submissions.md`, `docs/boundary-reasoning-calibration-study.md` | Reviewer can assess whether harness types, tool access, target-request correlation, and comparability keys are described well enough for agent-to-agent comparison. | Recruit reviewer for harness assumptions, tool access, and agent comparability. |
 
 ## Reviewer Questions
 
@@ -60,7 +60,7 @@ return real review evidence and maintainers copy public-safe summaries into
 ### Benchmark And Evals Methodology
 
 - Does the current claim boundary match the evidence in
-  `docs/evidence-and-claims.md`?
+  `docs/claims-and-evidence.md`?
 - Are `v0_mean_score`, exploit proof, boundary reasoning, false-positive rate,
   and target-request coverage separated clearly enough?
 - Are two-run ranges framed as descriptive evidence rather than statistical
@@ -90,7 +90,7 @@ return real review evidence and maintainers copy public-safe summaries into
 - Track accepted changes, rejected changes, and unresolved concerns.
 - Record whether each concern affects claims, scoring, task design, artifact
   packaging, or paper wording.
-- Update `docs/evidence-and-claims.md` if a review changes the supported claim
+- Update `docs/claims-and-evidence.md` if a review changes the supported claim
   boundary.
 
 ## Completion Gate

@@ -11,7 +11,7 @@ Current status: v1 internal release-candidate infrastructure validated.
 
 v1 does not claim external review, hosted public leaderboard readiness,
 SaaS-provider validation, or platform acceptance.
-Those are tracked as v2 gates in `docs/v2-external-validation-roadmap.md`.
+Those are tracked as v2 gates in `docs/claims-and-evidence.md`.
 
 Do not claim `v1` external readiness, hosted-leaderboard readiness, platform
 acceptance, or third-party endorsement. Completed external review is a separate

@@ -66,7 +66,7 @@ For external review, provide only public-safe material:
 - rendered public task contexts
 - scorer/result schema docs
 - aggregate public baseline summaries
-- known limitations from `docs/benchmark-card.md`
+- known limitations from `docs/benchmark-spec.md` and `docs/claims-and-evidence.md`
 
 Do not provide private holdout manifests, hidden seeds, private routes, oracle
 bodies, raw private run bundles, or private target logs.

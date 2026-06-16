@@ -16,7 +16,7 @@
       "id": "EXT-002",
       "title": "Kaggle platform acceptance decision",
       "labels": ["external-blocker", "kaggle"],
-      "body": "Only Kaggle can accept, host, or endorse the benchmark. This issue tracks the platform acceptance decision.\n\nBlocked by: Kaggle/Google\nRepo-side status: Host-review package is ready for review. See docs/host-review-package.md and docs/current-status-for-kaggle.md.\nReference: docs/kaggle-hosting-model.md",
+      "body": "Only Kaggle can accept, host, or endorse the benchmark. This issue tracks the platform acceptance decision.\n\nBlocked by: Kaggle/Google\nRepo-side status: Host-review package is ready for review. See docs/host/host-review-package.md and docs/host/host-status-and-reproducibility.md.\nReference: docs/host/hosting-model.md",
       "status": "draft",
       "external_dependency": "Kaggle/Google"
     },
@@ -64,7 +64,7 @@
       "id": "EXT-008",
       "title": "Hosted private holdout execution environment",
       "labels": ["external-blocker", "kaggle", "private-holdout"],
-      "body": "Requires a host-controlled or maintainer-operated private runner environment to execute private holdout evaluation. Cannot be completed without platform infrastructure.\n\nBlocked by: Kaggle/Google or maintainer infrastructure\nRepo-side status: Private holdout design, custody protocol, and rotation policy are documented. See docs/private-holdout-lifecycle.md and docs/privacy-and-holdout-custody.md.",
+      "body": "Requires a host-controlled or maintainer-operated private runner environment to execute private holdout evaluation. Cannot be completed without platform infrastructure.\n\nBlocked by: Kaggle/Google or maintainer infrastructure\nRepo-side status: Private holdout design, custody protocol, and rotation policy are documented. See docs/private-holdout-lifecycle.md and docs/host/host-operations-runbook.md.",
       "status": "draft",
       "external_dependency": "Kaggle/Google or maintainer"
     },

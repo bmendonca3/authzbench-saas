@@ -226,6 +226,5 @@ outside an explicit "not claimed" context.
 - Are the private holdouts governed? Read
   `docs/private-holdout-lifecycle.md`.
 - Are the leaderboard tiers and comparability keys consistent? Read
-  `docs/leaderboard-schema.md`,
-  `docs/leaderboard-anti-gaming-policy.md`, and
+  `docs/scoring-and-submissions.md` and
   `scripts/validate_submission_bundle.py`.
