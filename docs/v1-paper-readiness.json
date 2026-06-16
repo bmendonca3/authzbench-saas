@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "a5e5b0124f87c92877ee3d2d91f3b4a6a4172074",
+  "benchmark_source_sha": "a9011bf3a1244a7d4b58d93d488231491243415b",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "release_candidate",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "Re-pinned to the External Validation and Coverage Expansion work commit so the post-source evidence-only allow-list correctly covers the new validators, tests, and the goal anchor. Earlier pin (c5f4c99) preceded the External Validation work.",
+    "ci_refresh_note": "Re-pinned to the round-1-claim-boundary-doc-tighten pre-round-1 ancestor (a9011bf \"Re-pin paper-readiness benchmark_source_sha to current state\") so the post-source evidence-only allow-list correctly covers the round 1 and round 1.5 amendment commits (scripts/check_v1_overclaim.py, tests/test_v1_overclaim_check.py, CHANGELOG.md, docs/index.md). Earlier pin (a5e5b01) preceded the round 1 claim-boundary doc tighten work.",
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
