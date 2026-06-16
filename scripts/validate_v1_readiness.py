@@ -202,15 +202,11 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "ROADMAP.md",
     "docs/goal.md",
     "docs/reviews/external-review-summary.md",
-    "docs/v2-external-validation-roadmap.md",
     # Claim-boundary wording fixes: updated after source pin to rename
     # ambiguous readiness gates, add the canonical single-table claim ledger,
     # and split the scripted sanity baseline from the model/tool-agent
     # baseline. These do not change benchmark source, tasks, scoring, or
     # baselines, only the framing and forbidden-phrase enforcement.
-    "docs/current-claim-boundary.md",
-    "docs/benchmark-card.md",
-    "docs/evidence-and-claims.md",
     "docs/releases/v1.0-internal.md",
     "docs/v0-release-plan.md",
     "scripts/check_claim_boundary.py",
@@ -282,11 +278,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     # reviewer-facing score-shape clarifications. These are scoring-shape
     # and reviewer-wording docs; they do not change benchmark source,
     # tasks, scoring policy, or baseline substance.
-    "docs/score-policy.md",
     "docs/score-stability-policy.md",
-    "docs/scoring-examples.md",
-    "docs/leaderboard-anti-gaming-policy.md",
-    "docs/leaderboard-schema.md",
     "docs/private-holdout-lifecycle.md",
     "docs/private-review-protocol.md",
     "docs/reviewer-walkthrough.md",
@@ -339,17 +331,6 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     # Host-presentation packaging, validation, and public-safe examples added
     # after the benchmark source pin; they do not change benchmark tasks,
     # scorer policy, baselines, or private-holdout evidence.
-    "docs/host-architecture.md",
-    "docs/host-baseline-summary.md",
-    "docs/host-facing-one-page-summary.md",
-    "docs/host-packet-versioning.md",
-    "docs/host-private-leakage-response.md",
-    "docs/host-reproducibility-matrix.md",
-    "docs/host-review-walkthrough-transcript.md",
-    "docs/host-review-package.md",
-    "docs/kaggle-hosting-model.md",
-    "docs/kaggle-presentation-todo.md",
-    "docs/leaderboard-anti-gaming-policy.md",
     "docs/validation-commands.md",
     "scripts/build_host_review_bundle.py",
     "scripts/check_markdown_links.py",
@@ -381,13 +362,8 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "artifact/harbor-adapter-metadata.json",
     "artifact/external-blockers-issue-tracker.json",
     "docs/kaggle-harbor-integration-brief.md",
-    "docs/current-status-for-kaggle.md",
     "docs/reviews/saas-provider-review-packet.md",
-    "docs/holdout-and-contamination.md",
     "docs/holdout-rotation-protocol.md",
-    "docs/methodology.md",
-    "docs/privacy-and-holdout-custody.md",
-    "docs/result-schema.md",
     "docs/task-quality-rubric.md",
     "docs/v1-community-submission-governance.md",
     # Host-facing docs consolidation. These are documentation relocations and
@@ -399,8 +375,6 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/host/hosting-model.md",
     "docs/host/host-operations-runbook.md",
     "docs/host/host-review-walkthrough.md",
-    "docs/evaluation-for-hosts.md",
-    "docs/solution-file-contract.md",
     # Core benchmark spec, claims, and scoring/submissions consolidation.
     # These are documentation consolidations and relocations only; they do
     # not change benchmark source, tasks, scorer policy, baselines, or
@@ -409,6 +383,32 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/claims-and-evidence.md",
     "docs/scoring-and-submissions.md",
     "scripts/validate_v0_release.py",
+    # Deleted redirect stubs (Phase 4 Docs consolidation)
+    "docs/current-status-for-kaggle.md",
+    "docs/host-reproducibility-matrix.md",
+    "docs/host-packet-versioning.md",
+    "docs/kaggle-presentation-todo.md",
+    "docs/kaggle-hosting-model.md",
+    "docs/evaluation-for-hosts.md",
+    "docs/host-facing-one-page-summary.md",
+    "docs/host-private-leakage-response.md",
+    "docs/privacy-and-holdout-custody.md",
+    "docs/host-review-walkthrough-transcript.md",
+    "docs/host-review-package.md",
+    "docs/host-architecture.md",
+    "docs/host-baseline-summary.md",
+    "docs/solution-file-contract.md",
+    "docs/benchmark-card.md",
+    "docs/methodology.md",
+    "docs/holdout-and-contamination.md",
+    "docs/current-claim-boundary.md",
+    "docs/evidence-and-claims.md",
+    "docs/v2-external-validation-roadmap.md",
+    "docs/score-policy.md",
+    "docs/scoring-examples.md",
+    "docs/result-schema.md",
+    "docs/leaderboard-schema.md",
+    "docs/leaderboard-anti-gaming-policy.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",

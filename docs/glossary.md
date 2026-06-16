@@ -38,7 +38,7 @@ context, prefer the definition here over a local paraphrase.
 - **False positive**: a finding that the scorer rejects as incorrect
   because the underlying request was either denied, permitted, or
   out of scope. See
-  [`docs/leaderboard-anti-gaming-policy.md`](leaderboard-anti-gaming-policy.md).
+  [`docs/scoring-and-submissions.md`](scoring-and-submissions.md#3-leaderboard--anti-gaming-policy).
 - **Exploit proof**: the recorded request/response that demonstrates
   a vulnerability actually exists in the target app. The scorer's
   `exploit_proven: true` field is set when the final evidence
@@ -64,7 +64,7 @@ context, prefer the definition here over a local paraphrase.
   today. The `v1_ready: true` field in
   `artifact/expected-output/v1-readiness-public-view.json` is scoped
   to internal/public-view readiness only. See
-  [`docs/current-claim-boundary.md`](current-claim-boundary.md).
+  [`docs/claims-and-evidence.md`](claims-and-evidence.md).
 - **External validation**: the v2 readiness state in which all three
   external review lanes (AppSec, benchmark / evals, agent / tooling)
   are in `complete` status with real reviewer records. Not claimed
@@ -86,7 +86,7 @@ context, prefer the definition here over a local paraphrase.
 - **Eligibility tier**: the bucket a leaderboard row sits in
   (`sanity`, `public-diagnostic`, `private-candidate`,
   `private-eligible`, `external-verified`). See
-  [`docs/leaderboard-schema.md`](leaderboard-schema.md).
+  [`docs/scoring-and-submissions.md`](scoring-and-submissions.md#2-result-and-submission-schema).
 - **Comparability key**: the deterministic key derived from
   `harness_type`, `tool_access`, `max_steps`, `timeout_seconds`,
   `max_http_requests`, `retry_policy`, `temperature`, and the

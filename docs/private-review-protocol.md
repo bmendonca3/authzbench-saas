@@ -131,4 +131,4 @@ before the active pack is replaced.
 - [`docs/reviews/external-review-intake.md`](reviews/external-review-intake.md)
 - [`docs/reviews/external-review-summary.md`](reviews/external-review-summary.md)
 - [`docs/reviews/review-registry.json`](reviews/review-registry.json)
-- [`docs/v2-external-validation-roadmap.md`](v2-external-validation-roadmap.md)
+- [`docs/claims-and-evidence.md`](claims-and-evidence.md#5-deferred-v2-validation-tracks)

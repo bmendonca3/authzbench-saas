@@ -79,7 +79,7 @@ This package proposes Model A (dataset/review package) and Model B (maintainer/h
 
 ## Non-Claims
 
-Do not describe this package as accepted by any platform, as externally validated, as a hosted leaderboard, as SaaS-provider validated, or as a production vulnerability discovery benchmark. Use the language in [Current Claim Boundary](../current-claim-boundary.md) when writing a public summary.
+Do not describe this package as accepted by any platform, as externally validated, as a hosted leaderboard, as SaaS-provider validated, or as a production vulnerability discovery benchmark. Use the language in [Claims and Evidence](../claims-and-evidence.md) when writing a public summary.
 
 ## Host Packet Contents
 
@@ -99,7 +99,7 @@ The host-review package contains the following primary files for host evaluation
 ## Related Files
 
 * [README.md](../../README.md): project overview and claim boundary.
-* [Benchmark Card](../benchmark-card.md): scope and limitations.
-* [Leaderboard Schema](../leaderboard-schema.md): row schema and eligibility tiers.
+* [Benchmark Spec](../benchmark-spec.md): scope, thesis, methodology, and limitations.
+* [Scoring and Submissions](../scoring-and-submissions.md): row schema, eligibility tiers, and scoring policy.
 * [Submission Governance Specification](../v1-community-submission-governance.md): future submission governance.
 * [Validation Commands](../validation-commands.md): public and maintainer validation commands.

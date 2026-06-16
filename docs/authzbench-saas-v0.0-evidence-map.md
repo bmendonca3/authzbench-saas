@@ -12,20 +12,18 @@ Primary release and scope files:
 
 - [`README.md`](../README.md)
 - [`ROADMAP.md`](../ROADMAP.md)
-- [`docs/benchmark-card.md`](benchmark-card.md)
+- [`docs/benchmark-spec.md`](benchmark-spec.md)
 - [`docs/launch-report.md`](launch-report.md)
 - [`docs/release-evidence.json`](release-evidence.json)
 - [`docs/baseline-credibility.md`](baseline-credibility.md)
-- [`docs/evidence-and-claims.md`](evidence-and-claims.md)
+- [`docs/claims-and-evidence.md`](claims-and-evidence.md)
 - [`docs/status.md`](status.md)
 - [`docs/release-notes-v0.0.md`](release-notes-v0.0.md)
 
 Methodology and scoring files:
 
-- [`docs/methodology.md`](methodology.md)
-- [`docs/score-policy.md`](score-policy.md)
-- [`docs/result-schema.md`](result-schema.md)
-- [`docs/leaderboard-schema.md`](leaderboard-schema.md)
+- [`docs/benchmark-spec.md`](benchmark-spec.md)
+- [`docs/scoring-and-submissions.md`](scoring-and-submissions.md)
 - [`docs/score-stability-policy.md`](score-stability-policy.md)
 
 Baseline and evidence files:

@@ -14,7 +14,7 @@ exposure) against synthetic app targets. It carries an internal v1
 release tag, a public-view readiness fixture that is true, and
 governance specs for hosted leaderboard operation and external review
 that are not yet executed. See the canonical claim table in
-[`docs/current-claim-boundary.md`](current-claim-boundary.md) before
+[`docs/claims-and-evidence.md`](claims-and-evidence.md) before
 quoting any readiness number.
 
 ## 2. What it is not
@@ -123,7 +123,7 @@ The top-level result also carries `exploit_proven`,
 `boundary_schema_mismatch`, and `evidence_chain_complete` so a
 reviewer can distinguish "exploit proven but boundary wrong" from
 "exploit wrong but boundary text sounds right" without re-deriving
-the math. See [`docs/score-policy.md`](score-policy.md) for the full
+the math. See [`docs/scoring-and-submissions.md`](scoring-and-submissions.md#1-score-policy) for the full
 policy and [`docs/score-stability-policy.md`](score-stability-policy.md)
 for the determinism contract.
 

@@ -221,9 +221,9 @@ or local work that the maintainer controls.
 - [x] Deterministic scorer. Evidence: `authzbench/score.py`; `tests/test_scorer_adversarial_submissions.py` (17/17).
 - [x] Public validation. Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`; CI step in `.github/workflows/validate.yml`.
 - [x] Private artifact exclusion. Evidence: `scripts/redact_protected_private.py`; `docs/private-holdout-lifecycle.md`.
-- [x] Claim boundary docs. Evidence: `docs/current-claim-boundary.md`; `docs/benchmark-card.md`; `docs/evidence-and-claims.md`; `scripts/check_claim_boundary.py`.
+- [x] Claim boundary docs. Evidence: `docs/claims-and-evidence.md`; `docs/benchmark-spec.md`; `scripts/check_claim_boundary.py`.
 - [x] Positive-claim over-claim check. Evidence: `scripts/check_v1_overclaim.py` (6 phrases, negation-aware, v2-marker-aware, backtick-aware, Python-literal-aware); wired into `scripts/validate_public.py`; tests in `tests/test_v1_overclaim_check.py` (5/5).
-- [x] v2 roadmap. Evidence: `docs/v2-external-validation-roadmap.md`.
+- [x] v2 roadmap. Evidence: `docs/claims-and-evidence.md#5-deferred-v2-validation-tracks`.
 - [x] Ambiguous gate names cleaned up. Evidence: `local_or_containerized_submission_smoke`; `hosted_leaderboard_operation_claimed=false`; `has_current_public_scripted_sanity_baseline` and `has_current_public_model_or_tool_agent_baseline` split.
 - [ ] Fresh 60-task public model and tool-agent baselines. Evidence: `baselines/kiro-*-current-public-60-run{1,2}-summary.json` (six families x two runs). Note: the public 60-task evidence is current but is anchored to the locked 60-task public split; per-baseline `expected_task_count=60` is enforced.
 - [x] Task taxonomy generated. Evidence: `docs/task-taxonomy.md`; `artifact/task-taxonomy.json`.
