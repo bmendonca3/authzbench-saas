@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "d29572690bed8f5520ba97479ab352e2f7d89cb2",
+  "benchmark_source_sha": "2b8edf1606294026daed817ccdfffd4d172ccf8c",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "release_candidate",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "Re-pinned to the Harbor/Kaggle follow-up cleanup source commit (d295726 \"Align Harbor follow-up status docs\") so the updated Harbor claim-boundary docs, metadata entrypoints, readiness blocker semantics, and regression tests are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
+    "ci_refresh_note": "Re-pinned to the merged Kaggle-like host review package source commit (2b8edf1 \"Add Kaggle-like host review package\") so the host-review package, Harbor claim-boundary docs, metadata entrypoints, readiness blocker semantics, and regression tests are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
