@@ -1,19 +1,27 @@
 # Kaggle-Like Host Review Artifacts
 
-This directory contains public-safe artifacts for a Kaggle or Kaggle-like host
-review. It is not a platform upload and does not claim platform acceptance,
-hosted operation, or external validation.
+This directory contains public-safe artifacts for a Kaggle or Kaggle-like host review. It is not a platform upload and does not claim platform acceptance, hosted operation, or external validation.
+
+## Packet Decision
+
+This packet proposes Model A review package plus Model B maintainer/host-operated private evaluation pilot. Model C native CSV-only scoring is deferred. CSV files in this directory are index/shape examples, not standalone label-scoring claims.
 
 ## Files
 
-- `sample_submission.csv`: toy CSV showing the participant-facing `Id` shape
-  and a pointer to evidence files. It uses public task IDs only.
+- `README.md`: This file.
+- `sample_submission.csv`: Toy CSV showing the participant-facing `Id` shape and a pointer to evidence files. It uses public task IDs only.
+- `sample_submission.json`: Toy JSON manifest that indexes the submissions directory.
+- `dry-run-bundle/`: Directory containing a public dry-run bundle structure (manifest, CSV index, mock task submissions, and shape specifications).
+- `toy_solution_file.csv`: Sample host-side private solution file schema with public task IDs and a private placeholder row.
+- `toy_solution_file.README.md`: Explanation of the solution file columns.
+- `rules-template.md`: Draft rules template for host review.
+- `competition-page-draft.md`: Draft competition overview and evaluation structure.
+- `host-decision-log.template.md`: Template for host operational decisions.
+- `faq.md`: FAQ answering key architectural questions (e.g. why label-only CSV is insufficient).
 
-## Proposed Participant Artifact
+## Participant Artifact Shape
 
-AuthZBench-SaaS does not naturally reduce to a label-only CSV. A useful
-participant artifact should include:
-
+AuthZBench-SaaS does not naturally reduce to a label-only CSV. A participant artifact includes:
 - a CSV or manifest keyed by `Id`;
 - one evidence bundle per attempted task;
 - per-task `submission.json`;
@@ -21,8 +29,7 @@ participant artifact should include:
 - agent/model metadata;
 - a generated `summary.json` for the run.
 
-The CSV is best treated as an index into a structured evidence bundle. The
-scorer and leaderboard validator remain authoritative.
+The CSV is treated as an index into a structured evidence bundle. The scorer and leaderboard validator remain authoritative.
 
 ## Sample Submission Columns
 
@@ -30,23 +37,26 @@ scorer and leaderboard validator remain authoritative.
 | --- | --- |
 | `Id` | Public task ID |
 | `finding_path` | Relative path to the participant's per-task `submission.json` |
-| `notes` | Optional participant note; ignored by scorer unless a host adapter chooses otherwise |
+| `notes` | Optional participant note; ignored by scorer |
 
 ## Validation Path
 
-For the current repo package, run:
+To validate these artifacts and schemas, run the host-presentation validation commands:
 
 ```bash
-python3 scripts/validate_public.py --include-scripted-baseline
-```
+# Verify the sample CSV schema
+python3 scripts/validate_kaggle_sample_submission.py
 
-Future host adapters should add a targeted validator for this directory once
-the host chooses CSV-only, evidence-bundle, runner-image, or model-adapter
-submission.
+# Verify the dry-run bundle integrity and contents
+python3 scripts/validate_kaggle_dry_run_bundle.py
+
+# Verify the toy solution file schema
+python3 scripts/validate_kaggle_toy_solution_file.py
+
+# Run the aggregate host-presentation suite
+python3 scripts/validate_host_presentation.py
+```
 
 ## Private Holdout Handling
 
-Private holdouts are not included here. A host-controlled solution file should
-be generated outside public Git from protected private packs and referenced only
-by version, hash, and public-safe fingerprint in published summaries.
-
+Private holdouts are not included here. A host-controlled solution file should be generated outside public Git from protected private packs and referenced only by version, hash, and public-safe fingerprint in published summaries.

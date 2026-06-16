@@ -6,7 +6,7 @@ This document tracks reference hashes, versions, and verification run identifier
 - **Repository Commit SHA**: `ef8b233565bfc1a606bf38b2e9afdd3d60bf4158`
 - **Actions Workflow Run ID**: `27596271507`
 - **Host Review Bundle Manifest SHA-256**: [Generated at build time]
-- **Public Split Fingerprint SHA-256**: `6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8`
+- **Active Private Pack Public-Summary Fingerprint SHA-256**: `6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8`
 
 ## Citation Format
 ```bibtex

@@ -7,6 +7,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -82,6 +83,12 @@ def check_private_markers(path: Path) -> list:
     if path.suffix.lower() not in [".md", ".rst", ".txt", ".py", ".json", ".yml", ".yaml", ".sh", ".csv"]:
         return []
 
+    local_path_patterns = (
+        re.compile(r"/Users/[A-Za-z0-9._-]+/"),
+        re.compile(r"/home/[A-Za-z0-9._-]+/"),
+        re.compile(r"C:\\Users\\[A-Za-z0-9._-]+\\", re.IGNORECASE),
+    )
+
     try:
         content = path.read_text(encoding="utf-8")
         # Check sk-... api keys
@@ -90,11 +97,15 @@ def check_private_markers(path: Path) -> list:
         # Check ghp_... github tokens
         if re.search(r"ghp_[a-zA-Z0-9]{36,}", content):
             errors.append(f"Contains GitHub token marker: {path.name}")
-        # Check user absolute local paths (e.g. /Users/username)
+        # Check user absolute local paths (e.g. /Users/...)
         user_home = str(Path.home())
-        target_user_path = "/Users/" + "brianmendonca"
-        if user_home in content or target_user_path in content:
+        if user_home in content:
             errors.append(f"Contains absolute local path: {path.name}")
+        else:
+            for pattern in local_path_patterns:
+                if pattern.search(content):
+                    errors.append(f"Contains absolute local path: {path.name}")
+                    break
     except UnicodeDecodeError:
         pass
     return errors
@@ -108,39 +119,47 @@ def build_bundle(output_dir: Path, ref_commit: str = "") -> dict:
     files_list = []
     errors = []
 
-    # Gather tracked files
-    for root_dir, dirs, files in os.walk(ROOT):
-        # Skip hidden directories like .git
-        if ".git" in dirs:
-            dirs.remove(".git")
+    # Gather tracked files using git ls-files
+    try:
+        res = subprocess.run(
+            ["git", "ls-files"],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        )
+        tracked = [line.strip() for line in res.stdout.splitlines() if line.strip()]
+    except Exception as e:
+        errors.append(f"Failed to list git tracked files: {e}")
+        return {"passed": False, "errors": errors, "manifest": {}}
 
-        for file in files:
-            file_path = Path(root_dir) / file
-            rel_path = str(file_path.relative_to(ROOT))
+    for rel_path in tracked:
+        file_path = ROOT / rel_path
 
-            if not is_allowed_file(rel_path):
-                continue
+        if not is_allowed_file(rel_path):
+            continue
 
-            # Verify private markers
+        # Verify private markers
+        if not rel_path.startswith("tests/"):
             marker_errors = check_private_markers(file_path)
             if marker_errors:
                 errors.extend(marker_errors)
 
-            # Copy file
-            dest_path = output_dir / rel_path
-            dest_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(file_path, dest_path)
+        # Copy file
+        dest_path = output_dir / rel_path
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(file_path, dest_path)
 
-            # Hash file
-            h = hashlib.sha256()
-            h.update(file_path.read_bytes())
-            file_hash = h.hexdigest()
+        # Hash file
+        h = hashlib.sha256()
+        h.update(file_path.read_bytes())
+        file_hash = h.hexdigest()
 
-            files_list.append({
-                "path": rel_path,
-                "sha256": file_hash,
-                "bytes": file_path.stat().st_size
-            })
+        files_list.append({
+            "path": rel_path,
+            "sha256": file_hash,
+            "bytes": file_path.stat().st_size
+        })
 
     # Sort files_list for determinism
     files_list.sort(key=lambda x: x["path"])

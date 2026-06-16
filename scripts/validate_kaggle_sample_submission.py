@@ -23,6 +23,17 @@ def validate_sample_csv(path: Path) -> dict:
             if headers != ["Id", "finding_path", "notes"]:
                 errors.append(f"Invalid headers: {headers}. Expected: ['Id', 'finding_path', 'notes']")
 
+            # Build public task index
+            task_index = {}
+            for t_path in TASKS_DIR.glob("*/*.json"):
+                try:
+                    t_data = json.loads(t_path.read_text(encoding="utf-8"))
+                    t_id = t_data.get("id")
+                    if isinstance(t_id, str):
+                        task_index[t_id] = t_data
+                except Exception:
+                    pass
+
             ids = []
             vulnerable_count = 0
             denial_count = 0
@@ -58,23 +69,18 @@ def validate_sample_csv(path: Path) -> dict:
                         errors.append(f"Row {idx} ({task_id}): Contains forbidden private substring '{p}'")
 
                 # Resolve task in public split to check type
-                task_paths = list(TASKS_DIR.glob(f"*/{task_id}.json"))
-                if not task_paths:
+                task_data = task_index.get(task_id)
+                if not task_data:
                     errors.append(f"Row {idx} ({task_id}): Id not found in public tasks")
                 else:
-                    task_path = task_paths[0]
-                    try:
-                        task_data = json.loads(task_path.read_text(encoding="utf-8"))
-                        is_vulnerable = task_data.get("expected_vulnerable", False)
-                        control_type = task_data.get("control_type")
-                        if is_vulnerable:
-                            vulnerable_count += 1
-                        elif control_type == "denial":
-                            denial_count += 1
-                        elif control_type == "authorized_allow":
-                            authorized_allow_count += 1
-                    except Exception as e:
-                        errors.append(f"Row {idx} ({task_id}): Failed to parse task file: {e}")
+                    is_vulnerable = task_data.get("expected_vulnerable", False)
+                    control_type = task_data.get("control_type")
+                    if is_vulnerable:
+                        vulnerable_count += 1
+                    elif control_type == "denial":
+                        denial_count += 1
+                    elif control_type == "authorized_allow":
+                        authorized_allow_count += 1
 
             # Unique IDs check
             if len(ids) != len(set(ids)):

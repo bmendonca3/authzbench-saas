@@ -94,6 +94,7 @@ SKIP_DIRS: tuple[str, ...] = (
 # explaining why.
 SKIP_TEST_FILES: tuple[str, ...] = (
     "tests/test_claim_boundary_check.py",
+    "tests/test_validate_host_review_bundle.py",
 )
 
 

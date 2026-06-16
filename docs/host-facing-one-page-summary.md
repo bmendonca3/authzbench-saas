@@ -9,7 +9,7 @@ AuthZBench-SaaS evaluates whether AI agents can prove SaaS authorization failure
 - **Public Target Apps**: 6 synthetic SaaS applications running locally.
 - **Public Tasks**: 60 total, with 24 vulnerable tasks and 36 secure controls.
 - **Controls Mix**: 21 denial controls and 15 authorized-allow controls.
-- **Validation**: Strict local public validation, Docker container smokes, and claim-boundary verification.
+- **Validation**: Public validation, claim-boundary checks, and Docker/container smoke are required on the final candidate commit before sending a host packet. The current verified commit and run ID are recorded in `docs/host-reproducibility-matrix.md`.
 
 ## Private-Holdout Design
 - **Custody**: 48 private holdout tasks are summarized publicly only by count, version, and fingerprint.

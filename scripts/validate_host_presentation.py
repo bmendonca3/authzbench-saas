@@ -34,18 +34,18 @@ def main():
     args = parser.parse_args()
 
     steps = [
-        ("Claim boundary check", ["python3", "scripts/check_claim_boundary.py", "--json"]),
-        ("V1 overclaim check", ["python3", "scripts/check_v1_overclaim.py", "--json"]),
-        ("Kaggle sample submission validator", ["python3", "scripts/validate_kaggle_sample_submission.py"]),
-        ("Kaggle dry-run bundle validator", ["python3", "scripts/validate_kaggle_dry_run_bundle.py"]),
-        ("Kaggle toy solution file validator", ["python3", "scripts/validate_kaggle_toy_solution_file.py"]),
-        ("Markdown relative links check", ["python3", "scripts/check_markdown_links.py"]),
-        ("Host review docs validator", ["python3", "scripts/validate_host_review_docs.py"]),
+        ("Claim boundary check", [sys.executable, "scripts/check_claim_boundary.py", "--json"]),
+        ("V1 overclaim check", [sys.executable, "scripts/check_v1_overclaim.py", "--json"]),
+        ("Kaggle sample submission validator", [sys.executable, "scripts/validate_kaggle_sample_submission.py"]),
+        ("Kaggle dry-run bundle validator", [sys.executable, "scripts/validate_kaggle_dry_run_bundle.py"]),
+        ("Kaggle toy solution file validator", [sys.executable, "scripts/validate_kaggle_toy_solution_file.py"]),
+        ("Markdown relative links check", [sys.executable, "scripts/check_markdown_links.py"]),
+        ("Host review docs validator", [sys.executable, "scripts/validate_host_review_docs.py"]),
         ("Git diff check", ["git", "diff", "--check"]),
     ]
 
     # Validate public command
-    validate_public_cmd = ["python3", "scripts/validate_public.py", "--include-scripted-baseline"]
+    validate_public_cmd = [sys.executable, "scripts/validate_public.py", "--include-scripted-baseline"]
     if args.include_container_smoke:
         validate_public_cmd.append("--include-container-smoke")
     steps.append(("Public validation", validate_public_cmd))
@@ -70,7 +70,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir) / "authzbench-saas-host-review"
         build_ok, build_out = run_cmd(
-            ["python3", "scripts/build_host_review_bundle.py", "--output", str(tmp_path)],
+            [sys.executable, "scripts/build_host_review_bundle.py", "--output", str(tmp_path)],
             ROOT,
         )
         if not build_ok:
@@ -79,7 +79,7 @@ def main():
             failed = True
         else:
             val_ok, val_out = run_cmd(
-                ["python3", "scripts/validate_host_review_bundle.py", "--bundle-dir", str(tmp_path)],
+                [sys.executable, "scripts/validate_host_review_bundle.py", "--bundle-dir", str(tmp_path)],
                 ROOT,
             )
             if not val_ok:

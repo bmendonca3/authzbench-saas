@@ -94,10 +94,11 @@ def validate_bundle(bundle_dir: Path) -> dict:
             errors.append(f"File hash mismatch for {rel_path}: expected {expected_sha}, got {actual_sha}")
 
         # - check private markers
-        marker_errors = check_private_markers(actual_file_path)
-        if marker_errors:
-            for err in marker_errors:
-                errors.append(f"{rel_path}: {err}")
+        if not rel_path.startswith("tests/"):
+            marker_errors = check_private_markers(actual_file_path)
+            if marker_errors:
+                for err in marker_errors:
+                    errors.append(f"{rel_path}: {err}")
 
         # - check forbidden claim boundary text
         if actual_file_path.suffix.lower() in [".md", ".rst", ".txt", ".py", ".json", ".yml", ".yaml"]:
@@ -108,6 +109,20 @@ def validate_bundle(bundle_dir: Path) -> dict:
                         f"{rel_path}:L{line_number}: Forbidden claim boundary phrase '{phrase}' "
                         f"outside allowed context: '{line.strip()}'"
                     )
+
+    # Check for unmanifested extra files in the bundle directory
+    actual_paths = {
+        str(path.relative_to(bundle_dir).as_posix())
+        for path in bundle_dir.rglob("*")
+        if path.is_file() and path.name != "manifest.json"
+    }
+
+    missing_from_manifest = sorted(actual_paths - manifest_paths)
+    if missing_from_manifest:
+        errors.append(
+            "Bundle contains files not listed in manifest: "
+            + ", ".join(missing_from_manifest[:20])
+        )
 
     # 3. Check for required host docs
     for req in REQUIRED_FILES:

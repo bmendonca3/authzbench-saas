@@ -42,6 +42,17 @@ def validate_dry_run_bundle(bundle_dir: Path) -> dict:
                 if headers != ["Id", "finding_path", "notes"]:
                     errors.append(f"Invalid CSV headers: {headers}")
 
+                # Build public task index
+                task_index = {}
+                for t_path in TASKS_DIR.glob("*/*.json"):
+                    try:
+                        t_data = json.loads(t_path.read_text(encoding="utf-8"))
+                        t_id = t_data.get("id")
+                        if isinstance(t_id, str):
+                            task_index[t_id] = t_data
+                    except Exception:
+                        pass
+
                 vulnerable_count = 0
                 denial_count = 0
                 authorized_allow_count = 0
@@ -85,23 +96,18 @@ def validate_dry_run_bundle(bundle_dir: Path) -> dict:
                                 errors.append(f"Failed to parse {finding_path}: {e}")
 
                     # Check type in public tasks
-                    task_paths = list(TASKS_DIR.glob(f"*/{task_id}.json"))
-                    if not task_paths:
+                    task_data = task_index.get(task_id)
+                    if not task_data:
                         errors.append(f"Row {idx} ({task_id}): Task Id not found in public tasks")
                     else:
-                        task_path = task_paths[0]
-                        try:
-                            task_data = json.loads(task_path.read_text(encoding="utf-8"))
-                            is_vulnerable = task_data.get("expected_vulnerable", False)
-                            control_type = task_data.get("control_type")
-                            if is_vulnerable:
-                                vulnerable_count += 1
-                            elif control_type == "denial":
-                                denial_count += 1
-                            elif control_type == "authorized_allow":
-                                authorized_allow_count += 1
-                        except Exception as e:
-                            errors.append(f"Row {idx} ({task_id}): Failed to parse task file: {e}")
+                        is_vulnerable = task_data.get("expected_vulnerable", False)
+                        control_type = task_data.get("control_type")
+                        if is_vulnerable:
+                            vulnerable_count += 1
+                        elif control_type == "denial":
+                            denial_count += 1
+                        elif control_type == "authorized_allow":
+                            authorized_allow_count += 1
 
                 if vulnerable_count != 1:
                     errors.append(f"Dry-run bundle must contain exactly one vulnerable task, found {vulnerable_count}")
