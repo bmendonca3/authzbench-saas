@@ -6,8 +6,8 @@ requested. It does not claim platform acceptance, hosted leaderboard operation,
 external validation, or third-party submissions.
 
 **Last updated**: 2026-06-16
-**Current commit**: `1245db7` on branch `main`
-**Local validation**: All gates passing
+**Current commit**: `613c94720ce88d2b4e33433476d8fa4b5065c082` on branch `main`
+**Local validation**: `python3 scripts/validate_host_presentation.py` passing
 
 ---
 
@@ -19,7 +19,7 @@ external validation, or third-party submissions.
 - [x] Replay-based scorer with adversarial submission hardening
 - [x] Public validation suite: `python3 scripts/validate_public.py --include-scripted-baseline`
 - [x] Host-presentation validator: `python3 scripts/validate_host_presentation.py`
-- [x] 518+ unit tests passing locally
+- [x] Unit test suite passing locally
 
 ### Harbor Integration
 - [x] Harbor-compatible dataset skeleton builder and validator
@@ -64,7 +64,7 @@ external validation, or third-party submissions.
 | Application security | AppSec practitioner | Yes | No |
 | Benchmark/evals methodology | Evals researcher | Yes | No |
 | AI-agent/tooling | Agent/tooling engineer | Yes | No |
-| SaaS-provider validation | Product-security team | Yes | No |
+| SaaS-provider validation (Optional v2 track) | Product-security team | Yes | No |
 
 ---
 
@@ -89,7 +89,7 @@ git checkout main
 python3 scripts/validate_public.py --include-scripted-baseline
 
 # Run host-presentation validator
-python3 scripts/validate_host_presentation.py --allow-dirty
+python3 scripts/validate_host_presentation.py
 
 # Run all unit tests
 python3 -m unittest discover -s tests

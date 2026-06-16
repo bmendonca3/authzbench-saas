@@ -28,7 +28,8 @@ secure controls. The host-review package answers seven practical questions:
   private holdouts excluded from public Git.
 - Public + private task scale: 108 tasks.
 - Final host-review candidate commit: use the final PR/merge commit and its
-  passing GitHub Actions run before sending a package to a host.
+  passing GitHub Actions run before sending a package to a host. The exact
+  reviewed commit and CI run are recorded in [`docs/host-reproducibility-matrix.md`](host-reproducibility-matrix.md).
 
 ### Validation Levels
 
