@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "2148883a111a07a5bb79c0dcef49ee14987cc992",
+  "benchmark_source_sha": "c66462a0c57d43f2da41fcd95cebaabe29de3285",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "release_candidate",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "Re-pinned to the claim boundary and presentation verification hardening commit (2148883 \"Hardening: Wire host presentation validation and artifact upload to CI\") so the updated scanner, regression test, and package docs are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
+    "ci_refresh_note": "Re-pinned to the final reproducibility matrix update commit (c66462a \"Evidence: Update final reproducibility matrix and run IDs\") so the updated scanner, regression test, and package docs are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
