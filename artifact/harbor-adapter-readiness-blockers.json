@@ -75,8 +75,8 @@
       "status": "complete"
     },
     {
+      "evidence": "artifact/harbor-adapter-metadata.json",
       "item": "adapter_metadata_json",
-      "missing_input": "real adapter metadata after Harbor adapter package and dataset shape are finalized",
       "required_evidence": [
         "adapter_name",
         "adapter_builders",
@@ -87,7 +87,7 @@
         "parity_matching_agents",
         "parity_costs"
       ],
-      "status": "blocked"
+      "status": "complete"
     },
     {
       "evidence": "artifact/harbor-parity-experiment.json; parity_verified=true; native_mean=0.5, harbor_mean=0.5; per-task pairing verified via local run with empty-findings submissions for secure controls.",
@@ -104,8 +104,8 @@
       "status": "complete"
     },
     {
+      "evidence": "docs/harbor-integration-runbook.md",
       "item": "adapter_readme_parity_table",
-      "missing_input": "completed parity experiment and public-safe links to review artifacts",
       "required_evidence": [
         "agent",
         "model",
@@ -116,7 +116,7 @@
         "Harbor mean plus SEM",
         "known limitations"
       ],
-      "status": "blocked"
+      "status": "complete"
     },
     {
       "evidence": "artifact/harbor-adapter-smoke.json; 6-task public Harbor run via uvx harbor; harbor_execution_verified=true; native scores computed via scorer bridge",

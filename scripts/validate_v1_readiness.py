@@ -371,6 +371,21 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "tests/test_validate_kaggle_sample_submission.py",
     "tests/test_validate_kaggle_toy_solution_file.py",
     "artifact/run-public-validation.sh",
+    # Harbor Option B implementation: mixed-dataset skeleton builder,
+    # validator, and tests modified to support secure-control-empty-findings
+    # mode for parity verification. These do not change benchmark source,
+    # tasks, scoring, or baselines.
+    "scripts/build_harbor_dataset_skeleton.py",
+    "scripts/validate_harbor_dataset_skeleton.py",
+    "tests/test_build_harbor_dataset_skeleton.py",
+    # Gap-assessment documentation and review packets added after the source
+    # pin. These are host-review, status, and review-packet docs that do not
+    # change benchmark source, tasks, scoring, or baselines.
+    "artifact/harbor-adapter-metadata.json",
+    "artifact/external-blockers-issue-tracker.json",
+    "docs/kaggle-harbor-integration-brief.md",
+    "docs/current-status-for-kaggle.md",
+    "docs/reviews/saas-provider-review-packet.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",

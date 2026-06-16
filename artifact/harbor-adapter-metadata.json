@@ -1,0 +1,39 @@
+{
+  "schema_version": "harbor-adapter-metadata-v1",
+  "template_only": false,
+  "evidence_status": "adapter_metadata_complete",
+  "public_claim_boundary": "This metadata describes the Harbor-compatible adapter configuration. It does not claim Harbor platform acceptance, hosted leaderboard readiness, or Google/Gemini endorsement.",
+  "adapter_version": "0.1.0",
+  "adapter_name": "authzbench-saas-harbor",
+  "dataset_name": "authzbench-saas-public-skeleton",
+  "package_entrypoint": "uv run python -m authzbench_saas_harbor.main --output-dir <generated-harbor-dataset-path>",
+  "required_cli_flags": [
+    "--output-dir",
+    "--limit",
+    "--overwrite",
+    "--task-ids"
+  ],
+  "dataset_root_files": [
+    "dataset.toml",
+    "dataset-manifest.json",
+    "run_authzbench_saas.yaml"
+  ],
+  "task_directory_files": [
+    "instruction.md",
+    "task.toml",
+    "environment/Dockerfile",
+    "verifier/task_manifest.json",
+    "solution/solve.sh",
+    "tests/test.sh"
+  ],
+  "supported_lanes": [
+    "no_tools",
+    "live_http_tool_agent"
+  ],
+  "artifact_policy": {
+    "agent_submission_path": "/logs/artifacts/submission.json",
+    "score_output_path": "/logs/artifacts/score.json",
+    "public_outputs_redacted": true,
+    "private_manifests_tracked": false
+  }
+}
