@@ -7,7 +7,7 @@ from pathlib import Path
 
 from scripts.build_leaderboard_submission import build_submission
 from scripts.protected_private_eval import ROOT, redacted_summary
-from scripts.validate_leaderboard_submission import validate_submission
+from scripts.validate_leaderboard_submission import _load_rotation_metadata, validate_submission
 
 
 def _active_private_pack_fingerprint() -> str:
@@ -17,12 +17,9 @@ def _active_private_pack_fingerprint() -> str:
     private-holdout or combined submission to point at this
     fingerprint.
     """
-    from authzbench.core import load_json as _load
-
-    rotation = _load(ROOT / "tasks_private" / "holdout" / "rotation-metadata.json")
-    for pack in rotation.get("packs", []):
+    for fingerprint, pack in _load_rotation_metadata().items():
         if pack.get("role") == "active":
-            return str(pack["fingerprint_sha256"])
+            return fingerprint
     raise RuntimeError("no active private pack in rotation-metadata.json")
 
 

@@ -1,7 +1,7 @@
 {
   "overall_passed": true,
   "passed_step_count": 7,
-  "root": "/Users/brianmendonca/Documents/authzbench-saas",
+  "root": "<repo-root>",
   "schema_version": "public-reproduction-v1",
   "step_count": 7,
   "steps": [

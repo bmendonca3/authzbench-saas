@@ -302,6 +302,13 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/reviews/schemas/agent-tooling-review.schema.json",
     "scripts/reproduce_public_artifact.py",
     "artifact/reproduction/public-reproduction-summary.json",
+    # Clean-checkout leaderboard validation fallback: public-safe
+    # metadata compatibility for CI/reviewer clones without tracked
+    # private manifests. This does not change benchmark source, tasks,
+    # scoring, or baseline substance.
+    "scripts/validate_leaderboard_submission.py",
+    "tests/test_build_leaderboard_submission.py",
+    "tests/test_leaderboard_submission.py",
     "scripts/validate_submission_bundle.py",
     "scripts/validate_external_review_summary.py",
     "tests/test_submission_bundle_validator.py",
