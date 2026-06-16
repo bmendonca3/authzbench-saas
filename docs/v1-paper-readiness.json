@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "0ca7c896fb283dc5542279d8cd2f954ec16cdb35",
+  "benchmark_source_sha": "d29572690bed8f5520ba97479ab352e2f7d89cb2",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "release_candidate",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "Re-pinned to the final reproducibility matrix update commit (c66462a \"Evidence: Update final reproducibility matrix and run IDs\") so the updated scanner, regression test, and package docs are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
+    "ci_refresh_note": "Re-pinned to the Harbor/Kaggle follow-up cleanup source commit (d295726 \"Align Harbor follow-up status docs\") so the updated Harbor claim-boundary docs, metadata entrypoints, readiness blocker semantics, and regression tests are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
@@ -20,7 +20,7 @@
       "run_id": 27110222646,
       "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27110222646"
     },
-    "verified_on": "2026-06-15"
+    "verified_on": "2026-06-16"
   },
-  "verified_on": "2026-06-15"
+  "verified_on": "2026-06-16"
 }
