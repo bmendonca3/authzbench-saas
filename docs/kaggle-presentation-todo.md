@@ -7,7 +7,7 @@ third-party submissions.
 ## P0 Before Sending A Host Packet
 
 - [x] Single entrypoint: [`docs/host-review-package.md`](host-review-package.md)
-- [x] Final candidate commit has passing GitHub Actions public validation run: `27628002930`
+- [x] Final candidate commit has passing GitHub Actions public validation run: `27642462142`
 - [x] Public no-Docker validation command documented: `python3 scripts/validate_public.py --include-scripted-baseline`
 - [x] Full CI/container-smoke validation command documented: `python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke`
 - [x] Proposed host model recorded: Model A review package + Model B pilot path; Model C deferred
