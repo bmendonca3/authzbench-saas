@@ -13,9 +13,10 @@ class ValidateHostPresentationTests(unittest.TestCase):
         mock_res.stdout = "all good"
         mock_run.return_value = mock_res
 
-        ok, output = run_cmd(["some", "cmd"], Path("."))
+        ok, output, elapsed = run_cmd(["some", "cmd"], Path("."), 120)
         self.assertTrue(ok)
         self.assertEqual(output, "all good")
+        self.assertGreaterEqual(elapsed, 0)
 
     @patch("subprocess.run")
     def test_run_cmd_failure(self, mock_run: MagicMock) -> None:
@@ -24,6 +25,7 @@ class ValidateHostPresentationTests(unittest.TestCase):
         mock_res.stdout = "failed check"
         mock_run.return_value = mock_res
 
-        ok, output = run_cmd(["some", "cmd"], Path("."))
+        ok, output, elapsed = run_cmd(["some", "cmd"], Path("."), 120)
         self.assertFalse(ok)
         self.assertEqual(output, "failed check")
+        self.assertGreaterEqual(elapsed, 0)

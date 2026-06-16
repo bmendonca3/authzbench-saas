@@ -4,7 +4,8 @@
 import argparse
 import hashlib
 import json
-import os
+import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -18,7 +19,15 @@ from scripts.check_claim_boundary import _scan_text_file
 REQUIRED_FILES = [
     "docs/host-review-package.md",
     "platform/kaggle/sample_submission.csv",
+    "platform/kaggle/sample_submission.json",
     "docs/host-facing-one-page-summary.md",
+    "platform/kaggle/README.md",
+    "platform/kaggle/rules-template.md",
+    "platform/kaggle/competition-page-draft.md",
+    "platform/kaggle/faq.md",
+    "platform/kaggle/dry-run-bundle/manifest.json",
+    "platform/kaggle/dry-run-bundle/sample_submission.csv",
+    "platform/kaggle/toy_solution_file.csv",
 ]
 
 
@@ -40,6 +49,26 @@ def validate_bundle(bundle_dir: Path) -> dict:
     # Check manifest format
     if manifest.get("schema_version") != "host-review-bundle-manifest-v1":
         errors.append(f"Unexpected manifest schema version: {manifest.get('schema_version')}")
+
+    # Check commit SHA format
+    source_commit = manifest.get("source_commit")
+    if not source_commit:
+        errors.append("manifest.json is missing source_commit")
+    elif not re.match(r"^[0-9a-fA-F]{40}$", source_commit) and source_commit != "unknown":
+        errors.append(f"source_commit must be a 40-character hex SHA, got '{source_commit}'")
+
+    # Check timestamp format
+    created_at = manifest.get("created_at_utc")
+    if not created_at:
+        errors.append("manifest.json is missing created_at_utc")
+    elif not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$", created_at):
+        errors.append(f"created_at_utc must be ISO-8601 UTC format (e.g. YYYY-MM-DDTHH:MM:SSZ), got '{created_at}'")
+
+    # Check claim boundary matches approved wording
+    claim_boundary = manifest.get("claim_boundary")
+    expected_claim_boundary = "host-review only; no platform acceptance, hosted leaderboard operation, or external validation."
+    if claim_boundary != expected_claim_boundary:
+        errors.append(f"claim_boundary mismatch. Expected '{expected_claim_boundary}', got '{claim_boundary}'")
 
     files = manifest.get("files", [])
     if not files:
@@ -114,7 +143,7 @@ def validate_bundle(bundle_dir: Path) -> dict:
     actual_paths = {
         str(path.relative_to(bundle_dir).as_posix())
         for path in bundle_dir.rglob("*")
-        if path.is_file() and path.name != "manifest.json"
+        if path.is_file() and path.name != "manifest.json" and path.name != "HOST_PACKET_CHECKSUMS.sha256"
     }
 
     missing_from_manifest = sorted(actual_paths - manifest_paths)
@@ -128,6 +157,48 @@ def validate_bundle(bundle_dir: Path) -> dict:
     for req in REQUIRED_FILES:
         if req not in manifest_paths:
             errors.append(f"Required file is missing from the bundle: {req}")
+
+    # 4. Run embedded Kaggle validators inside the bundle directory
+    if len(errors) == 0:
+        # Validate sample submission in bundle
+        sub_script = bundle_dir / "scripts/validate_kaggle_sample_submission.py"
+        sub_csv = bundle_dir / "platform/kaggle/sample_submission.csv"
+        sub_tasks = bundle_dir / "tasks"
+        if sub_script.is_file() and sub_csv.is_file():
+            res = subprocess.run(
+                [sys.executable, str(sub_script), "--csv", str(sub_csv), "--tasks-dir", str(sub_tasks), "--require-existing-findings"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            if res.returncode != 0:
+                errors.append(f"Kaggle sample submission validator failed inside bundle:\n{res.stdout}")
+
+        # Validate dry run bundle in bundle
+        dry_script = bundle_dir / "scripts/validate_kaggle_dry_run_bundle.py"
+        dry_dir = bundle_dir / "platform/kaggle/dry-run-bundle"
+        if dry_script.is_file() and dry_dir.is_dir():
+            res = subprocess.run(
+                [sys.executable, str(dry_script), "--bundle-dir", str(dry_dir), "--tasks-dir", str(sub_tasks)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            if res.returncode != 0:
+                errors.append(f"Kaggle dry-run bundle validator failed inside bundle:\n{res.stdout}")
+
+        # Validate toy solution file in bundle
+        toy_script = bundle_dir / "scripts/validate_kaggle_toy_solution_file.py"
+        toy_csv = bundle_dir / "platform/kaggle/toy_solution_file.csv"
+        if toy_script.is_file() and toy_csv.is_file():
+            res = subprocess.run(
+                [sys.executable, str(toy_script), "--csv", str(toy_csv), "--tasks-dir", str(sub_tasks)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            if res.returncode != 0:
+                errors.append(f"Kaggle toy solution validator failed inside bundle:\n{res.stdout}")
 
     return {"passed": len(errors) == 0, "errors": errors}
 

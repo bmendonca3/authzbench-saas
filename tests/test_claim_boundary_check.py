@@ -341,6 +341,28 @@ class ClaimBoundaryCheckTests(unittest.TestCase):
         phrases = sorted(finding["phrase"] for finding in result["findings"])
         self.assertIn("externally validated", phrases)
 
+    def test_new_forbidden_phrases_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "host.md").write_text(
+                "This benchmark is SaaS-validated and v1.0 released.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/host.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("SaaS-validated", phrases)
+        self.assertIn("v1.0 released", phrases)
+
 
 if __name__ == "__main__":
     unittest.main()

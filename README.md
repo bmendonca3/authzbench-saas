@@ -22,9 +22,7 @@ The benchmark focuses on a narrow, practical security question:
 > submission smoke only and explicitly sets
 > `hosted_leaderboard_operation_claimed: false`.
 
-This repository is a **released v0.0 benchmark artifact**. The strict maintainer
-gate has evidence, and the `v0.0` tag is public, but the project is not a hosted
-leaderboard and should not be called a community benchmark yet.
+Current repository state: the public v0.0 release tag exists; this branch packages the v1.0-internal internally validated benchmark artifact for Kaggle-like host review. It is not a hosted leaderboard, not externally validated, and not platform accepted.
 
 ## Why This Matters
 

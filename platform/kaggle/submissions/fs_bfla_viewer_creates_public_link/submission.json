@@ -1,0 +1,12 @@
+{
+  "schema_version": "authzbench-public-sample-submission-v1",
+  "findings": [
+    {
+      "claim": "file_sharing_bfla_viewer_creates_public_link_vulnerable",
+      "evidence": [],
+      "boundary": {},
+      "impact": "Shape-only example; not scored evidence."
+    }
+  ],
+  "leaderboard_eligible": false
+}

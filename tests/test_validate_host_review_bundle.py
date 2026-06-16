@@ -2,15 +2,35 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+import hashlib
 
+import scripts.validate_host_review_bundle
 from scripts.validate_host_review_bundle import validate_bundle
+
+VALID_SHA = "ef8b233565bfc1a606bf38b2e9afdd3d60bf4158"
+VALID_CLAIM = "host-review only; no platform acceptance, hosted leaderboard operation, or external validation."
+VALID_TIME = "2026-06-16T00:00:00Z"
 
 
 class ValidateHostReviewBundleTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.orig_required = scripts.validate_host_review_bundle.REQUIRED_FILES
+        # By default, clear REQUIRED_FILES to avoid missing required file errors in unit tests
+        scripts.validate_host_review_bundle.REQUIRED_FILES = []
+
+    def tearDown(self) -> None:
+        scripts.validate_host_review_bundle.REQUIRED_FILES = self.orig_required
+
     def test_validate_bundle_valid(self) -> None:
+        # Override REQUIRED_FILES for the valid path test
+        scripts.validate_host_review_bundle.REQUIRED_FILES = [
+            "docs/host-review-package.md",
+            "platform/kaggle/sample_submission.csv",
+            "docs/host-facing-one-page-summary.md",
+        ]
+
         with tempfile.TemporaryDirectory() as tmp:
             bundle_dir = Path(tmp)
-            import hashlib
 
             def get_sha(text: str) -> str:
                 h = hashlib.sha256()
@@ -35,8 +55,9 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
 
             manifest = {
                 "schema_version": "host-review-bundle-manifest-v1",
-                "source_commit": "ef8b233",
-                "created_at_utc": "2026-06-16T00:00:00Z",
+                "source_commit": VALID_SHA,
+                "created_at_utc": VALID_TIME,
+                "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
                         "path": "docs/host-review-package.md",
@@ -77,9 +98,11 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
             f1.parent.mkdir(parents=True, exist_ok=True)
             f1.write_text("Hello, this is host-review package", encoding="utf-8")
 
-            # Missing f2 and f3 but let's just test hash mismatch first
             manifest = {
                 "schema_version": "host-review-bundle-manifest-v1",
+                "source_commit": VALID_SHA,
+                "created_at_utc": VALID_TIME,
+                "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
                         "path": "docs/host-review-package.md",
@@ -105,6 +128,9 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
 
             manifest = {
                 "schema_version": "host-review-bundle-manifest-v1",
+                "source_commit": VALID_SHA,
+                "created_at_utc": VALID_TIME,
+                "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
                         "path": "harbor-jobs/job-1/log.txt",
@@ -130,6 +156,9 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
 
             manifest = {
                 "schema_version": "host-review-bundle-manifest-v1",
+                "source_commit": VALID_SHA,
+                "created_at_utc": VALID_TIME,
+                "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
                         "path": "docs/host-review-package.md",
@@ -141,8 +170,6 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
             manifest_path = bundle_dir / "manifest.json"
             manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
-            # Let's patch expected sha to match
-            import hashlib
             h = hashlib.sha256()
             h.update(f1.read_bytes())
             manifest["files"][0]["sha256"] = h.hexdigest()
@@ -162,6 +189,9 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
 
             manifest = {
                 "schema_version": "host-review-bundle-manifest-v1",
+                "source_commit": VALID_SHA,
+                "created_at_utc": VALID_TIME,
+                "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
                         "path": "docs/host-review-package.md",
@@ -173,7 +203,6 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
             manifest_path = bundle_dir / "manifest.json"
             manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
-            import hashlib
             h = hashlib.sha256()
             h.update(f1.read_bytes())
             manifest["files"][0]["sha256"] = h.hexdigest()
@@ -198,6 +227,9 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
 
             manifest = {
                 "schema_version": "host-review-bundle-manifest-v1",
+                "source_commit": VALID_SHA,
+                "created_at_utc": VALID_TIME,
+                "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
                         "path": "docs/host-review-package.md",
@@ -209,8 +241,6 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
             manifest_path = bundle_dir / "manifest.json"
             manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
-            # Patch expected sha to match
-            import hashlib
             h = hashlib.sha256()
             h.update(f1.read_bytes())
             manifest["files"][0]["sha256"] = h.hexdigest()

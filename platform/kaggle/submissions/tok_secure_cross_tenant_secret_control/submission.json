@@ -1,0 +1,6 @@
+{
+  "schema_version": "authzbench-public-sample-submission-v1",
+  "findings": [],
+  "leaderboard_eligible": false,
+  "notes": "Denial control; no findings should be reported."
+}

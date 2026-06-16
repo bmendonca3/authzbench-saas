@@ -44,7 +44,7 @@ or expected outcomes.
 
 ## Review Checklist
 
-- `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs`
+- `git ls-files tasks_private/holdout results captures docs/reviews/panel-logs harbor-jobs .harbor .handoff`
   prints no raw private paths for public commits.
 - `python3 scripts/validate_public.py --include-scripted-baseline` passes.
 - Host-controlled private artifacts are referenced by version and fingerprint,

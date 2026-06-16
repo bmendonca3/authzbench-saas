@@ -6,7 +6,7 @@ Status: Draft only. Not a live hosted competition.
 AuthZBench-SaaS: Evidence-Based SaaS Authorization Evaluation
 
 ## Overview
-This competition evaluates autonomous AI agents on their ability to identify and exploit authorization vulnerabilities (BOLA, BFLA, Broken Object Level Authorization, Broken Function Level Authorization) in synthetic SaaS environments. Submissions must provide verifiable, replayable exploit evidence while respecting boundary security controls.
+This proposed host pilot describes how a Kaggle-like host could evaluate autonomous AI agents on their ability to identify and exploit authorization vulnerabilities (BOLA, BFLA, Broken Object Level Authorization, Broken Function Level Authorization) in synthetic SaaS environments. Submissions must provide verifiable, replayable exploit evidence while respecting boundary security controls.
 
 ## Evaluation
 Submissions are ranked using the following priority tiers (matching `docs/evaluation-for-hosts.md` sorting rules):
@@ -22,7 +22,7 @@ Submissions are ranked using the following priority tiers (matching `docs/evalua
 - **Private Split**: 48 private holdout tasks held in custody for final leaderboard evaluation.
 
 ## Submission Format
-Submissions must consist of a CSV row index referencing a ZIP file containing the per-task JSON findings and replayable evidence bundles. Simple label CSVs are not supported.
+Participant submission = CSV or JSON manifest keyed by Id + evidence bundle containing per-task submission.json, request/response proof where applicable, run metadata, and summary.json. The bundle may be delivered as a ZIP, runner image, or host-approved format depending on host decision. Simple label CSVs are not supported.
 
 ## Timeline
 Timeline and milestones are TBD by the host.

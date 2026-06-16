@@ -30,7 +30,7 @@ Or, to run the aggregate checks including Docker container smoke:
 python3 scripts/validate_host_presentation.py --include-container-smoke
 ```
 
-`artifact/run-public-validation.sh` wraps the core of the public set and also runs the tracked-path privacy check. It is the recommended one-line entrypoint.
+`python3 scripts/run_public_validation.py` wraps the core of the public set and also runs the tracked-path privacy check. It is the recommended cross-platform entrypoint (a bash wrapper is also available at `artifact/run-public-validation.sh`).
 
 ## Maintainer-Only Strict Set
 

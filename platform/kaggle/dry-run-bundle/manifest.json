@@ -1,6 +1,33 @@
 {
   "schema_version": "authzbench-public-dry-run-submission-v1",
-  "notes": "Toy public dry-run shape; not leaderboard eligible.",
+  "status": "toy_public_shape_only",
   "leaderboard_eligible": false,
-  "runs": []
+  "split": "public",
+  "csv": "sample_submission.csv",
+  "submission_count": 3,
+  "tasks": [
+    {
+      "Id": "tok_cross_tenant_secret_read",
+      "finding_path": "submissions/tok_cross_tenant_secret_read/submission.json",
+      "expected_vulnerable": true,
+      "control_type": null
+    },
+    {
+      "Id": "tok_secure_cross_tenant_secret_control",
+      "finding_path": "submissions/tok_secure_cross_tenant_secret_control/submission.json",
+      "expected_vulnerable": false,
+      "control_type": "denial"
+    },
+    {
+      "Id": "sup_admin_reassignment_control",
+      "finding_path": "submissions/sup_admin_reassignment_control/submission.json",
+      "expected_vulnerable": false,
+      "control_type": "authorized_allow"
+    }
+  ],
+  "expected_shape_files": [
+    "expected-shape/environment.json",
+    "expected-shape/metadata.json",
+    "expected-shape/summary.json"
+  ]
 }
