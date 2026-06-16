@@ -14,7 +14,7 @@
         "artifact/expected-output/v1-readiness-public-view.json"
       ],
       "description": "Public-view v1 readiness fixture match",
-      "elapsed_seconds": 0.254,
+      "elapsed_seconds": 0.276,
       "id": "v1_readiness",
       "passed": true,
       "returncode": 0,
@@ -27,7 +27,7 @@
         "scripts/check_claim_boundary.py"
       ],
       "description": "Claim-boundary forbidden-phrase CI check",
-      "elapsed_seconds": 0.513,
+      "elapsed_seconds": 0.518,
       "id": "claim_boundary",
       "passed": true,
       "returncode": 0,
@@ -41,7 +41,7 @@
         "--check"
       ],
       "description": "Task oracle audit (schema gate)",
-      "elapsed_seconds": 0.041,
+      "elapsed_seconds": 0.047,
       "id": "task_oracle_audit",
       "passed": true,
       "returncode": 0,
@@ -54,7 +54,7 @@
         "scripts/generate_task_taxonomy.py"
       ],
       "description": "Task taxonomy report",
-      "elapsed_seconds": 0.042,
+      "elapsed_seconds": 0.051,
       "id": "task_taxonomy",
       "passed": true,
       "returncode": 0,
@@ -68,7 +68,7 @@
         "--require-current-public"
       ],
       "description": "Baseline variance and confidence",
-      "elapsed_seconds": 0.06,
+      "elapsed_seconds": 0.065,
       "id": "baseline_variance",
       "passed": true,
       "returncode": 0,
@@ -84,12 +84,12 @@
         "-q"
       ],
       "description": "Harbor non-claim test",
-      "elapsed_seconds": 0.264,
+      "elapsed_seconds": 0.338,
       "id": "harbor_claim_boundary",
       "passed": true,
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.07s"
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.08s"
     },
     {
       "command": [
@@ -102,7 +102,7 @@
         "-q"
       ],
       "description": "Adversarial scorer test count (objective-3 reachability gate)",
-      "elapsed_seconds": 0.205,
+      "elapsed_seconds": 0.233,
       "id": "scorer_adversarial",
       "passed": true,
       "returncode": 0,

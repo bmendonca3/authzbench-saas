@@ -191,4 +191,4 @@ evidence, and target-request coverage rate.
 
 ## See also
 
-- [`docs/scoring-examples.md`](scoring-examples.md) — concrete worked examples of every per-task verdict shape.
+- [`docs/scoring-and-submissions.md`](scoring-and-submissions.md) — concrete worked examples of every per-task verdict shape.

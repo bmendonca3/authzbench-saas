@@ -17,10 +17,9 @@ from scripts.build_host_review_bundle import check_private_markers, DENY_PREFIXE
 from scripts.check_claim_boundary import _scan_text_file
 
 REQUIRED_FILES = [
-    "docs/host-review-package.md",
+    "docs/host/host-review-package.md",
     "platform/kaggle/sample_submission.csv",
     "platform/kaggle/sample_submission.json",
-    "docs/host-facing-one-page-summary.md",
     "platform/kaggle/README.md",
     "platform/kaggle/rules-template.md",
     "platform/kaggle/competition-page-draft.md",

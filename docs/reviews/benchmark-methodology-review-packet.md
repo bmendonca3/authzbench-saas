@@ -2,7 +2,7 @@
 
 This packet is the v2 external-review handoff for an independent
 benchmark / evals methodology reviewer. It assumes the reviewer has
-read [`docs/current-claim-boundary.md`](../current-claim-boundary.md)
+read [`docs/claims-and-evidence.md`](../claims-and-evidence.md)
 and the
 [`docs/reviews/external-review-intake.md`](external-review-intake.md)
 intake form.

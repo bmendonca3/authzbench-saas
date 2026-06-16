@@ -8,7 +8,7 @@ from scripts.build_host_review_bundle import is_allowed_file, check_private_mark
 class BuildHostReviewBundleTests(unittest.TestCase):
     def test_is_allowed_file_valid(self) -> None:
         self.assertTrue(is_allowed_file("README.md"))
-        self.assertTrue(is_allowed_file("docs/host-review-package.md"))
+        self.assertTrue(is_allowed_file("docs/host/host-review-package.md"))
         self.assertTrue(is_allowed_file("platform/kaggle/sample_submission.csv"))
         self.assertTrue(is_allowed_file("authzbench/score.py"))
 

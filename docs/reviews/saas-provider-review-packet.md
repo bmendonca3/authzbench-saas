@@ -36,15 +36,12 @@ This review lane is distinct from the AppSec review
 Use public-safe artifacts only:
 
 - `README.md`
-- `docs/benchmark-card.md`
-- `docs/evidence-and-claims.md`
-- `docs/methodology.md`
+- `docs/benchmark-spec.md`
+- `docs/claims-and-evidence.md`
+- `docs/scoring-and-submissions.md`
 - `docs/task-taxonomy.md`
 - `docs/task-quality-rubric.md`
 - `docs/task-quality-matrix.md`
-- `docs/current-claim-boundary.md`
-- `docs/score-policy.md`
-- `docs/scoring-examples.md`
 - `artifact/task-taxonomy.json`
 - `artifact/task-oracle-audit.json`
 - Public task manifests under `tasks/`

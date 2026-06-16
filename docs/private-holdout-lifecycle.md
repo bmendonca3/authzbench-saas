@@ -114,7 +114,7 @@ forbidden-pattern allow-list before any public artifact is published.
 
 ## See also
 
-- [`docs/holdout-and-contamination.md`](holdout-and-contamination.md):
+- [`docs/benchmark-spec.md`](benchmark-spec.md#5-holdout-and-contamination-prevention):
   the contamination model that explains why the public split and
   private holdouts are kept disjoint.
 - [`docs/holdout-rotation-protocol.md`](holdout-rotation-protocol.md):

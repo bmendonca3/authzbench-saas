@@ -17,7 +17,7 @@ The benchmark focuses on a narrow, practical security question:
 > Harbor-endorsed benchmark, SaaS-provider-validated benchmark, production
 > vulnerability discovery benchmark, validated model benchmark, or community
 > benchmark. See the canonical claim table at
-> [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md). The
+> [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md). The
 > `local_or_containerized_submission_smoke` gate covers the local Docker
 > submission smoke only and explicitly sets
 > `hosted_leaderboard_operation_claimed: false`.
@@ -52,15 +52,14 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 `artifact/expected-output/v1-readiness-public-view.json` is scoped to the
 internal/public-view readiness gates only. It does **not** assert external
 review, SaaS-provider validation, hosted leaderboard readiness, or platform
-acceptance. See [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md) and
-[`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md).
+acceptance. See [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
 The current maturity label is **credible v1 internal benchmark; credible
 community-benchmark candidate pending external validation**. Do not
 paraphrase this as "externally validated", "leaderboard-grade", "Harbor
 accepted", "SOTA security benchmark", or "production vulnerability
 discovery benchmark". The canonical single-table claim ledger lives at
-[`docs/current-claim-boundary.md`](docs/current-claim-boundary.md), and
+[`docs/claims-and-evidence.md`](docs/claims-and-evidence.md), and
 the CI-enforced forbidden-phrase check at
 `scripts/check_claim_boundary.py` fails the build on wording drift.
 
@@ -125,7 +124,7 @@ path, parity methodology versioning, public-view v1 readiness gates pass,
 native-vs-Harbor local parity evidence where present in tracked artifacts,
 v2 external gates tracked explicitly.
 
-Full claim ledger: [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md).
+Full claim ledger: [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 v1 release note: [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md).
 
 ## Release Evidence Validation
@@ -175,25 +174,20 @@ Full runbook: [`docs/harbor-integration-runbook.md`](docs/harbor-integration-run
 
 - `README.md` — this file
 - [`docs/index.md`](docs/index.md) — full documentation index
-- [`docs/benchmark-card.md`](docs/benchmark-card.md) — scope, intended use,
-  limits
-- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md) — current
-  claim ledger
-- [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md) —
-  canonical single-table claim boundary used in README text, release notes,
-  benchmark card, and external-review notes
+- [`docs/benchmark-spec.md`](docs/benchmark-spec.md) — benchmark scope, intended
+  use, methodology, and holdout plans
+- [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md) — current
+  claim ledger, canonical claim boundary, and v2 external validation roadmap
+- [`docs/scoring-and-submissions.md`](docs/scoring-and-submissions.md) —
+  scoring policy, submission schemas, and anti-gaming guidelines
 - [`docs/artifact-index.md`](docs/artifact-index.md) — public-safe artifact
   index
 - [`docs/validation-commands.md`](docs/validation-commands.md) — validation
   commands
 - [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md) —
   Harbor adapter runbook
-- [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md) —
-  private holdout separation
 - [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md) — v1
   release note
-- [`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md) —
-  deferred v2 validation lanes
 - `artifact/` — tracked public-safe artifacts
 - `tasks/` — public task manifests (6 apps, 60 tasks)
 - `authzbench_harbor/` — repo-side Harbor adapter Python package
@@ -209,16 +203,17 @@ General benchmark reviewers should start with:
 
 1. [`docs/index.md`](docs/index.md): full documentation map.
 2. [`README.md`](README.md): project overview, current status, and supported claims.
-3. [`docs/benchmark-card.md`](docs/benchmark-card.md): benchmark scope and intended use.
-4. [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): claim boundaries.
-5. [`docs/artifact-index.md`](docs/artifact-index.md): what each tracked artifact is allowed to prove.
-6. [`docs/validation-commands.md`](docs/validation-commands.md): public validation set, maintainer strict set, and privacy check.
-7. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md): bounded review questions.
-8. [`docs/goal.md`](docs/goal.md): current v1-prep status and remaining gates.
+3. [`docs/benchmark-spec.md`](docs/benchmark-spec.md): benchmark scope, methodology, and holdout specifications.
+4. [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md): claim boundaries and evidence matrix.
+5. [`docs/scoring-and-submissions.md`](docs/scoring-and-submissions.md): scoring rules and submission formats.
+6. [`docs/artifact-index.md`](docs/artifact-index.md): what each tracked artifact is allowed to prove.
+7. [`docs/validation-commands.md`](docs/validation-commands.md): public validation set, maintainer strict set, and privacy check.
+8. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md): bounded review questions.
+9. [`docs/goal.md`](docs/goal.md): current v1-prep status and remaining gates.
 
 ### Kaggle-Like Host Review
 
-If you are a benchmark host or platform reviewer, please start with [`docs/host-review-package.md`](docs/host-review-package.md). That package maps the repository's runner, scorer, public/private split, sample submission shape, and host decisions into one coherent review path without claiming platform acceptance or hosted leaderboard operation.
+If you are a benchmark host or platform reviewer, please start with [`docs/host/host-review-package.md`](docs/host/host-review-package.md). That package maps the repository's runner, scorer, public/private split, sample submission shape, and host decisions into one coherent review path without claiming platform acceptance or hosted leaderboard operation.
 
 > [!NOTE]
 > The Python package version (e.g. 0.0.1 in `pyproject.toml`) is a tooling/packaging version. Benchmark release labels such as `v1.0-internal` refer to benchmark evidence and task/scoring readiness, not the PyPI package version.
@@ -304,7 +299,7 @@ Unsupported claims:
 - broad cyber capability measurement
 
 For a detailed claim ledger, see
-[`docs/evidence-and-claims.md`](docs/evidence-and-claims.md).
+[`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
 ## Quick Start
 
@@ -441,8 +436,8 @@ Release-facing metrics emphasize:
 - `target_request_coverage_rate` for live HTTP runs
 
 The older `mean_score` field remains for compatibility, but it is not the main
-release-ranking metric. See [`docs/score-policy.md`](docs/score-policy.md) and
-[`docs/leaderboard-schema.md`](docs/leaderboard-schema.md).
+release-ranking metric. See [`docs/scoring-and-submissions.md#1-score-policy`](docs/scoring-and-submissions.md#1-score-policy) and
+[`docs/scoring-and-submissions.md#2-result-and-submission-schema`](docs/scoring-and-submissions.md#2-result-and-submission-schema).
 
 ## Current Baselines
 
@@ -519,7 +514,7 @@ Public docs may include count-level private evidence summaries, but must not
 publish private task bodies, seeds, routes, oracles, raw captures, or per-task
 private result rows.
 
-See [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md) and
+See [`docs/benchmark-spec.md#5-holdout-and-contamination-prevention`](docs/benchmark-spec.md#5-holdout-and-contamination-prevention) and
 [`docs/holdout-rotation-protocol.md`](docs/holdout-rotation-protocol.md).
 
 Future v1/community submission governance is defined in
@@ -571,7 +566,7 @@ v1 does not claim external review, hosted public leaderboard readiness, SaaS-pro
 - third-party submissions
 
 Those are v2 validation tracks, documented in
-[`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md).
+[`docs/claims-and-evidence.md#5-deferred-v2-validation-tracks`](docs/claims-and-evidence.md#5-deferred-v2-validation-tracks).
 
 ## Roadmap
 
@@ -590,26 +585,19 @@ See [`ROADMAP.md`](ROADMAP.md).
 
 - [`docs/index.md`](docs/index.md): full documentation index (start here for
   a 2-minute orientation)
-- [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use and limits
+- [`docs/benchmark-spec.md`](docs/benchmark-spec.md): intended use and limits
 - [`docs/artifact-index.md`](docs/artifact-index.md): public-safe artifact
   index
 - [`docs/validation-commands.md`](docs/validation-commands.md): validation
   commands and privacy check
 - [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md): v1
   release note
-- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim
-  ledger: intended use and limits
-- [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md):
-  canonical single-table claim boundary used in README text, release notes,
-  benchmark card, and external-review notes
-- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim ledger
+- [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md): canonical claim boundary and detailed evidence matrix
+- [`docs/benchmark-spec.md`](docs/benchmark-spec.md): benchmark scope, thesis, methodology, and holdout contamination plans
+- [`docs/scoring-and-submissions.md`](docs/scoring-and-submissions.md): scoring policies, result and submission schemas, and anti-gaming guidelines
 - [`docs/authzbench-saas-v0.0-technical-report.md`](docs/authzbench-saas-v0.0-technical-report.md): technical report draft
 - [`docs/authzbench-saas-v1-prep-technical-report.md`](docs/authzbench-saas-v1-prep-technical-report.md): current v1-prep report draft
 - [`docs/authzbench-saas-v0.0-evidence-map.md`](docs/authzbench-saas-v0.0-evidence-map.md): claim-to-evidence map
-- [`docs/methodology.md`](docs/methodology.md): scoring methodology
-- [`docs/result-schema.md`](docs/result-schema.md): result artifact schema
-- [`docs/leaderboard-schema.md`](docs/leaderboard-schema.md): leaderboard row schema
-- [`docs/score-policy.md`](docs/score-policy.md): headline metric policy
 - [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
 - [`docs/boundary-reasoning-calibration-study.md`](docs/boundary-reasoning-calibration-study.md): current boundary calibration
 - [`docs/v1-community-submission-governance.md`](docs/v1-community-submission-governance.md): future submission governance
@@ -644,7 +632,7 @@ Harbor-compatible adapter support.
 
 It does not claim to be the definitive benchmark for SaaS
 security agents. The plan in
-[`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md)
+[`docs/claims-and-evidence.md#5-deferred-v2-validation-tracks`](docs/claims-and-evidence.md#5-deferred-v2-validation-tracks)
 is what closes the gap between the credible v1 internal benchmark
 label and v2 validation status.
 
