@@ -139,6 +139,11 @@ def validate_bundle(bundle_dir: Path) -> dict:
                         f"outside allowed context: '{line.strip()}'"
                     )
 
+    # Check for prohibited symlinks in the bundle directory
+    for path in bundle_dir.rglob("*"):
+        if path.is_symlink():
+            errors.append(f"Symlinks are prohibited inside the review bundle: {path.relative_to(bundle_dir)}")
+
     # Check for unmanifested extra files in the bundle directory
     actual_paths = {
         str(path.relative_to(bundle_dir).as_posix())

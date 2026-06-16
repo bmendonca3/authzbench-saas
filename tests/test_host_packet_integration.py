@@ -19,7 +19,7 @@ class HostPacketIntegrationTests(unittest.TestCase):
             # We pass allow_dirty=True to ensure the test passes even if there are uncommitted changes during development.
             build_result = build_bundle(
                 tmp_path,
-                ref_commit="21a4fb2ce70386f6a57e470e76aabe9fb48496df",
+                ref_commit="52e7bda3468d01d0a625d1db43b34191ede5c4b3",
                 allow_dirty=True,
                 created_at_utc="2026-06-16T00:00:00Z"
             )

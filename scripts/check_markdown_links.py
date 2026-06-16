@@ -11,9 +11,10 @@ KAGGL_DIR = ROOT / "platform/kaggle"
 README_PATH = ROOT / "README.md"
 
 
-def check_markdown_links(files: list[Path]) -> dict:
+def check_markdown_links(files: list[Path], root: Path = ROOT) -> dict:
     errors = []
     link_pattern = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+    root = root.resolve()
 
     for file_path in files:
         if not file_path.is_file():
@@ -40,8 +41,16 @@ def check_markdown_links(files: list[Path]) -> dict:
 
                     # Resolve relative path
                     target_path = (file_path.parent / path_part).resolve()
-                    rel_file = file_path.relative_to(ROOT) if ROOT in file_path.parents else file_path
-                    rel_target = target_path.relative_to(ROOT) if ROOT in target_path.parents else target_path
+                    rel_file = file_path.relative_to(root) if root in file_path.parents else file_path
+                    try:
+                        target_path.relative_to(root)
+                    except ValueError:
+                        errors.append(
+                            f"{rel_file}:L{line_idx}: Link target '{link}' escapes repository root"
+                        )
+                        continue
+
+                    rel_target = target_path.relative_to(root)
                     if not target_path.exists():
                         errors.append(
                             f"{rel_file}:L{line_idx}: Broken link '{link}' "

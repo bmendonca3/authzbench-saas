@@ -24,6 +24,7 @@ ALLOWLIST = [
     "Dockerfile",
     "docker-compose.yml",
     "authzbench",
+    "authzbench_harbor",
     "apps",
     "tasks",
     "examples",

@@ -249,3 +249,45 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
             result = validate_bundle(bundle_dir)
             self.assertFalse(result["passed"])
             self.assertTrue(any("contains files not listed in manifest" in err.lower() for err in result["errors"]))
+
+    def test_validate_bundle_symlink_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_dir = Path(tmp)
+
+            # Create valid file docs/host-review-package.md
+            f1 = bundle_dir / "docs/host-review-package.md"
+            f1.parent.mkdir(parents=True, exist_ok=True)
+            f1.write_text("Hello, this is host-review package", encoding="utf-8")
+
+            # Create a symlink pointing to f1 (or any other location)
+            sym = bundle_dir / "docs/symlink.md"
+            try:
+                sym.symlink_to(f1)
+            except OSError:
+                # If OS doesn't support symlinks (e.g. non-admin Windows), skip
+                self.skipTest("Symlinks not supported on this environment")
+
+            manifest = {
+                "schema_version": "host-review-bundle-manifest-v1",
+                "source_commit": VALID_SHA,
+                "created_at_utc": VALID_TIME,
+                "claim_boundary": VALID_CLAIM,
+                "files": [
+                    {
+                        "path": "docs/host-review-package.md",
+                        "sha256": "dfcf2de72579b1df098547285c544d6db29cb9316cd9c2a13b6324db0a597a7e",
+                        "bytes": len("Hello, this is host-review package"),
+                    }
+                ],
+            }
+            manifest_path = bundle_dir / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            h = hashlib.sha256()
+            h.update(f1.read_bytes())
+            manifest["files"][0]["sha256"] = h.hexdigest()
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            result = validate_bundle(bundle_dir)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("Symlinks are prohibited" in err for err in result["errors"]))
