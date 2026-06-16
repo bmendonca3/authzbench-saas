@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+"""Validate the built host review bundle."""
+
+import argparse
+import hashlib
+import json
+import os
+import sys
+from pathlib import Path
+
+# Add project root to python path to allow importing scripts
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.append(str(ROOT))
+
+from scripts.build_host_review_bundle import check_private_markers, DENY_PREFIXES
+from scripts.check_claim_boundary import _scan_text_file
+
+REQUIRED_FILES = [
+    "docs/host-review-package.md",
+    "platform/kaggle/sample_submission.csv",
+    "docs/host-facing-one-page-summary.md",
+]
+
+
+def validate_bundle(bundle_dir: Path) -> dict:
+    errors = []
+
+    # 1. manifest.json existence and parsing
+    manifest_path = bundle_dir / "manifest.json"
+    if not manifest_path.is_file():
+        errors.append(f"manifest.json is missing in bundle directory: {bundle_dir}")
+        return {"passed": False, "errors": errors}
+
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        errors.append(f"Failed to parse manifest.json: {e}")
+        return {"passed": False, "errors": errors}
+
+    # Check manifest format
+    if manifest.get("schema_version") != "host-review-bundle-manifest-v1":
+        errors.append(f"Unexpected manifest schema version: {manifest.get('schema_version')}")
+
+    files = manifest.get("files", [])
+    if not files:
+        errors.append("manifest.json contains no files list")
+        return {"passed": False, "errors": errors}
+
+    manifest_paths = set()
+
+    # 2. Check each file listed in the manifest
+    for f_info in files:
+        rel_path = f_info.get("path")
+        expected_sha = f_info.get("sha256")
+        expected_bytes = f_info.get("bytes")
+
+        if not rel_path:
+            errors.append("File entry in manifest missing 'path'")
+            continue
+
+        manifest_paths.add(rel_path)
+
+        # - a manifest path is absolute
+        if rel_path.startswith("/") or rel_path.startswith("\\") or (len(rel_path) > 1 and rel_path[1] == ":"):
+            errors.append(f"Manifest path is absolute: {rel_path}")
+            continue
+
+        # - any path starts with/contains denied prefixes
+        norm_path = Path(rel_path).as_posix()
+        parts = norm_path.split("/")
+        for deny in DENY_PREFIXES:
+            if "/" in deny:
+                if norm_path == deny or norm_path.startswith(deny + "/") or f"/{deny}/" in f"/{norm_path}/":
+                    errors.append(f"File path contains denied prefix '{deny}': {rel_path}")
+            else:
+                if deny in parts:
+                    errors.append(f"File path contains denied component '{deny}': {rel_path}")
+
+        # - file exists on disk
+        actual_file_path = bundle_dir / rel_path
+        if not actual_file_path.is_file():
+            errors.append(f"File in manifest does not exist in bundle: {rel_path}")
+            continue
+
+        # - file size and hash match
+        actual_bytes = actual_file_path.stat().st_size
+        if actual_bytes != expected_bytes:
+            errors.append(f"File size mismatch for {rel_path}: expected {expected_bytes}, got {actual_bytes}")
+
+        h = hashlib.sha256()
+        h.update(actual_file_path.read_bytes())
+        actual_sha = h.hexdigest()
+        if actual_sha != expected_sha:
+            errors.append(f"File hash mismatch for {rel_path}: expected {expected_sha}, got {actual_sha}")
+
+        # - check private markers
+        marker_errors = check_private_markers(actual_file_path)
+        if marker_errors:
+            for err in marker_errors:
+                errors.append(f"{rel_path}: {err}")
+
+        # - check forbidden claim boundary text
+        if actual_file_path.suffix.lower() in [".md", ".rst", ".txt", ".py", ".json", ".yml", ".yaml"]:
+            if not rel_path.startswith("tests/") and not rel_path.startswith("docs/reviews/"):
+                hits = _scan_text_file(actual_file_path)
+                for line_number, line, phrase in hits:
+                    errors.append(
+                        f"{rel_path}:L{line_number}: Forbidden claim boundary phrase '{phrase}' "
+                        f"outside allowed context: '{line.strip()}'"
+                    )
+
+    # 3. Check for required host docs
+    for req in REQUIRED_FILES:
+        if req not in manifest_paths:
+            errors.append(f"Required file is missing from the bundle: {req}")
+
+    return {"passed": len(errors) == 0, "errors": errors}
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Validate the built host review bundle.")
+    parser.add_argument("--bundle-dir", default="dist/authzbench-saas-host-review", help="Path to bundle directory.")
+    args = parser.parse_args()
+
+    bundle_dir = Path(args.bundle_dir)
+    result = validate_bundle(bundle_dir)
+    if not result["passed"]:
+        print("Host review bundle validation FAILED:", file=sys.stderr)
+        for err in result["errors"]:
+            print(f"- {err}", file=sys.stderr)
+        sys.exit(1)
+    print("Host review bundle validation PASSED.")
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

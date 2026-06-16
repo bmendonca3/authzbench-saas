@@ -1,0 +1,6 @@
+{
+  "schema_version": "authzbench-public-dry-run-submission-v1",
+  "findings": [],
+  "leaderboard_eligible": false,
+  "notes": "Authorized-allow control; no exploit findings should be reported."
+}

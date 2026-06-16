@@ -7,7 +7,7 @@ python3 scripts/validate_leaderboard_submission.py \
   --submission 'leaderboard_submissions/**/*.json' \
   --require-source-summary
 
-tracked_private="$(git ls-files tasks_private/holdout results captures docs/reviews/panel-logs)"
+tracked_private="$(git ls-files tasks_private/holdout results captures docs/reviews/panel-logs harbor-jobs .harbor .handoff)"
 if [ -n "$tracked_private" ]; then
   echo "ERROR: private/raw artifact paths are tracked:"
   echo "$tracked_private"

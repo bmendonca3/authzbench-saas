@@ -1,0 +1,184 @@
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+from scripts.validate_host_review_bundle import validate_bundle
+
+
+class ValidateHostReviewBundleTests(unittest.TestCase):
+    def test_validate_bundle_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_dir = Path(tmp)
+            import hashlib
+
+            def get_sha(text: str) -> str:
+                h = hashlib.sha256()
+                h.update(text.encode("utf-8"))
+                return h.hexdigest()
+
+            # Create required files
+            f1_text = "Hello, this is host-review package"
+            f1 = bundle_dir / "docs/host-review-package.md"
+            f1.parent.mkdir(parents=True, exist_ok=True)
+            f1.write_text(f1_text, encoding="utf-8")
+
+            f2_text = "Id,finding_path,notes"
+            f2 = bundle_dir / "platform/kaggle/sample_submission.csv"
+            f2.parent.mkdir(parents=True, exist_ok=True)
+            f2.write_text(f2_text, encoding="utf-8")
+
+            f3_text = "One page summary"
+            f3 = bundle_dir / "docs/host-facing-one-page-summary.md"
+            f3.parent.mkdir(parents=True, exist_ok=True)
+            f3.write_text(f3_text, encoding="utf-8")
+
+            manifest = {
+                "schema_version": "host-review-bundle-manifest-v1",
+                "source_commit": "ef8b233",
+                "created_at_utc": "2026-06-16T00:00:00Z",
+                "files": [
+                    {
+                        "path": "docs/host-review-package.md",
+                        "sha256": get_sha(f1_text),
+                        "bytes": len(f1_text),
+                    },
+                    {
+                        "path": "platform/kaggle/sample_submission.csv",
+                        "sha256": get_sha(f2_text),
+                        "bytes": len(f2_text),
+                    },
+                    {
+                        "path": "docs/host-facing-one-page-summary.md",
+                        "sha256": get_sha(f3_text),
+                        "bytes": len(f3_text),
+                    },
+                ],
+            }
+
+            manifest_path = bundle_dir / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            result = validate_bundle(bundle_dir)
+            self.assertTrue(result["passed"], result.get("errors"))
+
+    def test_validate_bundle_missing_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_dir = Path(tmp)
+            result = validate_bundle(bundle_dir)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("manifest.json is missing" in err for err in result["errors"]))
+
+    def test_validate_bundle_mismatched_hash(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_dir = Path(tmp)
+
+            f1 = bundle_dir / "docs/host-review-package.md"
+            f1.parent.mkdir(parents=True, exist_ok=True)
+            f1.write_text("Hello, this is host-review package", encoding="utf-8")
+
+            # Missing f2 and f3 but let's just test hash mismatch first
+            manifest = {
+                "schema_version": "host-review-bundle-manifest-v1",
+                "files": [
+                    {
+                        "path": "docs/host-review-package.md",
+                        "sha256": "wrong_hash",
+                        "bytes": len("Hello, this is host-review package"),
+                    }
+                ],
+            }
+            manifest_path = bundle_dir / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            result = validate_bundle(bundle_dir)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("hash mismatch" in err for err in result["errors"]))
+
+    def test_validate_bundle_denied_prefix(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_dir = Path(tmp)
+
+            f1 = bundle_dir / "harbor-jobs/job-1/log.txt"
+            f1.parent.mkdir(parents=True, exist_ok=True)
+            f1.write_text("Job log", encoding="utf-8")
+
+            manifest = {
+                "schema_version": "host-review-bundle-manifest-v1",
+                "files": [
+                    {
+                        "path": "harbor-jobs/job-1/log.txt",
+                        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # dummy
+                        "bytes": 7,
+                    }
+                ],
+            }
+            manifest_path = bundle_dir / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            result = validate_bundle(bundle_dir)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("denied component" in err or "denied prefix" in err for err in result["errors"]))
+
+    def test_validate_bundle_private_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_dir = Path(tmp)
+
+            f1 = bundle_dir / "docs/host-review-package.md"
+            f1.parent.mkdir(parents=True, exist_ok=True)
+            f1.write_text("API key: sk-" + "12345678901234567890123456789012", encoding="utf-8")
+
+            manifest = {
+                "schema_version": "host-review-bundle-manifest-v1",
+                "files": [
+                    {
+                        "path": "docs/host-review-package.md",
+                        "sha256": "dummy_sha",
+                        "bytes": len("API key: sk-" + "12345678901234567890123456789012"),
+                    }
+                ],
+            }
+            manifest_path = bundle_dir / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            # Let's patch expected sha to match
+            import hashlib
+            h = hashlib.sha256()
+            h.update(f1.read_bytes())
+            manifest["files"][0]["sha256"] = h.hexdigest()
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            result = validate_bundle(bundle_dir)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("Contains OpenAI API key" in err for err in result["errors"]))
+
+    def test_validate_bundle_claim_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            bundle_dir = Path(tmp)
+
+            f1 = bundle_dir / "docs/host-review-package.md"
+            f1.parent.mkdir(parents=True, exist_ok=True)
+            f1.write_text("This is an externally validated benchmark.", encoding="utf-8")
+
+            manifest = {
+                "schema_version": "host-review-bundle-manifest-v1",
+                "files": [
+                    {
+                        "path": "docs/host-review-package.md",
+                        "sha256": "dummy_sha",
+                        "bytes": len("This is an externally validated benchmark."),
+                    }
+                ],
+            }
+            manifest_path = bundle_dir / "manifest.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            import hashlib
+            h = hashlib.sha256()
+            h.update(f1.read_bytes())
+            manifest["files"][0]["sha256"] = h.hexdigest()
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            result = validate_bundle(bundle_dir)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("Forbidden claim boundary phrase" in err for err in result["errors"]))

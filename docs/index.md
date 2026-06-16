@@ -95,20 +95,24 @@ artifact index and what each tracked artifact is allowed to prove.
 
 ## Kaggle-Like Host Review
 
-- [`docs/host-review-package.md`](host-review-package.md): one-page host
-  review route and artifact map.
-- [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md):
-  concrete host-presentation checklist and open decisions.
-- [`docs/kaggle-hosting-model.md`](kaggle-hosting-model.md): viable hosting
-  models and recommended host-review path.
-- [`docs/evaluation-for-hosts.md`](evaluation-for-hosts.md): scoring and
-  leaderboard metric explanation for host reviewers.
-- [`docs/solution-file-contract.md`](solution-file-contract.md): public-safe
-  solution-file schema and private custody rules.
-- [`docs/privacy-and-holdout-custody.md`](privacy-and-holdout-custody.md):
-  public/private artifact boundary.
-- [`platform/kaggle/README.md`](../platform/kaggle/README.md): public-safe
-  sample-submission artifact directory.
+- [`docs/host-review-package.md`](host-review-package.md): one-page host review route and artifact map.
+- [`docs/host-facing-one-page-summary.md`](host-facing-one-page-summary.md): host-facing one-page summary.
+- [`docs/kaggle-presentation-todo.md`](kaggle-presentation-todo.md): concrete host-presentation checklist status.
+- [`docs/kaggle-hosting-model.md`](kaggle-hosting-model.md): hosting models and proposed host-review path.
+- [`docs/evaluation-for-hosts.md`](evaluation-for-hosts.md): scoring and metric explanation.
+- [`docs/solution-file-contract.md`](solution-file-contract.md): public-safe solution-file schema.
+- [`docs/privacy-and-holdout-custody.md`](privacy-and-holdout-custody.md): public/private artifact boundary.
+- [`docs/host-reproducibility-matrix.md`](host-reproducibility-matrix.md): reproducibility matrix.
+- [`docs/host-baseline-summary.md`](host-baseline-summary.md): compact baseline summary.
+- [`docs/host-architecture.md`](host-architecture.md): Mermaid architecture flowchart.
+- [`docs/host-packet-versioning.md`](host-packet-versioning.md): host packet versioning note.
+- [`docs/host-private-leakage-response.md`](host-private-leakage-response.md): runbook for private leakage response.
+- [`docs/host-review-walkthrough-transcript.md`](host-review-walkthrough-transcript.md): walkthrough transcript for host reviewers.
+- [`platform/kaggle/README.md`](../platform/kaggle/README.md): Kaggle integration README.
+- [`platform/kaggle/rules-template.md`](../platform/kaggle/rules-template.md): draft rules template for host discussion.
+- [`platform/kaggle/competition-page-draft.md`](../platform/kaggle/competition-page-draft.md): competition page overview and timelines.
+- [`platform/kaggle/faq.md`](../platform/kaggle/faq.md): FAQ answering host-facing questions.
+- [`platform/kaggle/toy_solution_file.csv`](../platform/kaggle/toy_solution_file.csv): example host-side private solution file.
 
 ## Contributor And Reviewer
 

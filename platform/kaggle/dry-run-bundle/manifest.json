@@ -1,0 +1,6 @@
+{
+  "schema_version": "authzbench-public-dry-run-submission-v1",
+  "notes": "Toy public dry-run shape; not leaderboard eligible.",
+  "leaderboard_eligible": false,
+  "runs": []
+}

@@ -12,7 +12,7 @@ updated first, and the linked docs are updated to match.
 ## Top-level interpretation note
 
 `v1_ready: true` in
-[`artifact/expected-output/v1-readiness-public-view.json`](artifact/expected-output/v1-readiness-public-view.json)
+[`artifact/expected-output/v1-readiness-public-view.json`](../artifact/expected-output/v1-readiness-public-view.json)
 is scoped to the **internal / public-view** readiness gates only. It is the
 output of the ten internal gates listed in
 [`docs/v1-readiness-checklist.md`](v1-readiness-checklist.md). It does

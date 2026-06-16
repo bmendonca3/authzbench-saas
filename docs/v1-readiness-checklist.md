@@ -172,7 +172,7 @@ internal preflight only: it runs the ten internal gates and reports
 `v1_ready: false` until the strict release-evidence gate is supplied.
 True v1 readiness requires the tracked validator to be run with the
 external release evidence file, kept outside public Git per the
-completion gate in [`docs/goal.md`](../goal.md):
+completion gate in [`docs/goal.md`](goal.md):
 
 ```bash
 python3 scripts/validate_v1_readiness.py --release-evidence docs/release-evidence.json

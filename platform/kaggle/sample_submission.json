@@ -1,0 +1,13 @@
+{
+  "schema_version": "authzbench-kaggle-like-sample-submission-v1",
+  "status": "toy_public_shape_only",
+  "leaderboard_eligible": false,
+  "split": "public",
+  "tasks": [
+    {
+      "Id": "tok_cross_tenant_secret_read",
+      "finding_path": "submissions/tok_cross_tenant_secret_read/submission.json"
+    }
+  ],
+  "notes": "CSV/JSON sample indexes evidence bundle paths. It is not a scored result and not private-holdout evidence."
+}

@@ -11,6 +11,13 @@ Treat native CSV leaderboard scoring as a later host decision, because
 AuthZBench-SaaS scores replayable backend evidence rather than a simple label
 prediction.
 
+### Decision for this Packet
+
+- **Primary host proposal**: Model A (dataset/review package) plus Model B (maintainer-operated or host-controlled private evaluation pilot).
+- **Model A**: The current repository functions as a review package for methodology, task quality, and local reproducibility checks.
+- **Model B**: Replay-based scoring is operated via maintainer or host-controlled private runners using gitignored private holdout packs to preserve task custody.
+- **Model C (native CSV-only scoring)**: Deferred for this initial packet because AuthZBench-SaaS requires backend-replayable evidence validation. Native CSV format is used only as an index mapping to evidence files, not for standalone label scoring.
+
 Recommended near-term model:
 
 1. Publish the repo, public task pack, validation commands, and sample
