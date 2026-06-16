@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Consolidation Notice**: This file is slated for consolidation. Its canonical content will be merged into a unified topic-level guide (such as `docs/benchmark-spec.md` or `docs/scoring-and-submissions.md`) in subsequent consolidation phases.
+
 # Harbor parity per-task pairing contract
 
 The fix-plan section 6 calls for a per-task pairing artifact that

@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Consolidation Notice**: This file is slated for consolidation. Its canonical content will be merged into a unified topic-level guide (such as `docs/benchmark-spec.md` or `docs/scoring-and-submissions.md`) in subsequent consolidation phases.
+
 # Multi-step discovery task spec
 
 The fix-plan section 4.3 asks for a new task type: `multi_step_discovery`.
