@@ -51,8 +51,7 @@ Do not describe this as:
 `v1_ready: true` in `artifact/expected-output/v1-readiness-public-view.json`
 is scoped to the internal/public-view readiness gates only. It does not
 assert Harbor acceptance or any other external validation. See
-[`evidence-and-claims.md`](evidence-and-claims.md) and
-[`v2-external-validation-roadmap.md`](v2-external-validation-roadmap.md).
+[`claims-and-evidence.md`](claims-and-evidence.md).
 
 Repo-side adapter compatibility, local Harbor smoke, and local per-task parity
 are complete for the public package. The remaining Harbor-specific blockers are

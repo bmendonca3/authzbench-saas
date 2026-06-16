@@ -24,9 +24,8 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
     def test_validate_bundle_valid(self) -> None:
         # Override REQUIRED_FILES for the valid path test
         scripts.validate_host_review_bundle.REQUIRED_FILES = [
-            "docs/host-review-package.md",
+            "docs/host/host-review-package.md",
             "platform/kaggle/sample_submission.csv",
-            "docs/host-facing-one-page-summary.md",
         ]
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -39,7 +38,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
 
             # Create required files
             f1_text = "Hello, this is host-review package"
-            f1 = bundle_dir / "docs/host-review-package.md"
+            f1 = bundle_dir / "docs/host/host-review-package.md"
             f1.parent.mkdir(parents=True, exist_ok=True)
             f1.write_text(f1_text, encoding="utf-8")
 
@@ -48,11 +47,6 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
             f2.parent.mkdir(parents=True, exist_ok=True)
             f2.write_text(f2_text, encoding="utf-8")
 
-            f3_text = "One page summary"
-            f3 = bundle_dir / "docs/host-facing-one-page-summary.md"
-            f3.parent.mkdir(parents=True, exist_ok=True)
-            f3.write_text(f3_text, encoding="utf-8")
-
             manifest = {
                 "schema_version": "host-review-bundle-manifest-v1",
                 "source_commit": VALID_SHA,
@@ -60,7 +54,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
                 "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
-                        "path": "docs/host-review-package.md",
+                        "path": "docs/host/host-review-package.md",
                         "sha256": get_sha(f1_text),
                         "bytes": len(f1_text),
                     },
@@ -68,11 +62,6 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
                         "path": "platform/kaggle/sample_submission.csv",
                         "sha256": get_sha(f2_text),
                         "bytes": len(f2_text),
-                    },
-                    {
-                        "path": "docs/host-facing-one-page-summary.md",
-                        "sha256": get_sha(f3_text),
-                        "bytes": len(f3_text),
                     },
                 ],
             }
@@ -94,7 +83,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             bundle_dir = Path(tmp)
 
-            f1 = bundle_dir / "docs/host-review-package.md"
+            f1 = bundle_dir / "docs/host/host-review-package.md"
             f1.parent.mkdir(parents=True, exist_ok=True)
             f1.write_text("Hello, this is host-review package", encoding="utf-8")
 
@@ -105,7 +94,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
                 "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
-                        "path": "docs/host-review-package.md",
+                        "path": "docs/host/host-review-package.md",
                         "sha256": "wrong_hash",
                         "bytes": len("Hello, this is host-review package"),
                     }
@@ -150,7 +139,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             bundle_dir = Path(tmp)
 
-            f1 = bundle_dir / "docs/host-review-package.md"
+            f1 = bundle_dir / "docs/host/host-review-package.md"
             f1.parent.mkdir(parents=True, exist_ok=True)
             f1.write_text("API key: sk-" + "12345678901234567890123456789012", encoding="utf-8")
 
@@ -161,7 +150,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
                 "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
-                        "path": "docs/host-review-package.md",
+                        "path": "docs/host/host-review-package.md",
                         "sha256": "dummy_sha",
                         "bytes": len("API key: sk-" + "12345678901234567890123456789012"),
                     }
@@ -183,7 +172,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             bundle_dir = Path(tmp)
 
-            f1 = bundle_dir / "docs/host-review-package.md"
+            f1 = bundle_dir / "docs/host/host-review-package.md"
             f1.parent.mkdir(parents=True, exist_ok=True)
             f1.write_text("This is an externally validated benchmark.", encoding="utf-8")
 
@@ -194,7 +183,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
                 "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
-                        "path": "docs/host-review-package.md",
+                        "path": "docs/host/host-review-package.md",
                         "sha256": "dummy_sha",
                         "bytes": len("This is an externally validated benchmark."),
                     }
@@ -217,7 +206,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
             bundle_dir = Path(tmp)
 
             # Create manifest with only f1
-            f1 = bundle_dir / "docs/host-review-package.md"
+            f1 = bundle_dir / "docs/host/host-review-package.md"
             f1.parent.mkdir(parents=True, exist_ok=True)
             f1.write_text("Hello, this is host-review package", encoding="utf-8")
 
@@ -232,7 +221,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
                 "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
-                        "path": "docs/host-review-package.md",
+                        "path": "docs/host/host-review-package.md",
                         "sha256": "dfcf2de72579b1df098547285c544d6db29cb9316cd9c2a13b6324db0a597a7e",
                         "bytes": len("Hello, this is host-review package"),
                     }
@@ -254,8 +243,8 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             bundle_dir = Path(tmp)
 
-            # Create valid file docs/host-review-package.md
-            f1 = bundle_dir / "docs/host-review-package.md"
+            # Create valid file docs/host/host-review-package.md
+            f1 = bundle_dir / "docs/host/host-review-package.md"
             f1.parent.mkdir(parents=True, exist_ok=True)
             f1.write_text("Hello, this is host-review package", encoding="utf-8")
 
@@ -274,7 +263,7 @@ class ValidateHostReviewBundleTests(unittest.TestCase):
                 "claim_boundary": VALID_CLAIM,
                 "files": [
                     {
-                        "path": "docs/host-review-package.md",
+                        "path": "docs/host/host-review-package.md",
                         "sha256": "dfcf2de72579b1df098547285c544d6db29cb9316cd9c2a13b6324db0a597a7e",
                         "bytes": len("Hello, this is host-review package"),
                     }

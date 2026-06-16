@@ -75,8 +75,6 @@ TABLE_ALLOW_HEADERS: tuple[str, ...] = (
 )
 
 CANONICAL_CLAIM_FILES: tuple[str, ...] = (
-    "docs/current-claim-boundary.md",
-    "docs/evidence-and-claims.md",
     "docs/claims-and-evidence.md",
     "docs/benchmark-spec.md",
     "docs/v1-readiness-checklist.md",

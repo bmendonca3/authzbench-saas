@@ -81,14 +81,14 @@ These items cannot be completed without Kaggle/Harbor platform decisions:
 ## Recommended Next Steps for Kaggle
 
 1. **Review the host-review package**: Start with
-   [`docs/host-review-package.md`](host-review-package.md) for the full
+   [`docs/host/host-review-package.md`](host/host-review-package.md) for the full
    methodology and artifact inventory.
 2. **Run public validation locally**: Execute
    `python3 scripts/validate_public.py --include-scripted-baseline` to
    reproduce the public validation gate.
 3. **Decide on hosting model**: Model A (dataset/review package) and Model B
    (maintainer-operated private evaluation pilot) are recommended. See
-   [`docs/kaggle-hosting-model.md`](kaggle-hosting-model.md).
+   [`docs/host/hosting-model.md`](host/hosting-model.md).
 4. **Confirm Docker spec**: Provide the expected container shape, artifact
    paths, and scoring interface for Kaggle-hosted execution.
 5. **Schedule external reviews**: Independent AppSec, evals, and agent/tooling

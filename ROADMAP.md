@@ -79,7 +79,7 @@ track over time. It needs a public submission pipeline, hosted or fully
 containerized evaluation, rotating holdouts, multiple task packs, external
 contributors, and leaderboard governance. This is the v2 / external lane; it
 is not in the `v1.0-internal` release scope and uses the forbidden-phrase
-list in `docs/current-claim-boundary.md` to gate the wording.
+list in `docs/claims-and-evidence.md` to gate the wording.
 
 ## Completed Release Path: v0.0
 
@@ -214,7 +214,7 @@ Status: complete. v1 internal release-candidate infrastructure validated; extern
 
 v1 does not claim external review, hosted public leaderboard readiness, SaaS-provider validation, or platform acceptance.
 Those are tracked as v2 gates in
-`docs/v2-external-validation-roadmap.md`.
+`docs/claims-and-evidence.md#5-deferred-v2-validation-tracks`.
 
 v1 release gates:
 
