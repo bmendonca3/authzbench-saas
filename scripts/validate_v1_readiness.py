@@ -382,6 +382,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/benchmark-spec.md",
     "docs/claims-and-evidence.md",
     "docs/scoring-and-submissions.md",
+    "docs/authzbench-saas-v0.0-evidence-map.md",
     "scripts/validate_v0_release.py",
     # Deleted redirect stubs (Phase 4 Docs consolidation)
     "docs/current-status-for-kaggle.md",
