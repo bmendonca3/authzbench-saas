@@ -1,0 +1,48 @@
+{
+  "schema_version": "external-review-registry-v1",
+  "description": "Registry of independent external review records. v2 external-validation completion requires every lane to be in 'complete' status with a real reviewer record. Until then the project is a credible community-benchmark candidate, not externally validated.",
+  "lanes": [
+    {
+      "lane": "appsec",
+      "reviewer_role": "AppSec reviewer",
+      "packet": "docs/reviews/appsec-review-packet.md",
+      "schema": "docs/reviews/schemas/appsec-review.schema.json",
+      "review_status": "pending",
+      "reviewer_id": null,
+      "review_date": null,
+      "reviewed_commit_sha": null,
+      "overall_disposition": null,
+      "blocking_issues": [],
+      "nonblocking_issues": [],
+      "per_task_records": []
+    },
+    {
+      "lane": "benchmark_evals",
+      "reviewer_role": "Benchmark / evals reviewer",
+      "packet": "docs/reviews/benchmark-methodology-review-packet.md",
+      "schema": "docs/reviews/schemas/evals-review.schema.json",
+      "review_status": "pending",
+      "reviewer_id": null,
+      "review_date": null,
+      "reviewed_commit_sha": null,
+      "overall_disposition": null,
+      "blocking_issues": [],
+      "nonblocking_issues": [],
+      "per_task_records": []
+    },
+    {
+      "lane": "agent_tooling",
+      "reviewer_role": "AI-agent / tooling reviewer",
+      "packet": "docs/reviews/agent-tooling-review-packet.md",
+      "schema": "docs/reviews/schemas/agent-tooling-review.schema.json",
+      "review_status": "pending",
+      "reviewer_id": null,
+      "review_date": null,
+      "reviewed_commit_sha": null,
+      "overall_disposition": null,
+      "blocking_issues": [],
+      "nonblocking_issues": [],
+      "per_task_records": []
+    }
+  ]
+}

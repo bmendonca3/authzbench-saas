@@ -1,7 +1,7 @@
 {
   "schema_version": "hosted-submission-execution-runbook-v1",
   "evidence_status": "runbook",
-  "public_claim_boundary": "This runbook is not release smoke evidence. It defines the maintainer-platform procedure, but hosted_or_containerized_submission_execution remains incomplete until release-candidate smoke passes against the active private pack.",
+  "public_claim_boundary": "This runbook is not release smoke evidence. It defines the maintainer-platform procedure, but local_or_containerized_submission_smoke remains incomplete until release-candidate smoke passes against the active private pack.",
   "required_private_inputs": [
     "active private pack path",
     "active private pack version",

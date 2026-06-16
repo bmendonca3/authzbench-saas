@@ -20,6 +20,8 @@
   "benchmark_fingerprint_provenance": "runner-emitted",
   "benchmark_version": "v1",
   "boundary_reasoning_pass_rate": 0.0,
+  "capability_baseline": false,
+  "cohort": "schema-sanity",
   "comparability_key": "authzbench-cmp-v1:8cc3f1b7909c4ab03bb2a89b68cbb5af083606fb2097aa1fa6115465ee38e8a2",
   "control_execution_pass_rate": 0.8333,
   "control_false_report_rate": 0.0,
@@ -40,6 +42,7 @@
   "private_holdout_task_count": 24,
   "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
   "public_task_count": 0,
+  "purpose": "schema/provenance/false-positive sanity only; not a model or tool-agent capability row",
   "repeat_evidence": {
     "aggregation": "primary_run",
     "primary_run_id": "empty-response-private-tool-agent-e8e86cb-run1-redacted",

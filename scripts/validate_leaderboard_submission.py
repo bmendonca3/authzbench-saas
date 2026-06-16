@@ -146,6 +146,149 @@ EXPECTED_HARNESS_BY_KIND = {
     "tool_agent_baseline": {"tool-agent"},
 }
 
+ROTATION_METADATA_PATH = ROOT / "tasks_private" / "holdout" / "rotation-metadata.json"
+PUBLIC_PRIVATE_HOLDOUT_BLOCKER_PATH = ROOT / "artifact" / "private-holdout-operation-blocker.json"
+
+# Pack roles that are eligible to back a private-holdout or combined
+# leaderboard submission. Today the only eligible role is "active";
+# "shadow" packs are diagnostic only and "retired" packs are
+# historical evidence that must not be scored as current.
+ELIGIBLE_PACK_ROLES = frozenset({"active"})
+
+
+def _load_rotation_metadata() -> dict[str, dict[str, str]]:
+    """Return a map of pack fingerprint -> pack dict. Returns an
+    empty map if the rotation-metadata file is missing or malformed.
+    The leaderboard validator then has to fail closed for any
+    private-holdout submission because there is no active pack to
+    match against.
+    """
+    if not ROTATION_METADATA_PATH.is_file():
+        return _load_public_private_pack_metadata()
+    try:
+        data = load_json(ROTATION_METADATA_PATH)
+    except Exception:  # noqa: BLE001 - rotation metadata may be missing in slim checkouts.
+        return {}
+    packs = data.get("packs") if isinstance(data, dict) else None
+    if not isinstance(packs, list):
+        return {}
+    out: dict[str, dict[str, str]] = {}
+    for pack in packs:
+        if not isinstance(pack, dict):
+            continue
+        fingerprint = str(pack.get("fingerprint_sha256", "")).strip()
+        if fingerprint:
+            out[fingerprint] = {
+                "id": str(pack.get("id", "")),
+                "role": str(pack.get("role", "")),
+            }
+    return out
+
+
+def _load_public_private_pack_metadata() -> dict[str, dict[str, str]]:
+    """Return public-safe active/shadow pack metadata when private
+    rotation metadata is absent from a clean checkout.
+
+    The blocker artifact publishes count-level fingerprints only; it
+    deliberately omits private manifests and task identifiers. That is
+    enough for public validators to enforce that current private
+    leaderboard rows point at the active pack instead of a shadow or
+    unknown pack.
+    """
+    if not PUBLIC_PRIVATE_HOLDOUT_BLOCKER_PATH.is_file():
+        return {}
+    try:
+        data = load_json(PUBLIC_PRIVATE_HOLDOUT_BLOCKER_PATH)
+    except Exception:  # noqa: BLE001 - public fallback is optional.
+        return {}
+    evidence = data.get("count_level_public_evidence") if isinstance(data, dict) else None
+    if not isinstance(evidence, dict):
+        return {}
+    packs: dict[str, dict[str, str]] = {}
+    for role in ("active", "shadow"):
+        fingerprint = str(evidence.get(f"{role}_pack_fingerprint_sha256", "")).strip()
+        pack_id = str(evidence.get(f"{role}_pack_id", "")).strip()
+        if fingerprint and pack_id:
+            packs[fingerprint] = {"id": pack_id, "role": role}
+    return packs
+
+
+def _validate_private_pack_role(
+    submission: dict[str, Any],
+    errors: list[str],
+    warnings: list[str],
+) -> None:
+    """Goal-external-validation-coverage.md objective-5 CI gate.
+
+    The hard-fail rule applies to leaderboard-eligible private-holdout
+    or combined submissions: the fingerprint must match an active
+    pack in tasks_private/holdout/rotation-metadata.json. A missing
+    fingerprint, an unknown fingerprint, or a non-active role
+    (shadow or retired) is a hard error.
+
+    Non-eligible private-holdout submissions (i.e. evidence rows
+    kept on disk but explicitly not on the leaderboard) are
+    allowed to omit the fingerprint; the validator emits a
+    warning so reviewers can spot legacy evidence that pre-dates
+    the rotation-metadata convention. Combined splits follow the
+    same rule as private-holdout.
+    """
+    split = submission.get("split")
+    if split not in {"private-holdout", "combined"}:
+        return
+    leaderboard_eligible = submission.get("leaderboard_eligible") is True
+    fingerprint = str(submission.get("private_pack_fingerprint_sha256", "")).strip()
+    metadata = _load_rotation_metadata()
+    if not fingerprint:
+        if leaderboard_eligible:
+            errors.append(
+                f"split={split} submissions must declare private_pack_fingerprint_sha256"
+            )
+        else:
+            warnings.append(
+                f"split={split} submission does not declare private_pack_fingerprint_sha256; "
+                "this is allowed for non-leaderboard-eligible legacy evidence rows but "
+                "becomes a hard error for any row marked leaderboard_eligible=true"
+            )
+        return
+    if not metadata:
+        if leaderboard_eligible:
+            errors.append(
+                "private pack role cannot be verified because tasks_private/holdout/"
+                "rotation-metadata.json is missing or malformed"
+            )
+        else:
+            warnings.append(
+                "private pack role cannot be verified because tasks_private/holdout/"
+                "rotation-metadata.json is missing or malformed; non-eligible legacy row"
+            )
+        return
+    pack = metadata.get(fingerprint)
+    if pack is None:
+        if leaderboard_eligible:
+            errors.append(
+                f"private_pack_fingerprint_sha256 {fingerprint!r} does not match any "
+                "known pack in tasks_private/holdout/rotation-metadata.json"
+            )
+        else:
+            warnings.append(
+                f"private_pack_fingerprint_sha256 {fingerprint!r} does not match any known pack"
+            )
+        return
+    if pack["role"] not in ELIGIBLE_PACK_ROLES:
+        if leaderboard_eligible:
+            errors.append(
+                f"private_pack_fingerprint_sha256 {fingerprint!r} matches pack "
+                f"{pack['id']!r} (role={pack['role']!r}); only role=active packs are "
+                "eligible to back a private-holdout or combined leaderboard submission"
+            )
+        else:
+            warnings.append(
+                f"private_pack_fingerprint_sha256 points at non-active pack "
+                f"{pack['id']!r} (role={pack['role']!r}); legacy evidence row only"
+            )
+
+
 SOURCE_SUMMARY_FIELDS = {
     "agent",
     "model",
@@ -721,6 +864,8 @@ def validate_submission(
         errors.append("task_count must be positive")
     if public_count + private_count != task_count:
         errors.append("public_task_count + private_holdout_task_count must equal task_count")
+    _validate_private_pack_role(submission, errors, warnings)
+
     if split == "public" and (public_count != task_count or private_count != 0):
         errors.append("public split submissions must have public_task_count=task_count and private_holdout_task_count=0")
     if split == "private-holdout" and (private_count != task_count or public_count != 0):

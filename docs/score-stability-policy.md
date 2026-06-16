@@ -91,3 +91,7 @@ evidence.
 
 Public-split development runs must not be mixed with private-holdout
 leaderboard rows as if they are the same evidence class.
+
+## See also
+
+- [`docs/scoring-examples.md`](scoring-examples.md) — concrete worked examples of every per-task verdict shape.

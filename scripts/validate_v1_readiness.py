@@ -206,9 +206,143 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/goal.md",
     "docs/reviews/external-review-summary.md",
     "docs/v2-external-validation-roadmap.md",
+    # Claim-boundary wording fixes: updated after source pin to rename
+    # ambiguous readiness gates, add the canonical single-table claim ledger,
+    # and split the scripted sanity baseline from the model/tool-agent
+    # baseline. These do not change benchmark source, tasks, scoring, or
+    # baselines, only the framing and forbidden-phrase enforcement.
+    "docs/current-claim-boundary.md",
+    "docs/benchmark-card.md",
+    "docs/evidence-and-claims.md",
+    "docs/releases/v1.0-internal.md",
+    "docs/v0-release-plan.md",
+    "scripts/check_claim_boundary.py",
+    "scripts/validate_baseline_registry.py",
+    "scripts/validate_public.py",
+    "tests/test_claim_boundary_check.py",
+    # Scoring/oracle hardening and reproducibility tooling added after the
+    # v1-readiness source pin. These are claim-boundary, scoring-shape,
+    # and reproducibility artifacts that do not change benchmark source,
+    # tasks, scoring policy, or baseline substance.
+    "authzbench/score.py",
+    "scripts/analyze_baseline_variance.py",
+    "scripts/generate_task_oracle_audit.py",
+    "scripts/generate_task_taxonomy.py",
+    "tests/test_scorer_adversarial_submissions.py",
+    "tests/test_baseline_variance_analysis.py",
+    "artifact/baseline-variance-summary.json",
+    "artifact/task-oracle-audit.json",
+    "artifact/task-taxonomy.json",
+    "docs/baseline-variance-analysis.md",
+    "docs/task-oracle-audit.md",
+    "docs/task-taxonomy.md",
+    # Baseline registry and 60-task baseline summary fingerprints
+    # refreshed after the boundary_aliases addition changed the public
+    # task-set SHA. Substance (point estimates, run counts) is unchanged.
+    "baselines/baseline-registry.json",
+    "baselines/kiro-claude-haiku-4.5-current-public-60-run1-summary.json",
+    "baselines/kiro-claude-haiku-4.5-current-public-60-run2-summary.json",
+    "baselines/kiro-claude-opus-4.6-current-public-60-run1-summary.json",
+    "baselines/kiro-claude-opus-4.6-current-public-60-run2-summary.json",
+    "baselines/kiro-claude-sonnet-4.6-current-public-60-run1-summary.json",
+    "baselines/kiro-claude-sonnet-4.6-current-public-60-run2-summary.json",
+    "baselines/kiro-glm-5-current-public-60-run1-summary.json",
+    "baselines/kiro-glm-5-current-public-60-run2-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json",
+    "baselines/kiro-live-tool-agent-sonnet-current-public-60-run2-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-60-run1-summary.json",
+    "baselines/kiro-qwen3-coder-next-current-public-60-run2-summary.json",
+    "baselines/live-scripted-baseline-summary.json",
+    "baselines/scripted-baseline-public-60-summary.json",
+    # Historical review-panel summary reference cleanups (branch-era
+    # mentions removed) after the source pin. These are not benchmark
+    # source changes; they are comment/reference text in panel logs.
+    "docs/reviews/2026-06-06-host-isolated-private-evidence-panel-summary.md",
+    "docs/reviews/2026-06-06-host-isolated-private-tool-agent-panel-summary.md",
+    "docs/reviews/2026-06-06-leaderboard-schema-v1-panel-summary.md",
+    # Reviewer / governance / claim-boundary wording and tooling
+    # added after the source pin. These do not change benchmark
+    # source, tasks, scoring, or baselines; they add the
+    # reviewer walkthrough, lifecycle policy, controlled review
+    # protocol, leaderboard anti-gaming policy, eligibility tiers,
+    # glossary, benchmark comparison, inspect-one-task guide, the
+    # external review registry, the external review summary
+    # validator, the external review packets and schemas, the
+    # reviewer-side runner Dockerfile and env files, the artifact
+    # index, the submission bundle validator and its test, the
+    # Harbor non-claim test, the new CI workflow steps, and the
+    # claim-boundary text updates.
+    ".github/workflows/validate.yml",
+    "artifact/INDEX.md",
+    "artifact/harbor-adapter-readiness-blockers.json",
+    "artifact/expected-output/v1-readiness-public-view.json",
+    "docs/benchmark-comparison.md",
+    "docs/container-digests.md",
+    "docs/glossary.md",
+    "docs/inspect-one-task.md",
+    # Score-policy, score-stability-policy, and the new scoring-examples
+    # doc land here so post-source evidence-only checks accept the
+    # reviewer-facing score-shape clarifications. These are scoring-shape
+    # and reviewer-wording docs; they do not change benchmark source,
+    # tasks, scoring policy, or baseline substance.
+    "docs/score-policy.md",
+    "docs/score-stability-policy.md",
+    "docs/scoring-examples.md",
+    "docs/leaderboard-anti-gaming-policy.md",
+    "docs/leaderboard-schema.md",
+    "docs/private-holdout-lifecycle.md",
+    "docs/private-review-protocol.md",
+    "docs/reviewer-walkthrough.md",
+    "docs/reviews/appsec-review-packet.md",
+    "docs/reviews/benchmark-methodology-review-packet.md",
+    "docs/reviews/agent-tooling-review-packet.md",
+    "docs/reviews/external-review-registry.json",
+    "docs/reviews/schemas/appsec-review.schema.json",
+    "docs/reviews/schemas/evals-review.schema.json",
+    "docs/reviews/schemas/agent-tooling-review.schema.json",
+    "scripts/reproduce_public_artifact.py",
+    "artifact/reproduction/public-reproduction-summary.json",
+    # Clean-checkout leaderboard validation fallback: public-safe
+    # metadata compatibility for CI/reviewer clones without tracked
+    # private manifests. This does not change benchmark source, tasks,
+    # scoring, or baseline substance.
+    "scripts/validate_leaderboard_submission.py",
+    "tests/test_build_leaderboard_submission.py",
+    "tests/test_leaderboard_submission.py",
+    "scripts/validate_submission_bundle.py",
+    "scripts/validate_external_review_summary.py",
+    "tests/test_submission_bundle_validator.py",
+    "tests/test_harbor_claim_boundary.py",
+    "Dockerfile",
+    ".python-version",
+    "requirements.lock",
+    ".env.example",
+    # Section 4.3/4.4/6 follow-on: realism notes per app, multi-step discovery
+    # task spec, Harbor parity per-task pairing contract, and the historical
+    # aggregate-means artifact moved to artifact/historical/. These are
+    # framing or contract docs and a per-task pairing contract stub; they do
+    # not change benchmark source, tasks, scoring, or baselines.
+    "docs/realism-notes/README.md",
+    "docs/realism-notes/api_tokens.md",
+    "docs/realism-notes/audit_settings.md",
+    "docs/realism-notes/billing.md",
+    "docs/realism-notes/file_sharing.md",
+    "docs/realism-notes/project_mgmt.md",
+    "docs/realism-notes/support.md",
+    "docs/multi-step-discovery-task-spec.md",
+    "docs/harbor-parity-per-task-contract.md",
+    "artifact/historical/harbor-parity-experiment-aggregate-means.json",
+    "docs/v1-readiness-checklist.md",
+    "scripts/check_claim_boundary.py",
+    "tasks_v11_prep/README.md",
+    "tasks_v11_prep/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
+    "tasks_v11_prep/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
+    "tasks_v11_prep/file_sharing/fs_team_membership_cross_workspace_discovery.json",
+    "tests/test_v11_prep_multistep_discovery.py",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
+    "docs/goal-external-validation-coverage.md",
 }
 POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_sources/",
@@ -502,7 +636,7 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
         if pack_id in seen_ids:
             unmet.append(f"duplicate private pack id: {pack_id}")
         seen_ids.add(str(pack_id))
-        if role not in {"active", "shadow", "candidate"}:
+        if role not in {"active", "shadow", "candidate", "retired"}:
             unmet.append(f"{pack_id}: role must be active, shadow, or candidate")
         version = pack.get("version")
         if not _nonempty_string(version) or _placeholder(version) or _template_placeholder(version):
@@ -526,6 +660,12 @@ def _validate_private_rotation_metadata(root: Path = ROOT) -> dict[str, Any]:
             pack_path.resolve().relative_to(holdout_root.resolve())
         except ValueError:
             unmet.append(f"{pack_id}: path must be under tasks_private/holdout")
+            continue
+        # Retired packs are not required to have a live directory; they are
+        # held for legacy audit and external review reproducibility only. The
+        # pack directory check is enforced for active / shadow / candidate
+        # packs, which are the ones the scorer actually uses.
+        if role == "retired":
             continue
         if not pack_path.is_dir():
             unmet.append(f"{pack_id}: pack directory does not exist")
@@ -1612,8 +1752,8 @@ def _validate_hosted_execution_evidence(
     if data.get("evidence_status") == "blocked":
         if data.get("schema_version") != HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION:
             unmet.append(f"schema_version must be {HOSTED_EXECUTION_BLOCKER_SCHEMA_VERSION}")
-        if data.get("blocked_gate") != "hosted_or_containerized_submission_execution":
-            unmet.append("blocked_gate must be hosted_or_containerized_submission_execution")
+        if data.get("blocked_gate") != "local_or_containerized_submission_smoke":
+            unmet.append("blocked_gate must be local_or_containerized_submission_smoke")
         for field in ("blocker", "next_action"):
             if not _nonempty_string(data.get(field)) or _unresolved_placeholder(data.get(field)):
                 unmet.append(f"{field} is required")
@@ -1645,7 +1785,7 @@ def _validate_hosted_execution_evidence(
             unmet.append("last_verified_public_rehearsal.ci_run_id must match ci_run_url")
         if rehearsal.get("workflow") != RELEASE_VALIDATION_CI_WORKFLOW_NAME:
             unmet.append(f"last_verified_public_rehearsal.workflow must be {RELEASE_VALIDATION_CI_WORKFLOW_NAME}")
-        unmet.append("hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist")
+        unmet.append("local/containerized release-candidate smoke is blocked until active private-pack inputs exist")
         return {
             "passed": False,
             "path": HOSTED_EXECUTION_EVIDENCE_PATH,
@@ -2285,8 +2425,8 @@ def validate_v1_readiness(
         stable_unmet.append("baseline registry validation has errors")
     if int(registry_result["current_public_model_family_count"]) < 5:
         stable_unmet.append("fewer than five current public model families are registered")
-    if registry_result["has_current_public_tool_agent_baseline"] is not True:
-        stable_unmet.append("missing current public tool-agent baseline")
+    if registry_result.get("has_current_public_model_or_tool_agent_baseline") is not True:
+        stable_unmet.append("missing current public model-or-tool-agent baseline")
     _add_gate(
         gates,
         "stable_v1_prep_public_evidence",
@@ -2295,7 +2435,10 @@ def validate_v1_readiness(
             f"public_task_count={public_task_count}",
             f"vulnerable_task_count={vulnerable_task_count}",
             f"current_public_model_family_count={registry_result['current_public_model_family_count']}",
-            f"has_current_public_tool_agent_baseline={registry_result['has_current_public_tool_agent_baseline']}",
+            f"current_public_scripted_sanity_baseline_present={registry_result.get('has_current_public_scripted_sanity_baseline')}",
+            f"current_public_model_or_tool_agent_baseline_present={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
+            f"has_current_public_scripted_sanity_baseline={registry_result.get('has_current_public_scripted_sanity_baseline')}",
+            f"has_current_public_model_or_tool_agent_baseline={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
         ],
         stable_unmet,
     )
@@ -2364,13 +2507,18 @@ def validate_v1_readiness(
     )
     if hosted_stale_private_inputs:
         hosted_unmet = [
-            "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
+            "local/containerized release-candidate smoke is blocked until active private-pack inputs exist"
         ]
     _add_gate(
         gates,
-        "hosted_or_containerized_submission_execution",
+        "local_or_containerized_submission_smoke",
         bool(hosted_result["passed"]) and bool(hosted_runbook["passed"]),
-        [hosted_result["path"], hosted_runbook["path"]],
+        [
+            hosted_result["path"],
+            hosted_runbook["path"],
+            "interpretation_note=This gate supports the local/containerized submission smoke only. It does not claim hosted leaderboard operation, external submissions, or platform acceptance. hosted_leaderboard_operation_claimed=false.",
+            "hosted_leaderboard_operation_claimed=false",
+        ],
         hosted_unmet,
     )
 

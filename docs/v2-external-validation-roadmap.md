@@ -1,5 +1,7 @@
 # V2 External Validation Roadmap
 
+> **See also:** [`docs/current-claim-boundary.md`](current-claim-boundary.md) for the canonical claim table that names these v2 / external gates.
+
 External review and platform acceptance are not v1 gates.
 They are preserved here as v2 validation tracks.
 

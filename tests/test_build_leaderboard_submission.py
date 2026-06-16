@@ -7,7 +7,20 @@ from pathlib import Path
 
 from scripts.build_leaderboard_submission import build_submission
 from scripts.protected_private_eval import ROOT, redacted_summary
-from scripts.validate_leaderboard_submission import validate_submission
+from scripts.validate_leaderboard_submission import _load_rotation_metadata, validate_submission
+
+
+def _active_private_pack_fingerprint() -> str:
+    """Return the role=active private pack fingerprint from the
+    rotation metadata. The leaderboard submission validator
+    (objective-5) requires every leaderboard-eligible
+    private-holdout or combined submission to point at this
+    fingerprint.
+    """
+    for fingerprint, pack in _load_rotation_metadata().items():
+        if pack.get("role") == "active":
+            return fingerprint
+    raise RuntimeError("no active private pack in rotation-metadata.json")
 
 
 def _runner_summary(run_id: str) -> dict:
@@ -44,6 +57,7 @@ def _runner_summary(run_id: str) -> dict:
         "invalid_submission_rate": 0.0,
         "mean_score": 0.625,
         "model": "unit-model",
+        "private_pack_fingerprint_sha256": _active_private_pack_fingerprint(),
         "protected_execution": {
             "agent_cwd": "temporary-empty-workspace",
             "agent_received": "rendered-context-only",
