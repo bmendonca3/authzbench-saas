@@ -38,12 +38,9 @@ REQUIRED_REVIEW_LANES = (
 REQUIRED_REVIEW_PACKET_ARTIFACTS = (
     "README.md",
     "ROADMAP.md",
-    "docs/benchmark-card.md",
-    "docs/evidence-and-claims.md",
-    "docs/methodology.md",
-    "docs/score-policy.md",
-    "docs/result-schema.md",
-    "docs/leaderboard-schema.md",
+    "docs/benchmark-spec.md",
+    "docs/claims-and-evidence.md",
+    "docs/scoring-and-submissions.md",
     "docs/task-quality-rubric.md",
     "docs/task-quality-matrix.md",
     "docs/baseline-credibility.md",
@@ -404,6 +401,13 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/host/host-review-walkthrough.md",
     "docs/evaluation-for-hosts.md",
     "docs/solution-file-contract.md",
+    # Core benchmark spec, claims, and scoring/submissions consolidation.
+    # These are documentation consolidations and relocations only; they do
+    # not change benchmark source, tasks, scorer policy, baselines, or
+    # private-holdout evidence.
+    "docs/benchmark-spec.md",
+    "docs/claims-and-evidence.md",
+    "docs/scoring-and-submissions.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
