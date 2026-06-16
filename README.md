@@ -63,6 +63,18 @@ discovery benchmark". The canonical single-table claim ledger lives at
 the CI-enforced forbidden-phrase check at
 `scripts/check_claim_boundary.py` fails the build on wording drift.
 
+## Roadmap At A Glance
+
+| Stage | Status | What it proves | Next gate |
+| --- | --- | --- | --- |
+| `v0.0` public release | Complete | First evidence-backed public benchmark snapshot with 46 frozen public tasks, release evidence, CI, privacy checks, and tagged release artifacts. | Preserved as historical release evidence. |
+| `v1.0-internal` | Complete | Current internally validated artifact with 60 public tasks, 48 maintainer-private holdout tasks, deterministic scoring, private-holdout governance, and repo-side Harbor adapter path. | Keep docs, validators, and artifacts aligned while external tracks are still pending. |
+| `v2` external validation | Deferred | Independent AppSec/evals/agent review, SaaS-provider scenario validation, platform review, hosted operation, and third-party submissions. | Recruit reviewers, run external lanes, record real dispositions, and update the claim ledger. |
+
+The full roadmap is maintained in [`ROADMAP.md`](ROADMAP.md). Claim limits and
+the v2 external-validation tracks are maintained in
+[`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
+
 ## What This Is
 
 A benchmark for evaluating whether AI agents can reason about SaaS
@@ -209,7 +221,7 @@ General benchmark reviewers should start with:
 6. [`docs/artifact-index.md`](docs/artifact-index.md): what each tracked artifact is allowed to prove.
 7. [`docs/validation-commands.md`](docs/validation-commands.md): public validation set, maintainer strict set, and privacy check.
 8. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md): bounded review questions.
-9. [`docs/goal.md`](docs/goal.md): current v1-prep status and remaining gates.
+9. [`docs/goal.md`](docs/goal.md): current v1.0-internal status and remaining gates.
 
 ### Kaggle-Like Host Review
 
@@ -233,16 +245,15 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
 
 - current 60-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- stale repeated 54-task no-tools public baselines across Qwen, Claude Haiku
+- repeated current 60-task no-tools public baselines across Qwen, Claude Haiku
   4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6; public-split evidence
   only
-- stale repeated 54-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
-  one plan/probe artifact per task, 54/54 target-request correlation in both
-  runs, zero planner or parser failures, and zero secure-control false reports;
-  public-split evidence only
-- frozen v0.0 46-task public baseline summaries and historical 49-task
-  v1-prep rows retained for context only; stale rows are not current comparison
-  evidence
+- repeated current 60-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+  target-request correlation and public-safe plan/probe artifacts; public-split
+  evidence only
+- frozen v0.0 46-task public baseline summaries plus historical 49-task and
+  stale 54-task rows retained for context only; stale rows are not current
+  comparison evidence
 - v0.0 maintainer-only private-holdout summaries published only as redacted
   aggregate evidence
 
@@ -250,7 +261,7 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
 
 - leaderboard-submission schema, source-summary validation, benchmark
   fingerprints, and comparability keys
-- public-safe benchmark charts, task-quality matrix, benchmark card, release
+- public-safe benchmark charts, task-quality matrix, benchmark spec, release
   gates, privacy checks, and fresh-clone validation
 - task-quality gate contract, Harbor adapter contract, Harbor skeleton builder,
   Harbor readiness blockers, and Harbor integration runbook; these preserve
@@ -464,20 +475,21 @@ Important interpretation:
   vulnerable tasks, even when exploit replay succeeded.
 - The 49-task public-split runs include repeated no-tools evidence for five
   model families and a repeated live HTTP tool-agent family. They are now stale
-  after the 54-task support-reassignment expansion and cannot support current
-  comparison until rerun.
-- The stale 54-task split has repeated no-tools Qwen, Claude Haiku 4.5,
-  Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6 families, plus a repeated live
-  HTTP Claude Sonnet 4.6 tool-agent family with 54/54 target-request
-  correlation in both runs. This closes the stable v1-prep public-evidence
-  gate only; private holdouts, hosted execution, external review, and v1-scale
-  claims remain open.
+  after later public-task expansions and cannot support current comparison until
+  rerun.
+- The 54-task split has repeated no-tools Qwen, Claude Haiku 4.5, Claude Sonnet
+  4.6, GLM-5, and Claude Opus 4.6 families, plus a repeated live HTTP Claude
+  Sonnet 4.6 tool-agent family. Those rows are now stale for the 60-task split.
+- The current 60-task split has repeated no-tools model-family evidence and a
+  repeated live HTTP tool-agent family tracked in the baseline registry. These
+  are public-split diagnostics only; private holdouts, hosted operation,
+  external review, and platform acceptance remain separate v2 gates.
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
-  vocabulary required for full vulnerable-task credit. The stale 54-task
-  live tool-agent pair repeats the same exploit-proof versus boundary-credit
-  pattern, but it is not a new calibration study.
+  vocabulary required for full vulnerable-task credit. Later stale 54-task and
+  current 60-task public runs preserve the same distinction between exploit
+  proof and boundary-credit interpretation.
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and
@@ -596,7 +608,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`docs/benchmark-spec.md`](docs/benchmark-spec.md): benchmark scope, thesis, methodology, and holdout contamination plans
 - [`docs/scoring-and-submissions.md`](docs/scoring-and-submissions.md): scoring policies, result and submission schemas, and anti-gaming guidelines
 - [`docs/authzbench-saas-v0.0-technical-report.md`](docs/authzbench-saas-v0.0-technical-report.md): technical report draft
-- [`docs/authzbench-saas-v1-prep-technical-report.md`](docs/authzbench-saas-v1-prep-technical-report.md): current v1-prep report draft
+- [`docs/authzbench-saas-v1-prep-technical-report.md`](docs/authzbench-saas-v1-prep-technical-report.md): current v1 technical report draft
 - [`docs/authzbench-saas-v0.0-evidence-map.md`](docs/authzbench-saas-v0.0-evidence-map.md): claim-to-evidence map
 - [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
 - [`docs/boundary-reasoning-calibration-study.md`](docs/boundary-reasoning-calibration-study.md): current boundary calibration

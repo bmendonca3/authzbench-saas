@@ -1,8 +1,8 @@
 # Roadmap
 
-AuthZBench-SaaS is a released v0.0 artifact for evaluating whether AI agents
-can prove SaaS authorization failures with backend evidence while avoiding false
-positives on secure controls.
+AuthZBench-SaaS is an internally validated SaaS authorization benchmark artifact
+for evaluating whether AI agents can prove access-control failures with backend
+evidence while avoiding false reports on secure controls.
 
 The project should stay focused. It is not a general cyber benchmark. It is a
 benchmark for authorization boundaries: tenants, organizations, users, roles,
@@ -24,21 +24,30 @@ and hard to game through public task memorization.
 
 ## Current Release State
 
-Current state: **v0.0 released**.
+Current state: **v1.0-internal complete** under the internal/non-external release
+definition.
+
+`v1.0-internal` means the repository-side benchmark artifact, validators,
+public/private task scale, claim boundary, and host-review packaging are aligned.
+It does not claim independent external review, SaaS-provider validation, hosted
+operation, platform acceptance, or third-party submissions. Those remain v2
+external-validation tracks in
+[`docs/claims-and-evidence.md`](docs/claims-and-evidence.md#5-deferred-v2-validation-tracks).
 
 Evidence already in place:
 
 - 6 synthetic SaaS apps
 - frozen v0.0 release snapshot with 46 public tasks
-- current v1-prep public split with 54 public tasks
-- a maintainer-only private holdout pack with count-level redacted evidence
+- current v1.0-internal public split with 60 public tasks
+- 48 maintainer-private holdout tasks, summarized only
+- 108 total public + private task scale
 - deterministic backend replay scoring
 - target-side request logging for live HTTP runs
 - five repeated frozen v0.0 public model/agent baseline families
 - one repeated frozen v0.0 public live HTTP tool-agent family
-- one current 54-task scripted harness sanity baseline
-- five repeated current 54-task public no-tools model-family baselines
-- one repeated current 54-task public live HTTP tool-agent baseline
+- current 60-task scripted harness sanity baseline
+- current public model/tool-agent baseline evidence tracked in the baseline
+  registry
 - five repeated historical 49-task public no-tools model-family baselines,
   now stale for current comparison
 - one repeated historical 49-task public live HTTP tool-agent baseline, now
@@ -49,17 +58,19 @@ Evidence already in place:
 - public-safe charts and task-quality matrix
 - release evidence registry
 - privacy checks, fresh-clone validation path, Docker smoke, and CI
-- public-safe task-quality gate contract and Harbor adapter/skeleton validation
-  checks
+- public-safe task-quality gate contract
+- repo-side Harbor adapter package, CLI, scorer bridge, local smoke, parity
+  methodology, dataset validator, and metadata/parity validators
+- Kaggle-like host review package and validation commands
 
 Not yet in place:
 
-- hosted public leaderboard
-- verified Harbor SDK adapter, local Harbor execution, or Harbor parity evidence
-- repeated private tool-agent leaderboard row
-- rotating private holdout packs
-- third-party runs or independent external review
-- v1-scale task volume and methodology paper
+- independent external review
+- SaaS-provider scenario validation
+- hosted/public submission operation
+- Harbor/Kaggle/platform acceptance
+- third-party runs
+- externally validated methodology paper or research-grade review packet
 
 ## Maturity Levels
 
@@ -69,17 +80,18 @@ baselines, verified private-holdout separation, release evidence, privacy checks
 CI, fresh-clone validation, and a `v0.0` tag. It does not require a hosted
 leaderboard.
 
-**Level 2: research artifact.** A benchmark that can support academic or
-industry research. It needs independent review, reproducibility evidence,
-variance analysis, comparison against existing security benchmarks, and a paper
-or technical report.
+**Level 2: v1 internal artifact.** The current repository-side release state. It
+requires 60 public tasks, private-holdout governance, 108 total public/private
+task scale, deterministic scoring, current public-view readiness gates, public
+validation, host-review packaging, and claim-boundary enforcement. It does not
+require external review or platform acceptance.
 
-**Level 3: submission-open benchmark.** A benchmark people can submit to and
-track over time. It needs a public submission pipeline, hosted or fully
-containerized evaluation, rotating holdouts, multiple task packs, external
-contributors, and leaderboard governance. This is the v2 / external lane; it
-is not in the `v1.0-internal` release scope and uses the forbidden-phrase
-list in `docs/claims-and-evidence.md` to gate the wording.
+**Level 3: v2 externally validated benchmark.** A benchmark that can support
+external research or broader submissions. It needs independent review,
+SaaS-provider validation, hosted or fully containerized operation, third-party
+runs, platform review if pursued, and leaderboard governance. This is not in the
+`v1.0-internal` release scope and uses the forbidden-phrase list in
+`docs/claims-and-evidence.md` to gate wording.
 
 ## Completed Release Path: v0.0
 
@@ -117,30 +129,32 @@ Exit criteria:
 
 ## Milestone 1: Public Scaffold and v0 Scope
 
-Status: complete for v0.0.
+Status: complete for v1.0-internal.
 
 - [x] Publish six synthetic SaaS target apps.
 - [x] Publish 46 seeded public tasks.
+- [x] Expand to 60 current public tasks.
 - [x] Include vulnerable tasks, denial controls, and authorized-allow controls.
 - [x] Add deterministic scorer replay transcripts.
 - [x] Add Docker request logging for live HTTP runs.
 - [x] Add route aliases and decoy endpoints.
-- [x] Add first public multi-step workflow wave.
-- [x] Add public benchmark card and methodology docs.
+- [x] Add public multi-step workflow coverage.
+- [x] Consolidate benchmark scope and methodology into
+      `docs/benchmark-spec.md`.
 - [x] Add task-quality rubric and generated task-quality matrix.
 - [x] Add machine-readable task-quality gate validation for public manifests.
 - [x] Add public-safe benchmark charts.
 
 Next improvements:
 
-- [ ] Expand multi-step workflows beyond the first project-management wave.
-- [ ] Add more state-changing authorization tasks across billing, support,
-      file sharing, API tokens, and audit settings.
-- [ ] Increase task count toward v1 scale without diluting control quality.
+- [ ] Continue expanding multi-step workflows without diluting control quality.
+- [ ] Add more state-changing authorization tasks across billing, support, file
+      sharing, API tokens, and audit settings.
+- [ ] Keep public/private task-pack changes tied to refreshed baselines.
 
 ## Milestone 2: Baseline Credibility
 
-Status: v0.0 complete; v1 work remains.
+Status: complete for v1.0-internal; external run evidence remains v2 work.
 
 - [x] Run repeated current baselines for at least five model/agent families.
 - [x] Include at least one live HTTP tool-agent family.
@@ -159,13 +173,13 @@ Next improvements:
 - [x] Add statistical variance analysis for repeated baselines.
 - [x] Add boundary-reasoning calibration for the historical 49-task public
       tool-agent evidence and carry the interpretation forward only as
-      claim-boundary guidance for the current 54-task pair.
+      claim-boundary guidance for current comparisons.
 - [ ] Re-run key baselines after any task/scoring change before comparing
       scores.
 
 ## Milestone 3: Private Holdouts and Anti-Gaming
 
-Status: v0.0 evidence exists; v1 hardening remains.
+Status: complete for v1.0-internal; external/private operation remains bounded.
 
 - [x] Keep private holdouts out of public Git history.
 - [x] Validate private holdout app coverage, vulnerable/control mix, route
@@ -178,14 +192,15 @@ Status: v0.0 evidence exists; v1 hardening remains.
 
 Next improvements:
 
-- [ ] Implement rotating multi-pack private holdouts.
+- [x] Implement active/shadow private holdout metadata.
 - [ ] Add repeated private tool-agent leaderboard-candidate rows.
 - [ ] Add leakage-response and holdout-retirement workflow tests.
 - [ ] Add stronger non-macOS isolation story for protected private execution.
 
 ## Milestone 4: Leaderboard and Submission Infrastructure
 
-Status: schema ready; hosted/community path not ready.
+Status: repo-side and local/containerized paths ready; hosted/community path not
+ready.
 
 - [x] Add `leaderboard-submission-v1` schema.
 - [x] Add source-summary validation.
