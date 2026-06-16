@@ -130,7 +130,11 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
-            "has_current_public_tool_agent_baseline=True",
+            "has_current_public_scripted_sanity_baseline=True",
+            gates["stable_v1_prep_public_evidence"]["evidence"],
+        )
+        self.assertIn(
+            "has_current_public_model_or_tool_agent_baseline=True",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])
@@ -161,12 +165,12 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["harbor_repo_side_target_specified"]["evidence"],
         )
 
-        if gates["hosted_or_containerized_submission_execution"]["passed"]:
-            self.assertEqual(gates["hosted_or_containerized_submission_execution"]["unmet"], [])
+        if gates["local_or_containerized_submission_smoke"]["passed"]:
+            self.assertEqual(gates["local_or_containerized_submission_smoke"]["unmet"], [])
         else:
-            hosted_unmet = gates["hosted_or_containerized_submission_execution"]["unmet"]
+            hosted_unmet = gates["local_or_containerized_submission_smoke"]["unmet"]
             self.assertTrue(
-                "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"
+                "local/containerized release-candidate smoke is blocked until active private-pack inputs exist"
                 in hosted_unmet
                 or "active private pack fingerprint is required for hosted smoke evidence" in hosted_unmet
                 or "benchmark_source_sha does not match expected source SHA" in hosted_unmet
@@ -293,7 +297,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn(PRIVATE_OPERATION_RUNBOOK_PATH, rotation_gate["evidence"])
         self.assertTrue(gates["v1_task_scale"]["passed"])
         self.assertIn("total_task_count=108", gates["v1_task_scale"]["evidence"])
-        self.assertTrue(gates["hosted_or_containerized_submission_execution"]["passed"])
+        self.assertTrue(gates["local_or_containerized_submission_smoke"]["passed"])
         self.assertTrue(gates["repeated_private_tool_agent_evidence"]["passed"])
         self.assertTrue(gates["repeated_private_no_tools_evidence"]["passed"])
 
@@ -749,7 +753,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
     def test_hosted_execution_gate_includes_runbook_and_can_pass_in_public_view(self) -> None:
         result = validate_v1_readiness(public_view=True)
         gates = {gate["id"]: gate for gate in result["gates"]}
-        hosted_gate = gates["hosted_or_containerized_submission_execution"]
+        hosted_gate = gates["local_or_containerized_submission_smoke"]
 
         self.assertTrue(hosted_gate["passed"])
         self.assertIn("artifact/submission-runner-smoke.json", hosted_gate["evidence"])
@@ -761,12 +765,12 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             hosted_validator.return_value = {
                 "passed": False,
                 "path": "artifact/submission-runner-smoke.json",
-                "unmet": ["hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist"],
+                "unmet": ["local/containerized release-candidate smoke is blocked until active private-pack inputs exist"],
             }
             result = validate_v1_readiness(public_view=True)
 
         gates = {gate["id"]: gate for gate in result["gates"]}
-        hosted_gate = gates["hosted_or_containerized_submission_execution"]
+        hosted_gate = gates["local_or_containerized_submission_smoke"]
 
         self.assertFalse(hosted_gate["passed"])
         self.assertIn("artifact/submission-runner-smoke.json", hosted_gate["evidence"])
@@ -775,7 +779,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             any(
                 item in hosted_gate["unmet"]
                 for item in (
-                    "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist",
+                    "local/containerized release-candidate smoke is blocked until active private-pack inputs exist",
                     "active private pack fingerprint is required for hosted smoke evidence",
                     "benchmark_source_sha does not match expected source SHA",
                     "benchmark_source_sha must match release benchmark_source_sha",
@@ -1155,7 +1159,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                     {
                         "schema_version": "submission-runner-smoke-blocker-v1",
                         "evidence_status": "blocked",
-                        "blocked_gate": "hosted_or_containerized_submission_execution",
+                        "blocked_gate": "local_or_containerized_submission_smoke",
                         "blocker": "Needs the active private pack and maintainer-platform release smoke.",
                         "next_action": "Run the release-candidate smoke on the maintainer platform.",
                         "required_release_inputs": [
@@ -1184,7 +1188,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertEqual(
             result["unmet"],
             [
-                "hosted/containerized release-candidate smoke is blocked until active private-pack inputs exist",
+                "local/containerized release-candidate smoke is blocked until active private-pack inputs exist",
             ],
         )
 
@@ -1218,7 +1222,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("schema_version must be submission-runner-smoke-blocker-v1", result["unmet"])
-        self.assertIn("blocked_gate must be hosted_or_containerized_submission_execution", result["unmet"])
+        self.assertIn("blocked_gate must be local_or_containerized_submission_smoke", result["unmet"])
         self.assertIn("blocker is required", result["unmet"])
         self.assertIn("next_action is required", result["unmet"])
         self.assertIn("required_release_inputs must list concrete missing release inputs", result["unmet"])
@@ -1255,7 +1259,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                     {
                         "schema_version": "submission-runner-smoke-blocker-v1",
                         "evidence_status": "blocked",
-                        "blocked_gate": "hosted_or_containerized_submission_execution",
+                        "blocked_gate": "local_or_containerized_submission_smoke",
                         "blocker": "Needs the active private pack and maintainer-platform release smoke.",
                         "next_action": "Run the release-candidate smoke on the maintainer platform.",
                         "required_release_inputs": [

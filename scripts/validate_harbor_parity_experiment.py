@@ -169,6 +169,18 @@ def validate_parity_experiment(
             # because historical evidence predates per-task reward extraction.
         elif methodology == "per_task_pairing":
             _validate_per_task_pairing(data, errors)
+    # Plan 6.2 cross-direction check: any evidence_status="current" payload
+    # must declare parity_methodology="per_task_pairing" regardless of
+    # whether parity_verified is true or false. This is the validator
+    # contract that says "new evidence must use per-task pairing".
+    evidence_status_all = data.get("evidence_status")
+    if evidence_status_all == "current":
+        methodology_all = data.get("parity_methodology")
+        if methodology_all != "per_task_pairing":
+            errors.append(
+                "evidence_status='current' requires parity_methodology='per_task_pairing' "
+                f"(got {methodology_all!r})"
+            )
         # If methodology is None or unknown, per-task checks are skipped;
             # the methodology error above is the actionable signal.
 

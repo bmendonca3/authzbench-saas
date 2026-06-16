@@ -75,6 +75,29 @@ VALID_SUITABILITY = {
     "legacy_snapshot",
 }
 
+# Required provenance fields on every "current" entry. These were
+# introduced after the v1.0-internal release per
+# docs/goal-external-validation-coverage.md objective 1, and are
+# enforced as a hard CI gate for entries that claim current
+# public-split or current public harness-check suitability. Stale
+# and legacy-snapshot entries are explicitly allowed to use the
+# legacy field set (model_family, run_artifacts, etc.) and are
+# warned, not failed, when these fields are missing.
+REQUIRED_CURRENT_ENTRY_PROVENANCE_FIELDS = {
+    "model_name",
+    "model_version",
+    "scaffold_name",
+    "run_date",
+    "evidence_status",
+}
+
+# harness_check entries do not have a model or scaffold; the
+# provenance gate still requires run_date and evidence_status.
+HARNESS_CHECK_REQUIRED_PROVENANCE_FIELDS = {
+    "run_date",
+    "evidence_status",
+}
+
 
 def _current_public_task_items() -> list[tuple[str, dict[str, Any]]]:
     task_root = ROOT / "tasks"
@@ -472,6 +495,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
     model_families: set[str] = set()
     current_model_families: set[str] = set()
     has_tool_agent_baseline = False
+    has_current_scripted_sanity_baseline = False
+    has_current_model_or_tool_agent_baseline = False
     repeated_model_baselines = 0
     seen_entry_ids: set[str] = set()
     entries_by_id: dict[str, dict[str, Any]] = {}
@@ -506,6 +531,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
             errors.append(f"{entry_id}: leaderboard_eligible must be boolean")
         if suitability == "current_public_harness_check" and kind != "harness_check":
             errors.append(f"{entry_id}: current_public_harness_check is only valid for harness_check entries")
+        if kind == "harness_check" and suitability == "current_public_harness_check":
+            has_current_scripted_sanity_baseline = True
         if kind == "harness_check" and suitability == "current_public_split":
             errors.append(f"{entry_id}: harness checks must use current_public_harness_check, not current_public_split")
 
@@ -541,11 +568,47 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
             if not model_family:
                 errors.append(f"{entry_id}: model baselines must declare model_family")
             else:
+                pass
+        if suitability in {"current_public_split", "current_public_harness_check"}:
+            required = (
+                HARNESS_CHECK_REQUIRED_PROVENANCE_FIELDS
+                if kind == "harness_check"
+                else REQUIRED_CURRENT_ENTRY_PROVENANCE_FIELDS
+            )
+            missing_provenance = sorted(
+                field for field in required if not str(raw_entry.get(field, "")).strip()
+            )
+            if missing_provenance:
+                errors.append(
+                    f"{entry_id}: current {suitability} entry missing required provenance "
+                    f"fields: {', '.join(missing_provenance)}"
+                )
+        elif kind in {"model_baseline", "tool_agent_baseline"}:
+            # Stale or legacy-snapshot entries: warn on missing
+            # provenance but do not fail. The warning surfaces in
+            # the validator's JSON output.
+            missing_provenance = sorted(
+                field
+                for field in REQUIRED_CURRENT_ENTRY_PROVENANCE_FIELDS
+                if not str(raw_entry.get(field, "")).strip()
+            )
+            if missing_provenance:
+                warnings.append(
+                    f"{entry_id}: historical entry missing provenance fields "
+                    f"(allowed for stale/legacy only): {', '.join(missing_provenance)}"
+                )
+        if kind in {"model_baseline", "tool_agent_baseline"}:
+            model_family = str(raw_entry.get("model_family", "")).strip()
+            if not model_family:
+                errors.append(f"{entry_id}: model baselines must declare model_family")
+            else:
                 model_families.add(model_family)
                 if suitability == "current_public_split":
                     current_model_families.add(model_family)
+                    has_current_model_or_tool_agent_baseline = True
             if kind == "tool_agent_baseline" and suitability == "current_public_split":
                 has_tool_agent_baseline = True
+                has_current_model_or_tool_agent_baseline = True
                 missing_tool_fields = sorted(REQUIRED_TOOL_AGENT_SUMMARY_FIELDS - set(summary))
                 if missing_tool_fields:
                     errors.append(
@@ -640,7 +703,9 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         "model_family_count": len(model_families),
         "current_public_model_family_count": len(current_model_families),
         "repeated_model_baseline_count": repeated_model_baselines,
-        "has_current_public_tool_agent_baseline": has_tool_agent_baseline,
+        "has_current_public_tool_agent_baseline": has_tool_agent_baseline,  # legacy alias of has_current_public_model_or_tool_agent_baseline
+        "has_current_public_scripted_sanity_baseline": has_current_scripted_sanity_baseline,
+        "has_current_public_model_or_tool_agent_baseline": has_current_model_or_tool_agent_baseline,
         "v0_baseline_ready": not unmet_v0_requirements,
         "unmet_v0_requirements": unmet_v0_requirements,
         "release_snapshots": release_snapshot_results,

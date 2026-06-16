@@ -190,3 +190,52 @@ split and pass the published false-positive threshold.
 
 Deterministic harness checks can be schema-valid examples, but they must remain
 `leaderboard_eligible: false`.
+
+
+## Eligibility Tiers
+
+The leaderboard does not flatten every submission into one blended
+score. Rows are bucketed into five tiers, in increasing order of
+evidence required:
+
+| Tier | Meaning | Minimum evidence |
+| --- | --- | --- |
+| `sanity` | Deterministic scripted row or empty-response row used to validate the runner schema and provenance. | `kind: harness_check` or `kind: empty-response`, `capability_baseline: false`, `cohort: schema-sanity`. |
+| `public-diagnostic` | Public split, single run, no repeat requirement, not eligible for any external comparison. | `release_suitability: current_public_split` (or older), `harness_type` and `model` populated, single run. |
+| `private-candidate` | Private holdout, single run, maintainer-operated. | `private_pack_fingerprint_sha256` matches the active pack, `harness_type: tool-agent` or `harness_type: no-tools-model`, `source_private_path_denial: true`, single run. |
+| `private-eligible` | Private holdout, repeated, provenance valid, runner-emitted fingerprint. | All `private-candidate` requirements plus `run_count >= 2`, `repeat_evidence` populated, `benchmark_fingerprint_provenance: runner-emitted`. |
+| `external-verified` | Third-party or hosted execution verified. | All `private-eligible` requirements plus a recorded `external_reviewer_id` and `external_reviewer_disposition` from `docs/reviews/review-registry.json`. |
+
+A row can sit at the boundary between two tiers (for example
+`public-diagnostic` while the maintainer is collecting a second
+private run). The `tier` field is the row's current bucket, and the
+`next_tier_evidence_required` field lists the smallest additional
+evidence needed to move it up.
+
+Rows below `private-eligible` are not eligible for any external
+comparison and must not be paraphrased as "leaderboard-grade",
+"third-party-validated", or "SOTA". See
+[`docs/current-claim-boundary.md`](current-claim-boundary.md) and
+[`scripts/check_claim_boundary.py`](../scripts/check_claim_boundary.py)
+for the CI-enforced forbidden-phrase list.
+
+## Tool-Agent Comparability Keys
+
+For `harness_type: tool-agent` rows the schema requires a
+`tool_access` block and a comparability key derived from
+`harness_type`, `tool_access`, `max_steps`, `timeout_seconds`,
+`max_http_requests`, `retry_policy`, `temperature`, and the
+`target_request_correlation_required` flag. Two rows are
+comparable only when every key field matches. The
+`scripts/validate_leaderboard_submission.py` validator derives the
+key from these fields and refuses to assign the same key to two
+rows that differ in any of them.
+
+## See Also
+
+- [`docs/leaderboard-anti-gaming-policy.md`](leaderboard-anti-gaming-policy.md):
+  the anti-gaming rules every tier enforces.
+- [`scripts/validate_submission_bundle.py`](../scripts/validate_submission_bundle.py):
+  the CI gate that enforces the bundle structure and tier evidence.
+- [`scripts/validate_leaderboard_submission.py`](../scripts/validate_leaderboard_submission.py):
+  the per-row validator that derives the comparability key.

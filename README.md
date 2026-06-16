@@ -12,6 +12,16 @@ The benchmark focuses on a narrow, practical security question:
 > allowed through, and can it stay quiet when access is correctly denied or
 > correctly allowed?
 
+> **v1.0-internal means internally validated benchmark artifact.** It is not
+> a hosted leaderboard, externally validated benchmark, Harbor-accepted or
+> Harbor-endorsed benchmark, SaaS-provider-validated benchmark, production
+> vulnerability discovery benchmark, validated model benchmark, or community
+> benchmark. See the canonical claim table at
+> [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md). The
+> `local_or_containerized_submission_smoke` gate covers the local Docker
+> submission smoke only and explicitly sets
+> `hosted_leaderboard_operation_claimed: false`.
+
 This repository is a **released v0.0 benchmark artifact**. The strict maintainer
 gate has evidence, and the `v0.0` tag is public, but the project is not a hosted
 leaderboard and should not be called a community benchmark yet.
@@ -30,19 +40,139 @@ answer needs more than fluent prose:
 
 AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 
-## Current Snapshot
+## Status
 
-| Area | Current state |
-| --- | --- |
-| Public apps | 6 synthetic SaaS targets |
-| Public tasks | 60 total: 24 vulnerable, 36 secure controls |
-| Control mix | 21 denial controls, 15 authorized-allow controls |
-| Baselines | Current 60-task scripted sanity only; repeated 54-task Qwen, Haiku, Sonnet, GLM, Opus no-tools evidence and repeated live HTTP Sonnet tool-agent evidence are stale until rerun; v0.0 46-task snapshot preserved |
-| Scoring | Deterministic backend replay plus v0 evidence metrics |
-| Private holdouts | Maintainer-only, ignored from public Git history |
-| Harbor integration | Public-safe adapter contract, skeleton builder, blockers, and runbook only; no verified Harbor execution yet |
-| Release status | v0.0 released; v1 internal release-candidate infrastructure validated; hosted leaderboard, SaaS-provider validation, and external review are v2 gates |
-| Not included | Hosted leaderboard, verified Harbor adapter/run, rotating multi-pack holdouts, external review, SaaS-provider validation, Kaggle or Harbor platform acceptance |
+- Release state: `v1.0-internal` complete under the internal/non-external release definition
+- Public apps: 6 synthetic SaaS targets
+- Public tasks: 60 (24 vulnerable, 36 secure controls; 21 denial, 15 authorized-allow)
+- Maintainer-private holdout tasks: 48, summarized only
+- Total public + private task scale: 108
+- Harbor adapter: repo-side local adapter path implemented (parity methodology versioned, public-safe)
+- External review, SaaS-provider validation, hosted leaderboard operation, Harbor/Kaggle/platform acceptance, and third-party submissions: v2/external gates
+
+`v1_ready: true` in
+`artifact/expected-output/v1-readiness-public-view.json` is scoped to the
+internal/public-view readiness gates only. It does **not** assert external
+review, SaaS-provider validation, hosted leaderboard readiness, or platform
+acceptance. See [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md) and
+[`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md).
+
+The current maturity label is **credible v1 internal benchmark; credible
+community-benchmark candidate pending external validation**. Do not
+paraphrase this as "externally validated", "leaderboard-grade", "Harbor
+accepted", "SOTA security benchmark", or "production vulnerability
+discovery benchmark". The canonical single-table claim ledger lives at
+[`docs/current-claim-boundary.md`](docs/current-claim-boundary.md), and
+the CI-enforced forbidden-phrase check at
+`scripts/check_claim_boundary.py` fails the build on wording drift.
+
+## What This Is
+
+A benchmark for evaluating whether AI agents can reason about SaaS
+authorization boundaries with backend-replayable proof:
+
+- BOLA/BFLA-style authorization failures
+- tenant, organization, project, object, role, and token boundaries
+- correct actor / tenant / role boundary reasoning
+- false-positive avoidance on secure controls
+- safe behavior inside intentionally vulnerable local targets
+
+## What This Is Not
+
+- Not a hosted public leaderboard
+- Not an externally reviewed or industry-standard benchmark
+- Not a Kaggle or Harbor accepted/hosted benchmark
+- Not SaaS-provider validated
+- Not third-party proven
+- Not a benchmark of general cyber capability, exploit development, cloud
+  exploitation, malware, phishing, or production-target vulnerability
+  discovery
+
+## Quickstart
+
+```bash
+git clone https://github.com/bmendonca3/authzbench-saas.git
+cd authzbench-saas
+./artifact/run-public-validation.sh
+```
+
+The script runs the public validation gate, v1 public-readiness fixture
+check, Harbor adapter / blocker / template / preflight checks, baseline
+registry validation, leaderboard submission validation, and the tracked-path
+privacy check. The final line should be:
+
+```text
+Artifact privacy check passed: no private/raw artifact paths are tracked.
+```
+
+See [`docs/validation-commands.md`](docs/validation-commands.md) for the full
+set, including the maintainer-only strict validation set and the Harbor
+local preflight.
+
+## Claims And Boundaries
+
+`AuthZBench-SaaS v1.0-internal` is complete under the internal/non-external
+release definition. It does **not** claim:
+
+- independent external review
+- SaaS-provider scenario validation
+- hosted public leaderboard readiness or operation
+- Harbor or Kaggle or other platform acceptance
+- third-party submissions
+- production SaaS coverage or real customer SaaS authorization coverage
+
+Allowed claims: internally validated, deterministic scoring, public/private
+split, protected private holdout plumbing, repo-side local Harbor adapter
+path, parity methodology versioning, public-view v1 readiness gates pass,
+native-vs-Harbor local parity evidence where present in tracked artifacts,
+v2 external gates tracked explicitly.
+
+Full claim ledger: [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md).
+v1 release note: [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md).
+
+## Harbor Adapter
+
+- Repo-side local adapter path: implemented
+- Public-safe Harbor adapter contract, skeleton builder, and blocker record:
+  shipped
+- Parity methodology versioning: `per_task_pairing` (default for new
+  evidence) and `aggregate_means` (historical only, with
+  `evidence_status: historical_backcompat`)
+- Local smoke evidence: tracked at `artifact/harbor-adapter-smoke.json`
+- Local execution preflight: `python3 scripts/check_harbor_local_execution.py`
+- Harbor SDK integration, Harbor platform acceptance, passing Harbor
+  execution: not claimed (v2 gates)
+
+Full runbook: [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md).
+
+## Repository Map
+
+- `README.md` — this file
+- [`docs/index.md`](docs/index.md) — full documentation index
+- [`docs/benchmark-card.md`](docs/benchmark-card.md) — scope, intended use,
+  limits
+- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md) — current
+  claim ledger
+- [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md) —
+  canonical single-table claim boundary used in README text, release notes,
+  benchmark card, and external-review notes
+- [`docs/artifact-index.md`](docs/artifact-index.md) — public-safe artifact
+  index
+- [`docs/validation-commands.md`](docs/validation-commands.md) — validation
+  commands
+- [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md) —
+  Harbor adapter runbook
+- [`docs/holdout-and-contamination.md`](docs/holdout-and-contamination.md) —
+  private holdout separation
+- [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md) — v1
+  release note
+- [`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md) —
+  deferred v2 validation lanes
+- `artifact/` — tracked public-safe artifacts
+- `tasks/` — public task manifests (6 apps, 60 tasks)
+- `authzbench_harbor/` — repo-side Harbor adapter Python package
+- `scripts/` — validation and runner scripts
+- `tests/` — unit tests
 
 Public checkouts intentionally do not include private holdout manifests. That is
 part of the contamination-control design, not a missing file.
@@ -51,15 +181,20 @@ part of the contamination-control design, not a missing file.
 
 Start here if you are reviewing the benchmark:
 
-1. [`README.md`](README.md): project overview and supported claims.
-2. [`docs/benchmark-card.md`](docs/benchmark-card.md): benchmark scope and
+1. [`docs/index.md`](docs/index.md): full documentation map.
+2. [`README.md`](README.md): project overview, current status, and supported
+   claims.
+3. [`docs/benchmark-card.md`](docs/benchmark-card.md): benchmark scope and
    intended use.
-3. [`docs/score-policy.md`](docs/score-policy.md): scoring interpretation.
 4. [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): claim
    boundaries.
-5. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md):
+5. [`docs/artifact-index.md`](docs/artifact-index.md): what each tracked
+   artifact is allowed to prove.
+6. [`docs/validation-commands.md`](docs/validation-commands.md): public
+   validation set, maintainer strict set, and privacy check.
+7. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md):
    bounded review questions.
-6. [`docs/goal.md`](docs/goal.md): current v1-prep status and remaining gates.
+8. [`docs/goal.md`](docs/goal.md): current v1-prep status and remaining gates.
 
 ## What Is Included
 
@@ -366,15 +501,20 @@ That document is a specification, not a claim that hosted evaluation is live.
 
 ## Release Status
 
-AuthZBench-SaaS is at a released v0.0 stage:
+AuthZBench-SaaS has two public release tags:
 
-- strict maintainer gate evidence exists
-- release notes exist at [`docs/release-notes-v0.0.md`](docs/release-notes-v0.0.md)
-- the public `v0.0` tag points to the post-CI release commit
-- hosted leaderboard and rotating holdouts are v1/community work
+- `v0.0` — the first evidence-backed release snapshot. See
+  [`docs/release-notes-v0.0.md`](docs/release-notes-v0.0.md).
+- `v1.0-internal` — the internal release-candidate cut under the
+  internal/non-external release definition. See
+  [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md).
 
-Do not describe the project as leaderboard-ready or as a validated model
-benchmark until the hosted or containerized leaderboard process exists.
+Do not describe the project as leaderboard-ready, externally validated,
+SaaS-provider validated, or as having Harbor/Kaggle/platform acceptance
+until those v2 gates are completed. Do not call `v1_ready: true` in
+`artifact/expected-output/v1-readiness-public-view.json` a claim of external
+acceptance; that fixture is scoped to the internal/public-view readiness
+gates only.
 
 ## v1 Status
 
@@ -417,7 +557,20 @@ See [`ROADMAP.md`](ROADMAP.md).
 
 ## Documentation Map
 
+- [`docs/index.md`](docs/index.md): full documentation index (start here for
+  a 2-minute orientation)
 - [`docs/benchmark-card.md`](docs/benchmark-card.md): intended use and limits
+- [`docs/artifact-index.md`](docs/artifact-index.md): public-safe artifact
+  index
+- [`docs/validation-commands.md`](docs/validation-commands.md): validation
+  commands and privacy check
+- [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md): v1
+  release note
+- [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim
+  ledger: intended use and limits
+- [`docs/current-claim-boundary.md`](docs/current-claim-boundary.md):
+  canonical single-table claim boundary used in README text, release notes,
+  benchmark card, and external-review notes
 - [`docs/evidence-and-claims.md`](docs/evidence-and-claims.md): current claim ledger
 - [`docs/authzbench-saas-v0.0-technical-report.md`](docs/authzbench-saas-v0.0-technical-report.md): technical report draft
 - [`docs/authzbench-saas-v1-prep-technical-report.md`](docs/authzbench-saas-v1-prep-technical-report.md): current v1-prep report draft
@@ -438,6 +591,31 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`CONTRIBUTING.md`](CONTRIBUTING.md): contribution rules
 - [`SECURITY.md`](SECURITY.md): safe handling guidance
 - [`CITATION.cff`](CITATION.cff): citation metadata
+
+## Limitations
+
+1. The target apps are synthetic.
+2. The public split is inspectable and not leaderboard-grade by itself.
+3. Private holdouts are maintainer-controlled, not platform-governed.
+4. Baselines must be current to support comparisons; the n=2 repeated
+   95% CIs are a coarse ordering signal, not a hard bound.
+5. External AppSec / SaaS-provider validation is deferred to v2.
+6. The benchmark measures SaaS authorization proof quality, not
+   broad cyber capability.
+
+## Contribution
+
+AuthZBench-SaaS contributes a deterministic local benchmark scaffold
+for evaluating AI-agent SaaS authorization reasoning, with replayable
+exploit evidence, secure-control false-positive checks, private
+holdout governance, claim-boundary discipline, and early
+Harbor-compatible adapter support.
+
+It does not claim to be the definitive benchmark for SaaS
+security agents. The plan in
+[`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md)
+is what closes the gap between the credible v1 internal benchmark
+label and externally validated benchmark status.
 
 ## License
 

@@ -1,0 +1,3225 @@
+{
+  "cohorts": {
+    "current-model": {
+      "capability_baseline": true,
+      "cohort": "current-model",
+      "entries": [
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-qwen3-coder-next-current-public-60",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0164,
+              "ci95_high": 0.608,
+              "ci95_low": 0.5753,
+              "mean": 0.5917,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0118,
+              "std_error": 0.0083
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0272,
+              "ci95_high": 1.0133,
+              "ci95_low": 0.9589,
+              "mean": 0.9861,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0197,
+              "std_error": 0.0139
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 36.0,
+              "ci95_low": 36.0,
+              "mean": 36.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.1634,
+              "ci95_high": 0.2467,
+              "ci95_low": -0.08,
+              "mean": 0.0833,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.1179,
+              "std_error": 0.0833
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 3.92,
+              "ci95_high": 5.92,
+              "ci95_low": -1.92,
+              "mean": 2.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 2.8284,
+              "std_error": 2.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 24.0,
+              "ci95_low": 24.0,
+              "mean": 24.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-qwen",
+          "per_task_agreement": {
+            "agreement_rate": 0.9833,
+            "changed_verdict_count": 1,
+            "task_count": 60
+          },
+          "release_suitability": "current_public_split",
+          "run_count": 2,
+          "summary_path": "kiro-qwen3-coder-next-current-public-60-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-haiku-4-5-current-public-60",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.5833,
+              "ci95_low": 0.5833,
+              "mean": 0.5833,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 36.0,
+              "ci95_low": 36.0,
+              "mean": 36.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.1225,
+              "ci95_high": 0.3517,
+              "ci95_low": 0.1067,
+              "mean": 0.2292,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0884,
+              "std_error": 0.0625
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 2.94,
+              "ci95_high": 8.44,
+              "ci95_low": 2.56,
+              "mean": 5.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 2.1213,
+              "std_error": 1.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0278,
+              "ci95_low": 0.0278,
+              "mean": 0.0278,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 24.0,
+              "ci95_low": 24.0,
+              "mean": 24.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-haiku",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 60
+          },
+          "release_suitability": "current_public_split",
+          "run_count": 2,
+          "summary_path": "kiro-claude-haiku-4.5-current-public-60-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-sonnet-4-6-current-public-60",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.5833,
+              "ci95_low": 0.5833,
+              "mean": 0.5833,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 36.0,
+              "ci95_low": 36.0,
+              "mean": 36.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0408,
+              "ci95_high": 0.7283,
+              "ci95_low": 0.6467,
+              "mean": 0.6875,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0294,
+              "std_error": 0.0208
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 17.48,
+              "ci95_low": 15.52,
+              "mean": 16.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0278,
+              "ci95_low": 0.0278,
+              "mean": 0.0278,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 24.0,
+              "ci95_low": 24.0,
+              "mean": 24.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 0.9667,
+            "changed_verdict_count": 2,
+            "task_count": 60
+          },
+          "release_suitability": "current_public_split",
+          "run_count": 2,
+          "summary_path": "kiro-claude-sonnet-4.6-current-public-60-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-glm-5-current-public-60",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.6,
+              "ci95_low": 0.6,
+              "mean": 0.6,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 36.0,
+              "ci95_low": 36.0,
+              "mean": 36.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.125,
+              "ci95_low": 0.125,
+              "mean": 0.125,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 3.0,
+              "ci95_low": 3.0,
+              "mean": 3.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 24.0,
+              "ci95_low": 24.0,
+              "mean": 24.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-glm",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 60
+          },
+          "release_suitability": "current_public_split",
+          "run_count": 2,
+          "summary_path": "kiro-glm-5-current-public-60-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-opus-4-6-current-public-60",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.6,
+              "ci95_low": 0.6,
+              "mean": 0.6,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 36.0,
+              "ci95_low": 36.0,
+              "mean": 36.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.6667,
+              "ci95_low": 0.6667,
+              "mean": 0.6667,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 16.0,
+              "ci95_low": 16.0,
+              "mean": 16.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 24.0,
+              "ci95_low": 24.0,
+              "mean": 24.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-opus",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 60
+          },
+          "release_suitability": "current_public_split",
+          "run_count": 2,
+          "summary_path": "kiro-claude-opus-4.6-current-public-60-run1-summary.json"
+        }
+      ],
+      "entry_count": 5
+    },
+    "current-tool-agent": {
+      "capability_baseline": true,
+      "cohort": "current-tool-agent",
+      "entries": [
+        {
+          "harness_type": "tool-agent",
+          "id": "kiro-live-tool-agent-sonnet-current-public-60",
+          "kind": "tool_agent_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.6,
+              "ci95_low": 0.6,
+              "mean": 0.6,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 36.0,
+              "ci95_low": 36.0,
+              "mean": 36.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0408,
+              "ci95_high": 0.7283,
+              "ci95_low": 0.6467,
+              "mean": 0.6875,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0294,
+              "std_error": 0.0208
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 17.48,
+              "ci95_low": 15.52,
+              "mean": 16.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 24.0,
+              "ci95_low": 24.0,
+              "mean": 24.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-live-tool-agent-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 60
+          },
+          "release_suitability": "current_public_split",
+          "run_count": 2,
+          "summary_path": "kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json"
+        }
+      ],
+      "entry_count": 1
+    },
+    "scripted-sanity": {
+      "capability_baseline": false,
+      "cohort": "scripted-sanity",
+      "entries": [
+        {
+          "harness_type": "scripted",
+          "id": "scripted-sanity-public-60",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 36.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 24.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 24.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 24.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_harness_check",
+          "run_count": 1,
+          "summary_path": "scripted-baseline-public-60-summary.json"
+        }
+      ],
+      "entry_count": 1
+    },
+    "stale": {
+      "capability_baseline": false,
+      "cohort": "stale",
+      "entries": [
+        {
+          "harness_type": "scripted",
+          "id": "scripted-sanity-public-54",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 33.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 21.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 21.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 21.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 1,
+          "summary_path": "scripted-baseline-public-54-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-qwen3-coder-next-current-public-54",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0297,
+              "ci95_high": 1.0145,
+              "ci95_low": 0.9552,
+              "mean": 0.9849,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0214,
+              "std_error": 0.0151
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 33.0,
+              "ci95_low": 33.0,
+              "mean": 33.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.14,
+              "ci95_high": 0.2115,
+              "ci95_low": -0.0686,
+              "mean": 0.0714,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.101,
+              "std_error": 0.0714
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 2.94,
+              "ci95_high": 4.44,
+              "ci95_low": -1.44,
+              "mean": 1.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 2.1213,
+              "std_error": 1.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0297,
+              "ci95_high": 0.0448,
+              "ci95_low": -0.0145,
+              "mean": 0.0152,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0214,
+              "std_error": 0.0151
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 21.0,
+              "ci95_low": 21.0,
+              "mean": 21.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-qwen",
+          "per_task_agreement": {
+            "agreement_rate": 0.9815,
+            "changed_verdict_count": 1,
+            "task_count": 54
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-qwen3-coder-next-current-public-54-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-haiku-4-5-current-public-54",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 33.0,
+              "ci95_low": 33.0,
+              "mean": 33.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0466,
+              "ci95_high": 0.2609,
+              "ci95_low": 0.1677,
+              "mean": 0.2143,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0337,
+              "std_error": 0.0238
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 5.48,
+              "ci95_low": 3.52,
+              "mean": 4.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0303,
+              "ci95_low": 0.0303,
+              "mean": 0.0303,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 21.0,
+              "ci95_low": 21.0,
+              "mean": 21.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-haiku",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 54
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-haiku-4.5-current-public-54-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-sonnet-4-6-current-public-54",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 33.0,
+              "ci95_low": 33.0,
+              "mean": 33.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0466,
+              "ci95_high": 0.7371,
+              "ci95_low": 0.6439,
+              "mean": 0.6905,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0337,
+              "std_error": 0.0238
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 15.48,
+              "ci95_low": 13.52,
+              "mean": 14.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0303,
+              "ci95_low": 0.0303,
+              "mean": 0.0303,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 21.0,
+              "ci95_low": 21.0,
+              "mean": 21.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 0.963,
+            "changed_verdict_count": 2,
+            "task_count": 54
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-sonnet-4.6-current-public-54-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-glm-5-current-public-54",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 33.0,
+              "ci95_low": 33.0,
+              "mean": 33.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0467,
+              "ci95_high": 0.1658,
+              "ci95_low": 0.0723,
+              "mean": 0.1191,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0337,
+              "std_error": 0.0238
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 3.48,
+              "ci95_low": 1.52,
+              "mean": 2.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 21.0,
+              "ci95_low": 21.0,
+              "mean": 21.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-glm",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 54
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-glm-5-current-public-54-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-opus-4-6-current-public-54",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 33.0,
+              "ci95_low": 33.0,
+              "mean": 33.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.6667,
+              "ci95_low": 0.6667,
+              "mean": 0.6667,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 14.0,
+              "ci95_low": 14.0,
+              "mean": 14.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 21.0,
+              "ci95_low": 21.0,
+              "mean": 21.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-opus",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 54
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-opus-4.6-current-public-54-run1-summary.json"
+        },
+        {
+          "harness_type": "tool-agent",
+          "id": "kiro-live-tool-agent-sonnet-current-public-54",
+          "kind": "tool_agent_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 33.0,
+              "ci95_low": 33.0,
+              "mean": 33.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.7143,
+              "ci95_low": 0.7143,
+              "mean": 0.7143,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 15.0,
+              "ci95_low": 15.0,
+              "mean": 15.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 21.0,
+              "ci95_low": 21.0,
+              "mean": 21.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-live-tool-agent-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 54
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-live-tool-agent-sonnet-current-public-54-run1-summary.json"
+        },
+        {
+          "harness_type": "scripted",
+          "id": "scripted-sanity-public-49",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 29.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 20.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 20.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 20.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 1,
+          "summary_path": "scripted-baseline-public-49-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-haiku-4-5-current-public-49",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 29.0,
+              "ci95_low": 29.0,
+              "mean": 29.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.147,
+              "ci95_high": 0.372,
+              "ci95_low": 0.078,
+              "mean": 0.225,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.1061,
+              "std_error": 0.075
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 2.94,
+              "ci95_high": 7.44,
+              "ci95_low": 1.56,
+              "mean": 4.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 2.1213,
+              "std_error": 1.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 20.0,
+              "ci95_low": 20.0,
+              "mean": 20.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-haiku",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 49
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-haiku-4.5-current-public-49-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-sonnet-4-6-current-public-49",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 29.0,
+              "ci95_low": 29.0,
+              "mean": 29.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.2,
+              "ci95_low": 0.2,
+              "mean": 0.2,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 4.0,
+              "ci95_low": 4.0,
+              "mean": 4.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 20.0,
+              "ci95_low": 20.0,
+              "mean": 20.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 49
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-sonnet-4.6-current-public-49-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-qwen3-coder-next-current-public-49",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 29.0,
+              "ci95_low": 29.0,
+              "mean": 29.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.049,
+              "ci95_high": 0.124,
+              "ci95_low": 0.026,
+              "mean": 0.075,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0354,
+              "std_error": 0.025
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 2.48,
+              "ci95_low": 0.52,
+              "mean": 1.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0338,
+              "ci95_high": 0.0511,
+              "ci95_low": -0.0166,
+              "mean": 0.0173,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0244,
+              "std_error": 0.0172
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 20.0,
+              "ci95_low": 20.0,
+              "mean": 20.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-qwen",
+          "per_task_agreement": {
+            "agreement_rate": 0.9796,
+            "changed_verdict_count": 1,
+            "task_count": 49
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-qwen3-coder-next-current-public-49-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-glm-5-current-public-49",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0338,
+              "ci95_high": 1.0166,
+              "ci95_low": 0.9489,
+              "mean": 0.9828,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0244,
+              "std_error": 0.0172
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 29.0,
+              "ci95_low": 29.0,
+              "mean": 29.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.049,
+              "ci95_high": 0.174,
+              "ci95_low": 0.076,
+              "mean": 0.125,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0354,
+              "std_error": 0.025
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 3.48,
+              "ci95_low": 1.52,
+              "mean": 2.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0338,
+              "ci95_high": 0.0511,
+              "ci95_low": -0.0166,
+              "mean": 0.0173,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0244,
+              "std_error": 0.0172
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 20.0,
+              "ci95_low": 20.0,
+              "mean": 20.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-glm",
+          "per_task_agreement": {
+            "agreement_rate": 0.9796,
+            "changed_verdict_count": 1,
+            "task_count": 49
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-glm-5-current-public-49-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-opus-4-6-current-public-49",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 29.0,
+              "ci95_low": 29.0,
+              "mean": 29.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.55,
+              "ci95_low": 0.55,
+              "mean": 0.55,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 11.0,
+              "ci95_low": 11.0,
+              "mean": 11.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 20.0,
+              "ci95_low": 20.0,
+              "mean": 20.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-opus",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 49
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-opus-4.6-current-public-49-run1-summary.json"
+        },
+        {
+          "harness_type": "tool-agent",
+          "id": "kiro-live-tool-agent-sonnet-current-public-49",
+          "kind": "tool_agent_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 29.0,
+              "ci95_low": 29.0,
+              "mean": 29.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.75,
+              "ci95_low": 0.75,
+              "mean": 0.75,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 15.0,
+              "ci95_low": 15.0,
+              "mean": 15.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 20.0,
+              "ci95_low": 20.0,
+              "mean": 20.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-live-tool-agent-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 49
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-live-tool-agent-sonnet-current-public-49-run1-summary.json"
+        },
+        {
+          "harness_type": "scripted",
+          "id": "scripted-sanity-public-46",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 27.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 19.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 19.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 19.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 1,
+          "summary_path": "scripted-baseline-public-46-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-qwen3-coder-next-current-public-46",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 27.0,
+              "ci95_low": 27.0,
+              "mean": 27.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0515,
+              "ci95_high": 0.0778,
+              "ci95_low": -0.0252,
+              "mean": 0.0263,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0372,
+              "std_error": 0.0263
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.98,
+              "ci95_high": 1.48,
+              "ci95_low": -0.48,
+              "mean": 0.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.7071,
+              "std_error": 0.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 19.0,
+              "ci95_low": 19.0,
+              "mean": 19.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-qwen",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 46
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-qwen3-coder-next-current-public-46-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-haiku-4-5-current-public-46",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 27.0,
+              "ci95_low": 27.0,
+              "mean": 27.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.2064,
+              "ci95_high": 0.3643,
+              "ci95_low": -0.0485,
+              "mean": 0.1579,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.1489,
+              "std_error": 0.1053
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 3.92,
+              "ci95_high": 6.92,
+              "ci95_low": -0.92,
+              "mean": 3.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 2.8284,
+              "std_error": 2.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0363,
+              "ci95_high": 0.0548,
+              "ci95_low": -0.0178,
+              "mean": 0.0185,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0262,
+              "std_error": 0.0185
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 19.0,
+              "ci95_low": 19.0,
+              "mean": 19.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-haiku",
+          "per_task_agreement": {
+            "agreement_rate": 0.9783,
+            "changed_verdict_count": 1,
+            "task_count": 46
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-haiku-4.5-current-public-46-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-sonnet-4-6-current-public-46",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 27.0,
+              "ci95_low": 27.0,
+              "mean": 27.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.2063,
+              "ci95_high": 0.7326,
+              "ci95_low": 0.3201,
+              "mean": 0.5263,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.1488,
+              "std_error": 0.1053
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 3.92,
+              "ci95_high": 13.92,
+              "ci95_low": 6.08,
+              "mean": 10.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 2.8284,
+              "std_error": 2.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0363,
+              "ci95_high": 0.0548,
+              "ci95_low": -0.0178,
+              "mean": 0.0185,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0262,
+              "std_error": 0.0185
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 19.0,
+              "ci95_low": 19.0,
+              "mean": 19.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 0.9783,
+            "changed_verdict_count": 1,
+            "task_count": 46
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-sonnet-4.6-current-public-46-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-glm-5-current-public-46",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 27.0,
+              "ci95_low": 27.0,
+              "mean": 27.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.1547,
+              "ci95_high": 0.2863,
+              "ci95_low": -0.0232,
+              "mean": 0.1316,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.1117,
+              "std_error": 0.0789
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 2.94,
+              "ci95_high": 5.44,
+              "ci95_low": -0.44,
+              "mean": 2.5,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 2.1213,
+              "std_error": 1.5
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 19.0,
+              "ci95_low": 19.0,
+              "mean": 19.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-glm",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 46
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-glm-5-current-public-46-run1-summary.json"
+        },
+        {
+          "harness_type": "tool-agent",
+          "id": "kiro-live-tool-agent-sonnet-current-public-46",
+          "kind": "tool_agent_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 27.0,
+              "ci95_low": 27.0,
+              "mean": 27.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.7368,
+              "ci95_low": 0.7368,
+              "mean": 0.7368,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 14.0,
+              "ci95_low": 14.0,
+              "mean": 14.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 19.0,
+              "ci95_low": 19.0,
+              "mean": 19.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-live-tool-agent-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": 1.0,
+            "changed_verdict_count": 0,
+            "task_count": 46
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-live-tool-agent-sonnet-current-public-46-summary.json"
+        },
+        {
+          "harness_type": "scripted-live-http",
+          "id": "live-scripted-public-44",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 26.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 18.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 18.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 18.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 1,
+          "summary_path": "live-scripted-baseline-summary.json"
+        },
+        {
+          "harness_type": "heuristic-live-http",
+          "id": "heuristic-live-http-prober-public-44",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.6667,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 26.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.6111,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 11.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 7.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 18.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 1,
+          "summary_path": "heuristic-live-http-prober-public-44-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-sonnet-4-6-legacy-15",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 9.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.3333,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 6.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": "kiro-claude-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "legacy_snapshot",
+          "run_count": 1,
+          "summary_path": "kiro-claude-sonnet-4.6-full-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-qwen3-coder-next-legacy-15",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 9.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.1111,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 6.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": "kiro-qwen",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "legacy_snapshot",
+          "run_count": 1,
+          "summary_path": "kiro-qwen3-coder-next-full-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-sonnet-4-6-current-public-44",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.1667,
+              "ci95_low": 0.1667,
+              "mean": 0.1667,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 26.0,
+              "ci95_low": 26.0,
+              "mean": 26.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.7778,
+              "ci95_low": 0.7778,
+              "mean": 0.7778,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 14.0,
+              "ci95_low": 14.0,
+              "mean": 14.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 3.0,
+              "ci95_low": 3.0,
+              "mean": 3.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 18.0,
+              "ci95_low": 18.0,
+              "mean": 18.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-sonnet-4.6-current-public-44-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-opus-4-6-current-public-44",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0556,
+              "ci95_low": 0.0556,
+              "mean": 0.0556,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 26.0,
+              "ci95_low": 26.0,
+              "mean": 26.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.6667,
+              "ci95_low": 0.6667,
+              "mean": 0.6667,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 12.0,
+              "ci95_low": 12.0,
+              "mean": 12.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 18.0,
+              "ci95_low": 18.0,
+              "mean": 18.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-opus",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-opus-4.6-current-public-44-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-claude-haiku-4-5-current-public-44",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 26.0,
+              "ci95_low": 26.0,
+              "mean": 26.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.2222,
+              "ci95_low": 0.2222,
+              "mean": 0.2222,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 4.0,
+              "ci95_low": 4.0,
+              "mean": 4.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 18.0,
+              "ci95_low": 18.0,
+              "mean": 18.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-claude-haiku",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-claude-haiku-4.5-current-public-44-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-deepseek-3-2-current-public-44",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 1.0,
+              "ci95_low": 1.0,
+              "mean": 1.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 26.0,
+              "ci95_low": 26.0,
+              "mean": 26.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 18.0,
+              "ci95_low": 18.0,
+              "mean": 18.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-deepseek",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-deepseek-3.2-current-public-44-run1-summary.json"
+        },
+        {
+          "harness_type": "no-tools-model",
+          "id": "kiro-qwen3-coder-next-current-public-44",
+          "kind": "model_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": 0.0377,
+              "ci95_high": 1.0185,
+              "ci95_low": 0.943,
+              "mean": 0.9808,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0272,
+              "std_error": 0.0192
+            },
+            "control_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 26.0,
+              "ci95_low": 26.0,
+              "mean": 26.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "false_positive_rate": {
+              "ci95_half_width": 0.0377,
+              "ci95_high": 0.057,
+              "ci95_low": -0.0185,
+              "mean": 0.0192,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0272,
+              "std_error": 0.0192
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 0.0,
+              "ci95_low": 0.0,
+              "mean": 0.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": 0.0,
+              "ci95_high": 18.0,
+              "ci95_low": 18.0,
+              "mean": 18.0,
+              "small_n_warning": "n=2: 95% CI below uses the normal approximation and is best read as a coarse ordering signal, not a hard bound",
+              "std_dev": 0.0,
+              "std_error": 0.0
+            }
+          },
+          "model_family": "kiro-qwen",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 2,
+          "summary_path": "kiro-qwen3-coder-next-current-public-44-run1-summary.json"
+        },
+        {
+          "harness_type": "tool-agent",
+          "id": "kiro-live-tool-agent-sonnet-current-public-44",
+          "kind": "tool_agent_baseline",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 26.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.7778,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 14.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 18.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": "kiro-live-tool-agent-sonnet",
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 1,
+          "summary_path": "kiro-live-tool-agent-sonnet-current-public-44-summary.json"
+        }
+      ],
+      "entry_count": 30
+    }
+  },
+  "issues": [],
+  "registry_path": "baselines/baseline-registry.json",
+  "schema_version": "baseline-variance-v1",
+  "summary": {
+    "current_model_entries": 5,
+    "current_tool_agent_entries": 1,
+    "scripted_sanity_entries": 1,
+    "stale_entries": 30
+  }
+}

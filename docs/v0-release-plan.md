@@ -82,7 +82,8 @@ customer data, vendors, or proprietary systems.
 For v0, target roughly 70-75 tasks total:
 
 - 40-50 public tasks for integration, debugging, and transparent methodology.
-- 20-30 private holdout tasks for leaderboard-grade scoring.
+- 20-30 private holdout tasks used for repeated-runs scoring under a
+  governance-controlled holdout, not for an open public leaderboard.
 - At least 25 vulnerable tasks.
 - At least 40 percent secure controls across the final task set. For the
   current 70-75 task target, that means at least 30 total secure controls,
@@ -348,7 +349,9 @@ Version labels:
 
 - Current repository state: `v0.0 released`
 - First release-worthy benchmark: `v0`
-- Mature, externally validated benchmark: `v1`
+- Mature benchmark with external review dispositions recorded: `v2`
+  (the v1.0-internal cut is the internal / public-view release; v2 is the
+  external lane tracked in `docs/v2-external-validation-roadmap.md`)
 
 This keeps the project honest. The alpha preview was useful because it showed
 the idea and harness. The v0.0 release is useful because it adds enough scale,

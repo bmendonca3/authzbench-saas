@@ -1,0 +1,113 @@
+{
+  "overall_passed": true,
+  "passed_step_count": 7,
+  "root": "<repo-root>",
+  "schema_version": "public-reproduction-v1",
+  "step_count": 7,
+  "steps": [
+    {
+      "command": [
+        "python3",
+        "scripts/validate_v1_readiness.py",
+        "--public-view",
+        "--expected-output",
+        "artifact/expected-output/v1-readiness-public-view.json"
+      ],
+      "description": "Public-view v1 readiness fixture match",
+      "elapsed_seconds": 0.198,
+      "id": "v1_readiness",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "      ],\n      \"id\": \"paper_and_artifact_readiness\",\n      \"passed\": true,\n      \"unmet\": []\n    },\n    {\n      \"evidence\": [\n        \"artifact/v1-release-candidate-validation.json\",\n        \"artifact/v1-release-candidate-validation-runbook.json\"\n      ],\n      \"id\": \"final_release_candidate_validation\",\n      \"passed\": true,\n      \"unmet\": []\n    }\n  ],\n  \"passed\": true,\n  \"passed_gate_count\": 10,\n  \"unmet_gate_count\": 0,\n  \"v1_ready\": true\n}"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_claim_boundary.py"
+      ],
+      "description": "Claim-boundary forbidden-phrase CI check",
+      "elapsed_seconds": 0.212,
+      "id": "claim_boundary",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "claim boundary check passed: 10 forbidden phrases, 0 unqualified uses across tracked text files"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/generate_task_oracle_audit.py",
+        "--check"
+      ],
+      "description": "Task oracle audit (schema gate)",
+      "elapsed_seconds": 0.03,
+      "id": "task_oracle_audit",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "task oracle audit: wrote artifact/task-oracle-audit.json and docs/task-oracle-audit.md; total=60"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/generate_task_taxonomy.py"
+      ],
+      "description": "Task taxonomy report",
+      "elapsed_seconds": 0.031,
+      "id": "task_taxonomy",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "task taxonomy: wrote artifact/task-taxonomy.json and docs/task-taxonomy.md; total=60"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/analyze_baseline_variance.py",
+        "--require-current-public"
+      ],
+      "description": "Baseline variance and confidence",
+      "elapsed_seconds": 0.043,
+      "id": "baseline_variance",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "baseline variance: wrote artifact/baseline-variance-summary.json and docs/baseline-variance-analysis.md; cohorts=['scripted-sanity', 'current-model', 'current-tool-agent', 'stale']"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_harbor_claim_boundary.py",
+        "-q"
+      ],
+      "description": "Harbor non-claim test",
+      "elapsed_seconds": 0.244,
+      "id": "harbor_claim_boundary",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.06s"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_scorer_adversarial_submissions.py",
+        "-q",
+        "--collect-only",
+        "-q"
+      ],
+      "description": "Adversarial scorer test count (objective-3 reachability gate)",
+      "elapsed_seconds": 0.186,
+      "id": "scorer_adversarial",
+      "passed": true,
+      "returncode": 0,
+      "stderr_tail": "",
+      "stdout_tail": "tests/test_scorer_adversarial_submissions.py: 19\n"
+    }
+  ]
+}

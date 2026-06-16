@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "bd7500657595603f94fb1ac599dfb0ff1be217df",
+  "benchmark_source_sha": "a5e5b0124f87c92877ee3d2d91f3b4a6a4172074",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "release_candidate",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "The paper preflight source is pinned to the verified GLM-5 54-task evidence completion record, which also retains the verified Qwen, Haiku, and Sonnet current-family evidence and the earlier finding-telemetry hardening. Exact-head CI run 27110222646 passed on the GLM paper-preflight descendant. Exact-head CI for this final provenance descendant remains required. Final paper readiness remains incomplete.",
+    "ci_refresh_note": "Re-pinned to the External Validation and Coverage Expansion work commit so the post-source evidence-only allow-list correctly covers the new validators, tests, and the goal anchor. Earlier pin (c5f4c99) preceded the External Validation work.",
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
@@ -20,6 +20,7 @@
       "run_id": 27110222646,
       "url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27110222646"
     },
-    "verified_on": "2026-06-12"
-  }
+    "verified_on": "2026-06-14"
+  },
+  "verified_on": "2026-06-14"
 }
