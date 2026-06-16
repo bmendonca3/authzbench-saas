@@ -7,22 +7,38 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED_DOCS = [
-    "docs/host-review-package.md",
-    "docs/host-facing-one-page-summary.md",
-    "docs/kaggle-hosting-model.md",
-    "docs/evaluation-for-hosts.md",
-    "docs/solution-file-contract.md",
-    "docs/privacy-and-holdout-custody.md",
-    "docs/host-reproducibility-matrix.md",
-    "docs/host-baseline-summary.md",
-    "docs/host-architecture.md",
-    "docs/host-packet-versioning.md",
-    "docs/host-private-leakage-response.md",
-    "docs/host-review-walkthrough-transcript.md",
+    "docs/host/README.md",
+    "docs/host/host-review-package.md",
+    "docs/host/host-status-and-reproducibility.md",
+    "docs/host/hosting-model.md",
+    "docs/host/host-operations-runbook.md",
+    "docs/host/host-review-walkthrough.md",
     "platform/kaggle/rules-template.md",
     "platform/kaggle/competition-page-draft.md",
     "platform/kaggle/faq.md",
 ]
+
+REQUIRED_TERMS = {
+    "docs/host/host-review-package.md": [
+        "platform acceptance",
+        "hosted leaderboard operation",
+        "external validation",
+        "third-party submissions",
+    ],
+    "docs/host/host-status-and-reproducibility.md": [
+        "Actions Workflow Run ID",
+        "Latest Verified Commit",
+        "Conclusion",
+        "python3 scripts/validate_host_presentation.py",
+    ],
+    "docs/host/hosting-model.md": [
+        "Model A",
+        "Model B",
+        "Model C",
+        "CSV",
+        "replay-based scoring",
+    ],
+}
 
 
 def validate_host_docs(root: Path) -> dict:
@@ -40,9 +56,14 @@ def validate_host_docs(root: Path) -> dict:
                 continue
 
             # Check for obvious unfinished draft markers
-            # We allow "TBD by host" or similar in templates, but check for generic TODOs
             if "TODO:" in content or "FIXME" in content:
                 errors.append(f"Document contains TODO or FIXME markers: {rel_path}")
+
+            # Check for required terms
+            if rel_path in REQUIRED_TERMS:
+                for term in REQUIRED_TERMS[rel_path]:
+                    if term not in content:
+                        errors.append(f"Document {rel_path} is missing required term: '{term}'")
 
         except Exception as e:
             errors.append(f"Failed to read {rel_path}: {e}")
