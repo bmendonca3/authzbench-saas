@@ -4,26 +4,33 @@ This page consolidates the bounded public validation set, the maintainer-only
 strict set, and the privacy check. It is intentionally a copy-paste friendly
 reference; see the linked scripts for full flag documentation.
 
-## Bounded Public Validation Set
+## Validation Levels
 
-Run from the repository root after a clean clone or after a non-trivial
-change:
+Reviewers and hosts should use the appropriate validation level:
 
+### Public No-Docker Reviewer Validation
+Run this from a clean clone to verify public tests and registry states:
 ```bash
-python3 -m unittest discover -s tests
 python3 scripts/validate_public.py --include-scripted-baseline
-python3 scripts/validate_baseline_registry.py
-python3 scripts/validate_harbor_parity_experiment.py
-python3 scripts/validate_harbor_adapter_templates.py
-python3 scripts/validate_v1_readiness.py \
-  --allow-incomplete \
-  --public-view \
-  --expected-output artifact/expected-output/v1-readiness-public-view.json
-git diff --check
 ```
 
-`artifact/run-public-validation.sh` wraps the core of this set and also runs
-the tracked-path privacy check. It is the recommended one-line entrypoint.
+### Full CI/Container-Smoke Validation
+Run this to include full container smoke testing (requires Docker to be running):
+```bash
+python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
+```
+
+### Host-Presentation Validation
+To run the aggregate validation checking all host-facing artifacts, markdown links, templates, and schemas:
+```bash
+python3 scripts/validate_host_presentation.py
+```
+Or, to run the aggregate checks including Docker container smoke:
+```bash
+python3 scripts/validate_host_presentation.py --include-container-smoke
+```
+
+`python3 scripts/run_public_validation.py` wraps the core of the public set and also runs the tracked-path privacy check. It is the recommended cross-platform entrypoint (a bash wrapper is also available at `artifact/run-public-validation.sh`).
 
 ## Maintainer-Only Strict Set
 

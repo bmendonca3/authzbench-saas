@@ -1,0 +1,12 @@
+{
+  "schema_version": "authzbench-public-dry-run-submission-v1",
+  "findings": [
+    {
+      "claim": "token_scope_cross_tenant_secret_read_vulnerable",
+      "evidence": [],
+      "boundary": {},
+      "impact": "Shape-only example; not scored evidence."
+    }
+  ],
+  "leaderboard_eligible": false
+}

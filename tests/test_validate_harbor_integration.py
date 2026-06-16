@@ -74,13 +74,13 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertIn("expected_adapter_package.evidence_status must be implementation_target", result["errors"])
         self.assertIn(
-            "expected_adapter_package.claim_boundary must reject implemented-SDK evidence claims",
+            "expected_adapter_package.claim_boundary must reject platform-acceptance claims",
             result["errors"],
         )
         self.assertTrue(any("expected_adapter_package.package_layout missing:" in error for error in result["errors"]), result)
         self.assertTrue(any("expected_adapter_package.required_cli_flags missing:" in error for error in result["errors"]), result)
         self.assertIn(
-            "expected_adapter_package.module_entrypoint must name the future module entrypoint",
+            "expected_adapter_package.module_entrypoint must name the repo-side Harbor CLI entrypoint",
             result["errors"],
         )
         self.assertIn("expected_adapter_package.blocked_until must list concrete blockers", result["errors"])
@@ -92,7 +92,7 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
         self.assertEqual(set(data["dataset_shape"]["dataset_root_files"]), REQUIRED_DATASET_ROOT_FILES)
         self.assertEqual(set(package["package_layout"]), REQUIRED_PACKAGE_LAYOUT)
         self.assertEqual(set(package["required_cli_flags"]), {"--output-dir", "--limit", "--overwrite", "--task-ids"})
-        self.assertIn("uv run python -m authzbench_saas_harbor.main", package["module_entrypoint"])
+        self.assertIn("python3 -m authzbench_harbor.cli build", package["module_entrypoint"])
 
     def test_allows_public_harbor_artifact_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

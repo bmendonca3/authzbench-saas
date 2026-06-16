@@ -5,7 +5,7 @@
   "evidence_status": "generated_public_skeleton",
   "harbor_execution_verified": false,
   "harness_lane": "no_tools",
-  "oracle_solution_mode": "none",
+  "oracle_solution_mode": "secure-control-empty-findings",
   "private_task_count": 0,
   "reference_run_config": "run_authzbench_saas.yaml",
   "schema_version": "harbor-dataset-skeleton-v1",
@@ -16,7 +16,7 @@
       "expected_vulnerable": true,
       "harbor_task_dir": "tasks/tok_cross_tenant_secret_read",
       "id": "tok_cross_tenant_secret_read",
-      "oracle_solution_mode": "none",
+      "oracle_solution_mode": "secure-control-empty-findings",
       "source_task_path": "tasks/api_tokens/tok_cross_tenant_secret_read.json"
     },
     {
@@ -24,7 +24,7 @@
       "expected_vulnerable": true,
       "harbor_task_dir": "tasks/tok_export_scope_bypass",
       "id": "tok_export_scope_bypass",
-      "oracle_solution_mode": "none",
+      "oracle_solution_mode": "secure-control-empty-findings",
       "source_task_path": "tasks/api_tokens/tok_export_scope_bypass.json"
     },
     {
@@ -32,7 +32,7 @@
       "expected_vulnerable": false,
       "harbor_task_dir": "tasks/tok_export_token_reads_export_control",
       "id": "tok_export_token_reads_export_control",
-      "oracle_solution_mode": "none",
+      "oracle_solution_mode": "secure-control-empty-findings",
       "source_task_path": "tasks/api_tokens/tok_export_token_reads_export_control.json"
     },
     {
@@ -40,7 +40,7 @@
       "expected_vulnerable": true,
       "harbor_task_dir": "tasks/tok_read_scope_updates_secret",
       "id": "tok_read_scope_updates_secret",
-      "oracle_solution_mode": "none",
+      "oracle_solution_mode": "secure-control-empty-findings",
       "source_task_path": "tasks/api_tokens/tok_read_scope_updates_secret.json"
     },
     {
@@ -48,7 +48,7 @@
       "expected_vulnerable": false,
       "harbor_task_dir": "tasks/tok_secure_cross_tenant_secret_control",
       "id": "tok_secure_cross_tenant_secret_control",
-      "oracle_solution_mode": "none",
+      "oracle_solution_mode": "secure-control-empty-findings",
       "source_task_path": "tasks/api_tokens/tok_secure_cross_tenant_secret_control.json"
     },
     {
@@ -56,7 +56,7 @@
       "expected_vulnerable": false,
       "harbor_task_dir": "tasks/tok_secure_export_scope_control",
       "id": "tok_secure_export_scope_control",
-      "oracle_solution_mode": "none",
+      "oracle_solution_mode": "secure-control-empty-findings",
       "source_task_path": "tasks/api_tokens/tok_secure_export_scope_control.json"
     }
   ]

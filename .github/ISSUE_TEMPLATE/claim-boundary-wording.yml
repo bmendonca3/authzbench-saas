@@ -1,0 +1,25 @@
+name: Claim Boundary Wording
+description: Suggest wording changes or report a claim-boundary checker failure.
+title: "[Claim Boundary]: "
+labels: ["claim-boundary"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please verify that you are not proposing changes that over-claim benchmark status.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Claim Verification
+      options:
+        - label: I have checked docs/current-claim-boundary.md
+          required: true
+        - label: I am not claiming platform acceptance, hosted leaderboard operation, external validation, or third-party submissions
+          required: true
+  - type: textarea
+    id: wording
+    attributes:
+      label: Wording Suggestion
+      description: Describe the wording change or check failure.
+    validations:
+      required: true

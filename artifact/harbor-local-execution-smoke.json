@@ -1,6 +1,6 @@
 {
-  "benchmark_source_sha": "5a70183cd9a1572994f9e9175342c0d013d914e9",
-  "benchmark_source_tree_sha": "0baf93bf08e6755e6c25ac3f37333bcbd8abcb6c",
+  "benchmark_source_sha": "38a0a7d0538e04df1cab82379eb7e99ef60ea41d",
+  "benchmark_source_tree_sha": "bf8b45d8a8027db5f7479d41163570b2a87692c0",
   "blocked_until": [
     "a public-safe adapter writes valid submissions for vulnerable and secure-control tasks",
     "matching native AuthZBench-SaaS public-run evidence is generated for the same task set",
@@ -11,8 +11,8 @@
   "expected_reward_reason": "The generated public oracle solution writes findings: [] for a secure-control task, so Harbor verifier reward should match the native AuthZBench-SaaS scorer reward. This is a local control-task smoke only, not full adapter parity.",
   "harbor_command": "uvx harbor",
   "harbor_execution_verified": true,
-  "harbor_run_id": "212f50af-6fd6-48be-8b4b-5c43bc918769",
-  "harbor_version": "0.13.1",
+  "harbor_run_id": "d8b53155-0d0d-4408-a9bc-b2c3772a76d7",
+  "harbor_version": "0.13.2",
   "harness_lane": "no_tools",
   "n_completed_trials": 1,
   "n_errored_trials": 0,

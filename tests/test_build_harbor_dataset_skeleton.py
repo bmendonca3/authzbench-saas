@@ -102,14 +102,20 @@ class HarborDatasetSkeletonBuilderTests(unittest.TestCase):
         self.assertIn('/logs/artifacts/submission.json', solution)
         self.assertIn('{"findings":[]}', solution)
 
-    def test_rejects_oracle_solution_for_vulnerable_task(self) -> None:
+    def test_vulnerable_task_uses_placeholder_in_secure_control_empty_findings_mode(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            with self.assertRaisesRegex(ValueError, "requires a secure-control task"):
-                build_harbor_dataset_skeleton(
-                    ["tasks/project_mgmt/pm_bola_read_alpha_from_beta.json"],
-                    Path(tmp) / "harbor-public",
-                    oracle_solution_mode="secure-control-empty-findings",
-                )
+            output = Path(tmp) / "harbor-public"
+            manifest = build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_bola_read_alpha_from_beta.json"],
+                output,
+                oracle_solution_mode="secure-control-empty-findings",
+            )
+            task_dir = output / manifest["tasks"][0]["harbor_task_dir"]
+            solution = (task_dir / "solution" / "solve.sh").read_text(encoding="utf-8")
+
+        self.assertEqual(manifest["oracle_solution_mode"], "secure-control-empty-findings")
+        self.assertIn("does not include a public oracle solution", solution)
+        self.assertIn("exit 64", solution)
 
     def test_live_http_lane_records_service_orchestration_notes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

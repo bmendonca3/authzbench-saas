@@ -1,0 +1,29 @@
+{
+  "schema_version": "authzbench-kaggle-like-sample-submission-v1",
+  "status": "toy_public_shape_only",
+  "leaderboard_eligible": false,
+  "split": "public",
+  "tasks": [
+    {
+      "Id": "tok_cross_tenant_secret_read",
+      "finding_path": "submissions/tok_cross_tenant_secret_read/submission.json"
+    },
+    {
+      "Id": "tok_secure_cross_tenant_secret_control",
+      "finding_path": "submissions/tok_secure_cross_tenant_secret_control/submission.json"
+    },
+    {
+      "Id": "bill_bfla_peer_member_plan_change",
+      "finding_path": "submissions/bill_bfla_peer_member_plan_change/submission.json"
+    },
+    {
+      "Id": "fs_bfla_viewer_creates_public_link",
+      "finding_path": "submissions/fs_bfla_viewer_creates_public_link/submission.json"
+    },
+    {
+      "Id": "sup_admin_reassignment_control",
+      "finding_path": "submissions/sup_admin_reassignment_control/submission.json"
+    }
+  ],
+  "notes": "CSV/JSON sample indexes evidence bundle paths. It is not a scored result and not private-holdout evidence."
+}

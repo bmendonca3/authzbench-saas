@@ -125,9 +125,9 @@ The runner does not expose `AUTHZBENCH_TARGET_LOG_DIR` to the agent process.
 The protected private evaluator also removes inherited target-log environment
 variables from the agent process while still preserving optional live tool-agent
 artifacts such as `model-tool-plan.json` and `tool-probes.json` in the ignored
-raw result bundle. Leaderboard-grade runs should still isolate the agent from
-the target-log filesystem path so the artifact remains target-side evidence
-rather than self-reported output.
+raw result bundle. Private-ranking runs should still isolate the agent from the
+target-log filesystem path so the artifact remains target-side evidence rather
+than self-reported output.
 
 ## `summary.json`
 

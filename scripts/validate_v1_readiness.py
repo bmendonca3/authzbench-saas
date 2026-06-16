@@ -339,6 +339,53 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "tasks_v11_prep/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
     "tasks_v11_prep/file_sharing/fs_team_membership_cross_workspace_discovery.json",
     "tests/test_v11_prep_multistep_discovery.py",
+    # Host-presentation packaging, validation, and public-safe examples added
+    # after the benchmark source pin; they do not change benchmark tasks,
+    # scorer policy, baselines, or private-holdout evidence.
+    "docs/host-architecture.md",
+    "docs/host-baseline-summary.md",
+    "docs/host-facing-one-page-summary.md",
+    "docs/host-packet-versioning.md",
+    "docs/host-private-leakage-response.md",
+    "docs/host-reproducibility-matrix.md",
+    "docs/host-review-walkthrough-transcript.md",
+    "docs/host-review-package.md",
+    "docs/kaggle-hosting-model.md",
+    "docs/kaggle-presentation-todo.md",
+    "docs/leaderboard-anti-gaming-policy.md",
+    "docs/validation-commands.md",
+    "scripts/build_host_review_bundle.py",
+    "scripts/check_markdown_links.py",
+    "scripts/validate_host_presentation.py",
+    "scripts/validate_host_review_bundle.py",
+    "scripts/validate_host_review_docs.py",
+    "scripts/validate_kaggle_dry_run_bundle.py",
+    "scripts/validate_kaggle_sample_submission.py",
+    "scripts/validate_kaggle_toy_solution_file.py",
+    "tests/test_build_host_review_bundle.py",
+    "tests/test_check_markdown_links.py",
+    "tests/test_validate_host_presentation.py",
+    "tests/test_validate_host_review_bundle.py",
+    "tests/test_validate_host_review_docs.py",
+    "tests/test_validate_kaggle_dry_run_bundle.py",
+    "tests/test_validate_kaggle_sample_submission.py",
+    "tests/test_validate_kaggle_toy_solution_file.py",
+    "artifact/run-public-validation.sh",
+    # Harbor Option B implementation: mixed-dataset skeleton builder,
+    # validator, and tests modified to support secure-control-empty-findings
+    # mode for parity verification. These do not change benchmark source,
+    # tasks, scoring, or baselines.
+    "scripts/build_harbor_dataset_skeleton.py",
+    "scripts/validate_harbor_dataset_skeleton.py",
+    "tests/test_build_harbor_dataset_skeleton.py",
+    # Gap-assessment documentation and review packets added after the source
+    # pin. These are host-review, status, and review-packet docs that do not
+    # change benchmark source, tasks, scoring, or baselines.
+    "artifact/harbor-adapter-metadata.json",
+    "artifact/external-blockers-issue-tracker.json",
+    "docs/kaggle-harbor-integration-brief.md",
+    "docs/current-status-for-kaggle.md",
+    "docs/reviews/saas-provider-review-packet.md",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
@@ -373,6 +420,8 @@ POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_submissions/",
     "artifact/harbor-dataset-public-smoke/",
     "authzbench_harbor/",
+    "platform/kaggle/",
+    ".github/ISSUE_TEMPLATE/",
 )
 
 

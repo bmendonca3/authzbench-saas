@@ -124,6 +124,28 @@ class ClaimBoundaryCheckTests(unittest.TestCase):
         self.assertIn("externally validated", phrases)
         self.assertIn("community benchmark", phrases)
 
+    def test_broad_not_substring_does_not_allow_forbidden_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "readme.md").write_text(
+                "This is not just internal; it is an externally validated community benchmark.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/readme.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("externally validated", phrases)
+        self.assertIn("community benchmark", phrases)
+
     def test_forbidden_phrase_in_forbidden_table_column_passes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -250,6 +272,96 @@ class ClaimBoundaryCheckTests(unittest.TestCase):
             )
             result = _run_check(root)
         self.assertTrue(result["passed"], result)
+
+    def test_kaggle_platform_acceptance_claims_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "host.md").write_text(
+                "AuthZBench-SaaS is Kaggle accepted, Kaggle hosted, "
+                "Kaggle leaderboard ready, and platform endorsed.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/host.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("Kaggle accepted", phrases)
+        self.assertIn("Kaggle hosted", phrases)
+        self.assertIn("Kaggle leaderboard ready", phrases)
+        self.assertIn("platform endorsed", phrases)
+
+    def test_kaggle_platform_non_claims_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "host.md").write_text(
+                "This package does not claim `Kaggle accepted`, "
+                "`Kaggle hosted`, `Kaggle leaderboard ready`, or "
+                "`platform endorsed` status.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/host.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertTrue(result["passed"], result)
+
+    def test_negation_of_different_forbidden_phrase_does_not_allow_current_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "host.md").write_text(
+                "This package is not Kaggle accepted. "
+                "It is an externally validated benchmark.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/host.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("externally validated", phrases)
+
+    def test_new_forbidden_phrases_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "host.md").write_text(
+                "This benchmark is SaaS-validated and v1.0 released.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/host.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("SaaS-validated", phrases)
+        self.assertIn("v1.0 released", phrases)
 
 
 if __name__ == "__main__":

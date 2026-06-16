@@ -139,8 +139,8 @@ def validate_harbor_adapter_templates(
         errors.append("adapter metadata template claim boundary must reject metadata and execution evidence claims")
     if metadata.get("adapter_name") != "authzbench-saas-harbor":
         errors.append("adapter metadata template adapter_name must be authzbench-saas-harbor")
-    if "uv run python -m authzbench_saas_harbor.main" not in str(metadata.get("package_entrypoint", "")):
-        errors.append("adapter metadata template package_entrypoint must name the future module entrypoint")
+    if "python3 -m authzbench_harbor.cli build" not in str(metadata.get("package_entrypoint", "")):
+        errors.append("adapter metadata template package_entrypoint must name the repo-side Harbor CLI entrypoint")
     missing_flags = _missing(REQUIRED_CLI_FLAGS, metadata.get("required_cli_flags"))
     if missing_flags:
         errors.append("adapter metadata template required_cli_flags missing: " + ", ".join(missing_flags))

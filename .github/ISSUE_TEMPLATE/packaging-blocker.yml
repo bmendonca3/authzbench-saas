@@ -1,0 +1,21 @@
+name: Packaging Blocker
+description: Report a bug or issue blocking host review bundle generation or validation.
+title: "[Blocker]: "
+labels: ["packaging", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to report validation failures or bundle generation blockers.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Describe what is failing during `scripts/validate_host_presentation.py` or bundle building.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or outputs
+      render: shell
