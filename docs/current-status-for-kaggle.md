@@ -6,7 +6,7 @@ requested. It does not claim platform acceptance, hosted leaderboard operation,
 external validation, or third-party submissions.
 
 **Last updated**: 2026-06-16
-**Current commit**: `a85db03` on branch `kaggle-host-review-package`
+**Current commit**: `1245db7` on branch `main`
 **Local validation**: All gates passing
 
 ---
@@ -83,7 +83,7 @@ external validation, or third-party submissions.
 # Clone and validate
 git clone https://github.com/bmendonca3/authzbench-saas.git
 cd authzbench-saas
-git checkout kaggle-host-review-package
+git checkout main
 
 # Run public validation (no Docker required)
 python3 scripts/validate_public.py --include-scripted-baseline
