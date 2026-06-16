@@ -43,6 +43,10 @@ FORBIDDEN_PHRASES: tuple[str, ...] = (
     "hosted leaderboard-ready",
     "Harbor accepted",
     "Harbor endorsed",
+    "Kaggle accepted",
+    "Kaggle hosted",
+    "Kaggle leaderboard ready",
+    "platform endorsed",
     "production vulnerability discovery benchmark",
     "validated model benchmark",
     "leaderboard-grade",
@@ -50,40 +54,20 @@ FORBIDDEN_PHRASES: tuple[str, ...] = (
     "SOTA security benchmark",
 )
 
-# Substrings that, when found on the same line or paragraph as a forbidden
-# phrase, signal that the phrase is being used in a non-claim way. Keep these
-# specific: broad words like "no" or "without" can appear in unrelated prose and
-# accidentally allow a nearby overclaim.
-NEGATION_HINTS: tuple[str, ...] = (
+# Substrings that allow a forbidden phrase because the surrounding block is an
+# explicit avoid list rather than project claim text.
+AVOID_CONTEXT_HINTS: tuple[str, ...] = (
     "Avoid",
     "avoid list",
     "Forbidden",
-    "not a",
-    "not an",
-    "is not",
-    "are not",
-    "was not",
-    "were not",
-    "do not",
-    "does not",
-    "did not",
-    "should not",
-    "shouldn't",
-    "never",
-    "not be",
-    "not be called",
-    "not claim",
-    "not ",
-    "does not claim",
-    "do not claim",
-    "did not claim",
-    "must not",
-    "remain optional",
-    "deferred to",
-    "deferred until",
-    "external gates",
+    "fails if",
     "## Externally validated benchmark",
     "### Community benchmark candidate",
+)
+
+TABLE_ALLOW_HEADERS: tuple[str, ...] = (
+    "Forbidden stronger wording",
+    "Does not support",
 )
 
 # Files to scan. Subset of tracked text. We do not scan binary files.
@@ -134,14 +118,14 @@ def _is_allow_context(line: str, prev_lines: list[str], next_lines: list[str]) -
                 break
             if not prev.lstrip().startswith("|"):
                 break
-            if "Forbidden stronger wording" in prev:
+            if any(header in prev for header in TABLE_ALLOW_HEADERS):
                 return True
 
-    # Allow if the current line itself contains an Avoid / Forbidden / negation
-    # hint. Multi-line negated paragraphs are handled by
+    # Allow if the current line itself contains an Avoid / Forbidden context
+    # marker. Multi-line negated paragraphs are handled by
     # `_paragraph_contains_negation` in the main scanner.
     lowered = line.lower()
-    for hint in NEGATION_HINTS:
+    for hint in AVOID_CONTEXT_HINTS:
         if hint.lower() in lowered:
             return True
 
@@ -173,10 +157,12 @@ def _scan_text_file(path: Path) -> list[tuple[int, str, str]]:
                 allowed = True
             if not allowed:
                 window = line
-                for hint in NEGATION_HINTS:
+                for hint in AVOID_CONTEXT_HINTS:
                     if hint.lower() in window.lower():
                         allowed = True
                         break
+            if not allowed and _window_negates_phrase(line, phrase):
+                allowed = True
             if not allowed:
                 # Allow in the canonical "Forbidden stronger wording" table
                 # column, but only while the current line is still inside that
@@ -187,7 +173,7 @@ def _scan_text_file(path: Path) -> list[tuple[int, str, str]]:
                             break
                         if not prev.lstrip().startswith("|"):
                             break
-                        if "Forbidden stronger wording" in prev:
+                        if any(header in prev for header in TABLE_ALLOW_HEADERS):
                             allowed = True
                             break
             if not allowed:
@@ -229,10 +215,37 @@ def _paragraph_contains_negation(lines: list[str], idx: int) -> bool:
             break
         end += 1
     window = "\n".join(_strip_prefix(line) for line in lines[start : end + 1])
-    for hint in NEGATION_HINTS:
+    for hint in AVOID_CONTEXT_HINTS:
         if hint.lower() in window.lower():
             return True
-    return False
+    return any(_window_negates_phrase(window, phrase) for phrase in FORBIDDEN_PHRASES)
+
+
+def _window_negates_phrase(window: str, phrase: str) -> bool:
+    """Return True when negation applies to the forbidden phrase itself.
+
+    The negation must reach the phrase before a sentence or clause boundary.
+    This allows "not externally validated" and
+    "is not a hosted leaderboard, externally validated benchmark", but rejects
+    "is not just internal; it is an externally validated benchmark".
+    """
+    normalized = " ".join(window.split())
+    escaped_phrase = re.escape(phrase)
+    boundary = r"[^.;:!\?\n]*"
+    patterns = (
+        rf"\bnot\b{boundary}\b{escaped_phrase}\b",
+        rf"\bnot\s+(?:a\s+|an\s+|the\s+)?{escaped_phrase}\b",
+        rf"\bnot\s+be\s+(?:called\s+)?(?:a\s+|an\s+|the\s+)?{escaped_phrase}\b",
+        rf"\b(?:is|are|was|were)\s+not\b{boundary}\b{escaped_phrase}\b",
+        rf"\b(?:do|does|did)\s+not\b{boundary}\b{escaped_phrase}\b",
+        rf"\b(?:do|does|did)\s+not\s+claim\b{boundary}\b{escaped_phrase}\b",
+        rf"\bshould\s+not\b{boundary}\b{escaped_phrase}\b",
+        rf"\bshouldn't\b{boundary}\b{escaped_phrase}\b",
+        rf"\bmust\s+not\b{boundary}\b{escaped_phrase}\b",
+        rf"\bnever\b{boundary}\b{escaped_phrase}\b",
+        rf"\bdeferred\s+(?:to|until)\b{boundary}\b{escaped_phrase}\b",
+    )
+    return any(re.search(pattern, normalized, re.IGNORECASE) for pattern in patterns)
 
 
 def _paragraph_prefix(line: str) -> str:

@@ -218,6 +218,12 @@ Start here if you are reviewing the benchmark:
    boundaries.
 5. [`docs/artifact-index.md`](docs/artifact-index.md): what each tracked
    artifact is allowed to prove.
+
+For Kaggle-like benchmark hosts or platform reviewers, start with
+[`docs/host-review-package.md`](docs/host-review-package.md). That package
+maps the repo's runner, scorer, public/private split, sample submission shape,
+and host decisions into one review path without claiming platform acceptance or
+hosted leaderboard operation.
 6. [`docs/validation-commands.md`](docs/validation-commands.md): public
    validation set, maintainer strict set, and privacy check.
 7. [`docs/reviews/external-review-packet.md`](docs/reviews/external-review-packet.md):
@@ -647,7 +653,7 @@ It does not claim to be the definitive benchmark for SaaS
 security agents. The plan in
 [`docs/v2-external-validation-roadmap.md`](docs/v2-external-validation-roadmap.md)
 is what closes the gap between the credible v1 internal benchmark
-label and externally validated benchmark status.
+label and v2 validation status.
 
 ## License
 

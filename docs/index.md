@@ -11,6 +11,8 @@ the right file without opening the full repository.
   use, and known limits.
 - [`docs/evidence-and-claims.md`](evidence-and-claims.md): current claim
   ledger and approved public framing.
+- [`docs/host-review-package.md`](host-review-package.md): Kaggle-like host
+  review entrypoint, package map, and non-claim boundary.
 
 ## Release Evidence
 
@@ -88,6 +90,21 @@ artifact index and what each tracked artifact is allowed to prove.
   v2 validation lanes, deferred from v1.
 - [`docs/v1-community-submission-governance.md`](v1-community-submission-governance.md):
   submission governance specification (not a live submission pipeline claim).
+
+## Kaggle-Like Host Review
+
+- [`docs/host-review-package.md`](host-review-package.md): one-page host
+  review route and artifact map.
+- [`docs/kaggle-hosting-model.md`](kaggle-hosting-model.md): viable hosting
+  models and recommended host-review path.
+- [`docs/evaluation-for-hosts.md`](evaluation-for-hosts.md): scoring and
+  leaderboard metric explanation for host reviewers.
+- [`docs/solution-file-contract.md`](solution-file-contract.md): public-safe
+  solution-file schema and private custody rules.
+- [`docs/privacy-and-holdout-custody.md`](privacy-and-holdout-custody.md):
+  public/private artifact boundary.
+- [`platform/kaggle/README.md`](../platform/kaggle/README.md): public-safe
+  sample-submission artifact directory.
 
 ## Contributor And Reviewer
 
