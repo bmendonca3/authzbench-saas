@@ -147,6 +147,7 @@ EXPECTED_HARNESS_BY_KIND = {
 }
 
 ROTATION_METADATA_PATH = ROOT / "tasks_private" / "holdout" / "rotation-metadata.json"
+PUBLIC_PRIVATE_HOLDOUT_BLOCKER_PATH = ROOT / "artifact" / "private-holdout-operation-blocker.json"
 
 # Pack roles that are eligible to back a private-holdout or combined
 # leaderboard submission. Today the only eligible role is "active";
@@ -163,7 +164,7 @@ def _load_rotation_metadata() -> dict[str, dict[str, str]]:
     match against.
     """
     if not ROTATION_METADATA_PATH.is_file():
-        return {}
+        return _load_public_private_pack_metadata()
     try:
         data = load_json(ROTATION_METADATA_PATH)
     except Exception:  # noqa: BLE001 - rotation metadata may be missing in slim checkouts.
@@ -182,6 +183,34 @@ def _load_rotation_metadata() -> dict[str, dict[str, str]]:
                 "role": str(pack.get("role", "")),
             }
     return out
+
+
+def _load_public_private_pack_metadata() -> dict[str, dict[str, str]]:
+    """Return public-safe active/shadow pack metadata when private
+    rotation metadata is absent from a clean checkout.
+
+    The blocker artifact publishes count-level fingerprints only; it
+    deliberately omits private manifests and task identifiers. That is
+    enough for public validators to enforce that current private
+    leaderboard rows point at the active pack instead of a shadow or
+    unknown pack.
+    """
+    if not PUBLIC_PRIVATE_HOLDOUT_BLOCKER_PATH.is_file():
+        return {}
+    try:
+        data = load_json(PUBLIC_PRIVATE_HOLDOUT_BLOCKER_PATH)
+    except Exception:  # noqa: BLE001 - public fallback is optional.
+        return {}
+    evidence = data.get("count_level_public_evidence") if isinstance(data, dict) else None
+    if not isinstance(evidence, dict):
+        return {}
+    packs: dict[str, dict[str, str]] = {}
+    for role in ("active", "shadow"):
+        fingerprint = str(evidence.get(f"{role}_pack_fingerprint_sha256", "")).strip()
+        pack_id = str(evidence.get(f"{role}_pack_id", "")).strip()
+        if fingerprint and pack_id:
+            packs[fingerprint] = {"id": pack_id, "role": role}
+    return packs
 
 
 def _validate_private_pack_role(
