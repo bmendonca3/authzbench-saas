@@ -1,6 +1,6 @@
 {
-  "benchmark_source_sha": "38a0a7d0538e04df1cab82379eb7e99ef60ea41d",
-  "benchmark_source_tree_sha": "bf8b45d8a8027db5f7479d41163570b2a87692c0",
+  "benchmark_source_sha": "2b8edf1606294026daed817ccdfffd4d172ccf8c",
+  "benchmark_source_tree_sha": "24436211362f59094e6f4b88011352dcb1e424cd",
   "blocked_until": [
     "a public-safe adapter writes valid submissions for vulnerable and secure-control tasks",
     "matching native AuthZBench-SaaS public-run evidence is generated for the same task set",
