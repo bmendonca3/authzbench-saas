@@ -142,7 +142,7 @@ def main() -> int:
     overall_passed = all(s["passed"] for s in step_results)
     summary = {
         "schema_version": "public-reproduction-v1",
-        "root": str(root),
+        "root": ".",
         "overall_passed": overall_passed,
         "step_count": len(step_results),
         "passed_step_count": sum(1 for s in step_results if s["passed"]),
