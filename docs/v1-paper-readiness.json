@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "65a8e749a0e8f09c56a7e5d84e608c2430a5a729",
+  "benchmark_source_sha": "b108bf486d2d047207bc4cd6694f26e7be5b796d",
   "charts_current_stale_legacy_labeled": true,
   "claim_boundary_reviewed": true,
   "evidence_scope": "release_candidate",
@@ -10,7 +10,7 @@
   "verification": {
     "charts_command": "python3 scripts/generate_benchmark_charts.py && git diff --exit-code -- docs/assets/benchmark-charts",
     "ci_history_requirement": "actions/checkout uses fetch-depth 0 so clean-clone CI can resolve and validate the ancestor benchmark source SHA",
-    "ci_refresh_note": "Re-pinned to the Kaggle-like host-review checklist source commit (65a8e74 \"Add Kaggle presentation checklist\") so the host-review packaging docs, presentation checklist, sample submission artifact, claim-boundary hardening, and wording cleanup are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
+    "ci_refresh_note": "Re-pinned to the claim boundary paragraph negation fix and docs update commit (b108bf4 \"Fix claim boundary paragraph negation and update host-review docs\") so the updated scanner, regression test, and package docs are included in the release-affecting source boundary while this evidence-refresh commit remains evidence-only.",
     "latex_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error paper/ieee-sp/main.tex",
     "latex_result": "exit 0; PDF generated; non-fatal font and underfull-box warnings remain; no unresolved citation/reference, LaTeX error, fatal stop, or overfull-box match was found in main.log",
     "paper_tables_command": "python3 scripts/generate_paper_tables.py && git diff --exit-code -- paper/shared",
