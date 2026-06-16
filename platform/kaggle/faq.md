@@ -25,7 +25,7 @@ The public split (60 tasks) is diagnostic only. It is intended for local validat
 Private holdouts are stored in a separate directory (`tasks_private/`) that is excluded from the public Git history and ignored. Only aggregate fingerprints and public-safe summaries are checked in. Scorer runs read private tasks in a restricted environment.
 
 ## What happens if private leakage occurs?
-If private task manifests are leaked, the host will rotate the active private pack to a new shadow pack version, regenerate manifest fingerprints, and invalidate affected scores following the protocol in `docs/host-private-leakage-response.md`.
+If private task manifests are leaked, the host will rotate the active private pack to a new shadow pack version, regenerate manifest fingerprints, and invalidate affected scores following the protocol in `docs/host/host-operations-runbook.md`.
 
 ## What must a host decide before launch?
 The host must decide:
