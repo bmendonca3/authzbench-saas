@@ -1,3 +1,6 @@
+> [!NOTE]
+> **Consolidation Notice**: This file is slated for consolidation. Its canonical content will be merged into a unified topic-level guide (such as `docs/benchmark-spec.md` or `docs/scoring-and-submissions.md`) in subsequent consolidation phases.
+
 # v1 Community Submission Governance
 
 Status: governance specification for future v1/community operation. This
