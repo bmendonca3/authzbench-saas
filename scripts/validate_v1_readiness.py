@@ -408,6 +408,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/benchmark-spec.md",
     "docs/claims-and-evidence.md",
     "docs/scoring-and-submissions.md",
+    "scripts/validate_v0_release.py",
 }
 PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/goal.md",
