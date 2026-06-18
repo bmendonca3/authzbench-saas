@@ -827,6 +827,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                     for marker in (
                         "release validation commit_sha must match target release SHA",
                         "tracked release-candidate evidence is missing",
+                        "benchmark_source_sha must be an ancestor of release commit_sha",
+                        "working tree must be clean when validating release-candidate evidence",
                     )
                 ),
                 release_gate["unmet"],
