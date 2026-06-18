@@ -1,20 +1,20 @@
 {
   "schema_version": "v1-release-candidate-validation-v2",
-  "schema_note": "validated_release_candidate_sha is the commit CI actually validated. ci_validated_sha must match the GitHub Actions run head_sha. evidence_file_commit_sha is the commit that stores this file. These are intentionally different — the evidence file cannot validate itself.",
-  "validated_release_candidate_sha": "72a4f2aa265d151714c1b7b33efac78271648b0b",
-  "ci_validated_sha": "cd0f796d17a7064dc2aa1d76febc92af68c21019",
-  "evidence_file_commit_sha": "e09be2a1ac390653980a480f9a32b5c3ff8f2918",
-  "benchmark_source_sha": "bd7500657595603f94fb1ac599dfb0ff1be217df",
+  "schema_note": "validated_release_candidate_sha is the commit CI actually validated. ci_validated_sha must match the GitHub Actions run head_sha. evidence_file_commit_sha is the commit that stores this file. These are intentionally different \u2014 the evidence file cannot validate itself.",
+  "validated_release_candidate_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
+  "ci_validated_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
+  "evidence_file_commit_sha": "pending-round-1-commit",
+  "benchmark_source_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
   "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
   "release_tag": "v1.0-internal",
-  "release_tag_sha": "cd0f796d17a7064dc2aa1d76febc92af68c21019",
-  "final_release_tag_sha": "bd6c6a9dcc69d35c872ccb540b0605a2fa358dba",
+  "release_tag_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
+  "final_release_tag_sha": "pending-round-1-commit",
   "post_evidence_main_ci": {
-    "head_sha": "e09be2a1ac390653980a480f9a32b5c3ff8f2918",
-    "run_id": "27427649106",
-    "run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27427649106",
+    "head_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
+    "run_id": "27656116973",
+    "run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27656116973",
     "conclusion": "success",
-    "note": "CI run on the evidence-schema cleanup commit; does not replace ci_validated_sha."
+    "note": "CI run on main HEAD fea39e7; the evidence file commit will differ from ci_validated_sha per the v2 schema design."
   },
   "evidence_status": "release_candidate",
   "public_claim_boundary": "This evidence supports AuthZBench-SaaS v1 under the internal/non-external release definition. It does not claim independent external review, SaaS-provider validation, hosted public leaderboard readiness, Kaggle acceptance, Harbor acceptance, or third-party submissions.",
@@ -24,61 +24,61 @@
   "platform_acceptance_claimed": false,
   "ci": {
     "workflow": "Validate AuthZBench-SaaS",
-    "run_id": "27426442681",
-    "run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27426442681",
-    "head_sha": "cd0f796d17a7064dc2aa1d76febc92af68c21019",
+    "run_id": "27656116973",
+    "run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27656116973",
+    "head_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
     "conclusion": "success"
   },
   "commands": {
     "python3 -m unittest discover -s tests": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "python3 scripts/validate_public.py --include-scripted-baseline": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "python3 scripts/validate_v0_release.py": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "python3 scripts/validate_baseline_registry.py": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "python3 scripts/generate_paper_tables.py": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "git diff --exit-code -- paper/shared": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "git diff --check": {
       "passed": true,
       "exit_code": 0,
-      "evidence": "run/27425999724"
+      "evidence": "local run 2026-06-18; exit 0"
     },
     "git ls-files tasks_private/holdout results captures docs/reviews/panel-logs": {
       "passed": true,
