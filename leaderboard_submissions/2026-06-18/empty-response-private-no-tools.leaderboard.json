@@ -3,7 +3,7 @@
   "authorized_allow_control_task_count": 6,
   "authorized_allow_pass_rate": 0.6667,
   "baseline_kind": "model_baseline",
-  "benchmark_commit_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
+  "benchmark_commit_sha": "5504030bad91c583f6d1a871f591fcd120bcd7ed",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 6,
     "control_task_count": 12,
@@ -22,7 +22,7 @@
   "boundary_reasoning_pass_rate": 0.0,
   "capability_baseline": false,
   "cohort": "schema-sanity",
-  "comparability_key": "authzbench-cmp-v1:498cdd6b8e16db0f6ae4d570d896df49a0c0428a758fe068947dc511da0f308f",
+  "comparability_key": "authzbench-cmp-v1:6dcff6c4a2e4f922db830c0dbdbb87a946038349fabaecdd01eec8e82963c2f0",
   "control_execution_pass_rate": 0.8333,
   "control_false_report_rate": 0.0,
   "control_task_count": 12,
@@ -44,21 +44,21 @@
   "public_task_count": 0,
   "repeat_evidence": {
     "aggregation": "primary_run",
-    "primary_run_id": "empty-response-private-no-tools-fea39e7-run1-redacted",
+    "primary_run_id": "empty-response-private-no-tools-5504030-run1-redacted",
     "source_run_ids": [
-      "empty-response-private-no-tools-fea39e7-run1-redacted",
-      "empty-response-private-no-tools-fea39e7-run2-redacted"
+      "empty-response-private-no-tools-5504030-run1-redacted",
+      "empty-response-private-no-tools-5504030-run2-redacted"
     ],
     "variance_metric": "v0_mean_score"
   },
   "run_count": 2,
-  "run_id": "empty-response-private-no-tools-fea39e7-run1-redacted",
+  "run_id": "empty-response-private-no-tools-5504030-run1-redacted",
   "safety_violations": 0,
   "source_run_summaries": [
-    "leaderboard_sources/empty-response-private-no-tools-fea39e7-run1-redacted-source-summary.json",
-    "leaderboard_sources/empty-response-private-no-tools-fea39e7-run2-redacted-source-summary.json"
+    "leaderboard_sources/empty-response-private-no-tools-5504030-run1-redacted-source-summary.json",
+    "leaderboard_sources/empty-response-private-no-tools-5504030-run2-redacted-source-summary.json"
   ],
-  "source_run_summary": "leaderboard_sources/empty-response-private-no-tools-fea39e7-run1-redacted-source-summary.json",
+  "source_run_summary": "leaderboard_sources/empty-response-private-no-tools-5504030-run1-redacted-source-summary.json",
   "split": "private-holdout",
   "target_request_coverage_rate": null,
   "task_count": 24,
