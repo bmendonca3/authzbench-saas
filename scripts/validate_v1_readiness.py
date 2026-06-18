@@ -195,6 +195,11 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "tests/test_harbor_scorer_bridge.py",
     "tests/test_validate_harbor_adapter_blockers.py",
     ".gitignore",
+    # Generated paper tables: output of scripts/generate_paper_tables.py.
+    # Regenerated after leaderboard source/submission changes to reflect
+    # current eligibility counts. Does not change benchmark source, tasks,
+    # scoring policy, or baseline substance.
+    "paper/shared/evidence-map-table.tex",
     # Claim-safe release framing docs: updated after source pin to clarify
     # v1 internal-RC vs v2 external-validation boundaries without changing
     # benchmark source, tasks, scoring, or baselines.
@@ -449,6 +454,11 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "tests/test_build_leaderboard_submission.py",
     "tests/test_leaderboard_submission.py",
     "tests/test_v0_release_validator.py",
+    # Generated paper tables: output of scripts/generate_paper_tables.py.
+    # Regenerated after leaderboard source/submission changes to reflect
+    # current eligibility counts. Does not change benchmark source, tasks,
+    # scoring policy, or baseline substance.
+    "paper/shared/evidence-map-table.tex",
 }
 POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_sources/",
