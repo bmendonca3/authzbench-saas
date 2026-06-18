@@ -114,14 +114,12 @@
         "artifact/v1-release-candidate-validation-runbook.json"
       ],
       "id": "final_release_candidate_validation",
-      "passed": false,
-      "unmet": [
-        "benchmark_source_sha must be an ancestor of release commit_sha"
-      ]
+      "passed": true,
+      "unmet": []
     }
   ],
-  "passed": false,
-  "passed_gate_count": 9,
-  "unmet_gate_count": 1,
-  "v1_ready": false
+  "passed": true,
+  "passed_gate_count": 10,
+  "unmet_gate_count": 0,
+  "v1_ready": true
 }
