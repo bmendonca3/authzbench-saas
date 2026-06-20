@@ -68,7 +68,7 @@ the CI-enforced forbidden-phrase check at
 | Stage | Status | What it proves | Next gate |
 | --- | --- | --- | --- |
 | `v0.0` public release | Complete | First evidence-backed public benchmark snapshot with 46 frozen public tasks, release evidence, CI, privacy checks, and tagged release artifacts. | Preserved as historical release evidence. |
-| `v1.0-internal` | Complete | Current internally validated artifact with 60 public tasks, 48 maintainer-private holdout tasks, deterministic scoring, private-holdout governance, and repo-side Harbor adapter path. | Keep docs, validators, and artifacts aligned while external tracks are still pending. |
+| `v1.0-internal` | Complete | Current internally validated artifact with 63 public tasks, 48 maintainer-private holdout tasks, deterministic scoring, private-holdout governance, and repo-side Harbor adapter path. | Keep docs, validators, and artifacts aligned while external tracks are still pending. |
 | `v2` external validation | Deferred | Independent AppSec/evals/agent review, SaaS-provider scenario validation, platform review, hosted operation, and third-party submissions. | Recruit reviewers, run external lanes, record real dispositions, and update the claim ledger. |
 
 The full roadmap is maintained in [`ROADMAP.md`](ROADMAP.md). Claim limits and
@@ -201,7 +201,7 @@ Full runbook: [`docs/harbor-integration-runbook.md`](docs/harbor-integration-run
 - [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md) — v1
   release note
 - `artifact/` — tracked public-safe artifacts
-- `tasks/` — public task manifests (6 apps, 60 tasks)
+- `tasks/` — public task manifests (6 apps, 63 tasks)
 - `authzbench_harbor/` — repo-side Harbor adapter Python package
 - `scripts/` — validation and runner scripts
 - `tests/` — unit tests
@@ -236,19 +236,19 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
 
 - 6 local SaaS fixtures: project management, billing, support, file sharing,
   API tokens, and audit settings
-- 60 public task manifests with seeded tenants, users, roles, objects, tokens,
+- 63 public task manifests with seeded tenants, users, roles, objects, tokens,
   scopes, routes, and controls
 - deterministic scorer-owned backend replay
 - Docker targets with request-log correlation for live HTTP agents
 
 ### Evidence and Baselines
 
-- current 60-task scripted sanity baseline proving the expanded public split,
+- current 63-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- repeated current 60-task no-tools public baselines across Qwen, Claude Haiku
+- repeated current 63-task no-tools public baselines across Qwen, Claude Haiku
   4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6; public-split evidence
   only
-- repeated current 60-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+- repeated current 63-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
   target-request correlation and public-safe plan/probe artifacts; public-split
   evidence only
 - frozen v0.0 46-task public baseline summaries plus historical 49-task and
@@ -479,17 +479,20 @@ Important interpretation:
   rerun.
 - The 54-task split has repeated no-tools Qwen, Claude Haiku 4.5, Claude Sonnet
   4.6, GLM-5, and Claude Opus 4.6 families, plus a repeated live HTTP Claude
-  Sonnet 4.6 tool-agent family. Those rows are now stale for the 60-task split.
-- The current 60-task split has repeated no-tools model-family evidence and a
-  repeated live HTTP tool-agent family tracked in the baseline registry. These
-  are public-split diagnostics only; private holdouts, hosted operation,
-  external review, and platform acceptance remain separate v2 gates.
+  Sonnet 4.6 tool-agent family. Those rows are now stale for the 63-task split.
+- The previous 60-task split had repeated no-tools model-family evidence and a
+  repeated live HTTP tool-agent family tracked in the baseline registry. With
+  the v1.1 promotion to a 63-task split, those rows are marked
+  current_public_stale pending reruns; only the scripted sanity baseline has
+  been re-stamped at 63. These are public-split diagnostics only; private
+  holdouts, hosted operation, external review, and platform acceptance remain
+  separate v2 gates.
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
-  vocabulary required for full vulnerable-task credit. Later stale 54-task and
-  current 60-task public runs preserve the same distinction between exploit
-  proof and boundary-credit interpretation.
+  vocabulary required for full vulnerable-task credit. Later stale 54-task,
+  stale 60-task, and current 63-task public runs preserve the same distinction
+  between exploit proof and boundary-credit interpretation.
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and
@@ -558,9 +561,9 @@ AuthZBench-SaaS v1 is complete under the internal/non-external release definitio
 
 v1 includes:
 
-- 60 public tasks across 6 synthetic SaaS targets
+- 63 public tasks across 6 synthetic SaaS targets
 - 48 maintainer-private holdout tasks summarized through public-safe count-level evidence
-- 108 total public/private task scale
+- 111 total public/private task scale
 - deterministic replay scoring
 - public baseline validation
 - protected private-evaluation plumbing
