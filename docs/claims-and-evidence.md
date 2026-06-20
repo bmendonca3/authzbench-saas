@@ -19,14 +19,14 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | Claim / Category | Status | Evidence | Forbidden Stronger Wording |
 | --- | --- | --- | --- |
 | **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md` and public-view readiness checklist success | "community benchmark", "externally validated benchmark", "leaderboard-grade benchmark" |
-| **60 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "leaderboard-grade public split" |
+| **63 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "leaderboard-grade public split" |
 | **48 private holdout tasks** | Supported by fingerprint / count | Ignored local private packs, rotation metadata, and public redaction summaries | "publicly reproducible private holdouts", "open private holdout task list" |
 | **Local Harbor adapter path** | Supported | `authzbench_harbor/` package, local smoke execution, and parity verification | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready" |
 | **Local / containerized submission smoke** | Supported | `artifact/submission-runner-smoke.json` and local test suites | "hosted leaderboard", "hosted submission operation" |
 | **Deterministic backend-replay scorer** | Supported | Scorer package codebase and test suites | "human-judged scoring", "model-graded scoring" |
 | **Public / private split with holdout governance** | Supported | Rotation and lifecycle specification documents | "public leaderboard operation", "open private holdout reuse" |
-| **Current scripted sanity baseline** | Supported | Fresh 60-task scripted sanity baseline summaries | "current model baseline", "current tool-agent baseline" |
-| **Fresh 60-task model / tool-agent baseline** | Supported for specific families | Fresh repeated baselines listed in `baselines/baseline-registry.json` | "all major model families", "all current frontier models" |
+| **Current scripted sanity baseline** | Supported | Fresh 63-task scripted sanity baseline summaries | "current model baseline", "current tool-agent baseline" |
+| **Fresh model / tool-agent baseline** | Partially supported (pending reruns) | The scripted sanity baseline is current at 63 tasks; prior 60-task model/tool-agent rows are marked `current_public_stale` in `baselines/baseline-registry.json` pending 63-task reruns | "fresh 63-task model/tool-agent baseline", "all major model families", "all current frontier models" |
 | **Synthetic targets only** | Supported | Sandbox applications; absence of real-SaaS API keys or integrations | "production SaaS coverage", "real customer SaaS authorization coverage" |
 | **Independent external review** | Not done | Intake packet exists; no reviewer dispositions recorded | "external review complete", "industry-standard benchmark" |
 | **SaaS-provider scenario validation** | Not done | Validation tracks defined; no provider endorsements recorded | "SaaS-validated", "real-world validated", "AppSec-reviewed" |
@@ -41,9 +41,9 @@ This ledger defines the boundary between supported claims and forbidden stronger
 
 | Evidence | What It Proves | What It Does Not Prove |
 | --- | --- | --- |
-| **60-task public split** | Presence of BOLA, BFLA, and secure controls across 6 apps. | v1 release readiness or hosted leaderboard operation. |
+| **63-task public split** | Presence of BOLA, BFLA, and secure controls across 6 apps. | v1 release readiness or hosted leaderboard operation. |
 | **Scripted sanity baseline** | Validates the public split scorer and oracle paths. | Model capability or private holdout performance. |
-| **Stale baselines** | Stale runs remain auditable as historical snapshots. | Direct comparability with the current 60-task split. |
+| **Stale baselines** | Stale runs remain auditable as historical snapshots. | Direct comparability with the current 63-task split. |
 | **Scorer replay** | Submitted evidence can be verified against backend behavior. | The agent interacted with a live target unless request logs are correlated. |
 | **Secure controls** | The benchmark penalizes false positives and over-reporting. | All real SaaS false-positive patterns are covered. |
 | **Rotation metadata** | Private packs are defined, verified, and gitignored. | Public reproducibility of the private holdouts. |
