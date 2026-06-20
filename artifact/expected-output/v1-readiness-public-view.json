@@ -3,8 +3,8 @@
   "gates": [
     {
       "evidence": [
-        "public_task_count=60",
-        "vulnerable_task_count=24",
+        "public_task_count=63",
+        "vulnerable_task_count=27",
         "current_public_model_family_count=6",
         "current_public_scripted_sanity_baseline_present=True",
         "current_public_model_or_tool_agent_baseline_present=True",
@@ -12,8 +12,10 @@
         "has_current_public_model_or_tool_agent_baseline=True"
       ],
       "id": "stable_v1_prep_public_evidence",
-      "passed": true,
-      "unmet": []
+      "passed": false,
+      "unmet": [
+        "baseline registry validation has errors"
+      ]
     },
     {
       "evidence": [
@@ -89,11 +91,11 @@
     {
       "evidence": [
         "artifact/v1-task-scale-roadmap.json",
-        "public_task_count=60",
+        "public_task_count=63",
         "validated_private_holdout_task_count=48",
-        "total_task_count=108",
+        "total_task_count=111",
         "planned_additional_task_count=0",
-        "planned_total_task_count=108"
+        "planned_total_task_count=111"
       ],
       "id": "v1_task_scale",
       "passed": true,
@@ -118,8 +120,8 @@
       "unmet": []
     }
   ],
-  "passed": true,
-  "passed_gate_count": 10,
-  "unmet_gate_count": 0,
-  "v1_ready": true
+  "passed": false,
+  "passed_gate_count": 9,
+  "unmet_gate_count": 1,
+  "v1_ready": false
 }
