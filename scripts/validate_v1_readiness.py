@@ -328,10 +328,6 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "artifact/historical/harbor-parity-experiment-aggregate-means.json",
     "docs/v1-readiness-checklist.md",
     "scripts/check_claim_boundary.py",
-    "tasks_v11_prep/README.md",
-    "tasks_v11_prep/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
-    "tasks_v11_prep/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
-    "tasks_v11_prep/file_sharing/fs_team_membership_cross_workspace_discovery.json",
     "tests/test_v11_prep_multistep_discovery.py",
     # Host-presentation packaging, validation, and public-safe examples added
     # after the benchmark source pin; they do not change benchmark tasks,
