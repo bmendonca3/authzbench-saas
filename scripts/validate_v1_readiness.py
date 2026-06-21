@@ -450,6 +450,38 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "tests/test_build_leaderboard_submission.py",
     "tests/test_leaderboard_submission.py",
     "tests/test_v0_release_validator.py",
+    # v1.1 public promotion evidence and docs generated after the benchmark
+    # source pin. The promoted task manifests themselves are already present
+    # at the source pin; these files record the 63-task scripted sanity
+    # evidence, generated charts/tables, public-safe private leaderboard rows,
+    # and validator/test/doc framing for the promoted split. They do not add or
+    # modify public task manifests, scorer policy, or private holdout contents.
+    "baselines/scripted-baseline-public-63-summary.json",
+    "docs/assets/benchmark-charts/boundary-reasoning.svg",
+    "docs/assets/benchmark-charts/chart-data.json",
+    "docs/assets/benchmark-charts/current-public-baselines.svg",
+    "docs/assets/benchmark-charts/evidence-readiness.svg",
+    "docs/assets/benchmark-charts/exploit-proven-success.svg",
+    "docs/assets/benchmark-charts/false-positive-rate.svg",
+    "docs/assets/benchmark-charts/model-pass-rate.svg",
+    "docs/assets/benchmark-charts/task-mix.svg",
+    "docs/authzbench-saas-v1-prep-technical-report.md",
+    "docs/baseline-credibility.md",
+    "docs/multi-step-discovery-task-spec.md",
+    "docs/status.md",
+    "docs/task-quality-matrix.json",
+    "docs/task-quality-matrix.md",
+    "paper/shared/authzbench-macros.tex",
+    "paper/shared/task-mix-table.tex",
+    "scripts/promote_public_baseline_delta.py",
+    "scripts/scripted_baseline_agent.py",
+    "tests/test_baseline_registry.py",
+    "tests/test_harness.py",
+    "tests/test_promote_public_baseline_delta.py",
+    "tests/test_runner.py",
+    "tests/test_task_quality_matrix.py",
+    "tests/test_validate_manifests.py",
+    "tests/test_validate_task_quality_gate.py",
     # Generated paper tables: output of scripts/generate_paper_tables.py.
     # Regenerated after leaderboard source/submission changes to reflect
     # current eligibility counts. Does not change benchmark source, tasks,
