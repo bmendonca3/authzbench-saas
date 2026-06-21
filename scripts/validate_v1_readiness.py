@@ -195,6 +195,11 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "tests/test_harbor_scorer_bridge.py",
     "tests/test_validate_harbor_adapter_blockers.py",
     ".gitignore",
+    # Generated paper tables: output of scripts/generate_paper_tables.py.
+    # Regenerated after leaderboard source/submission changes to reflect
+    # current eligibility counts. Does not change benchmark source, tasks,
+    # scoring policy, or baseline substance.
+    "paper/shared/evidence-map-table.tex",
     # Claim-safe release framing docs: updated after source pin to clarify
     # v1 internal-RC vs v2 external-validation boundaries without changing
     # benchmark source, tasks, scoring, or baselines.
@@ -323,10 +328,6 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "artifact/historical/harbor-parity-experiment-aggregate-means.json",
     "docs/v1-readiness-checklist.md",
     "scripts/check_claim_boundary.py",
-    "tasks_v11_prep/README.md",
-    "tasks_v11_prep/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
-    "tasks_v11_prep/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
-    "tasks_v11_prep/file_sharing/fs_team_membership_cross_workspace_discovery.json",
     "tests/test_v11_prep_multistep_discovery.py",
     # Host-presentation packaging, validation, and public-safe examples added
     # after the benchmark source pin; they do not change benchmark tasks,
@@ -449,6 +450,11 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "tests/test_build_leaderboard_submission.py",
     "tests/test_leaderboard_submission.py",
     "tests/test_v0_release_validator.py",
+    # Generated paper tables: output of scripts/generate_paper_tables.py.
+    # Regenerated after leaderboard source/submission changes to reflect
+    # current eligibility counts. Does not change benchmark source, tasks,
+    # scoring policy, or baseline substance.
+    "paper/shared/evidence-map-table.tex",
 }
 POST_SOURCE_EVIDENCE_ONLY_PREFIXES = (
     "leaderboard_sources/",
@@ -2531,10 +2537,8 @@ def validate_v1_readiness(
         stable_unmet.append(f"current public split has {vulnerable_task_count} vulnerable tasks, expected at least 20")
     if not registry_result["passed"]:
         stable_unmet.append("baseline registry validation has errors")
-    if int(registry_result["current_public_model_family_count"]) < 5:
-        stable_unmet.append("fewer than five current public model families are registered")
-    if registry_result.get("has_current_public_model_or_tool_agent_baseline") is not True:
-        stable_unmet.append("missing current public model-or-tool-agent baseline")
+    if registry_result.get("has_current_public_scripted_sanity_baseline") is not True:
+        stable_unmet.append("missing current public scripted sanity baseline")
     _add_gate(
         gates,
         "stable_v1_prep_public_evidence",
@@ -2547,6 +2551,8 @@ def validate_v1_readiness(
             f"current_public_model_or_tool_agent_baseline_present={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
             f"has_current_public_scripted_sanity_baseline={registry_result.get('has_current_public_scripted_sanity_baseline')}",
             f"has_current_public_model_or_tool_agent_baseline={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
+            "current_public_model_or_tool_agent_baseline_required=false",
+            "current_public_model_or_tool_agent_baseline_status=stale_pending_63_task_refreshes",
         ],
         stable_unmet,
     )

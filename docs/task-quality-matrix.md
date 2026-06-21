@@ -17,14 +17,14 @@ python3 scripts/generate_task_quality_matrix.py
 
 | Metric | Value |
 | --- | ---: |
-| Public tasks | 60 |
+| Public tasks | 63 |
 | App families | 6 |
-| Vulnerable tasks | 24 |
+| Vulnerable tasks | 27 |
 | Secure controls | 36 |
 | Denial controls | 21 |
 | Authorized-allow controls | 15 |
-| Tasks with explicit workflow evidence requirements | 5 |
-| Vulnerable workflow tasks with evidence requirements | 5 |
+| Tasks with explicit workflow evidence requirements | 8 |
+| Vulnerable workflow tasks with evidence requirements | 8 |
 
 ## App Mix
 
@@ -32,10 +32,10 @@ python3 scripts/generate_task_quality_matrix.py
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | api_tokens | 10 | 4 | 6 | 3 | 3 | 1 |
 | audit_settings | 9 | 4 | 5 | 2 | 3 | 1 |
-| billing | 13 | 5 | 8 | 5 | 3 | 1 |
-| file_sharing | 8 | 3 | 5 | 3 | 2 | 0 |
+| billing | 14 | 6 | 8 | 5 | 3 | 2 |
+| file_sharing | 9 | 4 | 5 | 3 | 2 | 1 |
 | project_mgmt | 9 | 4 | 5 | 3 | 2 | 1 |
-| support | 11 | 4 | 7 | 5 | 2 | 1 |
+| support | 12 | 5 | 7 | 5 | 2 | 2 |
 
 ## Task Review Matrix
 
@@ -64,6 +64,7 @@ python3 scripts/generate_task_quality_matrix.py
 | bill_admin_entitlement_access_control | billing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | bill_admin_export_denies_member_control | billing | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | bill_admin_plan_access_control | billing | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
+| bill_bfla_member_disables_export_entitlement_discovery | billing | vulnerable | multi_step_evidence_requirements | 2 | attacker_actor, entitlement, operation, org, required_role | 2 |
 | bill_bfla_member_enables_export_entitlement | billing | vulnerable | direct_oracle_and_controls | 3 | attacker_actor, entitlement, org, required_role | 0 |
 | bill_bfla_member_plan_change | billing | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, required_role | 0 |
 | bill_bfla_member_reads_plan_settings | billing | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |
@@ -81,6 +82,7 @@ python3 scripts/generate_task_quality_matrix.py
 | fs_secure_expired_share_link_control | file_sharing | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | fs_secure_viewer_share_control | file_sharing | control:denial | secure_control_oracle | 2 | n/a | 0 |
 | fs_stale_expired_share_link_access | file_sharing | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_link_state | 0 |
+| fs_team_membership_cross_workspace_discovery | file_sharing | vulnerable | multi_step_evidence_requirements | 2 | attacker_actor, required_membership, victim_workspace | 2 |
 | pm_bola_owner_reads_beta_task | project_mgmt | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, victim_tenant | 0 |
 | pm_bola_read_alpha_from_beta | project_mgmt | vulnerable | direct_oracle_and_controls | 3 | attacker_actor, victim_tenant | 0 |
 | pm_bola_read_beta_from_alpha | project_mgmt | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, victim_tenant | 0 |
@@ -93,6 +95,7 @@ python3 scripts/generate_task_quality_matrix.py
 | sup_admin_reassignment_control | support | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | sup_agent_status_only_update_control | support | control:authorized_allow | secure_control_oracle | 1 | n/a | 0 |
 | sup_bfla_viewer_closes_ticket | support | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |
+| sup_bfla_viewer_updates_assigned_ticket_status_discovery | support | vulnerable | multi_step_evidence_requirements | 2 | attacker_actor, org, required_assignment | 2 |
 | sup_bola_acme_reads_orbit_ticket | support | vulnerable | direct_oracle_and_controls | 2 | attacker_actor, victim_org | 0 |
 | sup_cross_org_assignment_control | support | control:denial | secure_control_oracle | 1 | n/a | 0 |
 | sup_invite_agent_creates_admin_invite | support | vulnerable | direct_oracle_and_controls | 1 | attacker_actor, required_role | 0 |

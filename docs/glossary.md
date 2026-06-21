@@ -57,8 +57,8 @@ context, prefer the definition here over a local paraphrase.
   split. The private holdout protects against memorization and is
   the source of truth for v1.0-internal scoring. See
   [`docs/private-holdout-lifecycle.md`](private-holdout-lifecycle.md).
-- **Public split**: the 60 public task manifests under `tasks/`
-  (6 apps × 10 tasks). Inspectable by reviewers; not leaderboard-grade
+- **Public split**: the 63 public task manifests under `tasks/`
+  (6 apps; 27 vulnerable tasks and 36 secure controls). Inspectable by reviewers; not leaderboard-grade
   by itself.
 - **v1.0-internal**: the internal release tag the project carries
   today. The `v1_ready: true` field in

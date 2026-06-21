@@ -79,9 +79,19 @@ def build_submission(
     task_count = int(primary["task_count"])
     split = str(primary.get("split"))
     row = {field: primary.get(field) for field in PRIMARY_FIELDS}
+    agent_name = str(primary.get("agent", ""))
+    model_name = str(primary.get("model", ""))
+    is_schema_sanity = (
+        "empty-response" in agent_name
+        or "empty-response" in model_name
+        or "heuristic" in agent_name
+        or "heuristic" in model_name
+    )
     row.update(
         {
             "baseline_kind": baseline_kind,
+            "capability_baseline": not is_schema_sanity,
+            "cohort": "schema-sanity" if is_schema_sanity else "capability",
             "comparability_key": "",
             "eligibility_policy_version": "leaderboard-eligibility-v1",
             "leaderboard_eligible": leaderboard_eligible,

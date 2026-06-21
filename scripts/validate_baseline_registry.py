@@ -91,6 +91,32 @@ REQUIRED_CURRENT_ENTRY_PROVENANCE_FIELDS = {
     "evidence_status",
 }
 
+PROMOTED_COMPOSITE_CONSTRUCTION = "promoted_cohort_delta_merge"
+
+REQUIRED_PROMOTED_COMPOSITE_ENTRY_FIELDS = {
+    "baseline_construction",
+    "base_public_task_count",
+    "delta_public_task_count",
+    "merged_public_task_count",
+    "base_summary_path",
+    "delta_summary_paths",
+    "promotion_annotation",
+    "not_full_rerun",
+}
+
+REQUIRED_PROMOTED_COMPOSITE_SUMMARY_FIELDS = {
+    "baseline_construction",
+    "base_public_task_count",
+    "delta_public_task_count",
+    "merged_public_task_count",
+    "delta_task_ids",
+    "not_full_rerun",
+    "promotion_annotation",
+    "promotion_sources",
+    "public_split_freshness",
+    "rerun_scope",
+}
+
 # harness_check entries do not have a model or scaffold; the
 # provenance gate still requires run_date and evidence_status.
 HARNESS_CHECK_REQUIRED_PROVENANCE_FIELDS = {
@@ -201,6 +227,109 @@ def _validate_summary_counts(
                 f"{entry_id}: {location} {prefix} {count_field} "
                 f"{summary[count_field]!r} does not match {expected_counts[count_field]}"
             )
+
+
+def _validate_promoted_composite_provenance(
+    registry_path: Path,
+    raw_entry: dict[str, Any],
+    summary: dict[str, Any],
+    entry_id: str,
+    expected_task_count: int,
+    errors: list[str],
+) -> None:
+    construction = str(raw_entry.get("baseline_construction", "")).strip()
+    summary_construction = str(summary.get("baseline_construction", "")).strip()
+    has_promoted_markers = any(
+        field in raw_entry
+        for field in REQUIRED_PROMOTED_COMPOSITE_ENTRY_FIELDS
+    ) or any(field in summary for field in REQUIRED_PROMOTED_COMPOSITE_SUMMARY_FIELDS)
+    if not has_promoted_markers:
+        return
+    if construction != PROMOTED_COMPOSITE_CONSTRUCTION:
+        errors.append(
+            f"{entry_id}: promoted composite current rows must set "
+            f"baseline_construction={PROMOTED_COMPOSITE_CONSTRUCTION!r}"
+        )
+        return
+    if summary_construction != PROMOTED_COMPOSITE_CONSTRUCTION:
+        errors.append(
+            f"{entry_id}: promoted composite summary must set "
+            f"baseline_construction={PROMOTED_COMPOSITE_CONSTRUCTION!r}"
+        )
+
+    missing_entry_fields = sorted(
+        field for field in REQUIRED_PROMOTED_COMPOSITE_ENTRY_FIELDS if field not in raw_entry
+    )
+    if missing_entry_fields:
+        errors.append(
+            f"{entry_id}: promoted composite entry missing fields: "
+            f"{', '.join(missing_entry_fields)}"
+        )
+    missing_summary_fields = sorted(
+        field for field in REQUIRED_PROMOTED_COMPOSITE_SUMMARY_FIELDS if field not in summary
+    )
+    if missing_summary_fields:
+        errors.append(
+            f"{entry_id}: promoted composite summary missing fields: "
+            f"{', '.join(missing_summary_fields)}"
+        )
+
+    if raw_entry.get("not_full_rerun") is not True:
+        errors.append(f"{entry_id}: promoted composite entry must set not_full_rerun=true")
+    if summary.get("not_full_rerun") is not True:
+        errors.append(f"{entry_id}: promoted composite summary must set not_full_rerun=true")
+
+    base_count = raw_entry.get("base_public_task_count")
+    delta_count = raw_entry.get("delta_public_task_count")
+    merged_count = raw_entry.get("merged_public_task_count")
+    if not isinstance(base_count, int):
+        errors.append(f"{entry_id}: base_public_task_count must be an integer")
+    if not isinstance(delta_count, int):
+        errors.append(f"{entry_id}: delta_public_task_count must be an integer")
+    if not isinstance(merged_count, int):
+        errors.append(f"{entry_id}: merged_public_task_count must be an integer")
+    if isinstance(base_count, int) and isinstance(delta_count, int) and isinstance(merged_count, int):
+        if base_count + delta_count != merged_count:
+            errors.append(
+                f"{entry_id}: base_public_task_count + delta_public_task_count must equal "
+                "merged_public_task_count"
+            )
+        if merged_count != expected_task_count:
+            errors.append(
+                f"{entry_id}: merged_public_task_count {merged_count!r} does not match "
+                f"expected_task_count {expected_task_count}"
+            )
+    for field in ("base_public_task_count", "delta_public_task_count", "merged_public_task_count"):
+        if field in summary and raw_entry.get(field) != summary.get(field):
+            errors.append(
+                f"{entry_id}: promoted composite {field} {summary.get(field)!r} "
+                f"does not match registry {raw_entry.get(field)!r}"
+            )
+
+    delta_paths = raw_entry.get("delta_summary_paths")
+    if not isinstance(delta_paths, list) or not delta_paths:
+        errors.append(f"{entry_id}: delta_summary_paths must be a non-empty list")
+    else:
+        for index, delta_path in enumerate(delta_paths, start=1):
+            if not isinstance(delta_path, str) or not delta_path.strip():
+                errors.append(f"{entry_id}: delta_summary_paths[{index}] must be a non-empty path")
+                continue
+            if not _summary_path(registry_path, delta_path).exists():
+                errors.append(f"{entry_id}: missing delta summary {_display_path(_summary_path(registry_path, delta_path))}")
+
+    base_summary_path = raw_entry.get("base_summary_path")
+    if not isinstance(base_summary_path, str) or not base_summary_path.strip():
+        errors.append(f"{entry_id}: base_summary_path must be a non-empty path")
+    elif not _summary_path(registry_path, base_summary_path).exists():
+        errors.append(f"{entry_id}: missing base summary {_display_path(_summary_path(registry_path, base_summary_path))}")
+
+    promotion_sources = summary.get("promotion_sources")
+    if not isinstance(promotion_sources, dict):
+        errors.append(f"{entry_id}: promoted composite summary promotion_sources must be an object")
+    else:
+        for field in ("base_summary", "delta_summary", "base_task_count", "delta_task_count"):
+            if field not in promotion_sources:
+                errors.append(f"{entry_id}: promoted composite summary promotion_sources missing {field}")
 
 
 def _require_int(value: Any, field: str, entry_id: str, errors: list[str]) -> int:
@@ -582,6 +711,15 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
                 errors.append(
                     f"{entry_id}: current {suitability} entry missing required provenance "
                     f"fields: {', '.join(missing_provenance)}"
+                )
+            if kind in {"model_baseline", "tool_agent_baseline"} and suitability == "current_public_split":
+                _validate_promoted_composite_provenance(
+                    registry_path,
+                    raw_entry,
+                    summary,
+                    entry_id,
+                    expected_task_count,
+                    errors,
                 )
         elif kind in {"model_baseline", "tool_agent_baseline"}:
             # Stale or legacy-snapshot entries: warn on missing

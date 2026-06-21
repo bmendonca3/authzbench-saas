@@ -48,9 +48,9 @@ class ManifestValidationTests(unittest.TestCase):
     def test_public_manifests_validate(self) -> None:
         result = validate_patterns(["tasks/*/*.json"])
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["manifest_count"], 60, result)
+        self.assertEqual(result["manifest_count"], 63, result)
         self.assertEqual(result["private_holdout_count"], 0, result)
-        self.assertEqual(result["vulnerable_count"], 24, result)
+        self.assertEqual(result["vulnerable_count"], 27, result)
         self.assertEqual(result["control_count"], 36, result)
         self.assertEqual(result["denial_control_count"], 21, result)
         self.assertEqual(result["authorized_allow_control_count"], 15, result)

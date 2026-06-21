@@ -1,11 +1,10 @@
-"""Tests for the v1.1-prep multi-step discovery task cohort.
+"""Tests for the multi-step discovery task cohort.
 
-The v1.1-prep cohort is a parallel directory (`tasks_v11_prep/`) that
-demonstrates the `multi_step_discovery` task type and the plan-4.2
-categories the public 60-task split does not cover, without changing
-the public count. The cohort is locked at 3 tasks and is validated
-in isolation; it does not enter the v1-readiness gate or the public
-baseline summaries.
+These three `multi_step_discovery` tasks were promoted from the
+`tasks_v11_prep/` parallel directory into the public split as part of
+the v1.1 wave, bringing the public count from 60 to 63. They cover the
+plan-4.2 categories the original 60-task split did not. The cohort is
+locked at 3 tasks and now lives under the standard `tasks/<app>/` paths.
 """
 
 from __future__ import annotations
@@ -23,7 +22,7 @@ from authzbench.score import score_submission
 from authzbench.validate_manifests import validate_patterns
 
 
-V11_PREP_GLOB = "tasks_v11_prep/*/*.json"
+V11_PREP_GLOB = "tasks/*/*_discovery.json"
 EXPECTED_IDS = {
     "sup_bfla_viewer_updates_assigned_ticket_status_discovery",
     "bill_bfla_member_disables_export_entitlement_discovery",
@@ -192,7 +191,7 @@ class V11PrepBoundaryAliasTests(unittest.TestCase):
         must fire ``boundary_semantic_match=True`` and not the
         strict subset path.
         """
-        path = ROOT / "tasks_v11_prep/file_sharing/fs_team_membership_cross_workspace_discovery.json"
+        path = ROOT / "tasks/file_sharing/fs_team_membership_cross_workspace_discovery.json"
         task = load_json(path)
         refs = build_context(task)["refs"]
         # Build a submission with the canonical structure but with

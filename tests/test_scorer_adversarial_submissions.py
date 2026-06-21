@@ -268,7 +268,7 @@ class BoundaryAliasTests(unittest.TestCase):
         from authzbench.score import score_submission as _score
 
         path = _P(__file__).resolve().parents[1] / (
-            "tasks_v11_prep/file_sharing/"
+            "tasks/file_sharing/"
             "fs_team_membership_cross_workspace_discovery.json"
         )
         task = _load_json(path)
