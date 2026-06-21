@@ -8,7 +8,7 @@ the benchmark changes.
 
 | State | Meaning |
 | --- | --- |
-| `current_public_split` | Run on the current public task set and current scorer profile. |
+| `current_public_split` | Valid for the current public task set and current scorer profile. Model/tool rows must also state whether they are full reruns or `promoted_cohort_delta_merge` composites. |
 | `current_public_stale` | Run on a recently superseded public task set; useful context, but rerun required before current comparison or v0 claims. |
 | `current_private_holdout` | Maintainer-side private holdout run for release-candidate evidence. |
 | `legacy_snapshot` | Historical run kept for context, not comparable to current results. |
@@ -38,6 +38,19 @@ New public tasks should include:
 - public validation
 
 Private holdout additions must remain outside public Git history.
+
+## Promoted-Composite Baselines
+
+When a small private-prep cohort is promoted into `tasks/`, a current model or
+tool-agent baseline may be refreshed by merging an immutable prior public split
+summary with fresh reruns for exactly the promoted public tasks. Such rows must
+use `baseline_construction: promoted_cohort_delta_merge`, set
+`not_full_rerun: true`, preserve base and delta summary paths, and recompute the
+current public benchmark fingerprint.
+
+Approved wording is "current promoted-composite baseline for the current public
+split." Do not call these rows "fresh full reruns" or "fresh 63-task reruns"
+unless every task in the public split was actually rerun.
 
 ## Task Removals
 

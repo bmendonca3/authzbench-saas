@@ -31,6 +31,7 @@ CURRENT_SONNET_60_ID = "kiro-claude-sonnet-4-6-current-public-60"
 CURRENT_GLM_60_ID = "kiro-glm-5-current-public-60"
 CURRENT_OPUS_60_ID = "kiro-claude-opus-4-6-current-public-60"
 CURRENT_TOOL_AGENT_60_ID = "kiro-live-tool-agent-sonnet-current-public-60"
+CURRENT_SCRIPTED_63_ID = "scripted-sanity-public-63"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
@@ -61,52 +62,160 @@ def _baseline_by_id(registry: dict, baseline_id: str) -> dict:
     raise AssertionError(f"missing baseline fixture: {baseline_id}")
 
 
+def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, dict]:
+    registry = load_json(registry_path)
+    base_entry = _baseline_by_id(registry, CURRENT_QWEN_60_ID)
+    entry = copy.deepcopy(base_entry)
+    entry.update(
+        {
+            "id": "synthetic-qwen-current-public-63-composite",
+            "release_suitability": "current_public_split",
+            "leaderboard_eligible": False,
+            "expected_task_count": 63,
+            "requires_rerun_before_current_comparison": False,
+            "summary_path": "synthetic-qwen-current-public-63-composite-run1-summary.json",
+            "run_artifacts": [
+                "synthetic-qwen-current-public-63-composite-run1-summary.json",
+                "synthetic-qwen-current-public-63-composite-run2-summary.json",
+            ],
+            "run_date": "2026-06-20",
+            "evidence_status": "current_promoted_composite",
+            "baseline_construction": "promoted_cohort_delta_merge",
+            "base_public_task_count": 60,
+            "delta_public_task_count": 3,
+            "merged_public_task_count": 63,
+            "base_summary_path": base_entry["summary_path"],
+            "delta_summary_paths": ["synthetic-qwen-current-public-63-delta-summary.json"],
+            "promotion_annotation": (
+                "Current 63-task promoted-composite baseline built from the immutable "
+                "60-task public baseline plus fresh reruns on the three promoted public tasks; "
+                "not a full 63-task rerun."
+            ),
+            "not_full_rerun": True,
+        }
+    )
+
+    scripted_summary = load_json(registry_path.parent / "scripted-baseline-public-63-summary.json")
+    summary = copy.deepcopy(scripted_summary)
+    summary.update(
+        {
+            "agent": entry["expected_agent"],
+            "model": entry["expected_model"],
+            "harness_type": entry["expected_harness_type"],
+            "baseline_construction": "promoted_cohort_delta_merge",
+            "public_split_freshness": "current_promoted_composite_not_full_rerun",
+            "rerun_scope": "delta_public_tasks_only",
+            "not_full_rerun": True,
+            "base_public_task_count": 60,
+            "delta_public_task_count": 3,
+            "merged_public_task_count": 63,
+            "delta_task_ids": [
+                "bill_bfla_member_disables_export_entitlement_discovery",
+                "fs_team_membership_cross_workspace_discovery",
+                "sup_bfla_viewer_updates_assigned_ticket_status_discovery",
+            ],
+            "promotion_annotation": entry["promotion_annotation"],
+            "promotion_sources": {
+                "base_summary": entry["base_summary_path"],
+                "delta_summary": entry["delta_summary_paths"][0],
+                "base_task_count": 60,
+                "delta_task_count": 3,
+                "base_run_id": "synthetic-base",
+                "delta_run_id": "synthetic-delta",
+            },
+        }
+    )
+    for index, artifact_path in enumerate(entry["run_artifacts"], start=1):
+        artifact = copy.deepcopy(summary)
+        artifact["run_id"] = f"synthetic-qwen-current-public-63-composite-run{index}"
+        (registry_path.parent / artifact_path).write_text(
+            json.dumps(artifact, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+    delta_summary = {
+        **summary,
+        "run_id": "synthetic-qwen-current-public-63-delta",
+        "task_count": 3,
+        "tasks": [
+            task for task in summary["tasks"] if task["task_id"] in set(summary["delta_task_ids"])
+        ],
+    }
+    (registry_path.parent / entry["delta_summary_paths"][0]).write_text(
+        json.dumps(delta_summary, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    registry["baselines"].append(entry)
+    registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return registry, entry
+
+
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_keeps_54_task_rows_stale_after_60_task_expansion(self) -> None:
+    def test_current_registry_keeps_60_task_rows_stale_after_63_task_expansion(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 37, result)
-        self.assertEqual(result["public_split"]["task_count"], 60, result)
-        self.assertEqual(result["current_public_model_family_count"], 6, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 6, result)
-        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
-        self.assertTrue(result["v0_baseline_ready"], result)
+        self.assertEqual(result["baseline_count"], 38, result)
+        self.assertEqual(result["public_split"]["task_count"], 63, result)
+        self.assertEqual(result["current_public_model_family_count"], 0, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
+        self.assertTrue(result["has_current_public_scripted_sanity_baseline"], result)
+        self.assertFalse(result["has_current_public_model_or_tool_agent_baseline"], result)
+        self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
         self.assertEqual(len(result["release_snapshots"]), 1, result)
         self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertEqual(result["unmet_v0_requirements"], [])
+        self.assertEqual(
+            result["unmet_v0_requirements"],
+            [
+                "current public model families: 0 of 5",
+                "repeated model baselines: 0 of 5",
+                "missing current public tool-agent baseline",
+            ],
+        )
 
         registry = load_json(REGISTRY)
+        current_scripted_63 = _baseline_by_id(registry, CURRENT_SCRIPTED_63_ID)
+        self.assertEqual(current_scripted_63["expected_task_count"], 63)
+        self.assertEqual(current_scripted_63["run_count"], 1)
+        self.assertEqual(current_scripted_63["release_suitability"], "current_public_harness_check")
+        self.assertFalse(current_scripted_63["requires_rerun_before_current_comparison"])
+
         current_scripted = _baseline_by_id(registry, CURRENT_SCRIPTED_60_ID)
         self.assertEqual(current_scripted["expected_task_count"], 60)
         self.assertEqual(current_scripted["run_count"], 1)
-        self.assertEqual(current_scripted["release_suitability"], "current_public_harness_check")
-        self.assertFalse(current_scripted["requires_rerun_before_current_comparison"])
+        self.assertEqual(current_scripted["release_suitability"], "current_public_stale")
+        self.assertTrue(current_scripted["requires_rerun_before_current_comparison"])
         current_qwen_60 = _baseline_by_id(registry, CURRENT_QWEN_60_ID)
         self.assertEqual(current_qwen_60["expected_task_count"], 60)
         self.assertEqual(current_qwen_60["run_count"], 2)
-        self.assertEqual(current_qwen_60["release_suitability"], "current_public_split")
-        self.assertFalse(current_qwen_60["requires_rerun_before_current_comparison"])
+        self.assertEqual(current_qwen_60["release_suitability"], "current_public_stale")
+        self.assertTrue(current_qwen_60["requires_rerun_before_current_comparison"])
         current_haiku_60 = _baseline_by_id(registry, CURRENT_HAIKU_60_ID)
         self.assertEqual(current_haiku_60["expected_model"], "claude-haiku-4.5")
-        self.assertEqual(current_haiku_60["release_suitability"], "current_public_split")
+        self.assertEqual(current_haiku_60["release_suitability"], "current_public_stale")
+        self.assertTrue(current_haiku_60["requires_rerun_before_current_comparison"])
         current_sonnet_60 = _baseline_by_id(registry, CURRENT_SONNET_60_ID)
         self.assertEqual(current_sonnet_60["expected_model"], "claude-sonnet-4.6")
-        self.assertEqual(current_sonnet_60["release_suitability"], "current_public_split")
+        self.assertEqual(current_sonnet_60["release_suitability"], "current_public_stale")
+        self.assertTrue(current_sonnet_60["requires_rerun_before_current_comparison"])
         current_glm_60 = _baseline_by_id(registry, CURRENT_GLM_60_ID)
         self.assertEqual(current_glm_60["expected_model"], "glm-5")
-        self.assertEqual(current_glm_60["release_suitability"], "current_public_split")
+        self.assertEqual(current_glm_60["release_suitability"], "current_public_stale")
+        self.assertTrue(current_glm_60["requires_rerun_before_current_comparison"])
         current_opus_60 = _baseline_by_id(registry, CURRENT_OPUS_60_ID)
         self.assertEqual(current_opus_60["expected_model"], "claude-opus-4.6")
-        self.assertEqual(current_opus_60["release_suitability"], "current_public_split")
+        self.assertEqual(current_opus_60["release_suitability"], "current_public_stale")
+        self.assertTrue(current_opus_60["requires_rerun_before_current_comparison"])
         current_tool_agent_60 = _baseline_by_id(registry, CURRENT_TOOL_AGENT_60_ID)
         self.assertEqual(current_tool_agent_60["expected_harness_type"], "tool-agent")
         self.assertEqual(current_tool_agent_60["expected_task_count"], 60)
-        self.assertEqual(current_tool_agent_60["release_suitability"], "current_public_split")
+        self.assertEqual(current_tool_agent_60["release_suitability"], "current_public_stale")
+        self.assertTrue(current_tool_agent_60["requires_rerun_before_current_comparison"])
         current_qwen = _baseline_by_id(registry, CURRENT_QWEN_54_ID)
         self.assertEqual(current_qwen["expected_task_count"], 54)
         self.assertEqual(current_qwen["run_count"], 2)
@@ -696,7 +805,7 @@ class BaselineRegistryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            current = _baseline_by_id(registry, CURRENT_QWEN_60_ID)
+            current = _baseline_by_id(registry, CURRENT_SCRIPTED_63_ID)
             for field in (
                 "model_name",
                 "model_version",
@@ -716,11 +825,37 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertTrue(
             any(
                 "missing required provenance fields" in error
-                and CURRENT_QWEN_60_ID in error
+                and CURRENT_SCRIPTED_63_ID in error
                 for error in result["errors"]
             ),
             result,
         )
+
+    def test_accepts_current_promoted_composite_with_explicit_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            _add_synthetic_promoted_composite_entry(registry_path)
+
+            result = validate_registry(registry_path)
+
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["current_public_model_family_count"], 1, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
+
+    def test_rejects_current_promoted_composite_without_explicit_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry, entry = _add_synthetic_promoted_composite_entry(registry_path)
+            promoted = _baseline_by_id(registry, entry["id"])
+            promoted.pop("delta_summary_paths")
+            promoted["not_full_rerun"] = False
+            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("promoted composite entry missing fields" in error for error in result["errors"]), result)
+        self.assertTrue(any("not_full_rerun=true" in error for error in result["errors"]), result)
 
     def test_stale_entry_missing_provenance_emits_warning_only(self) -> None:
         """A stale entry (current_public_stale or legacy_snapshot)

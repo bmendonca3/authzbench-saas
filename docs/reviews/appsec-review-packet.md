@@ -12,7 +12,7 @@ controlled-environment contract.
 
 ## Scope
 
-- All 60 public tasks under `tasks/` (6 apps × 10 tasks).
+- All 63 public tasks under `tasks/` (6 apps; 27 vulnerable tasks and 36 secure controls).
 - The active private holdout pack summary
   (`artifact/private-holdout-active-public-summary.json`) at the
   pack level only. Per-task private contents are reviewed under

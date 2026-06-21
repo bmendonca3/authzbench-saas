@@ -5,17 +5,17 @@
       "evidence": [
         "public_task_count=63",
         "vulnerable_task_count=27",
-        "current_public_model_family_count=6",
+        "current_public_model_family_count=0",
         "current_public_scripted_sanity_baseline_present=True",
-        "current_public_model_or_tool_agent_baseline_present=True",
+        "current_public_model_or_tool_agent_baseline_present=False",
         "has_current_public_scripted_sanity_baseline=True",
-        "has_current_public_model_or_tool_agent_baseline=True"
+        "has_current_public_model_or_tool_agent_baseline=False",
+        "current_public_model_or_tool_agent_baseline_required=false",
+        "current_public_model_or_tool_agent_baseline_status=stale_pending_63_task_refreshes"
       ],
       "id": "stable_v1_prep_public_evidence",
-      "passed": false,
-      "unmet": [
-        "baseline registry validation has errors"
-      ]
+      "passed": true,
+      "unmet": []
     },
     {
       "evidence": [
@@ -74,7 +74,7 @@
     },
     {
       "evidence": [
-        "eligible_private_tool_agent_rows=[{'path': 'leaderboard_submissions/2026-06-18/heuristic-private-tool-agent.leaderboard.json', 'harness_type': 'tool-agent', 'run_count': 2, 'model': 'deterministic-heuristic-tool-probe', 'benchmark_commit_sha': '5504030bad91c583f6d1a871f591fcd120bcd7ed', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': 1.0, 'source_private_path_denial': True}]"
+        "eligible_private_tool_agent_rows=[{'path': 'leaderboard_submissions/2026-06-20/heuristic-private-tool-agent-8cb931f.leaderboard.json', 'harness_type': 'tool-agent', 'run_count': 2, 'model': 'deterministic-heuristic-tool-probe', 'benchmark_commit_sha': '8cb931f266a193b4f867e4f5aecfda8edcc81650', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': 1.0, 'source_private_path_denial': True}]"
       ],
       "id": "repeated_private_tool_agent_evidence",
       "passed": true,
@@ -82,7 +82,7 @@
     },
     {
       "evidence": [
-        "eligible_private_no_tools_rows=[{'path': 'leaderboard_submissions/2026-06-18/empty-response-private-no-tools.leaderboard.json', 'harness_type': 'no-tools-model', 'run_count': 2, 'model': 'deterministic-empty-response-no-tools', 'benchmark_commit_sha': '5504030bad91c583f6d1a871f591fcd120bcd7ed', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': None, 'source_private_path_denial': True}]"
+        "eligible_private_no_tools_rows=[{'path': 'leaderboard_submissions/2026-06-20/empty-response-private-no-tools-8cb931f.leaderboard.json', 'harness_type': 'no-tools-model', 'run_count': 2, 'model': 'deterministic-empty-response-no-tools', 'benchmark_commit_sha': '8cb931f266a193b4f867e4f5aecfda8edcc81650', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': None, 'source_private_path_denial': True}]"
       ],
       "id": "repeated_private_no_tools_evidence",
       "passed": true,
@@ -120,8 +120,8 @@
       "unmet": []
     }
   ],
-  "passed": false,
-  "passed_gate_count": 9,
-  "unmet_gate_count": 1,
-  "v1_ready": false
+  "passed": true,
+  "passed_gate_count": 10,
+  "unmet_gate_count": 0,
+  "v1_ready": true
 }

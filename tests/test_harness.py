@@ -18,7 +18,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_all_task_manifests_render(self) -> None:
         paths = self.task_paths()
-        self.assertEqual(len(paths), 60)
+        self.assertEqual(len(paths), 63)
         for path in paths:
             with self.subTest(path=path.name):
                 context = build_context(load_json(path))

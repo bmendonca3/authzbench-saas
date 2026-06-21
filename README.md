@@ -42,9 +42,9 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 
 - Release state: `v1.0-internal` complete under the internal/non-external release definition
 - Public apps: 6 synthetic SaaS targets
-- Public tasks: 60 (24 vulnerable, 36 secure controls; 21 denial, 15 authorized-allow)
+- Public tasks: 63 (27 vulnerable, 36 secure controls; 21 denial, 15 authorized-allow)
 - Maintainer-private holdout tasks: 48, summarized only
-- Total public + private task scale: 108
+- Total public + private task scale: 111
 - Harbor adapter: repo-side local adapter path implemented (parity methodology versioned, public-safe)
 - External review, SaaS-provider validation, hosted leaderboard operation, Harbor/Kaggle/platform acceptance, and third-party submissions: v2/external gates
 
@@ -245,12 +245,14 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
 
 - current 63-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- repeated current 63-task no-tools public baselines across Qwen, Claude Haiku
-  4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6; public-split evidence
-  only
-- repeated current 63-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
-  target-request correlation and public-safe plan/probe artifacts; public-split
-  evidence only
+- repeated 60-task no-tools public baselines across Qwen, Claude Haiku 4.5,
+  Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6, now marked stale for the
+  63-task split pending full reruns or promoted-composite refreshes;
+  public-split evidence only
+- repeated 60-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+  target-request correlation and public-safe plan/probe artifacts, now marked
+  stale for the 63-task split pending a full rerun or promoted-composite
+  refresh; public-split evidence only
 - frozen v0.0 46-task public baseline summaries plus historical 49-task and
   stale 54-task rows retained for context only; stale rows are not current
   comparison evidence
@@ -490,9 +492,10 @@ Important interpretation:
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
-  vocabulary required for full vulnerable-task credit. Later stale 54-task,
-  stale 60-task, and current 63-task public runs preserve the same distinction
-  between exploit proof and boundary-credit interpretation.
+  vocabulary required for full vulnerable-task credit. Later stale 54-task and
+  stale 60-task public runs preserve the same distinction between exploit proof
+  and boundary-credit interpretation; current 63-task public capability reruns
+  are still pending.
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and
