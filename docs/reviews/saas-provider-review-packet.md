@@ -25,7 +25,7 @@ This review lane is distinct from the AppSec review
 
 ## Scope
 
-- All 60 public tasks under `tasks/` (6 apps × 10 tasks).
+- All 63 public tasks under `tasks/` (6 apps; 27 vulnerable tasks and 36 secure controls).
 - The task taxonomy (`artifact/task-taxonomy.json`) focusing on vulnerability
   family distribution and control type balance.
 - The authorization model descriptions in each synthetic SaaS app's README.

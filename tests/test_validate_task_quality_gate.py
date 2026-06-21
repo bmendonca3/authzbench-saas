@@ -108,8 +108,8 @@ class TaskQualityGateTests(unittest.TestCase):
             validate_task_quality_gate.DEFAULT_CONTRACT,
         )
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["summary"]["task_count"], 60, result)
-        self.assertEqual(result["summary"]["vulnerable_task_count"], 24, result)
+        self.assertEqual(result["summary"]["task_count"], 63, result)
+        self.assertEqual(result["summary"]["vulnerable_task_count"], 27, result)
         self.assertEqual(result["summary"]["denial_control_task_count"], 21, result)
         self.assertEqual(result["summary"]["authorized_allow_control_task_count"], 15, result)
 

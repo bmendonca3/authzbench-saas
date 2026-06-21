@@ -2,7 +2,7 @@
   "schema_version": "v1-task-scale-roadmap-v1",
   "evidence_status": "validated_private_holdout_counts",
   "public_claim_boundary": "Count-level private holdout evidence only. This roadmap reports validated maintainer-only pack counts and does not publish private task bodies, IDs, routes, seeds, or oracle details.",
-  "current_public_task_count": 60,
+  "current_public_task_count": 63,
   "current_validated_private_holdout_task_count": 48,
   "required_total_task_count": 100,
   "minimum_additional_tasks_required": 0,

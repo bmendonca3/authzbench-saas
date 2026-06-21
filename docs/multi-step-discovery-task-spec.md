@@ -84,21 +84,24 @@ multistep pair. The note about "Agent must inspect token scopes before
 attempting export" is satisfied by the api_tokens baseline expectations
 on `meridian_read_token` and `meridian_write_token` scope metadata.
 
-A v1.1-prep cohort of three additional `multi_step_discovery` tasks
-lives in `tasks_v11_prep/`. The cohort demonstrates the discovery
-pattern for plan-4.2 categories the public 60-task split does not
-cover, and is validated in isolation by
-`tests/test_v11_prep_multistep_discovery.py`. The v1.1-prep cohort
-is documented in `tasks_v11_prep/README.md`.
+A cohort of three `multi_step_discovery` tasks demonstrates the
+discovery pattern for plan-4.2 categories the original 60-task public
+split did not cover. As of the v1.1 wave these tasks have been promoted
+into the standard `tasks/<app>/` paths (one each under `billing/`,
+`file_sharing/`, and `support/`), bringing the public split to 63 tasks.
+They are covered by `tests/test_v11_prep_multistep_discovery.py`.
 
-## Why a new public task is not added here
+## Why the cohort was held out before v1.1
 
-The current public split is locked at 60 tasks. Every public baseline
-summary (`baselines/kiro-*-current-public-60-*.json`) is anchored to
-the 60-task public count, and the v1-readiness gate asserts
-`public_task_count=60`. Adding a 61st public task would require
-re-running the 60-task live baselines to bring them to 61 tasks, or
-two-tier public-split evidence. That work is a follow-on v1.1 task.
+The public split was locked at 60 tasks for the v1.0-internal release.
+Every public baseline summary (`baselines/kiro-*-current-public-60-*.json`)
+was anchored to the 60-task public count, and the v1-readiness gate asserted
+`public_task_count=60`. Adding a 61st public task would have required
+re-running the 60-task live baselines to bring them to 63 tasks, or
+two-tier public-split evidence. That work is the v1.1 wave, which has now
+promoted this cohort into `tasks/<app>/` and re-anchored the scripted
+sanity baseline at 63 tasks; the prior live model/tool-agent rows are
+marked `current_public_stale` pending their 63-task reruns.
 
 This spec is the design record for the cohort. When a v1.1 wave
 extends the public split, the first new public task should be tagged

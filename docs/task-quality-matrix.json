@@ -20,17 +20,17 @@
       "authorized_allow_control_task_count": 3,
       "control_task_count": 8,
       "denial_control_task_count": 5,
-      "task_count": 13,
-      "vulnerable_task_count": 5,
-      "workflow_evidence_task_count": 1
+      "task_count": 14,
+      "vulnerable_task_count": 6,
+      "workflow_evidence_task_count": 2
     },
     "file_sharing": {
       "authorized_allow_control_task_count": 2,
       "control_task_count": 5,
       "denial_control_task_count": 3,
-      "task_count": 8,
-      "vulnerable_task_count": 3,
-      "workflow_evidence_task_count": 0
+      "task_count": 9,
+      "vulnerable_task_count": 4,
+      "workflow_evidence_task_count": 1
     },
     "project_mgmt": {
       "authorized_allow_control_task_count": 2,
@@ -44,9 +44,9 @@
       "authorized_allow_control_task_count": 2,
       "control_task_count": 7,
       "denial_control_task_count": 5,
-      "task_count": 11,
-      "vulnerable_task_count": 4,
-      "workflow_evidence_task_count": 1
+      "task_count": 12,
+      "vulnerable_task_count": 5,
+      "workflow_evidence_task_count": 2
     }
   },
   "schema_version": "task-quality-matrix-schema-1",
@@ -60,11 +60,11 @@
     "authorized_allow_control_task_count": 15,
     "control_task_count": 36,
     "denial_control_task_count": 21,
-    "task_count": 60,
+    "task_count": 63,
     "tasks_with_quality_flags": [],
-    "vulnerable_task_count": 24,
-    "vulnerable_workflow_evidence_task_count": 5,
-    "workflow_evidence_task_count": 5
+    "vulnerable_task_count": 27,
+    "vulnerable_workflow_evidence_task_count": 8,
+    "workflow_evidence_task_count": 8
   },
   "tasks": [
     {
@@ -848,6 +848,62 @@
     {
       "allowed_host_count": 1,
       "app": "billing",
+      "control_count": 2,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 2,
+      "control_success_check_count": 1,
+      "control_type": null,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 0,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
+      "expected_boundary_keys": [
+        "attacker_actor",
+        "entitlement",
+        "operation",
+        "org",
+        "required_role"
+      ],
+      "expected_boundary_present": true,
+      "expected_vulnerable": true,
+      "id": "bill_bfla_member_disables_export_entitlement_discovery",
+      "manifest_path": "tasks/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "multi_step_evidence_requirements",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "billing",
       "control_count": 3,
       "control_denial_check_count": 2,
       "control_status_check_count": 3,
@@ -1397,6 +1453,60 @@
     },
     {
       "allowed_host_count": 1,
+      "app": "file_sharing",
+      "control_count": 2,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 2,
+      "control_success_check_count": 1,
+      "control_type": null,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
+      "expected_boundary_keys": [
+        "attacker_actor",
+        "required_membership",
+        "victim_workspace"
+      ],
+      "expected_boundary_present": true,
+      "expected_vulnerable": true,
+      "id": "fs_team_membership_cross_workspace_discovery",
+      "manifest_path": "tasks/file_sharing/fs_team_membership_cross_workspace_discovery.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "multi_step_evidence_requirements",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
       "app": "project_mgmt",
       "control_count": 1,
       "control_denial_check_count": 1,
@@ -1798,6 +1908,60 @@
         "workflow_evidence_ready": true
       },
       "replay_proof_status": "direct_oracle_and_controls",
+      "scorer_oracle_present": true,
+      "split": "public"
+    },
+    {
+      "allowed_host_count": 1,
+      "app": "support",
+      "control_count": 2,
+      "control_denial_check_count": 1,
+      "control_status_check_count": 2,
+      "control_success_check_count": 1,
+      "control_type": null,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
+      "expected_boundary_keys": [
+        "attacker_actor",
+        "org",
+        "required_assignment"
+      ],
+      "expected_boundary_present": true,
+      "expected_vulnerable": true,
+      "id": "sup_bfla_viewer_updates_assigned_ticket_status_discovery",
+      "manifest_path": "tasks/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
+      "oracle_body_check_present": true,
+      "oracle_status_present": true,
+      "quality_flags": {
+        "has_controls": true,
+        "has_replayable_check": true,
+        "has_scorer_oracle": true,
+        "missing_public_fields": [],
+        "required_public_fields_present": true,
+        "secure_control_type_requirement_satisfied": true,
+        "vulnerable_boundary_requirement_satisfied": true,
+        "workflow_evidence_ready": true
+      },
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },

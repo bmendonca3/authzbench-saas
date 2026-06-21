@@ -174,6 +174,37 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
             ]
         }
 
+    if task_id == "bill_bfla_member_disables_export_entitlement_discovery":
+        return {
+            "findings": [
+                _multistep_finding(
+                    "member_can_downgrade_billing_entitlement",
+                    [
+                        {
+                            "actor": "atlas_admin",
+                            "method": "PATCH",
+                            "path": f"/api/secure/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
+                            "body": {"enabled": True},
+                        },
+                        {
+                            "actor": "atlas_member",
+                            "method": "PATCH",
+                            "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
+                            "body": {"enabled": False},
+                        },
+                    ],
+                    {
+                        "attacker_actor": "atlas_member",
+                        "required_role": "admin",
+                        "org": "atlas",
+                        "entitlement": "audit_exports",
+                        "operation": "downgrade",
+                    },
+                    "A non-admin organization member can disable an admin-only billing feature entitlement after an admin enables it.",
+                )
+            ]
+        }
+
     if task_id == "bill_account_entitlements_alias_plan_change":
         return {
             "findings": [
@@ -225,6 +256,34 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
                     },
                     {"attacker_actor": "acme_viewer", "required_role": "agent"},
                     "A read-only support viewer can close a support ticket through the non-secure route.",
+                )
+            ]
+        }
+
+    if task_id == "sup_bfla_viewer_updates_assigned_ticket_status_discovery":
+        return {
+            "findings": [
+                _multistep_finding(
+                    "viewer_can_update_ticket_status_via_team_membership_bypass",
+                    [
+                        {
+                            "actor": "acme_viewer",
+                            "method": "GET",
+                            "path": f"/api/secure/tickets/{refs['ACME_TICKET_ID']}",
+                        },
+                        {
+                            "actor": "acme_viewer",
+                            "method": "PATCH",
+                            "path": f"/api/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
+                            "body": {"status": "triaged"},
+                        },
+                    ],
+                    {
+                        "attacker_actor": "acme_viewer",
+                        "org": "acme",
+                        "required_assignment": "ticket_assignee",
+                    },
+                    "A read-only support viewer can update the status of a ticket assigned to another actor.",
                 )
             ]
         }
@@ -294,6 +353,33 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
                     },
                     {"attacker_actor": "northstar_viewer", "victim_workspace": "apex"},
                     "A Northstar viewer can read Apex private file contents.",
+                )
+            ]
+        }
+
+    if task_id == "fs_team_membership_cross_workspace_discovery":
+        return {
+            "findings": [
+                _multistep_finding(
+                    "viewer_can_read_cross_workspace_file_via_team_membership_bypass",
+                    [
+                        {
+                            "actor": "northstar_viewer",
+                            "method": "GET",
+                            "path": f"/api/secure/files/{refs['NORTHSTAR_PUBLIC_FILE_ID']}",
+                        },
+                        {
+                            "actor": "northstar_viewer",
+                            "method": "GET",
+                            "path": f"/api/files/{refs['APEX_PRIVATE_FILE_ID']}",
+                        },
+                    ],
+                    {
+                        "attacker_actor": "northstar_viewer",
+                        "required_membership": "apex",
+                        "victim_workspace": "apex",
+                    },
+                    "A Northstar viewer can read an Apex workspace file after proving only Northstar workspace membership.",
                 )
             ]
         }

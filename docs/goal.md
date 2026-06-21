@@ -20,8 +20,8 @@ v2 claim.
 ## v1 Release-Candidate Statement
 
 AuthZBench-SaaS v1 is an internally validated SaaS authorization-agent benchmark
-artifact with a 60-task public split, maintainer-private holdout operation,
-108 total public/private task scale, deterministic backend replay scoring,
+artifact with a 63-task public split, maintainer-private holdout operation,
+111 total public/private task scale, deterministic backend replay scoring,
 protected private-evaluation plumbing, Docker/hosted execution smoke evidence,
 and Harbor-compatible local execution scaffolding. External review,
 SaaS-provider validation, hosted leaderboard operation, and platform acceptance
@@ -31,9 +31,9 @@ are explicitly deferred to v2.
 
 v1 release gates:
 
-- [x] 60-task public split validated
+- [x] 63-task public split validated
 - [x] 48-task maintainer-private holdout evidence summarized
-- [x] 108 total public + private task scale
+- [x] 111 total public + private task scale
 - [x] deterministic replay scorer validated
 - [x] public baselines current or clearly marked stale
 - [x] private execution smoke passed

@@ -38,14 +38,14 @@ Evidence already in place:
 
 - 6 synthetic SaaS apps
 - frozen v0.0 release snapshot with 46 public tasks
-- current v1.0-internal public split with 60 public tasks
+- current v1.0-internal public split with 63 public tasks
 - 48 maintainer-private holdout tasks, summarized only
-- 108 total public + private task scale
+- 111 total public + private task scale
 - deterministic backend replay scoring
 - target-side request logging for live HTTP runs
 - five repeated frozen v0.0 public model/agent baseline families
 - one repeated frozen v0.0 public live HTTP tool-agent family
-- current 60-task scripted harness sanity baseline
+- current 63-task scripted harness sanity baseline
 - current public model/tool-agent baseline evidence tracked in the baseline
   registry
 - five repeated historical 49-task public no-tools model-family baselines,
@@ -81,7 +81,7 @@ CI, fresh-clone validation, and a `v0.0` tag. It does not require a hosted
 leaderboard.
 
 **Level 2: v1 internal artifact.** The current repository-side release state. It
-requires 60 public tasks, private-holdout governance, 108 total public/private
+requires 63 public tasks, private-holdout governance, 111 total public/private
 task scale, deterministic scoring, current public-view readiness gates, public
 validation, host-review packaging, and claim-boundary enforcement. It does not
 require external review or platform acceptance.
@@ -233,9 +233,9 @@ Those are tracked as v2 gates in
 
 v1 release gates:
 
-- [x] 60-task public split validated
+- [x] 63-task public split validated
 - [x] 48-task maintainer-private holdout evidence summarized
-- [x] 108 total public + private task scale
+- [x] 111 total public + private task scale
 - [x] deterministic replay scorer validated
 - [x] public baselines current or clearly marked stale
 - [x] private execution smoke passed

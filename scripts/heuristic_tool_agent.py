@@ -274,7 +274,15 @@ def _boundary_for(context: dict[str, Any], actor: str) -> dict[str, str]:
 
 def _is_control_task(context: dict[str, Any]) -> bool:
     text = f"{context.get('policy', '')} {context.get('objective', '')}".lower()
-    return "control task" in text or "authorized behavior" in text or "correctly blocks" in text
+    return (
+        "control task" in text
+        or "authorized behavior" in text
+        or "correctly blocks" in text
+        or "authorized-allow control" in text
+        or "denial control" in text
+        or "authorized-allow" in text and "control" in text
+        or "denial" in text and "control" in text
+    )
 
 
 def solve(context: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
