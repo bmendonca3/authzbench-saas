@@ -12,11 +12,11 @@ community-scale benchmark.
 
 The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
 46-task release baselines, 49-task v1-prep model/tool-agent baselines, and
-54-task v1-prep model/tool-agent baselines are stale for current 60-task
+54-task v1-prep model/tool-agent baselines are stale for current 63-task
 comparison. Repeated 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5,
 and Claude Opus 4.6 no-tools families plus the repeated 54-task Claude Sonnet
 4.6 live HTTP tool-agent family remain public-split diagnostic evidence only;
-they do not provide current 60-task comparison, private-holdout,
+they do not provide current 63-task comparison, private-holdout,
 hosted-leaderboard, or v1 release evidence.
 
 ## Current Public Split
@@ -24,8 +24,8 @@ hosted-leaderboard, or v1 release evidence.
 The current v1-prep public split contains:
 
 - 6 synthetic SaaS target families
-- 60 public tasks
-- 24 vulnerable tasks
+- 63 public tasks
+- 27 vulnerable tasks
 - 36 secure controls
 - 21 denial controls
 - 15 authorized-allow controls
@@ -40,7 +40,7 @@ denial, authorized admin reassignment, and status-only state preservation.
 
 ## Current Evidence
 
-The current 60-task scripted sanity baseline passes all public tasks. It proves
+The current 63-task scripted sanity baseline passes all public tasks. It proves
 that the expanded manifests, scorer, scripted oracle path, and baseline registry
 agree. It does not prove model capability, leaderboard eligibility,
 private-holdout performance, or v1 readiness.
@@ -101,7 +101,7 @@ Both runs retain 54 model-tool plan artifacts, 54 tool-probe artifacts, 54/54
 target-request correlation, zero planner failures, zero planner parse errors,
 zero invalid submissions, and zero fallback probes. This closes the previous
 54-task live HTTP rerun gate while remaining stale public-split diagnostic
-evidence rather than current 60-task, private-holdout, hosted-leaderboard, or
+evidence rather than current 63-task, private-holdout, hosted-leaderboard, or
 v1-release evidence.
 
 The preceding 49-task public split has repeated diagnostic Kiro baselines: five
@@ -132,7 +132,7 @@ The current registry separates:
 - `release_snapshots` for frozen tagged-release evidence such as v0.0
 
 Rows marked `requires_rerun_before_current_comparison` cannot support current
-60-task comparison. That marker does not imply the frozen v0.0 release snapshot
+63-task comparison. That marker does not imply the frozen v0.0 release snapshot
 itself needs to be rerun.
 
 ## Frozen v0.0 Evidence
@@ -142,7 +142,7 @@ secure controls, 16 denial controls, and 11 authorized-allow controls. Its
 public baselines include four repeated no-tools model-family rows and one
 repeated live HTTP tool-agent family. These are useful diagnostics for exploit
 replay, false positives, request correlation, and weak boundary reasoning, but
-they are stale for current 60-task comparison.
+they are stale for current 63-task comparison.
 
 The v0.0 report remains in
 [`authzbench-saas-v0.0-technical-report.md`](authzbench-saas-v0.0-technical-report.md).

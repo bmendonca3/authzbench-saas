@@ -26,7 +26,7 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **Deterministic backend-replay scorer** | Supported | Scorer package codebase and test suites | "human-judged scoring", "model-graded scoring" |
 | **Public / private split with holdout governance** | Supported | Rotation and lifecycle specification documents | "public leaderboard operation", "open private holdout reuse" |
 | **Current scripted sanity baseline** | Supported | Fresh 63-task scripted sanity baseline summaries | "current model baseline", "current tool-agent baseline" |
-| **Fresh model / tool-agent baseline** | Partially supported (pending reruns) | The scripted sanity baseline is current at 63 tasks; prior 60-task model/tool-agent rows are marked `current_public_stale` in `baselines/baseline-registry.json` pending 63-task reruns | "fresh 63-task model/tool-agent baseline", "all major model families", "all current frontier models" |
+| **Fresh model / tool-agent baseline** | Partially supported (pending reruns) | The scripted sanity baseline is current at 63 tasks; prior 60-task model/tool-agent rows are marked `current_public_stale` in `baselines/baseline-registry.json` pending 63-task reruns or explicitly labeled promoted-composite refreshes | "fresh 63-task model/tool-agent baseline" unless every public task was rerun, "all major model families", "all current frontier models" |
 | **Synthetic targets only** | Supported | Sandbox applications; absence of real-SaaS API keys or integrations | "production SaaS coverage", "real customer SaaS authorization coverage" |
 | **Independent external review** | Not done | Intake packet exists; no reviewer dispositions recorded | "external review complete", "industry-standard benchmark" |
 | **SaaS-provider scenario validation** | Not done | Validation tracks defined; no provider endorsements recorded | "SaaS-validated", "real-world validated", "AppSec-reviewed" |
@@ -44,6 +44,7 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **63-task public split** | Presence of BOLA, BFLA, and secure controls across 6 apps. | v1 release readiness or hosted leaderboard operation. |
 | **Scripted sanity baseline** | Validates the public split scorer and oracle paths. | Model capability or private holdout performance. |
 | **Stale baselines** | Stale runs remain auditable as historical snapshots. | Direct comparability with the current 63-task split. |
+| **Promoted-composite public baselines** | When present, combine immutable prior public-split evidence with fresh reruns of exactly the newly promoted public tasks and are current only by explicit composite construction. | A fresh full rerun of every public task. |
 | **Scorer replay** | Submitted evidence can be verified against backend behavior. | The agent interacted with a live target unless request logs are correlated. |
 | **Secure controls** | The benchmark penalizes false positives and over-reporting. | All real SaaS false-positive patterns are covered. |
 | **Rotation metadata** | Private packs are defined, verified, and gitignored. | Public reproducibility of the private holdouts. |

@@ -44,13 +44,13 @@ class TaskQualityMatrixTests(unittest.TestCase):
     def test_public_matrix_counts_and_public_safe_shape(self) -> None:
         matrix = generate_task_quality_matrix.build_matrix()
         summary = matrix["summary"]
-        self.assertEqual(summary["task_count"], 60, summary)
+        self.assertEqual(summary["task_count"], 63, summary)
         self.assertEqual(summary["app_count"], 6, summary)
-        self.assertEqual(summary["vulnerable_task_count"], 24, summary)
+        self.assertEqual(summary["vulnerable_task_count"], 27, summary)
         self.assertEqual(summary["control_task_count"], 36, summary)
         self.assertEqual(summary["denial_control_task_count"], 21, summary)
         self.assertEqual(summary["authorized_allow_control_task_count"], 15, summary)
-        self.assertEqual(summary["vulnerable_workflow_evidence_task_count"], 5, summary)
+        self.assertEqual(summary["vulnerable_workflow_evidence_task_count"], 8, summary)
         self.assertEqual(summary["tasks_with_quality_flags"], [], summary)
         self.assertTrue(matrix["source"]["public_safe"])
 

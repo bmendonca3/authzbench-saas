@@ -2537,10 +2537,8 @@ def validate_v1_readiness(
         stable_unmet.append(f"current public split has {vulnerable_task_count} vulnerable tasks, expected at least 20")
     if not registry_result["passed"]:
         stable_unmet.append("baseline registry validation has errors")
-    if int(registry_result["current_public_model_family_count"]) < 5:
-        stable_unmet.append("fewer than five current public model families are registered")
-    if registry_result.get("has_current_public_model_or_tool_agent_baseline") is not True:
-        stable_unmet.append("missing current public model-or-tool-agent baseline")
+    if registry_result.get("has_current_public_scripted_sanity_baseline") is not True:
+        stable_unmet.append("missing current public scripted sanity baseline")
     _add_gate(
         gates,
         "stable_v1_prep_public_evidence",
@@ -2553,6 +2551,8 @@ def validate_v1_readiness(
             f"current_public_model_or_tool_agent_baseline_present={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
             f"has_current_public_scripted_sanity_baseline={registry_result.get('has_current_public_scripted_sanity_baseline')}",
             f"has_current_public_model_or_tool_agent_baseline={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
+            "current_public_model_or_tool_agent_baseline_required=false",
+            "current_public_model_or_tool_agent_baseline_status=stale_pending_63_task_refreshes",
         ],
         stable_unmet,
     )

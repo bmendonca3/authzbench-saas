@@ -144,7 +144,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertEqual(result["gate_count"], 10)
         self.assertTrue(gates["stable_v1_prep_public_evidence"]["passed"])
         self.assertIn(
-            "current_public_model_family_count=6",
+            "current_public_model_family_count=0",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
@@ -152,7 +152,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
-            "has_current_public_model_or_tool_agent_baseline=True",
+            "has_current_public_model_or_tool_agent_baseline=False",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])
@@ -244,17 +244,17 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         )
         self.assertIn("artifact/v1-task-scale-roadmap.json", gates["v1_task_scale"]["evidence"])
         if gates["rotating_private_holdouts_implemented"]["passed"]:
-            self.assertIn("total_task_count=108", gates["v1_task_scale"]["evidence"])
+            self.assertIn("total_task_count=111", gates["v1_task_scale"]["evidence"])
             self.assertEqual(gates["v1_task_scale"]["unmet"], [])
         else:
             self.assertTrue(
                 any(
                     item in gates["v1_task_scale"]["evidence"]
-                    for item in ("planned_total_task_count=60", "planned_total_task_count=108")
+                    for item in ("planned_total_task_count=63", "planned_total_task_count=111")
                 )
             )
             self.assertIn(
-                "total public plus private holdout tasks is 60, expected at least 100",
+                "total public plus private holdout tasks is 63, expected at least 100",
                 gates["v1_task_scale"]["unmet"],
             )
 
@@ -314,7 +314,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertIn("artifact/private-holdout-operation-blocker.json", rotation_gate["evidence"])
         self.assertIn(PRIVATE_OPERATION_RUNBOOK_PATH, rotation_gate["evidence"])
         self.assertTrue(gates["v1_task_scale"]["passed"])
-        self.assertIn("total_task_count=108", gates["v1_task_scale"]["evidence"])
+        self.assertIn("total_task_count=111", gates["v1_task_scale"]["evidence"])
         self.assertTrue(gates["local_or_containerized_submission_smoke"]["passed"])
         self.assertTrue(gates["repeated_private_tool_agent_evidence"]["passed"])
         self.assertTrue(gates["repeated_private_no_tools_evidence"]["passed"])
@@ -542,7 +542,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
     def test_v1_scale_roadmap_validated_counts_pass_in_public_view(self) -> None:
         result = _validate_v1_scale_roadmap(
-            public_task_count=60,
+            public_task_count=63,
             validated_private_holdout_task_count=48,
             public_view=True,
         )
@@ -550,7 +550,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(result["passed"])
         self.assertEqual(result["path"], "artifact/v1-task-scale-roadmap.json")
         self.assertEqual(result["planned_additional_task_count"], 0)
-        self.assertEqual(result["planned_total_task_count"], 108)
+        self.assertEqual(result["planned_total_task_count"], 111)
         self.assertEqual(result["unmet"], [])
 
     def test_v1_scale_roadmap_validated_counts_fixture_passes_in_maintainer_checkout(self) -> None:
@@ -578,13 +578,13 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
             result = _validate_v1_scale_roadmap(
                 root,
-                public_task_count=60,
+                public_task_count=63,
                 validated_private_holdout_task_count=48,
             )
 
         self.assertTrue(result["passed"])
         self.assertEqual(result["planned_additional_task_count"], 0)
-        self.assertEqual(result["planned_total_task_count"], 108)
+        self.assertEqual(result["planned_total_task_count"], 111)
         self.assertEqual(result["unmet"], [])
 
     def test_v1_scale_roadmap_rejects_overclaiming_and_under_target_plan(self) -> None:
@@ -624,7 +624,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
             result = _validate_v1_scale_roadmap(
                 root,
-                public_task_count=60,
+                public_task_count=63,
                 validated_private_holdout_task_count=0,
             )
 
@@ -637,7 +637,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         )
         self.assertIn("required_total_task_count must be 100", result["unmet"])
         self.assertIn(
-            "minimum_additional_tasks_required must be 40 for the current task counts",
+            "minimum_additional_tasks_required must be 37 for the current task counts",
             result["unmet"],
         )
         self.assertIn(
@@ -650,7 +650,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             "planned_waves must include a private-holdout-shadow or private-holdout-candidate wave",
             result["unmet"],
         )
-        self.assertIn("planned total task count is 70, expected at least 100", result["unmet"])
+        self.assertIn("planned total task count is 73, expected at least 100", result["unmet"])
 
     def test_private_operation_blocker_rejects_sensitive_public_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -216,7 +216,7 @@ or local work that the maintainer controls.
 
 ### Internal v1 complete
 
-- [x] 60 public tasks. Evidence: `tasks/*/*.json`; `artifact/expected-output/v1-readiness-public-view.json` shows `public_task_count=60`.
+- [x] 63 public tasks. Evidence: `tasks/*/*.json`; `artifact/expected-output/v1-readiness-public-view.json` shows `public_task_count=63`.
 - [x] 48 private holdout tasks by protected evidence. Evidence: `tasks_private/holdout/`; `artifact/v1-task-scale-roadmap.json` shows `current_validated_private_holdout_task_count=48`.
 - [x] Deterministic scorer. Evidence: `authzbench/score.py`; `tests/test_scorer_adversarial_submissions.py` (17/17).
 - [x] Public validation. Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`; CI step in `.github/workflows/validate.yml`.
@@ -225,14 +225,15 @@ or local work that the maintainer controls.
 - [x] Positive-claim over-claim check. Evidence: `scripts/check_v1_overclaim.py` (6 phrases, negation-aware, v2-marker-aware, backtick-aware, Python-literal-aware); wired into `scripts/validate_public.py`; tests in `tests/test_v1_overclaim_check.py` (5/5).
 - [x] v2 roadmap. Evidence: `docs/claims-and-evidence.md#5-deferred-v2-validation-tracks`.
 - [x] Ambiguous gate names cleaned up. Evidence: `local_or_containerized_submission_smoke`; `hosted_leaderboard_operation_claimed=false`; `has_current_public_scripted_sanity_baseline` and `has_current_public_model_or_tool_agent_baseline` split.
-- [x] Fresh 60-task public model and tool-agent baselines. Evidence: `baselines/kiro-*-current-public-60-run{1,2}-summary.json` (six families x two runs); `python3 scripts/validate_baseline_registry.py` exits 0 with 7 current-public-60 baseline IDs across 6 model families (scripted-sanity, qwen3-coder-next, claude-haiku-4.5, claude-sonnet-4.6, glm-5, claude-opus-4.6) plus kiro-live-tool-agent-sonnet. Note: the public 60-task evidence is current but is anchored to the locked 60-task public split; per-baseline `expected_task_count=60` is enforced.
+- [x] Current 63-task scripted sanity baseline. Evidence: `baselines/scripted-baseline-public-63-summary.json`; `python3 scripts/validate_baseline_registry.py` exits 0 with `has_current_public_scripted_sanity_baseline=true`.
+- [ ] Current 63-task public model and tool-agent capability baselines. Evidence: the prior `baselines/kiro-*-current-public-60-run{1,2}-summary.json` rows are retained as `current_public_stale`; `current_public_model_family_count=0` until six-family no-tools reruns and the live HTTP tool-agent rerun are refreshed for 63 tasks. A promoted-composite refresh is acceptable only when each row is labeled `baseline_construction=promoted_cohort_delta_merge`, preserves base and delta summary provenance, sets `not_full_rerun=true`, and avoids "fresh full rerun" wording.
 - [x] Task taxonomy generated. Evidence: `docs/task-taxonomy.md`; `artifact/task-taxonomy.json`.
 - [x] Oracle audit generated. Evidence: `docs/task-oracle-audit.md`; `artifact/task-oracle-audit.json`.
 - [x] Adversarial scorer tests added. Evidence: `tests/test_scorer_adversarial_submissions.py` (17/17).
 
 ### Community benchmark candidate
 
-- [x] Fresh public and private baselines. Evidence: `baselines/` and `tasks_private/holdout/`.
+- [x] Fresh private repeated rows and public scripted sanity baseline. Evidence: `leaderboard_submissions/2026-06-20/`, `leaderboard_sources/`, and `baselines/scripted-baseline-public-63-summary.json`.
 - [ ] External AppSec review. Evidence: `docs/reviews/external-review-registry.json` (pending lane); `docs/reviews/appsec-review-packet.md`; `docs/reviews/schemas/appsec-review.schema.json`.
 - [ ] External evals methodology review. Evidence: `docs/reviews/benchmark-methodology-review-packet.md`; `docs/reviews/schemas/evals-review.schema.json`.
 - [ ] External agent and tooling review. Evidence: `docs/reviews/agent-tooling-review-packet.md`; `docs/reviews/schemas/agent-tooling-review.schema.json`.
@@ -257,9 +258,9 @@ or local work that the maintainer controls.
 
 ## v1.1-prep cohort
 
-The v1.1-prep cohort in `tasks_v11_prep/` demonstrates the
-`multi_step_discovery` task type and plan-4.2 categories the public
-60-task split does not cover:
+The v1.1-prep cohort has been promoted into `tasks/` and demonstrates the
+`multi_step_discovery` task type and plan-4.2 categories the previous public
+60-task split did not cover:
 
 - `sup_bfla_viewer_updates_assigned_ticket_status_discovery` (team
   membership boundary in support)
@@ -268,30 +269,31 @@ The v1.1-prep cohort in `tasks_v11_prep/` demonstrates the
 - `fs_team_membership_cross_workspace_discovery` (team membership
   boundary in file_sharing)
 
-The cohort is validated in isolation by
-`tests/test_v11_prep_multistep_discovery.py` and is documented in
-`tasks_v11_prep/README.md`. It does not enter the public 60-task
-count, the public 60-task live baseline summaries, or the private
-holdout count. Promoting the cohort into the public split is a v1.1
-release-time action that requires regenerating the public live
-baselines to the new public count and re-pinning the v1-readiness
-fixture.
+The promoted cohort is covered by the public manifest/scorer validators and by
+the 63-task scripted sanity baseline. The former 60-task live public baseline
+summaries remain stale; regenerating public model/tool capability baselines is
+the remaining follow-on for current public comparison evidence. That refresh can
+be a full 63-task rerun or an explicitly labeled promoted-composite baseline
+built from the immutable 60-task public evidence plus fresh reruns of exactly
+the three promoted public tasks.
 
 ## v1.1 promotion checklist
 
-To promote the v1.1-prep cohort into the public split:
+The v1.1-prep cohort promotion status:
 
-- [ ] Move the three task files from `tasks_v11_prep/` into the
+- [x] Move the three task files from `tasks_v11_prep/` into the
   appropriate `tasks/<app>/` directory.
-- [ ] Update `docs/task-taxonomy.md` and `artifact/task-taxonomy.json`
+- [x] Update `docs/task-taxonomy.md` and `artifact/task-taxonomy.json`
   with the new public count.
-- [ ] Re-run the public 60-task live baselines (six families x two
-  runs) and refresh `baselines/kiro-*-current-public-63-run{1,2}-summary.json`.
-- [ ] Update `artifact/expected-output/v1-readiness-public-view.json`
+- [ ] Refresh the public 63-task live baselines (six families x two
+  runs) and refresh `baselines/kiro-*-current-public-63-run{1,2}-summary.json`,
+  either as full reruns or as `promoted_cohort_delta_merge` composites with
+  explicit base/delta provenance and `not_full_rerun=true`.
+- [x] Update `artifact/expected-output/v1-readiness-public-view.json`
   with `public_task_count=63`.
-- [ ] Update `artifact/v1-task-scale-roadmap.json` to reflect the new
+- [x] Update `artifact/v1-task-scale-roadmap.json` to reflect the new
   count and refresh the planned-waves list.
-- [ ] Update `docs/v1-readiness-checklist.md` to mark the v1.1
+- [x] Update `docs/v1-readiness-checklist.md` to mark the v1.1
   promotion items as complete and re-run the v1-readiness gate.
 
 ## Notes for the next release

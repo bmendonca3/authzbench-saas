@@ -1,6 +1,6 @@
 # Release Status
 
-Last updated: 2026-06-08
+Last updated: 2026-06-20
 
 ## v1 Prep Status
 
@@ -10,13 +10,14 @@ the startup gate is `docs/v1-readiness-checklist.md`.
 Current v1-prep boundary:
 
 - v0.0 remains frozen historical release evidence.
-- `main` is post-v0 active development and carries billing-entitlement plus
-  support-reassignment task slices, then the later local expansion brought the public task set to 60 tasks.
+- `main` is post-v0 active development and carries billing-entitlement,
+  support-reassignment, and file-sharing team-membership discovery slices; the
+  v1.1 promotion brought the public task set to 63 tasks.
 - Old 46-task baselines are stale for v1 comparison until rerun against the
   expanded public split.
 - The preceding 49-task split has five repeated no-tools Kiro model families
   and one repeated live HTTP Kiro tool-agent family with 49/49 target-request
-  correlation in both runs. All are stale for current 60-task comparison.
+  correlation in both runs. All are stale for current 63-task comparison.
 - v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
   community-scale benchmark maturity.
 - Harbor preparation includes repo-side adapter/runbook artifacts plus a
@@ -26,11 +27,13 @@ Current v1-prep boundary:
 
 Current main / v1-prep split:
 
-- 60 public task manifests
-- 24 vulnerable tasks
+- 63 public task manifests
+- 27 vulnerable tasks
 - 36 secure-control tasks
 - 21 denial controls and 15 authorized-allow controls
-- one current 60-task deterministic scripted sanity baseline
+- one current 63-task deterministic scripted sanity baseline
+- six stale repeated 60-task public no-tools/tool-agent capability baseline
+  families, pending full 63-task reruns or promoted-composite refreshes
 - five stale repeated 54-task no-tools model-family baselines: Qwen with
   model-output failure diagnostics, Claude Haiku 4.5 with complete zero-failure
   task artifacts, Claude Sonnet 4.6 with complete zero-failure task artifacts
@@ -44,18 +47,20 @@ Current main / v1-prep split:
 
 ## Current v1-Prep Public Split And Frozen v0.0 Snapshot
 
-AuthZBench-SaaS currently contains a 60-task public split on `v1-imp`. The v0.0
+AuthZBench-SaaS currently contains a 63-task public split. The v0.0
 release snapshot remains frozen at 46 public tasks and is preserved in the
 baseline registry as historical evidence.
 
 ### Current main / v1-prep split
 
 - 6 Dockerized synthetic SaaS targets
-- 60 public task manifests
-- 24 vulnerable tasks
+- 63 public task manifests
+- 27 vulnerable tasks
 - 36 secure-control tasks
 - 21 denial controls and 15 authorized-allow controls
 - one current deterministic scripted harness check
+- six stale repeated 60-task public no-tools/tool-agent capability baseline
+  families, pending full 63-task reruns or promoted-composite refreshes
 - five stale repeated 54-task no-tools Kiro model baselines:
   `qwen3-coder-next`, with explicit model-output failure diagnostics, and
   `claude-haiku-4.5`, with zero adapter, runner, and invalid-submission failures;
@@ -82,7 +87,8 @@ baseline registry as historical evidence.
 - baseline registry validation that separates harness checks, legacy snapshots,
   current public split summaries, frozen release snapshots, and leaderboard
   eligibility
-- current 60-task deterministic scripted harness check
+- current 63-task deterministic scripted harness check
+- repeated stale 60-task public no-tools/tool-agent capability baselines
 - repeated stale 54-task no-tools Kiro `qwen3-coder-next` model baseline
 - repeated stale 54-task no-tools Kiro `claude-haiku-4.5` model baseline
 - repeated stale 54-task no-tools Kiro `claude-sonnet-4.6` model baseline
@@ -133,7 +139,7 @@ baseline registry as historical evidence.
 - 16 denial controls and 11 authorized-allow controls
 - historical 46-task scripted and model/tool-agent baseline summaries retained
   for v0.0 auditability
-- 46-task baseline rows are stale for current 60-task comparison until rerun
+- 46-task baseline rows are stale for current 63-task comparison until rerun
 
 ## Verified Locally
 
@@ -160,10 +166,11 @@ python3 scripts/validate_public.py --include-scripted-baseline --include-contain
 
 The frozen v0.0 release snapshot remains baseline-ready. The repeated
 no-tools model families plus one repeated live HTTP tool-agent family for the
-49-task and 54-task public splits are now stale after the 60-task expansion.
-The current public-split baseline bar is the deterministic 60-task scripted
-sanity check; current 60-task model and live HTTP tool-agent reruns are still
-absent. Strict
+49-task, 54-task, and 60-task public splits are now stale after the 63-task
+expansion. The current public-split baseline bar is the deterministic 63-task
+scripted sanity check; current 63-task model and live HTTP tool-agent capability
+baselines are still absent until full reruns or promoted-composite refreshes
+complete. Strict
 `python3 scripts/validate_v0_release.py` should be rerun in a maintainer
 checkout before future tags because release evidence and CI references are
 time-sensitive.
@@ -176,7 +183,7 @@ Actions public-validation workflow.
 The deterministic scripted baseline was rerun on the v0.0 46-task public split.
 The `qwen3-coder-next`, `claude-haiku-4.5`, `claude-sonnet-4.6`, and `glm-5`
 no-tools Kiro baselines were each rerun twice on that 46-task split. Those rows
-are now stale for current 60-task comparison. The older live HTTP scripted,
+are now stale for current 63-task comparison. The older live HTTP scripted,
 heuristic, and older Kiro model/tool-agent summaries remain stale 44-task
 snapshots because earlier public splits changed. The v0.0
 `claude-sonnet-4.6` live HTTP tool-agent baseline has two 46-task public-split
@@ -207,7 +214,7 @@ parser failures, zero invalid submissions, and zero secure-control false
 reports. Both runs pass 33 tasks, prove 15 of 21 vulnerable replays, and keep
 boundary reasoning at `0.0`, so no vulnerable task fully passes. This preserves
 diagnostic public tool-agent evidence for the previous 54-task split, but
-remains stale public-split diagnostic evidence only, not current 60-task,
+remains stale public-split diagnostic evidence only, not current 63-task,
 private-holdout, hosted-leaderboard, or v1 release evidence.
 
 ## Baseline Results
@@ -334,7 +341,7 @@ expanded beyond that snapshot.
 - public task manifests validate
 - public docs explain task purpose, scoring, result artifacts, baselines, and limits
 - tracked baseline summaries exist
-- current 60-task deterministic scripted harness summary exists for the live
+- current 63-task deterministic scripted harness summary exists for the live
   v1-prep split
 - five repeated stale 54-task no-tools model-family baselines and one repeated
   stale 54-task live HTTP tool-agent family exist on the previous 54-task public split
@@ -347,7 +354,7 @@ expanded beyond that snapshot.
 - five repeated 49-task no-tools model-family baselines and one repeated
   49-task live HTTP tool-agent family remain as stale historical evidence
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: false` for the live 60-task public baseline bar and
+  `v0_baseline_ready: false` for the live 63-task public baseline bar and
   `v0_release_snapshot_ready: true` for the frozen v0.0 release snapshot
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence

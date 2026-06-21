@@ -13,7 +13,7 @@ Status: single-page status and reproducibility summary for Kaggle host reviewers
 ### What Is Done (Repo-Side)
 
 #### Benchmark Core
-* [x] 60 public tasks across 6 synthetic SaaS applications (24 vulnerable, 36 secure controls)
+* [x] 63 public tasks across 6 synthetic SaaS applications (27 vulnerable, 36 secure controls)
 * [x] 48 private holdout tasks (summarized publicly, raw manifests gitignored)
 * [x] Replay-based scorer with adversarial submission hardening
 * [x] Public validation suite: `python3 scripts/validate_public.py --include-scripted-baseline`

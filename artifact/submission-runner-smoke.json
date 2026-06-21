@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "5504030bad91c583f6d1a871f591fcd120bcd7ed",
+  "benchmark_source_sha": "8cb931f266a193b4f867e4f5aecfda8edcc81650",
   "cleanup_completed": true,
   "command": "python3 scripts/containerized_submission_smoke.py --private-pack REDACTED_PROTECTED_PACK --output PUBLIC_SAFE_EVIDENCE",
   "container_constraints": [
