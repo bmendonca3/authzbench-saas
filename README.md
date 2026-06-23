@@ -65,14 +65,27 @@ the CI-enforced forbidden-phrase check at
 
 ## Roadmap At A Glance
 
+For reviewers and evaluators, the authoritative forward-looking roadmap is the
+**Reviewer Roadmap At A Glance** section in [`ROADMAP.md`](ROADMAP.md). It
+separates what is left to call v1 fully done, what must happen before v2
+external validation can start, and what polish is needed for presentation:
+
+- **v1-readiness gaps** — remaining v1-scope improvements with owner,
+  verification, and status; preserves the `v1.0-internal` maturity label.
+- **v2 external-validation prep** — deferred tracks with dependencies and
+  entry criteria; all tracks remain preparatory and gated.
+- **repo-presentation polish** — checklist for host/reviewer presentation
+  readiness.
+
 | Stage | Status | What it proves | Next gate |
 | --- | --- | --- | --- |
 | `v0.0` public release | Complete | First evidence-backed public benchmark snapshot with 46 frozen public tasks, release evidence, CI, privacy checks, and tagged release artifacts. | Preserved as historical release evidence. |
 | `v1.0-internal` | Complete | Current internally validated artifact with 63 public tasks, 48 maintainer-private holdout tasks, deterministic scoring, private-holdout governance, and repo-side Harbor adapter path. | Keep docs, validators, and artifacts aligned while external tracks are still pending. |
 | `v2` external validation | Deferred | Independent AppSec/evals/agent review, SaaS-provider scenario validation, platform review, hosted operation, and third-party submissions. | Recruit reviewers, run external lanes, record real dispositions, and update the claim ledger. |
 
-The full roadmap is maintained in [`ROADMAP.md`](ROADMAP.md). Claim limits and
-the v2 external-validation tracks are maintained in
+The full roadmap is maintained in [`ROADMAP.md`](ROADMAP.md), including the
+v1-readiness gaps, v2 external-validation prep, and repo-presentation polish
+sections. Claim limits and the v2 external-validation tracks are maintained in
 [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
 ## What This Is
