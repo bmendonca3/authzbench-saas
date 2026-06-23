@@ -6,6 +6,7 @@ Welcome to the AuthZBench-SaaS documentation. This index maps all public-safe do
 
 ## 🔍 I am a Host Reviewer / Evaluator
 If you are evaluating AuthZBench-SaaS for a Kaggle or Kaggle-like evaluation pilot, start with these host-facing resources:
+* **[Reviewer Roadmap (ROADMAP.md)](../ROADMAP.md)**: The authoritative forward-looking roadmap. See the **Reviewer Roadmap At A Glance** section for v1-readiness gaps (owner/verification/status), v2 external-validation prep tracks (dependencies + entry criteria), and repo-presentation polish.
 * **[Host Review Package](host/host-review-package.md)**: The central entrypoint for the host packet, questions, and scopes.
 * **[Host Status & Reproducibility Matrix](host/host-status-and-reproducibility.md)**: Live status, reproducibility matrix, and versioning.
 * **[Hosting Model Options](host/hosting-model.md)**: Decisions on data custody, metric details, solution-file contracts, and display policies.
