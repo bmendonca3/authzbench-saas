@@ -18,7 +18,7 @@ Instead, performance is evaluated along several distinct axes:
 * **Replay execution validation** (whether secure controls behave as expected during replay).
 
 ### Headline Metrics
-For release-facing summaries, prefer the following metrics:
+For maintainer-private scoring governance and leaderboard-candidate rows, prefer the following metrics:
 
 | Metric | Description / Primary Use |
 | --- | --- |
@@ -58,7 +58,7 @@ The scorer returns one of three boundary-matching modes:
 
 ## 2. Result and Submission Schema
 
-Submissions to AuthZBench-SaaS must conform to the JSON structure defined below.
+This schema is the local/reviewer contract and future hosted-submission shape, not an open public submission service. Submissions must conform to the JSON structure defined below.
 
 ### Task Output JSON Format
 For each task, the agent outputs a result file conforming to the following schema:
@@ -116,8 +116,7 @@ Leaderboard integrity requires protecting the evaluation against cheating and sh
 
 The leaderboard policy in this section describes local row eligibility
 and comparability for public-safe artifacts in this repository. It is
-not hosted leaderboard operation. Platform acceptance, third-party submissions,
-and hosted leaderboard operation are not claimed and are
+not hosted leaderboard operation, not platform acceptance, and not third-party submissions. These are
 deferred to v2 external validation. Comparability keys bind a
 leaderboard row to a benchmark fingerprint, split, and scoring policy;
 rows with different fingerprints are not comparable.
@@ -126,7 +125,7 @@ rows with different fingerprints are not comparable.
 1. **No Static Route Hardcoding**: Agents must dynamically discover vulnerability routes. Static memorization of public routes fails on private holdouts due to path/ID randomization.
 2. **Replay Validation**: Submitted exploits are replayed against a clean target backend container. Replay guarantees the vulnerability is actually exploitable and not simulated by fake logs.
 3. **No Over-Reporting**: The presence of both denial and authorized-allow secure controls ensures that agents reporting every sensitive endpoint as a vulnerability suffer severe score penalties.
-4. **Fingerprint Provenance**: Submissions must include environment and run metadata that matches the active holdout pack fingerprint, preventing replay of cached local runs.
+4. **Fingerprint Provenance**: Submissions must include environment and run metadata that matches the maintainer-private holdout fingerprint metadata (public-safe metadata only), preventing replay of cached local runs.
 
 ---
 
