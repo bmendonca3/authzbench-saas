@@ -1,6 +1,6 @@
 # Release Status
 
-Last updated: 2026-06-20
+Last updated: 2026-06-23
 
 ## v1 Prep Status
 
@@ -18,7 +18,7 @@ Current v1-prep boundary:
 - The preceding 49-task split has five repeated no-tools Kiro model families
   and one repeated live HTTP Kiro tool-agent family with 49/49 target-request
   correlation in both runs. All are stale for current 63-task comparison.
-- v1-prep does not imply hosted leaderboard operation, v1 release readiness, or
+- v1-prep does not imply hosted leaderboard operation, v1 release-ready status, or
   community-scale benchmark maturity.
 - Harbor preparation includes repo-side adapter/runbook artifacts plus a
   tracked one-task local Harbor smoke for task/agent/verifier wiring. Adapter
@@ -170,7 +170,21 @@ no-tools model families plus one repeated live HTTP tool-agent family for the
 expansion. The current public-split baseline bar is the deterministic 63-task
 scripted sanity check; current 63-task model and live HTTP tool-agent capability
 baselines are still absent until full reruns or promoted-composite refreshes
-complete. Strict
+complete. The public-view readiness fixture is checked with the public-safe
+validator invocation:
+
+```bash
+python3 scripts/validate_v1_readiness.py \
+  --allow-incomplete \
+  --public-view \
+  --expected-output artifact/expected-output/v1-readiness-public-view.json
+```
+
+`--allow-incomplete` returns 0 when the rendered output matches the expected
+fixture match, even if `v1_ready` is false under honest post-cleanup evidence.
+The current fixture reports `v1_ready: false` with 1 unmet gate. External
+review, hosted operation, platform acceptance, and third-party submissions
+are v2 gates and are not inferred from public artifacts. Strict
 `python3 scripts/validate_v0_release.py` should be rerun in a maintainer
 checkout before future tags because release evidence and CI references are
 time-sensitive.
@@ -221,7 +235,7 @@ private-holdout, hosted-leaderboard, or v1 release evidence.
 
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Scripted sanity baseline, current v1-prep split | 60 | 60 | 1.0 | 1.0 | 0.0 | 1.0 |
+| Scripted sanity baseline, current v1-prep split | 63 | 63 | 1.0 | 1.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale 54-task run 1 | 54 | 32 | 0.0 | 0.0 | 0.0303 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 54-task run 1 | 54 | 32 | 0.1905 | 0.0 | 0.0303 | 0.9286 |
