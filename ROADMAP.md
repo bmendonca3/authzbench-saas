@@ -93,6 +93,85 @@ runs, platform review if pursued, and leaderboard governance. This is not in the
 `v1.0-internal` release scope and uses the forbidden-phrase list in
 `docs/claims-and-evidence.md` to gate wording.
 
+## Reviewer Roadmap At A Glance
+
+This section is the reviewer-facing roadmap. It separates what is left to call
+v1 fully done, what must happen before v2 external validation can start, and
+what polish is needed for host/reviewer presentation. The historical milestone
+detail follows below. The canonical claim ledger remains
+[`docs/claims-and-evidence.md`](docs/claims-and-evidence.md); nothing in this
+section strengthens or weakens any canonical claim, and all wording is subject
+to the CI forbidden-phrase check at `scripts/check_claim_boundary.py`.
+
+### v1-readiness gaps
+
+`v1.0-internal` is complete under the internal/public-view release definition.
+The gaps below are remaining v1-scope improvements that do **not** gate the
+`v1.0-internal` label and do not introduce any external-validation claim. Each
+row lists an owner role, a verification command, and a status.
+
+| Gap | Owner | Verification | Status |
+| --- | --- | --- | --- |
+| Expand multi-step workflow tasks without diluting control quality | maintainer | `python3 scripts/validate_public.py --include-scripted-baseline` exits 0 and task-quality gate passes | open |
+| Add state-changing authorization tasks across billing, support, file sharing, API tokens, and audit settings | maintainer | public task-quality matrix regenerates and task-quality gate passes | open |
+| Keep public/private task-pack changes tied to refreshed baselines | maintainer | baseline registry validation passes and stale rows are marked | open |
+| Add repeated private tool-agent leaderboard-candidate rows | maintainer | leaderboard submission validation accepts the new rows with runner-emitted fingerprint provenance | open |
+| Add leakage-response and holdout-retirement workflow tests | maintainer | private-holdout lifecycle validators pass | open |
+| Add stronger non-macOS isolation story for protected private execution | maintainer | protected private execution denial recorded on at least one non-macOS host | open |
+| Add a maintainer-operated submission review workflow | maintainer | leaderboard governance rules validator passes against the new workflow | open |
+| Add at least one third-party or independently operated agent run (v1-scope sanity, not external review) | maintainer | baseline registry records the run with provenance; row is not labeled external review | open |
+
+None of the above claims independent external review, SaaS-provider validation,
+hosted leaderboard availability, Harbor/Kaggle platform acceptance, or
+third-party submissions as completed. Those remain v2 prep tracks below.
+
+### v2 external-validation prep
+
+The v2 tracks are deferred and gated. They are listed here as prep work with
+dependencies and entry criteria so a reviewer can see what must happen before
+v2 external validation can start. None of these tracks has happened yet; the
+forbidden-phrase boundary in `docs/claims-and-evidence.md` enforces that
+wording stays preparatory.
+
+| Track | Dependencies | Entry criteria | Status |
+| --- | --- | --- | --- |
+| Independent AppSec review | reviewer recruitment; `docs/reviews/external-review-packet.md` intake packet | packet complete and at least one independent AppSec reviewer engaged | not started |
+| Benchmark and evals methodology review | independent AppSec review lane scoped | technical reports and split/scoring semantics packaged for an independent evals reviewer | not started |
+| AI-agent and tooling review | independent evals review lane scoped | harness types, tool access, and comparability keys documented for an independent agent reviewer | not started |
+| SaaS-provider scenario validation | at least one SaaS authorization provider willing to validate task scenarios | oracle logic and task scenarios packaged for provider review | not started |
+| Hosted leaderboard operation | submission review workflow proven; containerized evaluation path proven | hosted or fully containerized evaluation exists and private-holdout scoring is operational at that level | not started |
+| Harbor / Kaggle platform review (optional) | full Harbor adapter parity proven; hosted leaderboard operation track advanced | platform publishing and platform review pursued only after parity and hosted operation are real | not started |
+| Third-party submissions | submission governance rules published; hosted leaderboard operation track advanced | submission gates opened only after governance and hosted operation are real | not started |
+| Externally validated v1 release | all three required review lanes (AppSec, evals, agent/tooling) record real human decisions | v2 validation release complete only after all three lanes record real dispositions | not started |
+
+The dependency chain is: recruit reviewers → run the three independent review
+lanes → record real dispositions → only then pursue SaaS-provider validation,
+hosted leaderboard operation, optional platform review, and third-party
+submissions. Do not mark any v2 track complete until its entry criteria are met
+and real evidence is recorded in `docs/reviews/external-review-summary.json`.
+
+### repo-presentation polish
+
+A concise checklist for host/reviewer presentation readiness. Items that would
+require editing files other than `ROADMAP.md` are listed as future checklist
+items only and are not in scope for a roadmap-only round.
+
+- [ ] One canonical docs navigation map reachable from README and ROADMAP
+      (`docs/index.md`) so a reviewer has a single entry point.
+- [ ] Evidence pointers from ROADMAP and README resolve to the canonical claim
+      ledger and the release-evidence registry without dead links.
+- [ ] Reviewer walkthrough (`docs/reviewer-walkthrough.md`) matches the current
+      63-task public split and 111 total public/private task scale.
+- [ ] Host review package and validation commands
+      (`docs/validation-commands.md`) match the current validator set.
+- [ ] Public-safe charts and task-quality matrix reflect the current public
+      split, not a stale snapshot.
+- [ ] Harbor integration runbook wording stays local-maintainer-only and does
+      not claim Harbor platform acceptance or endorsement.
+- [ ] README "Roadmap At A Glance" table stays aligned with this section.
+- [ ] No tracked file contains a forbidden phrase outside an allowed negation
+      context (`scripts/check_claim_boundary.py` exits 0).
+
 ## Completed Release Path: v0.0
 
 Status: complete.
