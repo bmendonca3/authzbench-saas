@@ -27,7 +27,7 @@ quoting any readiness number.
 ## 2. What it is not
 
 - Not a general software-engineering benchmark like SWE-bench.
-- Not a hosted public leaderboard. The `local_or_containerized_submission_smoke`
+- Not hosted leaderboard operation, not platform acceptance, and not third-party submissions. The `local_or_containerized_submission_smoke`
   gate covers the local Docker submission smoke only and sets
   `hosted_leaderboard_operation_claimed: false` explicitly.
 - Not Harbor-accepted, Kaggle-accepted, or platform-accepted.
@@ -74,7 +74,7 @@ The runner executes, in order:
 4. `scripts/check_claim_boundary.py` (CI-fails on the 25 forbidden
    phrases outside allow contexts).
 5. The scripted baseline driver
-   (`baselines/scripted-baseline-public-60-summary.json`).
+   (`baselines/scripted-baseline-public-63-summary.json`), a 63-task deterministic harness sanity check that is not model/tool-agent capability evidence.
 
 Additional reviewer-safe validators:
 
@@ -223,13 +223,13 @@ and the runbook's "Harbor status table"):
 The CI non-claim test
 [`tests/test_harbor_claim_boundary.py`](../tests/test_harbor_claim_boundary.py)
 fails if docs or runbooks say "Harbor accepted", "Harbor endorsed",
-"platform accepted", "hosted public leaderboard", or "Kaggle accepted"
+"platform accepted", "hosted leaderboard operation", or "Kaggle accepted"
 outside an explicit "not claimed" context.
 
 ## 10. Known limitations
 
 1. The target apps are synthetic. Real-SaaS provider validation is v2.
-2. The public split is inspectable and not leaderboard-grade by itself.
+2. The public split is inspectable and supports local row eligibility and leaderboard-candidate rows with public-safe metadata only, not hosted leaderboard operation.
 3. Private holdouts are maintainer-controlled, not platform-governed.
 4. Baselines must be current to support comparisons; n=2 repeated
    95% CIs are a coarse ordering signal, not a hard bound.
