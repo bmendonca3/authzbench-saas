@@ -77,16 +77,20 @@ Every task has a machine-verifiable oracle.
 AuthZBench-SaaS uses a strict public/private split to prevent frontier models and agent harnesses from memorizing task details.
 
 ### Public Split
-Tracked under `tasks/*/*.json` manifests. Used for local smoke tests, harness integration, baseline debugging, and public methodology review.
+The current public split is 63 public tasks tracked under `tasks/*/*.json`
+manifests. Used for local smoke tests, harness integration, baseline
+debugging, and public methodology review.
 
 ### Private Holdout Split
 Lives entirely outside the public Git history. Private holdout manifests use the same schema but do not publish task seeds, exact routes, vulnerability locations, scorer oracle details, or reference exploits.
-* The v0/v1 holdout targets **20-30 unpublished tasks** (minimum 24 tasks for balanced coverage).
+* The current maintainer-private holdout is 48 maintainer-private holdout tasks, summarized only through a public-safe summary with public-safe count and fingerprint metadata.
+* Total public + private task scale: 111 total.
 * Ignored by Git under `tasks_private/holdout/`.
 * Evaluated locally via `python3 scripts/validate_holdout_pack.py`.
 
-### Private Leaderboard Evidence Requirements
-To maintain leaderboard credibility, the repository enforces the following requirements:
+### Holdout Governance and Leaderboard Eligibility
+The following governance requirements maintain leaderboard credibility.
+This is repo-side local row eligibility and comparability policy, not hosted leaderboard operation. Platform acceptance, third-party submissions, and hosted leaderboard operation are not claimed and are deferred to v2 external validation.
 1. **Active and Shadow Packs**: Must exist under the gitignored holdout root and report `leaderboard_suitable: true` before claiming private evidence.
 2. **Rotation Metadata**: Written only in the holdout root, matching validated pack fingerprints, and never tracked in public Git.
 3. **Protected Execution Summaries**: Redacted source summaries must record `host_private_paths_denied`, share a fingerprint with the active pack, and reach `run_count >= 2`.
