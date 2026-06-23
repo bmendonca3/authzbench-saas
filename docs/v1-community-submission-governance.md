@@ -81,7 +81,7 @@ The hosted path should operate like this:
 3. The hosted runner executes the agent in an isolated environment with no
    private-pack read access except through benchmark APIs.
 4. The scorer writes raw private results to an ignored protected evidence root.
-5. A redacted summary and candidate leaderboard-candidate row are generated.
+5. A redacted summary and leaderboard-candidate row are generated.
 6. Validation recomputes aggregate metrics from source summaries.
 7. Maintainers review the row, publish only public-safe metadata, and archive
    raw private evidence outside public Git.
