@@ -82,13 +82,13 @@ using the changed scorer for public comparison claims.
 
 ## Leaderboard Compatibility
 
-Leaderboard rows are comparable only when they use the same:
+Leaderboard-candidate rows are comparable only when they use the same:
 
 - benchmark version or release archive
 - scored split
 - scorer profile
 - task set
-- leaderboard eligibility policy
+- local row eligibility policy
 
 The validator encodes those inputs in `comparability_key`. Compare rows directly
 only when that key matches. The key includes the benchmark version and commit,
@@ -103,7 +103,7 @@ requires host private-path denial; older workspace-only runs remain historical
 evidence.
 
 Public-split development runs must not be mixed with private-holdout
-leaderboard rows as if they are the same evidence class.
+leaderboard-candidate rows as if they are the same evidence class.
 
 ## See also
 

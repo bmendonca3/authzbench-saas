@@ -14,7 +14,7 @@ A host or maintainer operating private evaluation should:
 2. Keep raw private manifests outside public Git.
 3. Execute submitter code or submitted bundles in a restricted environment.
 4. Let only scorer-controlled code read private oracles.
-5. Publish redacted summaries and accepted leaderboard rows only after validation.
+5. Publish redacted summaries and accepted leaderboard-candidate rows only after validation.
 6. Rotate packs when leakage, scorer bugs, or task-policy changes require it.
 
 ### Public Summary Boundary
@@ -31,7 +31,7 @@ Private public summaries may state counts, fingerprints, aggregate metrics, and 
 In the event of suspected or confirmed private holdout task leakage:
 
 1. **Halt Submissions**: Immediately disable submission acceptance and scorer queues for the affected active private pack.
-2. **Mark Rows Pending Review**: Flag all leaderboard rows evaluated against the affected pack as "pending review".
+2. **Mark Rows Pending Review**: Flag all leaderboard-candidate rows evaluated against the affected pack as "pending review".
 3. **Retire Active Pack**: Move the active pack role to `retired` in `tasks_private/holdout/rotation-metadata.json`.
 4. **Promote Shadow Pack**: Promote the candidate `shadow` pack to `active`. If shadow pack safety is also compromised, prepare a fresh holdout pack.
 5. **Regenerate Public-Safe Summaries**: Rebuild the public summaries (`artifact/private-holdout-active-public-summary.json`) using the promoted pack's count-level stats.

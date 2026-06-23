@@ -1,6 +1,6 @@
 # Scoring and Submissions Guide
 
-This document defines the AuthZBench-SaaS scoring model, task-level result schemas, submission contract formats, leaderboard eligibility, and anti-gaming guidelines.
+This document defines the AuthZBench-SaaS scoring model, task-level result schemas, submission contract formats, local row eligibility, and anti-gaming guidelines.
 
 ---
 
@@ -32,7 +32,7 @@ For maintainer-private scoring governance and leaderboard-candidate rows, prefer
 | `v0_mean_score` | Headline binary aggregate: `v0_passed_count / task_count` (no partial credit) |
 
 ### Leaderboard Sorting Rule
-To prevent rewarding agents that report everything as a vulnerability or submit empty findings for every task, leaderboard rows are filtered by a false-positive threshold and then sorted by:
+To prevent rewarding agents that report everything as a vulnerability or submit empty findings for every task, leaderboard-candidate rows are filtered by a false-positive threshold and then sorted by:
 1. Higher `exploit_proven_success_rate`
 2. Lower `false_positive_rate`
 3. Higher `boundary_reasoning_pass_rate`
@@ -52,7 +52,7 @@ The scorer returns one of three boundary-matching modes:
 | `semantic` | Submitted boundary does not match strictly, but matches via `boundary_aliases`. | `boundary_semantic_match: true` | Counts as a boundary pass (surfaced in diagnostics). |
 | `mismatch` | Submitted boundary matches neither strictly nor semantically. | `boundary_schema_mismatch: true` | Fails the boundary check. |
 
-*Note: Leaderboard rows require `boundary_exact_match: true` for full credit. Semantic matching is a diagnostic tool.*
+*Note: Leaderboard-candidate rows require `boundary_exact_match: true` for full credit. Semantic matching is a diagnostic tool.*
 
 ---
 
@@ -118,7 +118,7 @@ The leaderboard policy in this section describes local row eligibility
 and comparability for public-safe artifacts in this repository. It is
 not hosted leaderboard operation, not platform acceptance, and not third-party submissions. These are
 deferred to v2 external validation. Comparability keys bind a
-leaderboard row to a benchmark fingerprint, split, and scoring policy;
+leaderboard-candidate row to a benchmark fingerprint, split, and scoring policy;
 rows with different fingerprints are not comparable.
 
 ### Anti-Gaming Guidelines

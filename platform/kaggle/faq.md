@@ -16,10 +16,10 @@ In this package, the CSV functions as a submission index or manifest. It maps ta
 The evidence bundle contains per-task `submission.json` files. For vulnerable tasks, this includes exploit findings, targeted HTTP request logs, and resource boundaries. For secure-control tasks, it contains a declaration of no findings.
 
 ## What is leaderboard eligible?
-Only submissions evaluated against the private split using host-controlled or maintainer-operated private runs are eligible for the private leaderboard, subject to evidence replay and verification.
+Only submissions evaluated against the private split using host-controlled or maintainer-operated private runs are eligible for the private leaderboard-candidate rows, subject to evidence replay and verification.
 
 ## What is diagnostic only?
-The public split (60 tasks) is diagnostic only. It is intended for local validation and debugging. Public split rows are never eligible for the private leaderboard.
+The public split (60 tasks) is diagnostic only. It is intended for local validation and debugging. Public split rows are never eligible for the private leaderboard-candidate rows.
 
 ## How are private holdouts protected?
 Private holdouts are stored in a separate directory (`tasks_private/`) that is excluded from the public Git history and ignored. Only aggregate fingerprints and public-safe summaries are checked in. Scorer runs read private tasks in a restricted environment.
@@ -31,7 +31,7 @@ If private task manifests are leaked, the host will rotate the active private pa
 The host must decide:
 - **Custody owner**: Who hosts the private holdout evaluation runners.
 - **Submitter artifact**: Confirming if submitters provide result bundles or runner images.
-- **Leaderboard row tiering**: Rules for display of public-diagnostic, private-candidate, and host-verified rows.
+- **Leaderboard-candidate row tiering**: Rules for display of public-diagnostic, private-candidate, and host-verified rows.
 - **Operational policies**: Reruns, appeals, stale scores, and pack rotation triggers.
 
 ## Can this become native Kaggle scoring later?
