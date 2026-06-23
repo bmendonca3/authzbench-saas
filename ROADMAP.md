@@ -46,8 +46,7 @@ Evidence already in place:
 - five repeated frozen v0.0 public model/agent baseline families
 - one repeated frozen v0.0 public live HTTP tool-agent family
 - current 63-task scripted harness sanity baseline
-- current public model/tool-agent baseline evidence tracked in the baseline
-  registry
+- current 63-task public model and live HTTP tool-agent capability baselines remain a gap until full reruns or promoted-composite refreshes complete
 - five repeated historical 49-task public no-tools model-family baselines,
   now stale for current comparison
 - one repeated historical 49-task public live HTTP tool-agent baseline, now
@@ -156,20 +155,21 @@ A concise checklist for host/reviewer presentation readiness. Items that would
 require editing files other than `ROADMAP.md` are listed as future checklist
 items only and are not in scope for a roadmap-only round.
 
-- [ ] One canonical docs navigation map reachable from README and ROADMAP
+- [x] One canonical docs navigation map reachable from README and ROADMAP
       (`docs/index.md`) so a reviewer has a single entry point.
 - [ ] Evidence pointers from ROADMAP and README resolve to the canonical claim
       ledger and the release-evidence registry without dead links.
-- [ ] Reviewer walkthrough (`docs/reviewer-walkthrough.md`) matches the current
+- [x] Reviewer walkthrough (`docs/reviewer-walkthrough.md`) matches the current
       63-task public split and 111 total public/private task scale.
-- [ ] Host review package and validation commands
+- [x] Host review package and validation commands
       (`docs/validation-commands.md`) match the current validator set.
 - [ ] Public-safe charts and task-quality matrix reflect the current public
       split, not a stale snapshot.
-- [ ] Harbor integration runbook wording stays local-maintainer-only and does
-      not claim Harbor platform acceptance or endorsement.
-- [ ] README "Roadmap At A Glance" table stays aligned with this section.
-- [ ] No tracked file contains a forbidden phrase outside an allowed negation
+- [x] Harbor integration runbook (`docs/harbor-integration-runbook.md`) wording
+      stays local-maintainer-only and does not claim Harbor platform acceptance
+      or endorsement.
+- [x] README "Roadmap At A Glance" table stays aligned with this section.
+- [x] No tracked file contains a forbidden phrase outside an allowed negation
       context (`scripts/check_claim_boundary.py` exits 0).
 
 ## Completed Release Path: v0.0
