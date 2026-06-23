@@ -366,6 +366,7 @@ POST_SOURCE_EVIDENCE_ONLY_PATHS = {
     "docs/reviews/saas-provider-review-packet.md",
     "docs/holdout-rotation-protocol.md",
     "docs/task-quality-rubric.md",
+    "docs/boundary-reasoning-calibration-plan.md",
     "docs/v1-community-submission-governance.md",
     # Host-facing docs consolidation. These are documentation relocations and
     # redirect stubs only; they do not change benchmark source, tasks, scorer
