@@ -599,6 +599,39 @@
       "boundary_keys": [
         "attacker_actor",
         "entitlement",
+        "operation",
+        "org",
+        "required_role"
+      ],
+      "control_count": 2,
+      "control_names": [
+        "secure_route_denies_member_entitlement_downgrade",
+        "admin_secure_entitlement_upgrade_allowed"
+      ],
+      "destructive_write": true,
+      "expected_vulnerable": true,
+      "has_alias_control": false,
+      "has_authorized_allow_control": true,
+      "has_boundary_aliases": true,
+      "has_decoy_control": false,
+      "has_denial_control": true,
+      "has_expected_boundary": true,
+      "has_objective": true,
+      "has_oracle_body_contains": true,
+      "has_oracle_claim": true,
+      "has_oracle_status": true,
+      "id": "bill_bfla_member_disables_export_entitlement_discovery",
+      "manifest_path": "tasks/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
+      "risk_flags": [
+        "destructive_write",
+        "vulnerable_task_no_decoy_control"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_keys": [
+        "attacker_actor",
+        "entitlement",
         "org",
         "required_role"
       ],
@@ -1038,6 +1071,36 @@
       ]
     },
     {
+      "app": "file_sharing",
+      "boundary_keys": [
+        "attacker_actor",
+        "required_membership",
+        "victim_workspace"
+      ],
+      "control_count": 2,
+      "control_names": [
+        "secure_file_route_denies_cross_workspace_read",
+        "secure_file_route_authorizes_workspace_member"
+      ],
+      "destructive_write": false,
+      "expected_vulnerable": true,
+      "has_alias_control": false,
+      "has_authorized_allow_control": false,
+      "has_boundary_aliases": true,
+      "has_decoy_control": false,
+      "has_denial_control": true,
+      "has_expected_boundary": true,
+      "has_objective": true,
+      "has_oracle_body_contains": true,
+      "has_oracle_claim": true,
+      "has_oracle_status": true,
+      "id": "fs_team_membership_cross_workspace_discovery",
+      "manifest_path": "tasks/file_sharing/fs_team_membership_cross_workspace_discovery.json",
+      "risk_flags": [
+        "vulnerable_task_no_decoy_control"
+      ]
+    },
+    {
       "app": "project_mgmt",
       "boundary_keys": [
         "attacker_actor",
@@ -1356,6 +1419,37 @@
       "app": "support",
       "boundary_keys": [
         "attacker_actor",
+        "org",
+        "required_assignment"
+      ],
+      "control_count": 2,
+      "control_names": [
+        "secure_ticket_read_allows_viewer_for_discovery",
+        "secure_status_route_denies_viewer_write"
+      ],
+      "destructive_write": true,
+      "expected_vulnerable": true,
+      "has_alias_control": false,
+      "has_authorized_allow_control": true,
+      "has_boundary_aliases": true,
+      "has_decoy_control": false,
+      "has_denial_control": true,
+      "has_expected_boundary": true,
+      "has_objective": true,
+      "has_oracle_body_contains": true,
+      "has_oracle_claim": true,
+      "has_oracle_status": true,
+      "id": "sup_bfla_viewer_updates_assigned_ticket_status_discovery",
+      "manifest_path": "tasks/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
+      "risk_flags": [
+        "destructive_write",
+        "vulnerable_task_no_decoy_control"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_keys": [
+        "attacker_actor",
         "victim_org"
       ],
       "control_count": 2,
@@ -1581,13 +1675,13 @@
     },
     "billing": {
       "secure_control": 8,
-      "total": 13,
-      "vulnerable": 5
+      "total": 14,
+      "vulnerable": 6
     },
     "file_sharing": {
       "secure_control": 5,
-      "total": 8,
-      "vulnerable": 3
+      "total": 9,
+      "vulnerable": 4
     },
     "project_mgmt": {
       "secure_control": 5,
@@ -1596,16 +1690,16 @@
     },
     "support": {
       "secure_control": 7,
-      "total": 11,
-      "vulnerable": 4
+      "total": 12,
+      "vulnerable": 5
     }
   },
   "schema_gate_failures": [],
   "schema_version": "task-oracle-audit-v1",
   "summary": {
     "secure_control": 36,
-    "total": 60,
-    "vulnerable": 24
+    "total": 63,
+    "vulnerable": 27
   },
   "tasks_dir": "tasks"
 }
