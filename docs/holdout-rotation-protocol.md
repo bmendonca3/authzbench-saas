@@ -73,7 +73,6 @@ declared compatible in a release note. When a pack rotates:
 - label new rows with the active pack version
 - rerun core baselines on the new pack before comparing agents
 - keep public-split development results separate from private leaderboard-candidate rows
-  results
 
 If a scorer bug affects a private pack, mark affected rows as `deprecated` and
 publish a short non-sensitive explanation.
