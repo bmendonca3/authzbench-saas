@@ -8,15 +8,15 @@ holdout packs that back the v1.0-internal release. It is the source
 of truth for how a pack is created, validated, activated, rotated,
 and retired; for who can inspect private manifests; and for what the
 public repo is allowed to publish about a pack at each lifecycle
-stage.
+stage. This policy describes maintainer-private scoring governance and leaderboard-candidate rows inside the repo evidence model, not hosted leaderboard operation, not platform acceptance, and not third-party submissions.
 
 ## Pack lifecycle stages
 
 | Stage | When a pack is in this stage | Public artifact shape |
 | --- | --- | --- |
 | `preparation` | Tasks are being drafted and quality-reviewed; not yet routed through the public scorer. | No public summary. |
-| `shadow` | The pack is wired into the runner on a private host, but the public scorer is not yet pointed at it. Public row eligibility requires the active pack's fingerprint. | `private-holdout-shadow-public-summary.json` (count + fingerprint only). |
-| `active` | The pack is the source of truth for v1-internal scoring. Public row eligibility requires this pack's fingerprint. | `private-holdout-active-public-summary.json` (count + fingerprint only). |
+| `shadow` | The pack is wired into the runner on a private host, but the public scorer is not yet pointed at it. Leaderboard-candidate rows require the active pack's fingerprint. | `private-holdout-shadow-public-summary.json` (count + fingerprint only). |
+| `active` | The pack is the source of truth for maintainer-private scoring governance. Leaderboard-candidate rows require this pack's fingerprint. | `private-holdout-active-public-summary.json` (count + fingerprint only). |
 | `retired` | The pack is no longer scored against. Held for legacy audit and external review reproducibility only. | Public summary records retired status; no per-task body, route, or seed. |
 
 ## Pack creation
@@ -49,9 +49,9 @@ stage.
   list of `(path, manifest)` pairs.
 - When a task is added, removed, or modified, the pack's fingerprint
   changes. A new public summary artifact must be published under the
-  same pack id with the new fingerprint before any leaderboard row
+  same pack id with the new fingerprint before any leaderboard-candidate row
   references the new fingerprint.
-- The fingerprint is the key that ties a leaderboard row to a pack.
+- The fingerprint is the key that ties a leaderboard-candidate row to a pack.
   Rows that carry a different fingerprint are not comparable.
 
 ## Rotation cadence
@@ -93,6 +93,8 @@ credential is exposed publicly:
 
 ## Public summary rules
 
+Public artifacts may publish public-safe metadata only:
+
 Public artifacts may publish:
 
 - Active / shadow / retired pack id, role, version, created_at,
@@ -106,6 +108,7 @@ Public artifacts may **never** publish:
 - Per-task private routes, seeds, oracle strings, or expected
   boundaries.
 - Raw per-request transcripts of private runs.
+- Any raw private bundles or pack archives.
 - Real-SaaS credentials, tokens, or private customer data.
 - Local absolute paths from the maintainer host.
 
@@ -126,7 +129,7 @@ python3 scripts/check_claim_boundary.py
 task quality gate, claim-boundary check, and the public-view readiness
 fixture match. `check_claim_boundary.py` verifies that no forbidden
 claim phrases appear outside allowed negation contexts. Neither command
-requires access to `tasks_private/` or any private pack.
+requires access to `tasks_private/` or any private pack. This validation does not require access to tasks_private/, private packs, hosted services, Docker, or live model/API access.
 
 See [`docs/validation-commands.md`](validation-commands.md) for the full
 validator reference and [`docs/claims-and-evidence.md`](claims-and-evidence.md)
