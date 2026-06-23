@@ -416,7 +416,7 @@ expanded beyond that snapshot.
   and mark all required review-registry sections v0-ready
 - local-status paths and personal filesystem references have been removed from this document
 
-Still required before a hosted public leaderboard or v1/community claim:
+Still required before a hosted leaderboard operation or v1/community claim (not claimed, deferred to v2):
 
 - keep `docs/release-evidence.json` tied to exact command, commit, CI, and
   artifact evidence as later release checks are rerun

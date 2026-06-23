@@ -15,7 +15,7 @@ Use this language while v1 is in progress:
 
 - `main post-v0 active development`
 - `v1 task expansion work`
-- `v1 readiness checklist`
+- `v1.0-internal public-view readiness checklist`
 - `candidate v1 task family`
 - `stale v0.0 baseline for v1 comparison`
 
@@ -241,7 +241,7 @@ or local work that the maintainer controls.
 - [ ] External agent and tooling review. Evidence: `docs/reviews/agent-tooling-review-packet.md`; `docs/reviews/schemas/agent-tooling-review.schema.json`.
 - [ ] SaaS-provider or senior AppSec scenario validation. Evidence: pending external engagement.
 - [x] Private holdout lifecycle policy. Evidence: `docs/private-holdout-lifecycle.md`; `tasks_private/holdout/rotation-metadata.json`.
-- [x] Leaderboard eligibility tiers. Evidence: `docs/scoring-and-submissions.md`.
+- [x] Local row eligibility tiers. Evidence: `docs/scoring-and-submissions.md`.
 - [x] Clean-room reproduction command. Evidence: `python3 scripts/reproduce_public_artifact.py`; `Dockerfile`; `.env.example`; `docs/container-digests.md`.
 - [x] Public artifact index. Evidence: `artifact/INDEX.md`; `docs/artifact-index.md`.
 - [ ] Current per-task Harbor parity, if Harbor is part of the claim. Evidence: `artifact/harbor-parity-experiment.json` (per_task_pairing contract, currently `evidence_status=blocked`); historical aggregate-means run preserved at `artifact/historical/harbor-parity-experiment-aggregate-means.json`. The per_task_pairing map will be populated when a real Harbor run completes.

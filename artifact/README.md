@@ -10,49 +10,49 @@ here.
 - `install.md`: local setup and prerequisites.
 - `run-public-validation.sh`: bounded public validation entrypoint.
 - `expected-output/`: public-safe expected outputs for stable validation
-  signals, including the deterministic public view of v1 readiness.
+  signals, including the deterministic public view of v1.0-internal public-view readiness.
 - `run-bundle.md`: guidance for packaging and checking submitted run evidence.
 - `hosted-submission-execution-runbook.json`: public-safe runbook for the
   maintainer-hosted or fully containerized release-candidate smoke path. It is
-  not hosted execution evidence and cannot satisfy strict v1 readiness by
+  not hosted execution evidence and cannot satisfy strict v1.0-internal public-view readiness by
   itself.
 - `harbor-adapter-contract.json`: public-safe machine-readable contract for the
   Harbor-compatible adapter target. It is not Harbor execution evidence and
-  cannot satisfy strict v1 readiness by itself.
+  cannot satisfy strict v1.0-internal public-view readiness by itself.
 - `harbor-adapter-readiness-blockers.json`: public-safe blocker record for
   Harbor adapter metadata, parity, local Harbor execution, and adapter review
   evidence that do not exist yet. It is not adapter readiness or parity
-  evidence and cannot satisfy strict v1 readiness by itself.
+  evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
 - `harbor-adapter-metadata.template.json`: public-safe template for future real
   Harbor adapter metadata. It is not adapter metadata evidence, Harbor
-  execution evidence, or v1 readiness.
+  execution evidence, or v1.0-internal public-view readiness.
 - `harbor-parity-experiment.template.json`: public-safe template for future real
   Harbor parity rows. It is not parity evidence, Harbor execution evidence, or
-  v1 readiness.
+  v1.0-internal public-view readiness.
 - `task-quality-gate-contract.json`: public-safe acceptance contract for task
   quality gates enforced during public validation. It is not external review
-  evidence and cannot satisfy strict v1 readiness by itself.
+  evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
-  evidence and cannot satisfy strict v1 readiness.
+  evidence and cannot satisfy strict v1.0-internal public-view readiness.
 - `private-holdout-operation-runbook.json`: public-safe runbook for operating
   active plus shadow/candidate private packs. It is not private holdout
-  evidence and cannot satisfy strict v1 readiness by itself.
+  evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
 - `v1-paper-readiness-runbook.json`: public-safe runbook for the final v1
   report and IEEE scaffold refresh. It is not release-candidate paper
-  readiness evidence and cannot satisfy strict v1 readiness by itself.
+  readiness evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
 - `submission-runner-smoke.template.json`: public-safe release-candidate
   hosted/containerized smoke evidence template. It is not smoke evidence and
-  cannot satisfy strict v1 readiness.
+  cannot satisfy strict v1.0-internal public-view readiness.
 - `v1-task-scale-roadmap.json`: public-safe planning roadmap for the path from
   54 public tasks to at least 100 total public plus protected-private tasks. It
-  is not task-scale evidence and cannot satisfy strict v1 readiness by itself.
+  is not task-scale evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
 - `v1-release-candidate-validation.template.json`: public-safe template for
   external release evidence. It is not release evidence and cannot satisfy
-  strict v1 readiness.
+  strict v1.0-internal public-view readiness.
 - `v1-release-candidate-validation-runbook.json`: public-safe runbook for
   collecting final release-candidate validation evidence. It is not release
-  evidence and cannot satisfy strict v1 readiness by itself.
+  evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
 
 ## Public Validation
 
@@ -148,7 +148,7 @@ The tracked `artifact/submission-runner-smoke.json` file is allowed to contain a
 public-safe blocker record while the active private pack and maintainer-platform
 release smoke are not available. That blocker record is structured evidence for
 what remains missing; it is not a passing hosted/containerized submission smoke
-and the v1 readiness validator keeps the release gate red until it is replaced
+and the v1.0-internal public-view readiness validator keeps the release gate red until it is replaced
 by passed `execution_scope: release_candidate` evidence. Its public rehearsal
 reference must mark `reference_scope: prior_public_checkpoint` and include an
 AuthZBench-SaaS Actions URL and matching numeric run ID, plus workflow name
@@ -175,7 +175,7 @@ Use `artifact/private-holdout-rotation-metadata.template.json` only as a
 starting shape for the ignored maintainer-only file
 `tasks_private/holdout/rotation-metadata.json`. Replace every placeholder with
 real active and shadow/candidate pack metadata, then validate in the private
-checkout. The v1 readiness validator rejects the template if it is copied
+checkout. The v1.0-internal public-view readiness validator rejects the template if it is copied
 unchanged into the private rotation metadata path, and recursively rejects any
 unresolved placeholder left in populated metadata. The populated metadata must
 declare concrete pack versions, lowercase SHA-256 fingerprints that match each
@@ -197,7 +197,7 @@ rotation metadata can do that.
 Use `artifact/v1-task-scale-roadmap.json` as count-level planning evidence for
 the v1 scale path. It currently maps the 54 public tasks plus two 24-task
 protected-private pack waves to 102 planned total tasks. It does not contain or
-prove private manifests, and the v1 readiness validator still keeps the
+prove private manifests, and the v1.0-internal public-view readiness validator still keeps the
 `v1_task_scale` gate red until actual public plus validated private manifest
 counts reach at least 100.
 
@@ -214,7 +214,7 @@ paper-table diff, and `latexmk` commands plus concrete LaTeX result and
 
 ## Release-Candidate Evidence Template
 
-Strict v1 readiness requires release evidence supplied with:
+Strict v1.0-internal public-view readiness requires release evidence supplied with:
 
 ```bash
 python3 scripts/validate_v1_readiness.py \
@@ -238,7 +238,7 @@ release-evidence schema version, exact-head GitHub Actions URL, numeric run ID
 matching that URL, workflow name `Validate AuthZBench-SaaS`, the run's
 `headSha` matching the release commit, and non-placeholder evidence plus exit
 code `0` for every required command. Required commands include the public-view
-v1 readiness fixture check:
+v1.0-internal public-view readiness fixture check:
 
 ```bash
 python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view \

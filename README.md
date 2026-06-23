@@ -59,7 +59,7 @@ acceptance. See [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
 The current maturity label is **credible v1 internal benchmark; credible
 community-benchmark candidate pending external validation**. Do not
-paraphrase this as "externally validated", "leaderboard-grade", "Harbor
+paraphrase this as "externally validated", "hosted leaderboard operation", "Harbor
 accepted", "SOTA security benchmark", or "production vulnerability
 discovery benchmark". The canonical single-table claim ledger lives at
 [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md), and
@@ -73,7 +73,7 @@ For reviewers and evaluators, the authoritative forward-looking roadmap is the
 separates what is left to call v1 fully done, what must happen before v2
 external validation can start, and what polish is needed for presentation:
 
-- **v1-readiness gaps** — remaining v1-scope improvements with owner,
+- **roadmap gaps** — remaining v1-scope improvements with owner,
   verification, and status; preserves the `v1.0-internal` maturity label.
 - **v2 external-validation prep** — deferred tracks with dependencies and
   entry criteria; all tracks remain preparatory and gated.
@@ -87,7 +87,7 @@ external validation can start, and what polish is needed for presentation:
 | `v2` external validation | Deferred | Independent AppSec/evals/agent review, SaaS-provider scenario validation, platform review, hosted operation, and third-party submissions. | Recruit reviewers, run external lanes, record real dispositions, and update the claim ledger. |
 
 The full roadmap is maintained in [`ROADMAP.md`](ROADMAP.md), including the
-v1-readiness gaps, v2 external-validation prep, and repo-presentation polish
+roadmap gaps, v2 external-validation prep, and repo-presentation polish
 sections. Claim limits and the v2 external-validation tracks are maintained in
 [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
@@ -104,7 +104,7 @@ authorization boundaries with backend-replayable proof:
 
 ## What This Is Not
 
-- Not a hosted public leaderboard
+- Not hosted leaderboard operation
 - Not an externally reviewed or industry-standard benchmark
 - Not a Kaggle or Harbor accepted/hosted benchmark
 - Not SaaS-provider validated
@@ -141,7 +141,7 @@ release definition. It does **not** claim:
 
 - independent external review
 - SaaS-provider scenario validation
-- hosted public leaderboard readiness or operation
+- hosted leaderboard operation (not claimed, deferred to v2)
 - Harbor or Kaggle or other platform acceptance
 - third-party submissions
 - production SaaS coverage or real customer SaaS authorization coverage
@@ -594,11 +594,11 @@ v1 includes:
 
 v1 does **not** claim:
 
-v1 does not claim external review, hosted public leaderboard readiness, SaaS-provider validation, or platform acceptance.
+v1 does not claim external review, hosted leaderboard operation, SaaS-provider validation, or platform acceptance.
 
 - independent external review
 - SaaS-provider scenario validation
-- hosted public leaderboard readiness
+- hosted leaderboard operation
 - Harbor/Kaggle/platform acceptance
 - third-party submissions
 
@@ -651,7 +651,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 ## Limitations
 
 1. The target apps are synthetic.
-2. The public split is inspectable and not leaderboard-grade by itself.
+2. The public split is inspectable and supports local row eligibility and leaderboard-candidate rows, not hosted leaderboard operation.
 3. Private holdouts are maintainer-controlled, not platform-governed.
 4. Baselines must be current to support comparisons; the n=2 repeated
    95% CIs are a coarse ordering signal, not a hard bound.

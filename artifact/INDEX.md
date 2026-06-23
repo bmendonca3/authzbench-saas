@@ -8,7 +8,7 @@ quick-reference for reviewers; the long-form descriptions stay in
 | --- | --- | --- | --- | --- |
 | `v1-release-candidate-validation.json` | v1 release-candidate evidence pinned to the CI-validated commit and active private pack fingerprint | current | internal/non-external v1 release-candidate | external acceptance |
 | `v1-readiness-public-view.json` (under `expected-output/`) | public-view v1 readiness fixture (`v1_ready: true` is internal/public-view only) | current | internal/public-view readiness gates | external acceptance |
-| `baseline-variance-summary.json` | per-cohort mean / std_dev / 95% CI / per-task agreement for every registry entry | current | n=2 repeated-run variance signal | leaderboard-grade public comparison |
+| `baseline-variance-summary.json` | per-cohort mean / std_dev / 95% CI / per-task agreement for every registry entry | current | n=2 repeated-run variance signal | hosted leaderboard operation public comparison |
 | `task-oracle-audit.json` | per-task oracle / boundary / control-mix audit + risk flags | current | schema gate, completeness audit | human realism review |
 | `task-taxonomy.json` | per-task vulnerability class / boundary type / control type / route pattern / difficulty classification | current | diversity visibility, gap spotting | semantic accuracy of each label |
 | `harbor-adapter-smoke.json` | local Harbor adapter smoke evidence | current | local adapter works on a small public set | Harbor platform acceptance |
