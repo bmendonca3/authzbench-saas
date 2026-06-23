@@ -19,7 +19,7 @@ Counted reviewers:
 
 - Gemini 3.5 Flash (High), verified from the panel log.
 - Gemini 3.1 Pro (High), verified from the panel log.
-- ChatGPT reviewer, run as a separate scoped reviewer.
+- panel reviewer, run as a separate scoped reviewer.
 
 Unavailable or limited reviewers:
 
@@ -53,7 +53,7 @@ pushes to `main`, pull requests, and manual dispatch. Permissions are limited to
 
 ### Accepted: local workflow test should assert triggers
 
-The ChatGPT reviewer noted that the first version of `tests/test_ci_workflow.py`
+The panel reviewer noted that the first version of `tests/test_ci_workflow.py`
 checked the validation command and permissions but did not guard the trigger
 set.
 

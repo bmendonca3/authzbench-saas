@@ -10,8 +10,8 @@ committed.
 
 ## Reviewers
 
-- Parent/ChatGPT reviewer: local file and validation review.
-- ChatGPT subagent reviewer: read-only public-safe file review.
+- panel reviewer: local file and validation review.
+- read-only reviewer: read-only public-safe file review.
 - Kiro `claude-opus-4.8`: read-only review using `fs_read` only.
 
 ## Accepted Findings

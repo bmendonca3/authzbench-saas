@@ -12,7 +12,7 @@ baseline-registry tests.
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
 - Kiro `claude-opus-4.8`, verified against the local Kiro model catalog and
   command log
-- Parent ChatGPT synthesis
+- panel synthesis
 
 Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels propagated in logs but
 did not return substantive review output, so they are not counted.

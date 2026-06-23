@@ -8,7 +8,7 @@ evidence as first-class proof while preserving legacy actor-compatible replay?
 ## Review Scope
 
 This was a bounded parent/direct sectional review. The live agent pool was at
-its thread limit, so no additional subagent reviewer was spawned for this
+its thread limit, so no additional reviewer was spawned for this
 section. The review used direct code inspection plus targeted and full
 validation commands.
 

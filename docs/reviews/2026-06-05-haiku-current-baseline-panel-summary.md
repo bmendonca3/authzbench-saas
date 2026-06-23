@@ -11,8 +11,8 @@ split.
 
 - Gemini 3.5 Flash (High): verified Antigravity label; usable findings.
 - Gemini 3.1 Pro (High): verified Antigravity label; usable findings.
-- Parent ChatGPT review: used as the ChatGPT reviewer for final synthesis
-  because the session had already reached the live subagent thread limit.
+- panel review: used as the panel reviewer for final synthesis
+  because the session had already reached the live reviewer thread limit.
 
 Claude Sonnet 4.6 and Claude Opus 4.6 labels were verified in the panel logs,
 but they produced no usable review text for this run, so they are not counted as

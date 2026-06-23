@@ -17,7 +17,7 @@ The reviewed section adds:
 
 - Gemini 3.5 Flash (High): verified by Antigravity log
 - Gemini 3.1 Pro (High): verified by Antigravity log
-- ChatGPT reviewer: subagent review with local read-only inspection
+- panel reviewer: read-only local inspection
 
 Kiro `claude-opus-4.8` was attempted after preflight passed, but the run hung and
 was stopped. It is not counted for this section.

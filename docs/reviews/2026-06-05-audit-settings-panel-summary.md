@@ -30,7 +30,7 @@ current repo honestly labeled alpha/pre-v0.
 - Claude Sonnet 4.6 (Thinking), verified from panel log model evidence.
 - Claude Opus 4.6 (Thinking), verified from panel log model evidence.
 - Kiro CLI `claude-opus-4.8`, verified from the live model catalog and output.
-- ChatGPT reviewer subagent, read-only review.
+- panel reviewer, read-only review.
 
 Raw model logs were written under ignored `docs/reviews/panel-logs/`.
 

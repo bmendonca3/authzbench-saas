@@ -27,7 +27,7 @@ This does not make the whole benchmark v0-ready.
   review output, so it is not counted for substantive findings.
 - Claude Opus 4.6 (Thinking): label verified, but the run produced an empty
   review output, so it is not counted for substantive findings.
-- ChatGPT reviewer: parent-review fallback.
+- panel reviewer: parent-review fallback.
 
 Raw panel logs are intentionally untracked under `docs/reviews/panel-logs/`.
 

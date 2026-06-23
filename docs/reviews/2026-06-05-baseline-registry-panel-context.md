@@ -55,7 +55,7 @@ readiness?
 
 ## Independent Audit Disposition
 
-An independent ChatGPT subagent reviewed the uncommitted baseline credibility
+An internal read-only reviewer reviewed the uncommitted baseline credibility
 slice and found four actionable issues.
 
 Accepted and fixed:

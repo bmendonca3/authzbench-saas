@@ -10,7 +10,7 @@ targeted tests, and README/docs references.
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
 - Kiro CLI `claude-opus-4.8`, verified by live model catalog and Kiro output
-- Parent ChatGPT reviewer
+- panel reviewer
 
 Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels were verified by logs
 but did not return substantive review text for this checkpoint, so they are not

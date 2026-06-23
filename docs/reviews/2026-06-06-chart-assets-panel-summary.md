@@ -9,7 +9,7 @@ Scope: generated public-safe benchmark charts under
 
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
-- ChatGPT subagent reviewer
+- read-only reviewer
 
 Claude Antigravity labels were verified by logs but did not return substantive
 review text for this checkpoint. Kiro was intentionally skipped because the

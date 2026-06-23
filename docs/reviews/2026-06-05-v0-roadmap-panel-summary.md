@@ -13,7 +13,7 @@ at alpha/pre-v0.
 | Claude Sonnet 4.6 (Thinking) | verified label; no usable final findings returned in captured output |
 | Claude Opus 4.6 (Thinking) | verified by parent from local panel log |
 | Kiro `claude-opus-4.8` | verified by model catalog and captured output |
-| ChatGPT reviewer | verified |
+| panel reviewer | verified |
 
 Local evidence filenames, not committed because raw panel logs can contain local
 account metadata:

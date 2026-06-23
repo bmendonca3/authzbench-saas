@@ -20,7 +20,7 @@ Verified reviewer outputs:
 
 - Gemini 3.5 Flash (High)
 - Gemini 3.1 Pro (High)
-- ChatGPT reviewer
+- panel reviewer
 
 Unavailable or limited reviewers:
 
