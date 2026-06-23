@@ -48,8 +48,9 @@ Do not describe this as:
 - passing private hosted execution;
 - `v1-ready` evidence in the external sense.
 
-`v1_ready: true` in `artifact/expected-output/v1-readiness-public-view.json`
-is scoped to the internal/public-view readiness gates only. It does not
+The current public-view readiness fixture reports `v1_ready: false` with
+1 unmet gate in `artifact/expected-output/v1-readiness-public-view.json`.
+This is scoped to the internal/public-view readiness gates only and does not
 assert Harbor acceptance or any other external validation. See
 [`claims-and-evidence.md`](claims-and-evidence.md).
 

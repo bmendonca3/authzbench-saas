@@ -17,10 +17,10 @@ AuthZBench-SaaS evaluates whether AI agents can prove SaaS authorization failure
 ## Current Candidate State
 
 * **Public target apps**: 6 synthetic SaaS applications.
-* **Public tasks**: 60 total, with 24 vulnerable tasks and 36 secure controls.
+* **Public tasks**: 63 total, with 27 vulnerable tasks and 36 secure controls.
 * **Secure controls**: 21 denial controls and 15 authorized-allow controls.
 * **Maintainer-private holdout summaries**: 48 tasks summarized publicly, raw private holdouts excluded from public Git.
-* **Public + private task scale**: 108 tasks.
+* **Public + private task scale**: 111 tasks.
 * **Final host-review candidate commit**: use the final PR/merge commit and its passing GitHub Actions run before sending a package to a host. The exact reviewed commit and CI run are recorded in [Host Status & Reproducibility Matrix](host-status-and-reproducibility.md).
 
 ### Validation Levels

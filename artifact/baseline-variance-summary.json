@@ -1,9 +1,192 @@
 {
   "cohorts": {
-    "current-model": {
-      "capability_baseline": true,
-      "cohort": "current-model",
+    "scripted-sanity": {
+      "capability_baseline": false,
+      "cohort": "scripted-sanity",
       "entries": [
+        {
+          "harness_type": "scripted",
+          "id": "scripted-sanity-public-63",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 36.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 27.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 27.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 27.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_harness_check",
+          "run_count": 1,
+          "summary_path": "scripted-baseline-public-63-summary.json"
+        }
+      ],
+      "entry_count": 1
+    },
+    "stale": {
+      "capability_baseline": false,
+      "cohort": "stale",
+      "entries": [
+        {
+          "harness_type": "scripted",
+          "id": "scripted-sanity-public-60",
+          "kind": "harness_check",
+          "metric_variance": {
+            "boundary_reasoning_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_execution_pass_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "control_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 36.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_success_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 1.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "exploit_proven_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 24.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "false_positive_rate": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 0.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_full_pass_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 24.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            },
+            "vulnerable_task_count": {
+              "ci95_half_width": null,
+              "ci95_high": null,
+              "ci95_low": null,
+              "mean": 24.0,
+              "small_n_warning": "n=1: variance undefined",
+              "std_dev": null,
+              "std_error": null
+            }
+          },
+          "model_family": null,
+          "per_task_agreement": {
+            "agreement_rate": null,
+            "changed_verdict_count": 0,
+            "task_count": 0
+          },
+          "release_suitability": "current_public_stale",
+          "run_count": 1,
+          "summary_path": "scripted-baseline-public-60-summary.json"
+        },
         {
           "harness_type": "no-tools-model",
           "id": "kiro-qwen3-coder-next-current-public-60",
@@ -88,7 +271,7 @@
             "changed_verdict_count": 1,
             "task_count": 60
           },
-          "release_suitability": "current_public_split",
+          "release_suitability": "current_public_stale",
           "run_count": 2,
           "summary_path": "kiro-qwen3-coder-next-current-public-60-run1-summary.json"
         },
@@ -176,7 +359,7 @@
             "changed_verdict_count": 0,
             "task_count": 60
           },
-          "release_suitability": "current_public_split",
+          "release_suitability": "current_public_stale",
           "run_count": 2,
           "summary_path": "kiro-claude-haiku-4.5-current-public-60-run1-summary.json"
         },
@@ -264,7 +447,7 @@
             "changed_verdict_count": 2,
             "task_count": 60
           },
-          "release_suitability": "current_public_split",
+          "release_suitability": "current_public_stale",
           "run_count": 2,
           "summary_path": "kiro-claude-sonnet-4.6-current-public-60-run1-summary.json"
         },
@@ -352,7 +535,7 @@
             "changed_verdict_count": 0,
             "task_count": 60
           },
-          "release_suitability": "current_public_split",
+          "release_suitability": "current_public_stale",
           "run_count": 2,
           "summary_path": "kiro-glm-5-current-public-60-run1-summary.json"
         },
@@ -440,17 +623,10 @@
             "changed_verdict_count": 0,
             "task_count": 60
           },
-          "release_suitability": "current_public_split",
+          "release_suitability": "current_public_stale",
           "run_count": 2,
           "summary_path": "kiro-claude-opus-4.6-current-public-60-run1-summary.json"
-        }
-      ],
-      "entry_count": 5
-    },
-    "current-tool-agent": {
-      "capability_baseline": true,
-      "cohort": "current-tool-agent",
-      "entries": [
+        },
         {
           "harness_type": "tool-agent",
           "id": "kiro-live-tool-agent-sonnet-current-public-60",
@@ -535,112 +711,10 @@
             "changed_verdict_count": 0,
             "task_count": 60
           },
-          "release_suitability": "current_public_split",
+          "release_suitability": "current_public_stale",
           "run_count": 2,
           "summary_path": "kiro-live-tool-agent-sonnet-current-public-60-run1-summary.json"
-        }
-      ],
-      "entry_count": 1
-    },
-    "scripted-sanity": {
-      "capability_baseline": false,
-      "cohort": "scripted-sanity",
-      "entries": [
-        {
-          "harness_type": "scripted",
-          "id": "scripted-sanity-public-60",
-          "kind": "harness_check",
-          "metric_variance": {
-            "boundary_reasoning_pass_rate": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 1.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            },
-            "control_execution_pass_rate": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 1.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            },
-            "control_task_count": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 36.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            },
-            "exploit_proven_success_rate": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 1.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            },
-            "exploit_proven_task_count": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 24.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            },
-            "false_positive_rate": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 0.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            },
-            "vulnerable_full_pass_count": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 24.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            },
-            "vulnerable_task_count": {
-              "ci95_half_width": null,
-              "ci95_high": null,
-              "ci95_low": null,
-              "mean": 24.0,
-              "small_n_warning": "n=1: variance undefined",
-              "std_dev": null,
-              "std_error": null
-            }
-          },
-          "model_family": null,
-          "per_task_agreement": {
-            "agreement_rate": null,
-            "changed_verdict_count": 0,
-            "task_count": 0
-          },
-          "release_suitability": "current_public_harness_check",
-          "run_count": 1,
-          "summary_path": "scripted-baseline-public-60-summary.json"
-        }
-      ],
-      "entry_count": 1
-    },
-    "stale": {
-      "capability_baseline": false,
-      "cohort": "stale",
-      "entries": [
+        },
         {
           "harness_type": "scripted",
           "id": "scripted-sanity-public-54",
@@ -3210,16 +3284,19 @@
           "summary_path": "kiro-live-tool-agent-sonnet-current-public-44-summary.json"
         }
       ],
-      "entry_count": 30
+      "entry_count": 37
     }
   },
-  "issues": [],
+  "issues": [
+    "missing required current-model cohort for --require-current-public",
+    "missing required current-tool-agent cohort for --require-current-public"
+  ],
   "registry_path": "baselines/baseline-registry.json",
   "schema_version": "baseline-variance-v1",
   "summary": {
-    "current_model_entries": 5,
-    "current_tool_agent_entries": 1,
+    "current_model_entries": 0,
+    "current_tool_agent_entries": 0,
     "scripted_sanity_entries": 1,
-    "stale_entries": 30
+    "stale_entries": 37
   }
 }

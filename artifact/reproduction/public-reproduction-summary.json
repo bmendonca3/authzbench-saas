@@ -1,6 +1,6 @@
 {
-  "overall_passed": true,
-  "passed_step_count": 7,
+  "overall_passed": false,
+  "passed_step_count": 6,
   "root": ".",
   "schema_version": "public-reproduction-v1",
   "step_count": 7,
@@ -9,17 +9,18 @@
       "command": [
         "python3",
         "scripts/validate_v1_readiness.py",
+        "--allow-incomplete",
         "--public-view",
         "--expected-output",
         "artifact/expected-output/v1-readiness-public-view.json"
       ],
       "description": "Public-view v1 readiness fixture match",
-      "elapsed_seconds": 0.276,
+      "elapsed_seconds": 0.362,
       "id": "v1_readiness",
       "passed": true,
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "      ],\n      \"id\": \"paper_and_artifact_readiness\",\n      \"passed\": true,\n      \"unmet\": []\n    },\n    {\n      \"evidence\": [\n        \"artifact/v1-release-candidate-validation.json\",\n        \"artifact/v1-release-candidate-validation-runbook.json\"\n      ],\n      \"id\": \"final_release_candidate_validation\",\n      \"passed\": true,\n      \"unmet\": []\n    }\n  ],\n  \"passed\": true,\n  \"passed_gate_count\": 10,\n  \"unmet_gate_count\": 0,\n  \"v1_ready\": true\n}"
+      "stdout_tail": "      \"passed\": false,\n      \"unmet\": [\n        \"release-affecting files changed after benchmark_source_sha: artifact/README.md, artifact/docs-alignment-stale-wording-inventory.md, docs/checkpoints/2026-06-08-v1-readiness-hardening-history.md, docs/reviews/2026-06-05-api-tokens-panel-summary.md, docs/reviews/2026-06-05-audit-settings-panel-summary.md, docs/reviews/2026-06-05-baseline-registry-panel-context.md, docs/reviews/2026-06-05-baseline-registry-panel-summary.md, docs/reviews/2026-06-05-bearer-replay-panel-summary.md, docs/reviews/2026-06-05-benchmark-improvement-panel-summary.md, docs/reviews/2026-06-05-ci-validation-panel-summary.md\"\n      ]\n    },\n    {\n      \"evidence\": [\n        \"artifact/v1-release-candidate-validation.json\",\n        \"artifact/v1-release-candidate-validation-runbook.json\"\n      ],\n      \"id\": \"final_release_candidate_validation\",\n      \"passed\": true,\n      \"unmet\": []\n    }\n  ],\n  \"passed\": false,\n  \"passed_gate_count\": 9,\n  \"unmet_gate_count\": 1,\n  \"v1_ready\": false\n}"
     },
     {
       "command": [
@@ -27,7 +28,7 @@
         "scripts/check_claim_boundary.py"
       ],
       "description": "Claim-boundary forbidden-phrase CI check",
-      "elapsed_seconds": 0.518,
+      "elapsed_seconds": 0.597,
       "id": "claim_boundary",
       "passed": true,
       "returncode": 0,
@@ -41,12 +42,12 @@
         "--check"
       ],
       "description": "Task oracle audit (schema gate)",
-      "elapsed_seconds": 0.047,
+      "elapsed_seconds": 0.045,
       "id": "task_oracle_audit",
       "passed": true,
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "task oracle audit: wrote artifact/task-oracle-audit.json and docs/task-oracle-audit.md; total=60"
+      "stdout_tail": "task oracle audit: wrote artifact/task-oracle-audit.json and docs/task-oracle-audit.md; total=63"
     },
     {
       "command": [
@@ -54,12 +55,12 @@
         "scripts/generate_task_taxonomy.py"
       ],
       "description": "Task taxonomy report",
-      "elapsed_seconds": 0.051,
+      "elapsed_seconds": 0.046,
       "id": "task_taxonomy",
       "passed": true,
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "task taxonomy: wrote artifact/task-taxonomy.json and docs/task-taxonomy.md; total=60"
+      "stdout_tail": "task taxonomy: wrote artifact/task-taxonomy.json and docs/task-taxonomy.md; total=63"
     },
     {
       "command": [
@@ -68,12 +69,12 @@
         "--require-current-public"
       ],
       "description": "Baseline variance and confidence",
-      "elapsed_seconds": 0.065,
+      "elapsed_seconds": 0.068,
       "id": "baseline_variance",
-      "passed": true,
-      "returncode": 0,
-      "stderr_tail": "",
-      "stdout_tail": "baseline variance: wrote artifact/baseline-variance-summary.json and docs/baseline-variance-analysis.md; cohorts=['scripted-sanity', 'current-model', 'current-tool-agent', 'stale']"
+      "passed": false,
+      "returncode": 1,
+      "stderr_tail": "baseline variance: FAILED\n  - missing required current-model cohort for --require-current-public\n  - missing required current-tool-agent cohort for --require-current-public",
+      "stdout_tail": ""
     },
     {
       "command": [
@@ -84,12 +85,12 @@
         "-q"
       ],
       "description": "Harbor non-claim test",
-      "elapsed_seconds": 0.338,
+      "elapsed_seconds": 0.361,
       "id": "harbor_claim_boundary",
       "passed": true,
       "returncode": 0,
       "stderr_tail": "",
-      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.08s"
+      "stdout_tail": "..                                                                       [100%]\n2 passed in 0.09s"
     },
     {
       "command": [
@@ -102,7 +103,7 @@
         "-q"
       ],
       "description": "Adversarial scorer test count (objective-3 reachability gate)",
-      "elapsed_seconds": 0.233,
+      "elapsed_seconds": 0.229,
       "id": "scorer_adversarial",
       "passed": true,
       "returncode": 0,
