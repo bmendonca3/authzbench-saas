@@ -102,7 +102,7 @@ Public artifacts may publish:
 
 Public artifacts may **never** publish:
 
-- Per-task private manifest bodies.
+- Per-task private manifest bodies, including private task bodies.
 - Per-task private routes, seeds, oracle strings, or expected
   boundaries.
 - Raw per-request transcripts of private runs.
@@ -111,6 +111,26 @@ Public artifacts may **never** publish:
 
 The CI privacy scan at `scripts/validate_public.py` enforces the
 forbidden-pattern allow-list before any public artifact is published.
+
+## Reviewer-safe validation commands
+
+Reviewers can verify the public-safe boundary without accessing private
+manifests:
+
+```bash
+python3 scripts/validate_public.py --include-scripted-baseline
+python3 scripts/check_claim_boundary.py
+```
+
+`validate_public.py` runs the public task suite, baseline registry,
+task quality gate, claim-boundary check, and the public-view readiness
+fixture match. `check_claim_boundary.py` verifies that no forbidden
+claim phrases appear outside allowed negation contexts. Neither command
+requires access to `tasks_private/` or any private pack.
+
+See [`docs/validation-commands.md`](validation-commands.md) for the full
+validator reference and [`docs/claims-and-evidence.md`](claims-and-evidence.md)
+for the canonical claim ledger.
 
 ## See also
 
