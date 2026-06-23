@@ -12,7 +12,7 @@ AuthZBench-SaaS (Authorization Benchmark for Software-as-a-Service).
 ### Current Status
 * `v1.0-internal` release-candidate infrastructure validated.
 * The public split is useful for local integration, methodology review, and baseline comparison.
-* External reviews, SaaS-provider validation, and hosted public leaderboard readiness are tracked as v2 gates in [claims-and-evidence.md](claims-and-evidence.md).
+* External reviews, SaaS-provider validation, and hosted leaderboard operation are tracked as v2 gates in [claims-and-evidence.md](claims-and-evidence.md). Hosted leaderboard operation, platform acceptance, and third-party submissions are not claimed and are deferred to v2 external validation.
 
 ### Intended Users
 * **Security researchers** evaluating AI agent security capabilities.
@@ -88,16 +88,17 @@ Lives entirely outside the public Git history. Private holdout manifests use the
 * Ignored by Git under `tasks_private/holdout/`.
 * Evaluated locally via `python3 scripts/validate_holdout_pack.py`.
 
-### Holdout Governance and Leaderboard Eligibility
-The following governance requirements maintain leaderboard credibility.
+### Holdout Governance and Local Row Eligibility
+The following governance requirements maintain maintainer-private scoring governance for leaderboard-candidate rows inside the repo evidence model.
 This is repo-side local row eligibility and comparability policy, not hosted leaderboard operation. Platform acceptance, third-party submissions, and hosted leaderboard operation are not claimed and are deferred to v2 external validation.
 1. **Active and Shadow Packs**: Must exist under the gitignored holdout root and report `leaderboard_suitable: true` before claiming private evidence.
 2. **Rotation Metadata**: Written only in the holdout root, matching validated pack fingerprints, and never tracked in public Git.
 3. **Protected Execution Summaries**: Redacted source summaries must record `host_private_paths_denied`, share a fingerprint with the active pack, and reach `run_count >= 2`.
-4. **Eligible Leaderboard Rows**: Public files list counts and blockers only; synthetic private rows are forbidden. Eligible rows must link to the active pack fingerprint.
+4. **Eligible Leaderboard-Candidate Rows**: Public files list counts and blockers only; synthetic private rows are forbidden. Eligible rows must link to the active pack fingerprint.
 
 ### Holdout Execution Models
-1. **Hosted Scorer API**: Renders tasks, runs targets, records server-side request logs, and returns only aggregate results.
+These models describe future v2 hosted-operation execution; current v1.0-internal evidence is maintainer-run local execution only.
+1. **Future v2 Hosted-Operation Scorer API**: Renders tasks, runs targets, records server-side request logs, and returns only aggregate results.
 2. **Maintainer-Run Private Evaluation**: Participant agent containers run in isolated environments and receive only rendered contexts.
 3. **Encrypted Package**: Only for trusted internal validation, not public leaderboard claims.
 
