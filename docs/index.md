@@ -7,6 +7,10 @@ Welcome to the AuthZBench-SaaS documentation. This index maps all public-safe do
 ## 🔍 I am a Host Reviewer / Evaluator
 If you are evaluating AuthZBench-SaaS for a Kaggle or Kaggle-like evaluation pilot, start with these host-facing resources:
 * **[Reviewer Roadmap (ROADMAP.md)](../ROADMAP.md)**: The authoritative forward-looking roadmap. See the **Reviewer Roadmap At A Glance** section for v1-readiness gaps (owner/verification/status), v2 external-validation prep tracks (dependencies + entry criteria), and repo-presentation polish.
+* **[Reviewer Walkthrough](reviewer-walkthrough.md)**: Step-by-step reviewer guide covering public-view readiness fixture match (`--allow-incomplete`), validation levels, and claim boundaries.
+* **[v1.0-internal Release Note](releases/v1.0-internal.md)**: Current internal release-candidate state, task scale, and what is not claimed.
+* **[Claims and Evidence](claims-and-evidence.md)**: Canonical claim ledger, evidence matrix, and v2 deferred validation tracks.
+* **[Validation Commands](validation-commands.md)**: Public, host, Docker, and maintainer-only validation commands with failure guidance.
 * **[Host Review Package](host/host-review-package.md)**: The central entrypoint for the host packet, questions, and scopes.
 * **[Host Status & Reproducibility Matrix](host/host-status-and-reproducibility.md)**: Live status, reproducibility matrix, and versioning.
 * **[Hosting Model Options](host/hosting-model.md)**: Decisions on data custody, metric details, solution-file contracts, and display policies.
@@ -22,6 +26,7 @@ If you are running evaluations, reviewing code, or adding new tasks to the bench
 * **[Benchmark Specification](benchmark-spec.md)**: Benchmark design, evaluation split, and claim boundaries.
 * **[Task Quality Rubric](task-quality-rubric.md)**: Guidelines for writing new vulnerable and secure control tasks.
 * **[Scoring & Submissions Guide](scoring-and-submissions.md)**: Replay-based scoring mechanics, submission schema, and anti-gaming policy.
+* **[Baseline Credibility](baseline-credibility.md)**: Baseline registry labels, current scripted sanity interpretation, and stale/historical baseline guidance.
 * **[Harbor Integration Runbook](harbor-integration-runbook.md)**: Scaffolding, parity validator, and CLI commands for Harbor adapters.
 * **[v1 Readiness Checklist](v1-readiness-checklist.md)**: The release checklist and preflight gates for v1.
 * **[Validation Commands](validation-commands.md)**: Guide to running public, maintainer, and privacy checks.
