@@ -561,6 +561,36 @@
         "denial_control"
       ],
       "difficulty": [
+        "multi_step_discovery",
+        "token_scope_reasoning"
+      ],
+      "expected_vulnerable": true,
+      "id": "bill_bfla_member_disables_export_entitlement_discovery",
+      "manifest_path": "tasks/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
+      "route_patterns": [
+        "admin_route",
+        "export_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass",
+        "token_scope_bypass",
+        "entitlement_bypass",
+        "audit_admin_exposure"
+      ]
+    },
+    {
+      "app": "billing",
+      "boundary_types": [
+        "org",
+        "role",
+        "plan_entitlement"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
         "token_scope_reasoning"
       ],
       "expected_vulnerable": true,
@@ -953,6 +983,28 @@
       ]
     },
     {
+      "app": "file_sharing",
+      "boundary_types": [
+        "team"
+      ],
+      "control_types": [
+        "denial_control"
+      ],
+      "difficulty": [
+        "multi_step_discovery"
+      ],
+      "expected_vulnerable": true,
+      "id": "fs_team_membership_cross_workspace_discovery",
+      "manifest_path": "tasks/file_sharing/fs_team_membership_cross_workspace_discovery.json",
+      "route_patterns": [
+        "direct_object_id"
+      ],
+      "vulnerability_classes": [
+        "cross_tenant_read",
+        "role_bypass"
+      ]
+    },
+    {
       "app": "project_mgmt",
       "boundary_types": [
         "tenant",
@@ -1247,6 +1299,30 @@
     {
       "app": "support",
       "boundary_types": [
+        "org",
+        "team"
+      ],
+      "control_types": [
+        "authorized_allow_control",
+        "denial_control"
+      ],
+      "difficulty": [
+        "multi_step_discovery"
+      ],
+      "expected_vulnerable": true,
+      "id": "sup_bfla_viewer_updates_assigned_ticket_status_discovery",
+      "manifest_path": "tasks/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
+      "route_patterns": [
+        "admin_route"
+      ],
+      "vulnerability_classes": [
+        "BFLA",
+        "role_bypass"
+      ]
+    },
+    {
+      "app": "support",
+      "boundary_types": [
         "org"
       ],
       "control_types": [
@@ -1444,18 +1520,18 @@
       "unclassified_or_other": 1
     },
     "billing": {
-      "BFLA": 5,
-      "audit_admin_exposure": 5,
+      "BFLA": 6,
+      "audit_admin_exposure": 6,
       "cross_tenant_read": 3,
-      "entitlement_bypass": 11,
-      "role_bypass": 11,
-      "token_scope_bypass": 5
+      "entitlement_bypass": 12,
+      "role_bypass": 12,
+      "token_scope_bypass": 6
     },
     "file_sharing": {
       "BFLA": 1,
       "BOLA": 1,
-      "cross_tenant_read": 2,
-      "role_bypass": 8,
+      "cross_tenant_read": 3,
+      "role_bypass": 9,
       "stale_share_link": 4
     },
     "project_mgmt": {
@@ -1468,11 +1544,11 @@
       "unclassified_or_other": 2
     },
     "support": {
-      "BFLA": 3,
+      "BFLA": 4,
       "BOLA": 1,
       "cross_tenant_read": 4,
       "reassignment_abuse": 4,
-      "role_bypass": 4,
+      "role_bypass": 5,
       "token_scope_bypass": 1,
       "unclassified_or_other": 1
     }
@@ -1480,51 +1556,52 @@
   "schema_version": "task-taxonomy-v1",
   "summary": {
     "boundary_type_counts": {
-      "org": 33,
-      "plan_entitlement": 11,
+      "org": 35,
+      "plan_entitlement": 12,
       "project": 9,
-      "role": 11,
+      "role": 12,
       "share_link": 4,
+      "team": 2,
       "tenant": 13,
       "token": 10,
       "user": 2
     },
     "control_type_counts": {
       "alias_route": 6,
-      "authorized_allow_control": 14,
+      "authorized_allow_control": 16,
       "decoy_endpoint": 7,
-      "denial_control": 54,
+      "denial_control": 57,
       "vulnerable_proof": 4
     },
     "difficulty_counts": {
       "false_positive_trap_heavy": 7,
-      "multi_step_discovery": 3,
+      "multi_step_discovery": 6,
       "single_step_obvious": 30,
       "single_step_with_decoy": 7,
       "state_changing": 9,
-      "token_scope_reasoning": 15
+      "token_scope_reasoning": 16
     },
     "route_pattern_counts": {
-      "admin_route": 28,
+      "admin_route": 30,
       "alias_route": 11,
-      "direct_object_id": 9,
-      "export_route": 14,
+      "direct_object_id": 10,
+      "export_route": 15,
       "mutation_route": 9,
       "nested_project_object": 9,
       "token_auth_route": 10
     },
-    "task_count": 60,
+    "task_count": 63,
     "vulnerability_class_counts": {
-      "BFLA": 11,
+      "BFLA": 13,
       "BOLA": 6,
-      "audit_admin_exposure": 17,
-      "cross_tenant_read": 21,
+      "audit_admin_exposure": 18,
+      "cross_tenant_read": 22,
       "cross_tenant_write": 1,
-      "entitlement_bypass": 11,
+      "entitlement_bypass": 12,
       "reassignment_abuse": 4,
-      "role_bypass": 32,
+      "role_bypass": 35,
       "stale_share_link": 4,
-      "token_scope_bypass": 21,
+      "token_scope_bypass": 22,
       "unclassified_or_other": 4
     }
   },
