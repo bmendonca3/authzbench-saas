@@ -108,7 +108,7 @@ python3 scripts/generate_task_quality_matrix.py
 ## Current Interpretation
 
 The matrix supports the claim that the public scaffold is reviewable and
-structured across multiple SaaS authorization families. It does not make
-the benchmark leaderboard-ready by itself. The main remaining evidence
-gap is still current repeated baseline breadth, plus more workflow-real
-tasks before a v1-grade release claim.
+structured across multiple SaaS authorization families. It supports the
+v1.0-internal internal/public-view packaging and is not external validation.
+Current repeated baseline breadth and more workflow-real
+task expansion remain a roadmap gap, not a blocker to the v1.0-internal label.
