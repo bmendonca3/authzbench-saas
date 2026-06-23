@@ -167,21 +167,23 @@ HTTP tool-agent behavior changes.
 
 ## Release Evidence Validation
 
-The default `python3 scripts/validate_v1_readiness.py` invocation is an
-internal preflight only: it runs the ten internal gates and reports
-`v1_ready: false` until the strict release-evidence gate is supplied.
-True v1 readiness requires the tracked validator to be run with the
-external release evidence file, kept outside public Git per the
-completion gate in [`docs/goal.md`](goal.md):
+The public-view readiness fixture is checked with the public-safe
+validator invocation:
 
 ```bash
-python3 scripts/validate_v1_readiness.py --release-evidence docs/release-evidence.json
+python3 scripts/validate_v1_readiness.py \
+  --allow-incomplete \
+  --public-view \
+  --expected-output artifact/expected-output/v1-readiness-public-view.json
 ```
 
-Without `--release-evidence`, the `final_release_candidate_validation`
-gate fails closed with `v1_ready: false`. Do not infer or synthesize
-external release evidence from public artifacts; the validator already
-fails closed with a reviewer-readable diagnostic in that case.
+`--allow-incomplete` returns 0 when the rendered output matches the
+expected fixture match, even if `v1_ready` is false under honest
+post-cleanup evidence. The current fixture reports `v1_ready: false`
+with 1 unmet gate. This does not infer external release evidence from
+public artifacts; external release evidence is a v2/release-time gate
+kept outside public Git per the completion gate in
+[`docs/goal.md`](goal.md).
 
 For a one-line reviewer-readable summary of the headline verdict, add
 `--summary` (default invocation is silent on stderr so test contracts
@@ -218,7 +220,7 @@ or local work that the maintainer controls.
 
 - [x] 63 public tasks. Evidence: `tasks/*/*.json`; `artifact/expected-output/v1-readiness-public-view.json` shows `public_task_count=63`.
 - [x] 48 private holdout tasks by protected evidence. Evidence: `tasks_private/holdout/`; `artifact/v1-task-scale-roadmap.json` shows `current_validated_private_holdout_task_count=48`.
-- [x] Deterministic scorer. Evidence: `authzbench/score.py`; `tests/test_scorer_adversarial_submissions.py` (17/17).
+- [x] Deterministic scorer. Evidence: `authzbench/score.py`; `tests/test_scorer_adversarial_submissions.py` (19/19).
 - [x] Public validation. Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`; CI step in `.github/workflows/validate.yml`.
 - [x] Private artifact exclusion. Evidence: `scripts/redact_protected_private.py`; `docs/private-holdout-lifecycle.md`.
 - [x] Claim boundary docs. Evidence: `docs/claims-and-evidence.md`; `docs/benchmark-spec.md`; `scripts/check_claim_boundary.py`.
@@ -229,7 +231,7 @@ or local work that the maintainer controls.
 - [ ] Current 63-task public model and tool-agent capability baselines. Evidence: the prior `baselines/kiro-*-current-public-60-run{1,2}-summary.json` rows are retained as `current_public_stale`; `current_public_model_family_count=0` until six-family no-tools reruns and the live HTTP tool-agent rerun are refreshed for 63 tasks. A promoted-composite refresh is acceptable only when each row is labeled `baseline_construction=promoted_cohort_delta_merge`, preserves base and delta summary provenance, sets `not_full_rerun=true`, and avoids "fresh full rerun" wording.
 - [x] Task taxonomy generated. Evidence: `docs/task-taxonomy.md`; `artifact/task-taxonomy.json`.
 - [x] Oracle audit generated. Evidence: `docs/task-oracle-audit.md`; `artifact/task-oracle-audit.json`.
-- [x] Adversarial scorer tests added. Evidence: `tests/test_scorer_adversarial_submissions.py` (17/17).
+- [x] Adversarial scorer tests added. Evidence: `tests/test_scorer_adversarial_submissions.py` (19/19).
 
 ### Community benchmark candidate
 
