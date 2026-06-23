@@ -58,6 +58,22 @@ are complete for the public package. The remaining Harbor-specific blockers are
 platform review, publishing, organization sharing, and any host-specific
 packaging requirements.
 
+### Harbor status table
+
+| Level | Status | Evidence |
+| --- | --- | --- |
+| Repo-side local adapter | Complete | `authzbench_harbor/` package, `artifact/harbor-adapter-contract.json` |
+| Local smoke | Complete | `artifact/harbor-adapter-smoke.json`, `artifact/harbor-local-execution-smoke.json` |
+| Parity methodology | Complete (local, 6-task public subset) | `artifact/harbor-parity-experiment.json` |
+| Platform acceptance | Blocked | `artifact/harbor-adapter-readiness-blockers.json` |
+| Hosted leaderboard / external review | Deferred to v2 | Not claimed; v2 external validation track |
+
+The repo-side local adapter, local smoke, and parity methodology are
+public-safe and reviewer-verifiable. Platform acceptance is blocked on
+SDK adapter API integration, adapter metadata, and multi-task parity
+evidence. Hosted leaderboard operation and external review are deferred
+to v2.
+
 ## Current Repo-Side Adapter State
 
 This section describes the adapter surface that ships on `main` today,
@@ -352,7 +368,7 @@ python3 scripts/check_harbor_local_execution.py
 ```
 
 That preflight generates and validates a temporary public skeleton and checks
-whether the `harbor` CLI is on `PATH`. It does not invoke `harbor run`. In a
+whether the Harbor CLI is on `PATH`. It does not invoke `harbor run`. In a
 checkout without Harbor installed, it records the local execution gate as
 blocked on the missing CLI/package.
 
