@@ -2,12 +2,13 @@
 
 Status: completed by `docs/boundary-reasoning-calibration-study.md`.
 
+This plan and the completed study are a historical/public-safe calibration artifact based on 49-task live HTTP runs, not current 63-task public model/tool-agent capability evidence and not a blocker to the v1.0-internal label.
+
 The historical public evidence shows a sharp gap between exploit proof and
 boundary reasoning. The then-current 49-task live HTTP tool-agent repeated runs
 prove 15 of 20 vulnerable public tasks but still record `0.0000`
 `boundary_reasoning_pass_rate` and zero vulnerable full passes. The completed
-study uses a full census of those exploit-proven vulnerable task-run cases and
-should be treated as the current calibration artifact.
+study uses a full census of those exploit-proven vulnerable task-run cases.
 
 ## Study Question
 
@@ -47,7 +48,8 @@ For each sampled task, record:
 | Proposed action | none, task wording change, schema hint, scorer normalization, or doc note |
 
 Do not use private holdout bodies, raw private run bundles, captures, or
-reviewer logs in this public calibration file.
+reviewer logs in this public calibration file. This calibration is public-safe,
+does not use private holdouts, raw private bundles, or reviewer logs, and is not hosted leaderboard operation, not platform acceptance, and not external validation.
 
 ## Audit Procedure
 
