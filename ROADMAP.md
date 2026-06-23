@@ -102,7 +102,7 @@ detail follows below. The canonical claim ledger remains
 section strengthens or weakens any canonical claim, and all wording is subject
 to the CI forbidden-phrase check at `scripts/check_claim_boundary.py`.
 
-### v1-readiness gaps
+### roadmap gaps
 
 `v1.0-internal` is complete under the internal/public-view release definition.
 The gaps below are remaining v1-scope improvements that do **not** gate the
@@ -285,7 +285,7 @@ ready.
 - [x] Add source-summary validation.
 - [x] Add benchmark fingerprints and comparability keys.
 - [x] Require repeated-run provenance for eligible rows.
-- [x] Separate schema-valid evidence from leaderboard eligibility.
+- [x] Separate schema-valid evidence from local row eligibility.
 
 Next improvements:
 
@@ -306,7 +306,7 @@ Next improvements:
 
 Status: complete. v1 internal release-candidate infrastructure validated; external validation deferred to v2.
 
-v1 does not claim external review, hosted public leaderboard readiness, SaaS-provider validation, or platform acceptance.
+v1 does not claim external review, hosted leaderboard operation, SaaS-provider validation, or platform acceptance.
 Those are tracked as v2 gates in
 `docs/claims-and-evidence.md#5-deferred-v2-validation-tracks`.
 
@@ -330,7 +330,7 @@ Deferred to v2:
 
 - [ ] independent external review
 - [ ] SaaS-provider scenario validation
-- [ ] hosted public leaderboard
+- [ ] hosted leaderboard operation
 - [ ] Harbor/Kaggle/platform acceptance
 - [ ] third-party submissions
 
