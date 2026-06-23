@@ -5,10 +5,10 @@ Welcome to the AuthZBench-SaaS documentation. This index maps all public-safe do
 ---
 
 ## 🔍 I am a Host Reviewer / Evaluator
-If you are evaluating AuthZBench-SaaS for a Kaggle or Kaggle-like evaluation pilot, start with these host-facing resources:
-* **[Reviewer Roadmap (ROADMAP.md)](../ROADMAP.md)**: The authoritative forward-looking roadmap. See the **Reviewer Roadmap At A Glance** section for v1-readiness gaps (owner/verification/status), v2 external-validation prep tracks (dependencies + entry criteria), and repo-presentation polish.
+If you are doing host reviewer or evaluator preparation, start with these host-facing resources. This is host reviewer or evaluator preparation, not platform acceptance, not hosted leaderboard operation, and not third-party submissions; these tracks are v2-deferred.
+* **[Reviewer Roadmap (ROADMAP.md)](../ROADMAP.md)**: The authoritative forward-looking roadmap. See the **Reviewer Roadmap At A Glance** section for roadmap gaps (owner/verification/status), v2 external-validation prep tracks (dependencies + entry criteria), and repo-presentation polish.
 * **[Reviewer Walkthrough](reviewer-walkthrough.md)**: Step-by-step reviewer guide covering public-view readiness fixture match (`--allow-incomplete`), validation levels, and claim boundaries.
-* **[v1.0-internal Release Note](releases/v1.0-internal.md)**: Current internal release-candidate state, task scale, and what is not claimed.
+* **[v1.0-internal Release Note](releases/v1.0-internal.md)**: v1.0-internal public-view readiness fixture state, task scale, and what is not claimed.
 * **[Claims and Evidence](claims-and-evidence.md)**: Canonical claim ledger, evidence matrix, and v2 deferred validation tracks.
 * **[Validation Commands](validation-commands.md)**: Public, host, Docker, and maintainer-only validation commands with failure guidance.
 * **[Host Review Package](host/host-review-package.md)**: The central entrypoint for the host packet, questions, and scopes.
@@ -28,7 +28,7 @@ If you are running evaluations, reviewing code, or adding new tasks to the bench
 * **[Scoring & Submissions Guide](scoring-and-submissions.md)**: Replay-based scoring mechanics, submission schema, and anti-gaming policy.
 * **[Baseline Credibility](baseline-credibility.md)**: Baseline registry labels, current scripted sanity interpretation, and stale/historical baseline guidance.
 * **[Harbor Integration Runbook](harbor-integration-runbook.md)**: Scaffolding, parity validator, and CLI commands for Harbor adapters.
-* **[v1 Readiness Checklist](v1-readiness-checklist.md)**: The release checklist and preflight gates for v1.
+* **[v1 Readiness Checklist](v1-readiness-checklist.md)**: The release checklist and public-view readiness fixture gates for v1.0-internal.
 * **[Validation Commands](validation-commands.md)**: Guide to running public, maintainer, and privacy checks.
 * **[Task Taxonomy](task-taxonomy.md)**: Taxonomy of vulnerability families and control distributions.
 * **[Holdout Rotation Protocol](holdout-rotation-protocol.md)**: Rotating private holdout packs.
@@ -41,4 +41,4 @@ If you are running evaluations, reviewing code, or adding new tasks to the bench
 * **[Artifact Index](artifact-index.md)**: Allowed claims and purposes for each public-safe artifact.
 * **[v0.0 Technical Report](authzbench-saas-v0.0-technical-report.md)** & **[v1-Prep Technical Report](authzbench-saas-v1-prep-technical-report.md)**: Technical reports/papers.
 * **[Launch Report](launch-report.md)**: Historical benchmark launch report.
-* **[Submission Governance Spec](v1-community-submission-governance.md)**: Specifications for future community submissions.
+* **[Submission Governance Spec](v1-community-submission-governance.md)**: Governance for future hosted/community submission tracks with local row eligibility.
