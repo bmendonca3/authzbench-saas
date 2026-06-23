@@ -17,8 +17,8 @@ The current fixture reports `v1_ready: false` with 1 unmet gate; this is
 not a claim of external validation.
 
 It does not assert independent external review, SaaS-provider scenario
-validation, hosted public leaderboard readiness, or platform acceptance.
-Those are deferred validation tracks.
+validation, hosted leaderboard operation, or platform acceptance.
+Those are deferred validation tracks. This is not hosted leaderboard operation, not platform acceptance, and not third-party submissions.
 
 ---
 
@@ -28,15 +28,15 @@ This ledger defines the boundary between supported claims and forbidden stronger
 
 | Claim / Category | Status | Evidence | Forbidden Stronger Wording |
 | --- | --- | --- | --- |
-| **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md` and public-view readiness checklist success | "community benchmark", "externally validated benchmark", "leaderboard-grade benchmark" |
-| **63 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "leaderboard-grade public split" |
+| **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md` and public-view readiness checklist success | "community benchmark", "externally validated benchmark", "hosted leaderboard operation benchmark" |
+| **63 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "hosted leaderboard operation public split" |
 | **48 private holdout tasks** | Supported by fingerprint / count | Ignored local private packs, rotation metadata, and public redaction summaries | "publicly reproducible private holdouts", "open private holdout task list" |
 | **Local Harbor adapter path** | Supported | `authzbench_harbor/` package, local smoke execution, and parity verification | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready" |
 | **Local / containerized submission smoke** | Supported | `artifact/submission-runner-smoke.json` and local test suites | "hosted leaderboard", "hosted submission operation" |
 | **Deterministic backend-replay scorer** | Supported | Scorer package codebase and test suites | "human-judged scoring", "model-graded scoring" |
 | **Public / private split with holdout governance** | Supported | Rotation and lifecycle specification documents | "public leaderboard operation", "open private holdout reuse" |
 | **Current scripted sanity baseline** | Supported | Fresh 63-task scripted sanity baseline summaries | "current model baseline", "current tool-agent baseline" |
-| **Fresh model / tool-agent baseline** | Partially supported (pending reruns) | The scripted sanity baseline is current at 63 tasks; prior 60-task model/tool-agent rows are marked `current_public_stale` in `baselines/baseline-registry.json` pending 63-task reruns or explicitly labeled promoted-composite refreshes | "fresh 63-task model/tool-agent baseline" unless every public task was rerun, "all major model families", "all current frontier models" |
+| **Fresh model / tool-agent baseline** | Partially supported (pending reruns) | The scripted sanity baseline is current at 63 tasks; prior 60-task model/tool-agent rows are marked `current_public_stale` in `baselines/baseline-registry.json` pending full reruns or explicitly labeled promoted-composite refreshes. These stale rows are not current model/tool-agent capability evidence. | "fresh 63-task model/tool-agent baseline" unless every public task was rerun, "all major model families", "all current frontier models" |
 | **Synthetic targets only** | Supported | Sandbox applications; absence of real-SaaS API keys or integrations | "production SaaS coverage", "real customer SaaS authorization coverage" |
 | **Independent external review** | Not done | Intake packet exists; no reviewer dispositions recorded | "external review complete", "industry-standard benchmark" |
 | **SaaS-provider scenario validation** | Not done | Validation tracks defined; no provider endorsements recorded | "SaaS-validated", "real-world validated", "AppSec-reviewed" |
@@ -68,7 +68,7 @@ Use only the approved terminology below when describing AuthZBench-SaaS.
 
 ### Approved Wording
 * `released v0.0 benchmark artifact` / `v0.0 release evidence`
-* `current v1-prep public split` / `v1 readiness checklist`
+* `current v1-prep public split` / `v1.0-internal public-view readiness`
 * `public-split baseline` / `deterministic backend replay`
 * `protected private-holdout evidence`
 * `boundary-vocabulary calibration`
@@ -80,7 +80,7 @@ Use only the approved terminology below when describing AuthZBench-SaaS.
 * `hosted leaderboard-ready`
 * `validated model benchmark`
 * `v1/community-scale benchmark`
-* `v1 release-ready` (use `externally validated v1 release` only under "Not done")
+* `externally validated v1 release` (use only under "Not done" status)
 * `production vulnerability discovery benchmark`
 * `private holdouts are publicly reproducible`
 * `Harbor accepted` / `Harbor endorsed`
@@ -99,7 +99,7 @@ External review and platform acceptance are tracked below as v2 validation gates
 ### Benchmark and Evals Methodology Review
 * **Goal**: Independent evals reviewer evaluates task split design, scoring semantics, repeated-run evidence, and claim boundary.
 * **Packet**: `docs/reviews/external-review-packet.md` and technical reports.
-* **Criteria**: Verify task split and scoring semantics support stated claims without implying private leaderboard readiness.
+* **Criteria**: Verify task split and scoring semantics support stated claims without implying hosted leaderboard operation.
 
 ### AI-Agent and Tooling Review
 * **Goal**: Independent agent reviewer assesses harness types, tool access, target-request correlation, and comparability keys.
@@ -126,4 +126,4 @@ External review and platform acceptance are tracked below as v2 validation gates
 
 ## 7. Generated Charts
 
-The public baseline metrics and task mixes can be regenerated using `python3 scripts/generate_benchmark_charts.py`. They represent public-safe artifacts only and do not turn public-split scores into private-holdout leaderboard rankings.
+The public baseline metrics and task mixes can be regenerated using `python3 scripts/generate_benchmark_charts.py`. They represent public-safe artifacts only and do not turn public-split scores into leaderboard-candidate rows. Leaderboard-candidate rows use local row eligibility with public-safe private-holdout metadata, inside the repo evidence model.
