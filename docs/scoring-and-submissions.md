@@ -112,8 +112,44 @@ For each evaluated task, the scorer outputs a result containing:
 
 Leaderboard integrity requires protecting the evaluation against cheating and shortcuts.
 
+### Scope: local row eligibility, not hosted leaderboard operation
+
+The leaderboard policy in this section describes local row eligibility
+and comparability for public-safe artifacts in this repository. It is
+not hosted leaderboard operation. Platform acceptance, third-party submissions,
+and hosted leaderboard operation are not claimed and are
+deferred to v2 external validation. Comparability keys bind a
+leaderboard row to a benchmark fingerprint, split, and scoring policy;
+rows with different fingerprints are not comparable.
+
 ### Anti-Gaming Guidelines
 1. **No Static Route Hardcoding**: Agents must dynamically discover vulnerability routes. Static memorization of public routes fails on private holdouts due to path/ID randomization.
 2. **Replay Validation**: Submitted exploits are replayed against a clean target backend container. Replay guarantees the vulnerability is actually exploitable and not simulated by fake logs.
 3. **No Over-Reporting**: The presence of both denial and authorized-allow secure controls ensures that agents reporting every sensitive endpoint as a vulnerability suffer severe score penalties.
 4. **Fingerprint Provenance**: Submissions must include environment and run metadata that matches the active holdout pack fingerprint, preventing replay of cached local runs.
+
+---
+
+## 4. Reviewer Validation Commands
+
+Reviewers can verify scorer behavior, public validation, and
+claim-boundary safety without private access:
+
+```bash
+python3 -m pytest tests/test_scorer_adversarial_submissions.py -q
+python3 scripts/validate_public.py --include-scripted-baseline
+python3 scripts/check_claim_boundary.py
+```
+
+The adversarial scorer test suite pins scorer verdicts for empty,
+malformed, wrong-actor, wrong-tenant, wrong-method, alias, decoy,
+destructive, and false-positive submissions on both vulnerable and
+secure-control fixtures. The public validation gate runs the full
+public task suite, baseline registry, task quality gate,
+claim-boundary check, and the public-view readiness fixture match.
+The claim-boundary check verifies that no forbidden claim phrases
+appear outside allowed negation contexts.
+
+None of these commands requires private holdouts, Docker, live
+model/API access, or hosted leaderboard access. The adversarial test
+suite does not require private holdouts and does not require hosted leaderboard access.
