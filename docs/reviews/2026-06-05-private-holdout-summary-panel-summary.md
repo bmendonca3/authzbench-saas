@@ -21,7 +21,7 @@ missing.
   verified in runner log.
 - Gemini 3.1 Pro (High): usable grounded findings returned; model label
   verified in runner log.
-- Parent ChatGPT reviewer: performed integration, privacy, and disposition
+- panel reviewer: performed integration, privacy, and disposition
   review in this main thread.
 
 ## Reviewers Not Counted For Content

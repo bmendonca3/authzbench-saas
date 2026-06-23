@@ -14,7 +14,7 @@ ineligible. The section does not claim v0 readiness or leaderboard readiness.
 
 ## Reviewers Counted
 
-- ChatGPT independent subagent auditor: usable findings returned.
+- internal read-only auditor: usable findings returned.
 - Gemini 3.5 Flash (High): usable findings returned; model label verified in
   runner log.
 - Gemini 3.1 Pro (High): usable findings returned; model label verified in

@@ -12,7 +12,7 @@ leaderboard holdouts?
 - Gemini 3.1 Pro (High), verified from panel log model evidence.
 - Claude Sonnet 4.6 (Thinking), verified from panel log model evidence.
 - Claude Opus 4.6 (Thinking), verified from panel log model evidence.
-- ChatGPT subagent reviewer.
+- read-only reviewer.
 
 Kiro `claude-opus-4.8` passed preflight but did not return a usable final
 answer within the bounded review window. Its child process was stopped and is

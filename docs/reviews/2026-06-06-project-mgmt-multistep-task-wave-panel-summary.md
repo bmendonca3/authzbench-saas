@@ -11,7 +11,7 @@ baseline handling, chart updates, and related docs/tests.
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Kiro CLI `claude-opus-4.8`, verified against the live Kiro model catalog
-- ChatGPT reviewer, read-only staged-diff review
+- panel reviewer, read-only staged-diff review
 
 Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels propagated, but they
 returned no substantive review output, so they were not counted.

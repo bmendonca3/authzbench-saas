@@ -12,7 +12,7 @@ are worth committing as an alpha/pre-v0 checkpoint.
 | Claude Sonnet 4.6 (Thinking) | verified label; no usable final findings returned |
 | Claude Opus 4.6 (Thinking) | verified label; no usable final findings returned |
 | Kiro `claude-opus-4.8` | verified model catalog and usable findings |
-| ChatGPT reviewer | usable findings |
+| panel reviewer | usable findings |
 
 Raw panel logs are intentionally not committed because they can contain local
 environment metadata. They were written under `docs/reviews/panel-logs/`, which

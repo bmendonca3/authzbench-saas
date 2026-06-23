@@ -23,7 +23,7 @@ Counted reviewers:
 - Gemini 3.1 Pro (High), verified from the panel log.
 - Claude Sonnet 4.6 (Thinking), verified from the panel log.
 - Claude Opus 4.6 (Thinking), verified from the panel log.
-- ChatGPT reviewer, run as a separate scoped reviewer.
+- panel reviewer, run as a separate scoped reviewer.
 
 Unavailable or limited reviewers:
 
@@ -37,7 +37,7 @@ Raw panel logs are intentionally not committed.
 
 ### Accepted: v0 secure-control math needed tightening
 
-The ChatGPT reviewer found that `docs/v0-release-plan.md` and
+The panel reviewer found that `docs/v0-release-plan.md` and
 `docs/v0-task-build-matrix.md` still said "at least 28" secure controls while
 the v0 target allows up to 75 total tasks. That could miss the stated 40 percent
 secure-control bar.
@@ -61,7 +61,7 @@ Disposition:
 
 ### Accepted: review contexts need point-in-time handling
 
-Claude Opus and ChatGPT both flagged that older review artifacts still contain
+Claude Opus and panel review both flagged that older review artifacts still contain
 older task-count references, such as the earlier 37-task split. Those artifacts
 are useful historical evidence, but they should not be read as current status.
 
@@ -84,7 +84,7 @@ Disposition:
 
 ### Clean: top-benchmark ambition is framed as earned, not current
 
-Gemini, Claude, and ChatGPT reviewers agreed that the refreshed docs do not
+Gemini, Claude, and panel reviewers agreed that the refreshed docs do not
 claim the current repo is already v0, leaderboard-ready, or top-tier. The
 ambition is stated as a goal, and the missing gates are listed plainly.
 

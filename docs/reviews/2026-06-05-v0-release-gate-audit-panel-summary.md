@@ -6,8 +6,8 @@ Section: privacy scan, packaging, and final release readiness.
 
 ## Reviewers Counted
 
-- Parent/ChatGPT implementation reviewer
-- ChatGPT independent read-only auditor
+- panel implementation reviewer
+- internal read-only auditor
 - Gemini 3.5 Flash (High), verified from Antigravity panel log
 - Gemini 3.1 Pro (High), verified from Antigravity panel log
 

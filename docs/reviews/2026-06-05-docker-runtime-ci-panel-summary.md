@@ -19,8 +19,8 @@ overclaiming local Docker success or v0 readiness?
 
 - Gemini 3.5 Flash (High), verified from Antigravity log.
 - Gemini 3.1 Pro (High), verified from Antigravity log.
-- ChatGPT code/runtime auditor.
-- ChatGPT docs/release wording auditor.
+- internal code/runtime auditor.
+- internal docs/release wording auditor.
 
 Limited or unavailable:
 

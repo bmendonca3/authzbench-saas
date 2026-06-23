@@ -7,7 +7,7 @@ Section: baseline methodology and live-target proof.
 Counted reviewers:
 
 - Gemini 3.1 Pro (High), verified in Antigravity log
-- Parent ChatGPT review
+- panel review
 
 Partial or uncounted reviewers:
 

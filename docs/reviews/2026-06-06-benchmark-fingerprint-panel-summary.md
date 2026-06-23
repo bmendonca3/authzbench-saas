@@ -13,7 +13,7 @@ Reviewers counted:
 
 - Gemini 3.5 Flash High
 - Gemini 3.1 Pro High
-- ChatGPT parent/subagent review
+- panel review
 
 Antigravity also verified Claude Sonnet 4.6 Thinking and Claude Opus 4.6
 Thinking routing labels for this panel run, but those reviewers did not return

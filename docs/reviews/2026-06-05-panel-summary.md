@@ -12,7 +12,7 @@ read-only inspection only.
 | Gemini 3.1 Pro (High) | verified |
 | Claude Sonnet 4.6 (Thinking) | verified |
 | Claude Opus 4.6 (Thinking) | verified |
-| ChatGPT reviewer | verified |
+| panel reviewer | verified |
 | Kiro `claude-opus-4.8` | not counted; non-interactive tool approval failure |
 
 ## Highest-Value Findings

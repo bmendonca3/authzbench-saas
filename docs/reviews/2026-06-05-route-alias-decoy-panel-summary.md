@@ -20,7 +20,7 @@ Counted reviewers:
 
 - Gemini 3.5 Flash (High), verified from the panel log.
 - Gemini 3.1 Pro (High), verified from the panel log.
-- ChatGPT reviewer, run as a separate scoped reviewer.
+- panel reviewer, run as a separate scoped reviewer.
 
 Unavailable or limited reviewers:
 
@@ -38,7 +38,7 @@ Raw panel logs are intentionally not committed.
 
 ### Clean: aliases preserve the intended vulnerable semantics
 
-Gemini and ChatGPT reviewers agreed that the aliases mirror the intended public
+Gemini and panel reviewers agreed that the aliases mirror the intended public
 vulnerabilities:
 
 - project-management work-items preserve cross-tenant task read behavior
@@ -65,7 +65,7 @@ Disposition:
 
 ### Accepted: alias controls needed body-level assertions
 
-The ChatGPT reviewer found that alias controls on vulnerable tasks were replayed
+The panel reviewer found that alias controls on vulnerable tasks were replayed
 by the scorer, but most initially checked only `status: 200`. That proved the
 path executed, but not that it returned the same protected object.
 

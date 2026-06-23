@@ -20,7 +20,7 @@ bundles.
   review output, so it is not counted for substantive findings.
 - Claude Opus 4.6 (Thinking): label verified, but the run produced an empty
   review output, so it is not counted for substantive findings.
-- ChatGPT reviewer: parent-review fallback only because no subagent slot was
+- panel reviewer: parent-review fallback only because no reviewer slot was
   available.
 
 Raw panel logs are intentionally untracked under `docs/reviews/panel-logs/`.

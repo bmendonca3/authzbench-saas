@@ -21,7 +21,7 @@ Counted reviewers:
 
 - Gemini 3.5 Flash (High), verified from the panel log.
 - Gemini 3.1 Pro (High), verified from the panel log.
-- ChatGPT reviewer, run as a separate scoped reviewer.
+- panel reviewer, run as a separate scoped reviewer.
 
 Unavailable or limited reviewers:
 
@@ -38,7 +38,7 @@ Raw panel logs are intentionally not committed.
 
 ### Accepted: control execution metric was documented with the wrong denominator
 
-ChatGPT and Gemini 3.5 both noted that `control_execution_pass_rate` is computed
+Panel review and Gemini 3.5 both noted that `control_execution_pass_rate` is computed
 per secure-control task, not per individual control request.
 
 Disposition:
@@ -48,7 +48,7 @@ Disposition:
 
 ### Accepted: missing inverse test for secure-control backend failure
 
-The ChatGPT reviewer noted that tests covered a false report with successful
+The panel reviewer noted that tests covered a false report with successful
 backend replay, but not the inverse case where the agent reports no finding and
 backend replay fails.
 

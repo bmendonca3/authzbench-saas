@@ -19,14 +19,14 @@ that strict v0 readiness remains false.
   verified in runner log.
 - Gemini 3.1 Pro (High): usable grounded findings returned; model label
   verified in runner log.
-- Parent ChatGPT reviewer: performed the integration and disposition review in
+- panel reviewer: performed the integration and disposition review in
   this main thread.
 
 ## Reviewers Not Counted For Content
 
 - Claude Sonnet 4.6 (Thinking): model label verified, but output file was empty.
 - Claude Opus 4.6 (Thinking): model label verified, but output file was empty.
-- ChatGPT subagent reviewer: unavailable because the local agent thread pool was
+- read-only reviewer: unavailable because the local reviewer thread pool was
   already occupied by prior shutdown reviewers.
 
 Raw Antigravity outputs and logs are intentionally kept under ignored
