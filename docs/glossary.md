@@ -83,7 +83,7 @@ context, prefer the definition here over a local paraphrase.
 
 ## Leaderboard and submission terms
 
-- **Eligibility tier**: the bucket a leaderboard row sits in
+- **Eligibility tier**: the bucket a leaderboard-candidate row sits in
   (`sanity`, `public-diagnostic`, `private-candidate`,
   `private-eligible`, `external-verified`). See
   [`docs/scoring-and-submissions.md`](scoring-and-submissions.md#2-result-and-submission-schema).

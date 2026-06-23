@@ -37,7 +37,7 @@ For v1-scale use, maintainers should prepare at least two private packs:
 
 The ignored `tasks_private/holdout/rotation-metadata.json` file must declare
 each pack's ID, role, safe relative path, concrete version label, and lowercase
-SHA-256 fingerprint. The v1 readiness validator recomputes each pack
+SHA-256 fingerprint. The v1.0-internal public-view readiness validator recomputes each pack
 fingerprint from the private manifests and requires every declared fingerprint
 to match before the rotation gate can pass.
 
@@ -69,10 +69,10 @@ private context text, raw private bundles, private logs, or local paths.
 Scores from different private packs should not be merged unless the packs are
 declared compatible in a release note. When a pack rotates:
 
-- mark old leaderboard rows as `legacy_snapshot`
+- mark old leaderboard-candidate rows as `legacy_snapshot`
 - label new rows with the active pack version
 - rerun core baselines on the new pack before comparing agents
-- keep public-split development results separate from private leaderboard
+- keep public-split development results separate from private leaderboard-candidate rows
   results
 
 If a scorer bug affects a private pack, mark affected rows as `deprecated` and

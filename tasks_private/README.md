@@ -18,7 +18,7 @@ Use `artifact/private-holdout-rotation-metadata.template.json` as the public
 starting shape for maintainer-only rotation metadata. Copy it to the ignored
 `tasks_private/holdout/rotation-metadata.json` path only in a private checkout,
 replace every placeholder with real active plus shadow/candidate pack metadata,
-and run strict v1 readiness validation there. Populated metadata must include
+and run strict v1.0-internal public-view readiness validation there. Populated metadata must include
 concrete pack versions, declared lowercase SHA-256 fingerprints matching each
 computed pack fingerprint, concrete compatibility and retirement policy, and a
 rerun policy requiring no-tools and tool-agent baseline reruns before current
@@ -51,7 +51,7 @@ python3 scripts/generate_holdout_rehearsal_pack.py --force
 ```
 
 That rehearsal pack is generated from public task structure and exists only to
-test the private-pack workflow. It is not a real private leaderboard holdout and
+test the private-pack workflow. It is not a real private leaderboard-candidate holdout and
 should not be used for v0 scoring claims.
 Generated rehearsal manifests include `leaderboard_suitable: false`, and the
 holdout validator reports a warning when rehearsal manifests are present.

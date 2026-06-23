@@ -17,7 +17,7 @@ leaderboard-ready until private-holdout evaluation is operated through either:
   a locked runner image and maintainers execute it against private packs.
 
 Public-split runs are useful for debugging, paper evidence, and reproducibility.
-They are not eligible for release-facing leaderboard rows.
+They are not eligible for release-facing leaderboard-candidate rows.
 
 ## Roles
 
@@ -53,7 +53,7 @@ A v1 leaderboard candidate must satisfy all gates below:
 4. The row declares score-policy, evidence-contract, benchmark commit SHA,
    private-pack version, harness type, model label, tool access, timeout, retry,
    and runner image or command provenance.
-5. Repeated-run provenance is present for leaderboard rows, with source
+5. Repeated-run provenance is present for leaderboard-candidate rows, with source
    summaries and a primary run.
 6. False-positive and invalid-submission counts are reported separately from
    exploit-proof success.
@@ -81,7 +81,7 @@ The hosted path should operate like this:
 3. The hosted runner executes the agent in an isolated environment with no
    private-pack read access except through benchmark APIs.
 4. The scorer writes raw private results to an ignored protected evidence root.
-5. A redacted summary and candidate leaderboard row are generated.
+5. A redacted summary and candidate leaderboard-candidate row are generated.
 6. Validation recomputes aggregate metrics from source summaries.
 7. Maintainers review the row, publish only public-safe metadata, and archive
    raw private evidence outside public Git.

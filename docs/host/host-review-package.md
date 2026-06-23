@@ -9,7 +9,7 @@ AuthZBench-SaaS evaluates whether AI agents can prove SaaS authorization failure
 1. What is the benchmark?
 2. What would a participant submit?
 3. What does the scorer verify?
-4. What would a leaderboard row show?
+4. What would a leaderboard-candidate row show?
 5. Which artifacts are public, private-summary-only, or host-controlled?
 6. What validation has passed?
 7. What is explicitly not claimed?
@@ -54,7 +54,7 @@ This package proposes Model A (dataset/review package) and Model B (maintainer/h
 
 * **Custody owner**: Who hosts the private holdout evaluation runners.
 * **Submitter artifact**: Confirming if submitters provide result bundles or runner images.
-* **Leaderboard row tiering**: Rules for display of public-diagnostic, private-candidate, and host-verified rows.
+* **Leaderboard-candidate row tiering**: Rules for display of public-diagnostic, private-candidate, and host-verified rows.
 * **Operational policies**: Reruns, appeals, stale scores, and pack rotation triggers.
 
 ## Proposed Review Flow
@@ -74,7 +74,7 @@ This package proposes Model A (dataset/review package) and Model B (maintainer/h
 | Public tasks | `tasks/*/*.json` | Not applicable | Public task pack mirrors |
 | Private holdouts | Count/fingerprint summaries only | `artifact/private-holdout-*-public-summary.json` | Raw private manifests and solution files |
 | Scoring | `authzbench/score.py`, validators, schemas | Redacted aggregate private evidence | Private scorer inputs and raw private outputs |
-| Submissions | Schema-valid examples | Redacted private leaderboard rows | Submitted bundles, runner images, accepted rows |
+| Submissions | Schema-valid examples | Redacted private leaderboard-candidate rows | Submitted bundles, runner images, accepted rows |
 | Validation | CI and public validation scripts | Maintainer-only release evidence summaries | Platform smoke, host audit logs |
 
 ## Non-Claims

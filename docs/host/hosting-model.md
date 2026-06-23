@@ -19,7 +19,7 @@ Before launch, the host should decide:
 * Private holdout custody owner.
 * Scorer execution location.
 * Whether public split scores are diagnostic only.
-* Leaderboard eligibility tier rules.
+* Local row eligibility tier rules.
 * Appeal and rerun process.
 * Task-pack freeze and rotation policy.
 
@@ -31,9 +31,9 @@ AuthZBench-SaaS scoring rewards backend-replayable authorization proof and penal
 
 ### Plain-English Metric Story
 * **Vulnerable Tasks**: An agent succeeds on a vulnerable task only when it submits evidence that the wrong actor, tenant, role, token, or object boundary was accepted by the target backend. Fluent prose alone does not count.
-* **Secure Controls**: An agent succeeds on a secure control (denial or authorized-allow) when it does not report a vulnerability and the scorer's replay confirms the target backend behaved correctly. A false report on either control type harms leaderboard eligibility.
+* **Secure Controls**: An agent succeeds on a secure control (denial or authorized-allow) when it does not report a vulnerability and the scorer's replay confirms the target backend behaved correctly. A false report on either control type harms local row eligibility.
 
-### Sorted Leaderboard Row Fields
+### Sorted Leaderboard-candidate Row Fields
 Instead of sorting by a single generic mean, hosts should sort eligible rows by:
 1. Higher exploit-proven success rate.
 2. Lower false-positive rate.
@@ -73,4 +73,4 @@ private-row-placeholder,Private,false,denial,host-controlled,private-pack-versio
 * Public Git may hold private pack fingerprints, counts, and public summaries.
 * Public Git must not hold raw private task bodies, routes, seeds, per-task private outcomes, or private oracle details.
 * Host-controlled private solution files should be generated from protected private packs and stored outside public Git.
-* Published leaderboard rows should contain only redacted public-safe metadata.
+* Published leaderboard-candidate rows should contain only redacted public-safe metadata.

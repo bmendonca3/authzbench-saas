@@ -239,7 +239,7 @@ outside an explicit "not claimed" context.
 
 ## 11. Questions reviewers should ask
 
-- Is the v1 readiness fixture current? Run
+- Is the v1.0-internal public-view readiness fixture current? Run
   `python3 scripts/validate_v1_readiness.py --public-view` and
   compare against `artifact/expected-output/v1-readiness-public-view.json`.
 - Are the baselines current? Read
