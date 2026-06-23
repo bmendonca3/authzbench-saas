@@ -45,7 +45,7 @@ as current-comparable evidence.
 ## v0 Baseline Bar
 
 The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
-60-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
+63-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
 46-task release snapshot. The 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6,
 GLM-5, and Claude Opus 4.6 no-tools families are stale, and the 54-task
 `claude-sonnet-4.6` live HTTP tool-agent family is stale until rerun.
@@ -159,7 +159,7 @@ model-tool plan artifact and one tool-probe artifact per task, correlate
 target-side requests for all 54 tasks, and report zero planner failures, zero
 parser failures, zero invalid submissions, and zero fallback probes. This is
 stale public live HTTP evidence for the previous 54-task split, not current
-60-task evidence, private evidence, hosted-leaderboard evidence, a stable
+63-task evidence, private evidence, hosted-leaderboard evidence, a stable
 cross-model ranking, or v1 readiness.
 
 The stale 49-task no-tools Kiro baselines have two runs each for
@@ -257,3 +257,23 @@ restored yet. The repeated 60-task no-tools and live HTTP tool-agent rows are
 stale until full 63-task reruns or promoted-composite refreshes complete.
 Public baselines must be paired with protected private-holdout operation before
 leaderboard claims.
+
+## Reviewer validation and interpretation
+
+Reviewers can validate the baseline registry and public validation gate with:
+
+```bash
+python3 scripts/validate_baseline_registry.py
+python3 scripts/validate_public.py --include-scripted-baseline
+```
+
+`validate_baseline_registry.py` checks registry consistency, fingerprint
+binding, and release-snapshot labels. `validate_public.py` runs the full
+public task suite, baseline registry, task quality gate, claim-boundary
+check, and the public-view readiness fixture match.
+
+Current scripted sanity is deterministic harness verification only. It is
+not model capability evidence, not leaderboard evidence, not private-holdout evidence, and not external validation. Older 60-task,
+54-task, 49-task, 46-task, and 44-task rows are stale or historical
+release-snapshot evidence only; they do not count toward current 63-task
+model-family coverage or repeated-baseline coverage.
