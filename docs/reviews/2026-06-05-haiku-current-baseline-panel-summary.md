@@ -9,8 +9,8 @@ split.
 
 ## Reviewers Counted
 
-- Gemini 3.5 Flash (High): verified Antigravity label; usable findings.
-- Gemini 3.1 Pro (High): verified Antigravity label; usable findings.
+- Gemini 3.5 Flash (High): verified panel runner label; usable findings.
+- Gemini 3.1 Pro (High): verified panel runner label; usable findings.
 - panel review: used as the panel reviewer for final synthesis
   because the session had already reached the live reviewer thread limit.
 

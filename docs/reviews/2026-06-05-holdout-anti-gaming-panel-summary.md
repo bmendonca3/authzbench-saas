@@ -6,16 +6,16 @@ Section reviewed: holdout, contamination, and anti-gaming design.
 
 ## Reviewers
 
-- Gemini 3.5 Flash (High): verified by Antigravity panel log.
-- Gemini 3.1 Pro (High): verified by Antigravity panel log.
-- Claude Sonnet 4.6 (Thinking): model label verified by Antigravity panel log,
+- Gemini 3.5 Flash (High): verified by panel runner log.
+- Gemini 3.1 Pro (High): verified by panel runner log.
+- Claude Sonnet 4.6 (Thinking): model label verified by panel runner log,
   but no usable final review content was returned.
-- Claude Opus 4.6 (Thinking): model label verified by Antigravity panel log,
+- Claude Opus 4.6 (Thinking): model label verified by panel runner log,
   but no usable final review content was returned.
 - panel reviewer: independent holdout audit reviewer.
 - Parent reviewer: final synthesis and local verification.
 
-Raw Antigravity logs and outputs are intentionally ignored under
+Raw panel runner logs and outputs are intentionally ignored under
 `docs/reviews/panel-logs/`.
 
 ## Findings

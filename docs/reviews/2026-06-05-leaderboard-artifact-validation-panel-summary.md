@@ -8,14 +8,14 @@ Section: baseline methodology and leaderboard schema.
 
 - panel implementation reviewer
 - internal read-only auditor
-- Gemini 3.5 Flash (High), verified from Antigravity panel log
-- Gemini 3.1 Pro (High), verified from Antigravity panel log
+- Gemini 3.5 Flash (High), verified from panel runner log
+- Gemini 3.1 Pro (High), verified from panel runner log
 
 Claude Sonnet 4.6 (Thinking) and Claude Opus 4.6 (Thinking) labels were
-verified in Antigravity logs, but their outputs were empty for this run, so they
+verified in panel runner logs, but their outputs were empty for this run, so they
 were not counted as content reviewers.
 
-Raw Antigravity logs are intentionally ignored under `docs/reviews/panel-logs/`.
+Raw panel runner logs are intentionally ignored under `docs/reviews/panel-logs/`.
 
 ## Accepted Findings
 

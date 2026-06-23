@@ -15,7 +15,7 @@ Reviewers counted:
 - Gemini 3.1 Pro High
 - panel review
 
-Antigravity also verified Claude Sonnet 4.6 Thinking and Claude Opus 4.6
+the panel runner also verified Claude Sonnet 4.6 Thinking and Claude Opus 4.6
 Thinking routing labels for this panel run, but those reviewers did not return
 substantive final findings, so they are not counted in the decision summary.
 

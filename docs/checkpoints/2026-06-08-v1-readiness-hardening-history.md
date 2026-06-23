@@ -17,7 +17,7 @@ scale, paper readiness, or final release-candidate validation.
 - PR #2 (`fix/live-bearer-auth-parity`) was closed as superseded. The
   Bearer-auth fixture work landed through merged PR #8
   (`fix/live-bearer-auth-parity-bm`). No local worktree or local branch remains
-  for the superseded branch, and the stale local No-Mistakes gate ref was
+  for the superseded branch, and the stale local the local review gate gate ref was
   removed after confirming the worktree was clean.
 - Commit `fd461390bd2816ccb8f36d9a3a1979d3ded3ec64` hardened the
   external-review evidence contract so completed lanes must record concrete

@@ -8,11 +8,11 @@ wording in commit `2b411254078598a64bbfe2c623e2327eed8d1cff`.
 
 ## Counted Reviewers
 
-- Gemini 3.5 Flash (High), verified by Antigravity CLI log
-- Gemini 3.1 Pro (High), verified by Antigravity CLI log
+- Gemini 3.5 Flash (High), verified by the panel runner CLI log
+- Gemini 3.1 Pro (High), verified by the panel runner CLI log
 - panel reviewer
 
-Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels were verified by logs
+Claude Sonnet 4.6 and Claude Opus 4.6 panel runner labels were verified by logs
 but did not return substantive review text. Kiro CLI `claude-opus-4.8` was
 attempted from the live model catalog, but the reviewer failed under
 non-interactive tool restrictions and is not counted.

@@ -7,11 +7,11 @@ optional vulnerable-task `evidence_requirements`.
 
 ## Counted Reviewers
 
-- Gemini 3.5 Flash (High), verified by Antigravity CLI log
-- Gemini 3.1 Pro (High), verified by Antigravity CLI log
+- Gemini 3.5 Flash (High), verified by the panel runner CLI log
+- Gemini 3.1 Pro (High), verified by the panel runner CLI log
 - panel reviewer, read-only local-code review
 
-Claude Antigravity labels were verified by logs but did not return substantive
+Claude panel runner labels were verified by logs but did not return substantive
 review text for this checkpoint. The Kiro Opus 4.8 reviewer was started but was
 terminated after exceeding the useful review window, so it is not counted.
 

@@ -8,14 +8,14 @@ model-family baseline, and the README/status/chart framing around that evidence.
 
 ## Reviewers Counted
 
-- Gemini 3.5 Flash (High), verified by Antigravity run log.
-- Gemini 3.1 Pro (High), verified by Antigravity run log.
+- Gemini 3.5 Flash (High), verified by the panel runner run log.
+- Gemini 3.1 Pro (High), verified by the panel runner run log.
 - Kiro `claude-opus-4.8`, verified against the live Kiro model catalog.
 - Kiro `claude-sonnet-4.6`, verified against the live Kiro model catalog.
 - Kiro `deepseek-3.2`, verified against the live Kiro model catalog.
 - panel reviewer.
 
-Antigravity Claude Sonnet and Opus labels propagated, but returned no
+the panel runner Claude Sonnet and Opus labels propagated, but returned no
 substantive review output in the fast runner. Kiro `qwen3-coder-next` was
 rate-limited in the balanced Kiro pass and was not counted.
 
