@@ -10,11 +10,18 @@ AuthZBench-SaaS is a narrow, deterministic local benchmark that evaluates
 how well an AI agent proves SaaS authorization failures (BOLA, BFLA,
 cross-tenant reads/writes, role bypass, token-scope bypass, entitlement
 bypass, stale share-link access, reassignment abuse, audit/admin
-exposure) against synthetic app targets. It carries an internal v1
-release tag, a public-view readiness fixture that is true, and
-governance specs for hosted leaderboard operation and external review
-that are not yet executed. See the canonical claim table in
-[`docs/claims-and-evidence.md`](claims-and-evidence.md) before
+exposure) against synthetic app targets. It carries a `v1.0-internal`
+release tag scoped to the internal/public-view definition: the
+public-view readiness fixture is checked with `--allow-incomplete` and
+may report `v1_ready: false` under honest post-cleanup evidence (for
+example, release-affecting docs changed after the pinned
+`benchmark_source_sha`); this is not a claim of external validation.
+v2 external validation (independent AppSec, evals, agent-tooling review,
+SaaS-provider scenario validation, hosted leaderboard operation,
+platform review, and third-party submissions) remains deferred. See
+the canonical claim table in
+[`docs/claims-and-evidence.md`](claims-and-evidence.md) and the
+reviewer roadmap in [`../ROADMAP.md`](../ROADMAP.md) before
 quoting any readiness number.
 
 ## 2. What it is not
@@ -30,6 +37,20 @@ quoting any readiness number.
 - Not a measure of broad cyber capability. It measures SaaS
   authorization proof quality on synthetic targets.
 
+### Current task scale
+
+The current public/private split is:
+
+- 63 public tasks across 6 apps
+- 27 vulnerable tasks and 36 secure controls in the public split
+- 48 maintainer-private holdout tasks
+- 111 total public/private tasks
+
+See [`../ROADMAP.md`](../ROADMAP.md) for the v1-readiness gaps,
+v2 external-validation prep tracks, and repo-presentation polish
+checklist, and [`docs/claims-and-evidence.md`](claims-and-evidence.md)
+for the canonical claim ledger.
+
 ## 3. How to run public validation
 
 From a clean clone:
@@ -43,14 +64,29 @@ python3 scripts/validate_public.py --include-scripted-baseline
 
 The runner executes, in order:
 
-1. `scripts/validate_v1_readiness.py` (matches
-   `artifact/expected-output/v1-readiness-public-view.json`).
+1. `scripts/validate_v1_readiness.py --allow-incomplete --public-view
+   --expected-output artifact/expected-output/v1-readiness-public-view.json`
+   (the fixture-matching public-view check; `--allow-incomplete` returns
+   0 when the rendered output matches the expected fixture even if
+   `v1_ready` is false — this is not a claim of external validation).
 2. `scripts/validate_baseline_registry.py`.
 3. `scripts/validate_task_quality_gate.py`.
-4. `scripts/check_claim_boundary.py` (CI-fails on the 10 forbidden
+4. `scripts/check_claim_boundary.py` (CI-fails on the 25 forbidden
    phrases outside allow contexts).
 5. The scripted baseline driver
    (`baselines/scripted-baseline-public-60-summary.json`).
+
+Additional reviewer-safe validators:
+
+```bash
+python3 scripts/validate_host_presentation.py
+python3 scripts/check_claim_boundary.py
+python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json
+```
+
+`validate_host_presentation.py` runs the host review docs validator, a
+git diff check, the full public validation, and the host review bundle
+build. All three commands should exit 0 from a clean clone.
 
 Container smoke (`--include-container-smoke`) requires Docker; see
 `docker-compose.yml` for the per-app base URLs.
