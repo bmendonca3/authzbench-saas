@@ -6,9 +6,19 @@ This document serves as the canonical claim ledger and evidence matrix for AuthZ
 
 ## 1. Top-Level Interpretation Note
 
-`v1_ready: true` in [`artifact/expected-output/v1-readiness-public-view.json`](../artifact/expected-output/v1-readiness-public-view.json) is scoped to the **internal / public-view** readiness gates only. It represents the passing state of the internal gates (such as public split completeness, submission governance definition, private holdout mechanism checks, baseline registry logs, and local/containerized submission smokes).
+The public-view readiness fixture at
+[`artifact/expected-output/v1-readiness-public-view.json`](../artifact/expected-output/v1-readiness-public-view.json)
+is checked with `--allow-incomplete --public-view --expected-output`. The
+fixture is a fixture-matching public-view check: `--allow-incomplete`
+returns 0 when the rendered output matches the expected fixture, even if
+`v1_ready` is false under honest post-cleanup evidence (for example,
+release-affecting docs changed after the pinned `benchmark_source_sha`).
+The current fixture reports `v1_ready: false` with 1 unmet gate; this is
+not a claim of external validation.
 
-It does **not** assert independent external review, SaaS-provider scenario validation, hosted public leaderboard readiness, or platform acceptance. Those are deferred validation tracks.
+It does not assert independent external review, SaaS-provider scenario
+validation, hosted public leaderboard readiness, or platform acceptance.
+Those are deferred validation tracks.
 
 ---
 
@@ -64,7 +74,7 @@ Use only the approved terminology below when describing AuthZBench-SaaS.
 * `boundary-vocabulary calibration`
 * `v1/community submission governance specification`
 * `repo-side local Harbor adapter path`
-* `public-view v1 readiness gates pass`
+* `public-view readiness fixture match (--allow-incomplete)`
 
 ### Avoid Wording
 * `hosted leaderboard-ready`
