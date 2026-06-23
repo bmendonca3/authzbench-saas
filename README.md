@@ -48,9 +48,12 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 - Harbor adapter: repo-side local adapter path implemented (parity methodology versioned, public-safe)
 - External review, SaaS-provider validation, hosted leaderboard operation, Harbor/Kaggle/platform acceptance, and third-party submissions: v2/external gates
 
-`v1_ready: true` in
-`artifact/expected-output/v1-readiness-public-view.json` is scoped to the
-internal/public-view readiness gates only. It does **not** assert external
+The public-view readiness fixture at
+`artifact/expected-output/v1-readiness-public-view.json` is a
+public-view readiness fixture match checked with `--allow-incomplete
+--public-view --expected-output`. The current fixture reports
+`v1_ready: false` with 1 unmet gate under honest post-cleanup evidence;
+this is the internal/public-view scope only and does not assert external
 review, SaaS-provider validation, hosted leaderboard readiness, or platform
 acceptance. See [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
@@ -145,29 +148,31 @@ release definition. It does **not** claim:
 
 Allowed claims: internally validated, deterministic scoring, public/private
 split, protected private holdout plumbing, repo-side local Harbor adapter
-path, parity methodology versioning, public-view v1 readiness gates pass,
-native-vs-Harbor local parity evidence where present in tracked artifacts,
-v2 external gates tracked explicitly.
+path, parity methodology versioning, public-view readiness fixture match
+(--allow-incomplete), native-vs-Harbor local parity evidence where present
+in tracked artifacts, v2 external gates tracked explicitly.
 
 Full claim ledger: [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 v1 release note: [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md).
 
 ## Release Evidence Validation
 
-The default `python3 scripts/validate_v1_readiness.py` invocation is an
-internal preflight only: it runs the ten internal gates and reports
-`v1_ready: false` until the strict release-evidence gate is supplied.
-True v1 readiness requires the tracked validator to be run with the
-external release evidence file, kept outside public Git per the
-completion gate in [`docs/goal.md`](docs/goal.md):
+The public-view readiness fixture is checked with the public-safe
+validator invocation:
 
 ```bash
-python3 scripts/validate_v1_readiness.py --release-evidence docs/release-evidence.json
+python3 scripts/validate_v1_readiness.py \
+  --allow-incomplete \
+  --public-view \
+  --expected-output artifact/expected-output/v1-readiness-public-view.json
 ```
 
-Without `--release-evidence`, the `final_release_candidate_validation`
-gate fails closed with `v1_ready: false`. Do not infer or synthesize
-external release evidence from public artifacts.
+`--allow-incomplete` returns 0 when the rendered output matches the
+expected fixture, even if `v1_ready` is false under honest post-cleanup
+evidence. The current fixture reports `v1_ready: false` with 1 unmet
+gate. This does not infer external release evidence from public
+artifacts; external release evidence is a v2 gate kept outside public
+Git per the completion gate in [`docs/goal.md`](docs/goal.md).
 
 For a one-line reviewer-readable summary of the headline verdict, add
 `--summary` (default invocation is silent on stderr so test contracts
@@ -564,10 +569,11 @@ AuthZBench-SaaS has two public release tags:
 
 Do not describe the project as leaderboard-ready, externally validated,
 SaaS-provider validated, or as having Harbor/Kaggle/platform acceptance
-until those v2 gates are completed. Do not call `v1_ready: true` in
-`artifact/expected-output/v1-readiness-public-view.json` a claim of external
+until those v2 gates are completed. Do not treat a passing
+`v1-readiness-public-view.json` fixture match as a claim of external
 acceptance; that fixture is scoped to the internal/public-view readiness
-gates only.
+gates only and may honestly report `v1_ready: false` under
+`--allow-incomplete`.
 
 ## v1 Status
 
