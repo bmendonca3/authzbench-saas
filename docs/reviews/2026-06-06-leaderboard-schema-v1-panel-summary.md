@@ -19,7 +19,7 @@ private row.
   substantive findings.
 - Kiro `claude-opus-4.8`: verified from the live Kiro model catalog; accepted
   schema completion while requiring an eligible-ready runner-to-row workflow.
-- ChatGPT reviewer: parent review plus an independent local evidence review.
+- panel reviewer: parent review plus an independent local evidence review.
 
 Raw panel logs remain untracked under `docs/reviews/panel-logs/`.
 

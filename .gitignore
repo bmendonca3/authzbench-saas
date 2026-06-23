@@ -21,7 +21,7 @@ paper/ieee-sp/*.log
 paper/ieee-sp/*.out
 paper/ieee-sp/*.pdf
 
-# Local Codex agent scratch (handoff packets, panel logs, run logs)
+# Local scratch (handoff packets, panel logs, run logs)
 .handoff/
 
 # Local environment files (secrets, tokens, credentials)

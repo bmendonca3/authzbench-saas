@@ -97,7 +97,7 @@ Ignored public-safe paths include:
 - `captures/` — local capture artifacts
 - `docs/reviews/panel-logs/` — raw model or CLI review logs
 - `harbor-jobs/`, `.harbor/` — raw Harbor job output
-- `.handoff/` — local Codex agent scratch (handoff packets, run logs)
+- `.handoff/` — local scratch (handoff packets, run logs)
 
 If you need to add a tracked public-safe example under one of these paths,
 update `.gitignore` carefully and re-run the privacy check.

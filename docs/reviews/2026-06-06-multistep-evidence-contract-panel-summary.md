@@ -9,7 +9,7 @@ optional vulnerable-task `evidence_requirements`.
 
 - Gemini 3.5 Flash (High), verified by Antigravity CLI log
 - Gemini 3.1 Pro (High), verified by Antigravity CLI log
-- ChatGPT reviewer, read-only local-code review
+- panel reviewer, read-only local-code review
 
 Claude Antigravity labels were verified by logs but did not return substantive
 review text for this checkpoint. The Kiro Opus 4.8 reviewer was started but was

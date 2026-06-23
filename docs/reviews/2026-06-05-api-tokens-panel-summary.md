@@ -17,7 +17,7 @@ reviewed section adds:
 
 - Gemini 3.5 Flash (High): verified by Antigravity log
 - Gemini 3.1 Pro (High): verified by Antigravity log
-- ChatGPT reviewer: subagent review with local read-only inspection
+- panel reviewer: read-only local inspection
 
 Kiro was deliberately skipped for this section after the previous file-sharing
 Kiro review hung. Raw panel logs are intentionally kept under ignored

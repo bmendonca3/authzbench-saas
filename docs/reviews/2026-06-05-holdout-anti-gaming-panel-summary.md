@@ -12,7 +12,7 @@ Section reviewed: holdout, contamination, and anti-gaming design.
   but no usable final review content was returned.
 - Claude Opus 4.6 (Thinking): model label verified by Antigravity panel log,
   but no usable final review content was returned.
-- ChatGPT/subagent reviewer: independent holdout audit reviewer.
+- panel reviewer: independent holdout audit reviewer.
 - Parent reviewer: final synthesis and local verification.
 
 Raw Antigravity logs and outputs are intentionally ignored under

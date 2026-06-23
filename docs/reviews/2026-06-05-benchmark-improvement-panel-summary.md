@@ -27,7 +27,7 @@ Substantive reviewer outputs were received from:
 - Gemini 3.5 Flash (High)
 - Gemini 3.1 Pro (High)
 - Kiro CLI `claude-opus-4.8`
-- ChatGPT reviewer
+- panel reviewer
 
 Antigravity Claude labels were attempted and model routing was verified, but the
 captured reviewer outputs were not substantive enough to count as findings.

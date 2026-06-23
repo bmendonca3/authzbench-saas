@@ -13,7 +13,7 @@ model-family baseline, and the README/status/chart framing around that evidence.
 - Kiro `claude-opus-4.8`, verified against the live Kiro model catalog.
 - Kiro `claude-sonnet-4.6`, verified against the live Kiro model catalog.
 - Kiro `deepseek-3.2`, verified against the live Kiro model catalog.
-- ChatGPT reviewer/subagent.
+- panel reviewer.
 
 Antigravity Claude Sonnet and Opus labels propagated, but returned no
 substantive review output in the fast runner. Kiro `qwen3-coder-next` was

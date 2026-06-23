@@ -19,7 +19,7 @@ anti-gaming, multi-seed private scoring, or final release-readiness blockers.
   review output, so it is not counted for substantive findings.
 - Claude Opus 4.6 (Thinking): label verified, but the run produced an empty
   review output, so it is not counted for substantive findings.
-- ChatGPT reviewer: independent subagent review accepted.
+- panel reviewer: internal review accepted.
 
 Raw panel logs are intentionally untracked under `docs/reviews/panel-logs/`.
 
