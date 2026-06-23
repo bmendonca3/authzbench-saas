@@ -14,7 +14,19 @@ Run this from a clean clone to verify public tests and registry states:
 python3 scripts/validate_public.py --include-scripted-baseline
 ```
 
-### Full CI/Container-Smoke Validation
+The runner includes the public-view readiness check:
+```bash
+python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json
+```
+
+This is a fixture-matching public-view check: `--allow-incomplete` returns 0
+when the rendered output matches the expected fixture, even if `v1_ready` is
+false under honest post-cleanup evidence (for example, release-affecting docs
+changed after the pinned `benchmark_source_sha`). This is not a claim of
+external validation or full v1 readiness; v2 external validation remains
+deferred.
+
+### Docker / Container-Smoke Validation
 Run this to include full container smoke testing (requires Docker to be running):
 ```bash
 python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
@@ -101,14 +113,22 @@ tables were intentionally refreshed.
 
 - `validate_public.py`: manifest, scoring, or privacy regression. Inspect
   the failure context; do not weaken validators to clear a check.
+- `validate_host_presentation.py`: host-facing artifact, markdown link,
+  template, or schema regression. Fix the affected host artifact; do not
+  weaken validators.
+- `check_claim_boundary.py`: claim-boundary wording drift. A forbidden
+  phrase appeared outside an allowed negation context. Fix the wording;
+  do not weaken the claim-boundary check.
 - `validate_baseline_registry.py`: baseline registry drift. Refresh the
   affected baseline or update the registry contract.
 - `validate_harbor_parity_experiment.py`: parity evidence drift. Refresh
   the parity evidence or correct the methodology field.
 - `validate_harbor_adapter_templates.py`: adapter template drift. Refresh
   the affected template.
-- `validate_v1_readiness.py --public-view`: public-view readiness drift.
-  Refresh the public-view fixture only if a tracked gate intentionally
-  changed; do not weaken readiness truth conditions.
+- `validate_v1_readiness.py --allow-incomplete --public-view
+  --expected-output`: public-view fixture drift. The rendered readiness
+  JSON no longer matches the expected fixture. Refresh the public-view
+  fixture only if a tracked gate intentionally changed; do not weaken
+  readiness truth conditions. This is not a claim of external validation.
 - `git diff --check`: whitespace or conflict-marker regression.
 - Privacy check: investigate the tracked file before unstaging.
