@@ -1,20 +1,20 @@
 {
   "schema_version": "v1-release-candidate-validation-v2",
   "schema_note": "validated_release_candidate_sha is the commit CI actually validated. ci_validated_sha must match the GitHub Actions run head_sha. evidence_file_commit_sha is the commit that stores this file. These are intentionally different \u2014 the evidence file cannot validate itself.",
-  "validated_release_candidate_sha": "f8ce7c281435c2b0ddd89cabc4dcb529d9fbb176",
-  "ci_validated_sha": "f8ce7c281435c2b0ddd89cabc4dcb529d9fbb176",
+  "validated_release_candidate_sha": "8c7fa29f100adc8bd1cffbc80669d4b14d6b5225",
+  "ci_validated_sha": "8c7fa29f100adc8bd1cffbc80669d4b14d6b5225",
   "evidence_file_commit_sha": "pending-round-1-commit",
-  "benchmark_source_sha": "5504030bad91c583f6d1a871f591fcd120bcd7ed",
+  "benchmark_source_sha": "41f55aeb3a3207ec6fdcb0626daf6dbac7a6fd69",
   "private_pack_fingerprint_sha256": "6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8",
   "release_tag": "v1.0-internal",
-  "release_tag_sha": "fea39e73c6a2eeefc695b20cf25196a0c5730b5d",
+  "release_tag_sha": "c916386a2e5bf7cc92ebb489ca827fa1a6b350b7",
   "final_release_tag_sha": "pending-round-1-commit",
   "post_evidence_main_ci": {
-    "head_sha": "f8ce7c281435c2b0ddd89cabc4dcb529d9fbb176",
+    "head_sha": "8c7fa29f100adc8bd1cffbc80669d4b14d6b5225",
     "run_id": "27793441369",
     "run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27793441369",
     "conclusion": "success",
-    "note": "CI run on branch HEAD f8ce7c2; benchmark_source_sha 5504030 is an ancestor."
+    "note": "CI run on branch HEAD 8c7fa29; benchmark_source_sha 41f55ae is an ancestor."
   },
   "evidence_status": "release_candidate",
   "public_claim_boundary": "This evidence supports AuthZBench-SaaS v1 under the internal/non-external release definition. It does not claim independent external review, SaaS-provider validation, hosted public leaderboard readiness, Kaggle acceptance, Harbor acceptance, or third-party submissions.",
@@ -26,7 +26,7 @@
     "workflow": "Validate AuthZBench-SaaS",
     "run_id": "27793441369",
     "run_url": "https://github.com/bmendonca3/authzbench-saas/actions/runs/27793441369",
-    "head_sha": "f8ce7c281435c2b0ddd89cabc4dcb529d9fbb176",
+    "head_sha": "8c7fa29f100adc8bd1cffbc80669d4b14d6b5225",
     "conclusion": "success"
   },
   "commands": {

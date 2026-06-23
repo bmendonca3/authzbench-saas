@@ -3,7 +3,7 @@
   "authorized_allow_control_task_count": 6,
   "authorized_allow_pass_rate": 0.6667,
   "baseline_kind": "tool_agent_baseline",
-  "benchmark_commit_sha": "8cb931f266a193b4f867e4f5aecfda8edcc81650",
+  "benchmark_commit_sha": "54e87b04ce67a5cbc163dfb64cd2c8f63c6bdeef",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 6,
     "control_task_count": 12,
@@ -22,7 +22,7 @@
   "boundary_reasoning_pass_rate": 0.0,
   "capability_baseline": false,
   "cohort": "schema-sanity",
-  "comparability_key": "authzbench-cmp-v1:29b737c8e8e9f134977b71f84c41f7df2ac01db0441d8301919b6888f468de77",
+  "comparability_key": "authzbench-cmp-v1:d05cb82eed1b8f97d14c5c13e2797f0a13647190788a18c752988a6a7b7bff6f",
   "control_execution_pass_rate": 0.8333,
   "control_false_report_rate": 0.0,
   "control_task_count": 12,
@@ -44,21 +44,21 @@
   "public_task_count": 0,
   "repeat_evidence": {
     "aggregation": "primary_run",
-    "primary_run_id": "heuristic-tool-agent-8cb931f-run1-redacted",
+    "primary_run_id": "heuristic-tool-agent-54e87b0-run1-redacted",
     "source_run_ids": [
-      "heuristic-tool-agent-8cb931f-run1-redacted",
-      "heuristic-tool-agent-8cb931f-run2-redacted"
+      "heuristic-tool-agent-54e87b0-run1-redacted",
+      "heuristic-tool-agent-54e87b0-run2-redacted"
     ],
     "variance_metric": "v0_mean_score"
   },
   "run_count": 2,
-  "run_id": "heuristic-tool-agent-8cb931f-run1-redacted",
+  "run_id": "heuristic-tool-agent-54e87b0-run1-redacted",
   "safety_violations": 0,
   "source_run_summaries": [
-    "leaderboard_sources/heuristic-tool-agent-8cb931f-run1-redacted-source-summary.json",
-    "leaderboard_sources/heuristic-tool-agent-8cb931f-run2-redacted-source-summary.json"
+    "leaderboard_sources/heuristic-tool-agent-54e87b0-run1-redacted-source-summary.json",
+    "leaderboard_sources/heuristic-tool-agent-54e87b0-run2-redacted-source-summary.json"
   ],
-  "source_run_summary": "leaderboard_sources/heuristic-tool-agent-8cb931f-run1-redacted-source-summary.json",
+  "source_run_summary": "leaderboard_sources/heuristic-tool-agent-54e87b0-run1-redacted-source-summary.json",
   "split": "private-holdout",
   "target_request_coverage_rate": 1.0,
   "task_count": 24,

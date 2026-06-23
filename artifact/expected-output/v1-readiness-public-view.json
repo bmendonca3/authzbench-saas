@@ -74,7 +74,7 @@
     },
     {
       "evidence": [
-        "eligible_private_tool_agent_rows=[{'path': 'leaderboard_submissions/2026-06-20/heuristic-private-tool-agent-8cb931f.leaderboard.json', 'harness_type': 'tool-agent', 'run_count': 2, 'model': 'deterministic-heuristic-tool-probe', 'benchmark_commit_sha': '8cb931f266a193b4f867e4f5aecfda8edcc81650', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': 1.0, 'source_private_path_denial': True}]"
+        "eligible_private_tool_agent_rows=[{'path': 'leaderboard_submissions/2026-06-20/heuristic-private-tool-agent-54e87b0.leaderboard.json', 'harness_type': 'tool-agent', 'run_count': 2, 'model': 'deterministic-heuristic-tool-probe', 'benchmark_commit_sha': '54e87b04ce67a5cbc163dfb64cd2c8f63c6bdeef', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': 1.0, 'source_private_path_denial': True}]"
       ],
       "id": "repeated_private_tool_agent_evidence",
       "passed": true,
@@ -82,7 +82,7 @@
     },
     {
       "evidence": [
-        "eligible_private_no_tools_rows=[{'path': 'leaderboard_submissions/2026-06-20/empty-response-private-no-tools-8cb931f.leaderboard.json', 'harness_type': 'no-tools-model', 'run_count': 2, 'model': 'deterministic-empty-response-no-tools', 'benchmark_commit_sha': '8cb931f266a193b4f867e4f5aecfda8edcc81650', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': None, 'source_private_path_denial': True}]"
+        "eligible_private_no_tools_rows=[{'path': 'leaderboard_submissions/2026-06-20/empty-response-private-no-tools-54e87b0.leaderboard.json', 'harness_type': 'no-tools-model', 'run_count': 2, 'model': 'deterministic-empty-response-no-tools', 'benchmark_commit_sha': '54e87b04ce67a5cbc163dfb64cd2c8f63c6bdeef', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': None, 'source_private_path_denial': True}]"
       ],
       "id": "repeated_private_no_tools_evidence",
       "passed": true,
@@ -107,8 +107,10 @@
         "artifact/v1-paper-readiness-runbook.json"
       ],
       "id": "paper_and_artifact_readiness",
-      "passed": true,
-      "unmet": []
+      "passed": false,
+      "unmet": [
+        "release-affecting files changed after benchmark_source_sha: docs/checkpoints/2026-06-08-v1-readiness-hardening-history.md, docs/reviews/2026-06-05-api-tokens-panel-summary.md, docs/reviews/2026-06-05-audit-settings-panel-summary.md, docs/reviews/2026-06-05-baseline-registry-panel-context.md, docs/reviews/2026-06-05-baseline-registry-panel-summary.md, docs/reviews/2026-06-05-bearer-replay-panel-summary.md, docs/reviews/2026-06-05-benchmark-improvement-panel-summary.md, docs/reviews/2026-06-05-ci-validation-panel-summary.md, docs/reviews/2026-06-05-deepseek-current-baseline-panel-summary.md, docs/reviews/2026-06-05-docker-runtime-ci-panel-summary.md"
+      ]
     },
     {
       "evidence": [
@@ -120,8 +122,8 @@
       "unmet": []
     }
   ],
-  "passed": true,
-  "passed_gate_count": 10,
-  "unmet_gate_count": 0,
-  "v1_ready": true
+  "passed": false,
+  "passed_gate_count": 9,
+  "unmet_gate_count": 1,
+  "v1_ready": false
 }

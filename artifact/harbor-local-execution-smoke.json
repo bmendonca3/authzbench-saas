@@ -1,5 +1,5 @@
 {
-  "benchmark_source_sha": "2b8edf1606294026daed817ccdfffd4d172ccf8c",
+  "benchmark_source_sha": "21d00f0f20356459ec984c2b77b839b1ad78b4e2",
   "benchmark_source_tree_sha": "24436211362f59094e6f4b88011352dcb1e424cd",
   "blocked_until": [
     "a public-safe adapter writes valid submissions for vulnerable and secure-control tasks",
