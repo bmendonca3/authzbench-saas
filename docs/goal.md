@@ -65,7 +65,7 @@ Deferred to v2:
   docs, and a one-task local Harbor smoke artifact are complete and validated.
   Full adapter metadata/parity evidence still requires a submission-producing
   public adapter run.
-- Current local gate note: No-Mistakes run `01KTPZQFWAPSWGT96G3ZVMSC92` failed
+- Current local gate note: the local review gate run `01KTPZQFWAPSWGT96G3ZVMSC92` failed
   in the review step because the runner reported the workspace is out of
   credits; it produced no findings.
 - True v1 blockers: private holdouts, protected private
@@ -399,7 +399,7 @@ Use this after every material change:
 5. Run `git diff --check`.
 6. Run private-source and overclaim scans before public artifact handoff.
 7. Confirm tracked private/raw path scan is empty.
-8. If No-Mistakes is used, honor the no-push constraint unless pushing is
+8. If the local review gate is used, honor the no-push constraint unless pushing is
    explicitly authorized.
 
 ## Public-Safe External Platform Follow-Up

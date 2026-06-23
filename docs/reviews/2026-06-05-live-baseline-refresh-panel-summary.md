@@ -29,7 +29,7 @@ that strict v0 readiness remains false.
 - read-only reviewer: unavailable because the local reviewer thread pool was
   already occupied by prior shutdown reviewers.
 
-Raw Antigravity outputs and logs are intentionally kept under ignored
+Raw the panel runner outputs and logs are intentionally kept under ignored
 `docs/reviews/panel-logs/` and are not part of the public repo.
 
 ## Accepted Findings And Fixes

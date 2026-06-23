@@ -8,12 +8,12 @@ baseline handling, chart updates, and related docs/tests.
 
 ## Counted Reviewers
 
-- Gemini 3.1 Pro (High), verified by Antigravity CLI log
-- Gemini 3.5 Flash (High), verified by Antigravity CLI log
+- Gemini 3.1 Pro (High), verified by the panel runner CLI log
+- Gemini 3.5 Flash (High), verified by the panel runner CLI log
 - Kiro CLI `claude-opus-4.8`, verified against the live Kiro model catalog
 - panel reviewer, read-only staged-diff review
 
-Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels propagated, but they
+Claude Sonnet 4.6 and Claude Opus 4.6 panel runner labels propagated, but they
 returned no substantive review output, so they were not counted.
 
 Raw prompts and logs are kept under ignored `docs/reviews/panel-logs/` and are

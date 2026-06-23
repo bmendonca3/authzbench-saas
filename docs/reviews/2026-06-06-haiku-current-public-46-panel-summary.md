@@ -8,13 +8,13 @@ baseline-registry tests.
 
 ## Counted Reviewers
 
-- Gemini 3.5 Flash (High), verified by Antigravity CLI log
-- Gemini 3.1 Pro (High), verified by Antigravity CLI log
+- Gemini 3.5 Flash (High), verified by the panel runner CLI log
+- Gemini 3.1 Pro (High), verified by the panel runner CLI log
 - Kiro `claude-opus-4.8`, verified against the local Kiro model catalog and
   command log
 - panel synthesis
 
-Claude Sonnet 4.6 and Claude Opus 4.6 Antigravity labels propagated in logs but
+Claude Sonnet 4.6 and Claude Opus 4.6 panel runner labels propagated in logs but
 did not return substantive review output, so they are not counted.
 
 Raw prompts and logs are kept under ignored `docs/reviews/panel-logs/` and are

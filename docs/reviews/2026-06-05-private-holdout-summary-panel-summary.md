@@ -29,7 +29,7 @@ missing.
 - Claude Sonnet 4.6 (Thinking): model label verified, but output file was empty.
 - Claude Opus 4.6 (Thinking): model label verified, but output file was empty.
 
-Raw Antigravity outputs and logs are intentionally kept under ignored
+Raw the panel runner outputs and logs are intentionally kept under ignored
 `docs/reviews/panel-logs/` and are not part of the public repo.
 
 ## Accepted Findings And Fixes

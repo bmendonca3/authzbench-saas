@@ -17,20 +17,20 @@ overclaiming local Docker success or v0 readiness?
 
 ## Reviewers Counted
 
-- Gemini 3.5 Flash (High), verified from Antigravity log.
-- Gemini 3.1 Pro (High), verified from Antigravity log.
+- Gemini 3.5 Flash (High), verified from panel runner log.
+- Gemini 3.1 Pro (High), verified from panel runner log.
 - internal code/runtime auditor.
 - internal docs/release wording auditor.
 
 Limited or unavailable:
 
-- Claude Sonnet 4.6 (Thinking) label was verified in the Antigravity log, but no
+- Claude Sonnet 4.6 (Thinking) label was verified in the panel runner log, but no
   usable final findings were returned.
-- Claude Opus 4.6 (Thinking) label was verified in the Antigravity log, but no
+- Claude Opus 4.6 (Thinking) label was verified in the panel runner log, but no
   usable final findings were returned.
 - Kiro was not used for this bounded section review.
 
-Raw Antigravity logs are under the ignored
+Raw panel runner logs are under the ignored
 `docs/reviews/panel-logs/docker-runtime-ci-20260605/` directory.
 
 ## Findings And Disposition

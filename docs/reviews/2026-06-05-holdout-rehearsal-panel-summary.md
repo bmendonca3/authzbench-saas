@@ -18,8 +18,8 @@ Kiro `claude-opus-4.8` passed preflight but did not return a usable final
 answer within the bounded review window. Its child process was stopped and is
 not counted.
 
-Raw Antigravity/Kiro logs were written under ignored
-`docs/reviews/panel-logs/` and local Antigravity panel-log paths. They are not
+Raw panel runner/Kiro logs were written under ignored
+`docs/reviews/panel-logs/` and local the panel runner panel-log paths. They are not
 committed.
 
 ## Consensus

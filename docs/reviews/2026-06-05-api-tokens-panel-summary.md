@@ -15,8 +15,8 @@ reviewed section adds:
 
 ## Reviewers Counted
 
-- Gemini 3.5 Flash (High): verified by Antigravity log
-- Gemini 3.1 Pro (High): verified by Antigravity log
+- Gemini 3.5 Flash (High): verified by panel runner log
+- Gemini 3.1 Pro (High): verified by panel runner log
 - panel reviewer: read-only local inspection
 
 Kiro was deliberately skipped for this section after the previous file-sharing

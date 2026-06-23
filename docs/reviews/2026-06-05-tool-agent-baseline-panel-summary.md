@@ -6,7 +6,7 @@ Section: baseline methodology and live-target proof.
 
 Counted reviewers:
 
-- Gemini 3.1 Pro (High), verified in Antigravity log
+- Gemini 3.1 Pro (High), verified in panel runner log
 - panel review
 
 Partial or uncounted reviewers:

@@ -29,7 +29,7 @@ Substantive reviewer outputs were received from:
 - Kiro CLI `claude-opus-4.8`
 - panel reviewer
 
-Antigravity Claude labels were attempted and model routing was verified, but the
+Panel runner Claude labels were attempted and model routing was verified, but the
 captured reviewer outputs were not substantive enough to count as findings.
 
 ## Consensus
