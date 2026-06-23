@@ -7,10 +7,13 @@ Use this rubric when adding public tasks, reviewing private holdouts, or asking
 an external reviewer to evaluate AuthZBench-SaaS task quality. It is meant to
 raise benchmark quality without exposing private holdout details.
 
-For a generated public-task audit view, see
-[`task-quality-matrix.md`](task-quality-matrix.md). The matrix summarizes
-coverage and evidence-readiness signals; this rubric remains the qualitative
-review standard.
+For generated public-task reviewer aids covering the current 63 public tasks,
+see [`task-quality-matrix.md`](task-quality-matrix.md),
+[`task-taxonomy.md`](task-taxonomy.md), and
+[`task-oracle-audit.md`](task-oracle-audit.md). These are public-task reviewer
+aids, not private holdout coverage and not external validation. The matrix
+summarizes coverage and evidence-readiness signals; this rubric remains the
+qualitative review standard.
 
 The public validation gate also enforces the machine-readable acceptance
 contract in
@@ -59,6 +62,8 @@ A task family should not be treated as release-candidate quality unless:
 
 ## External Review Packet
 
+The external review packet is preparatory and v2-deferred until real external
+review is engaged. Its existence is not evidence of completed external review.
 For external review, provide only public-safe material:
 
 - this rubric
