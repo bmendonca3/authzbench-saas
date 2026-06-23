@@ -14,13 +14,17 @@ versioned private packs with clear retirement and compatibility rules.
 
 ## Pack States
 
-- `candidate`: internally built and validated, not yet used for leaderboard
-  scoring
-- `active`: current private pack for release-facing leaderboard evaluation
+This protocol governs maintainer-private scoring governance and
+leaderboard-candidate rows inside the repo evidence model. It is not hosted leaderboard operation, not platform acceptance, and not third-party submissions; those remain v2-deferred tracks.
+
+- `candidate`: internally built and validated, not yet used for
+  maintainer-private scoring governance
+- `active`: current private pack for maintainer-private scoring governance and
+  leaderboard-candidate rows
 - `shadow`: run alongside the active pack to detect drift or leakage, but not
-  used for public ranking yet
-- `retired`: no longer used for current rankings; kept only for historical
-  reproducibility
+  used for leaderboard-candidate rows yet
+- `retired`: no longer used for leaderboard-candidate rows; kept only for
+  historical reproducibility
 - `invalidated`: removed from scoring because leakage, task flaw, or scorer
   error made results unreliable
 
@@ -56,9 +60,9 @@ Each active pack should preserve the benchmark's core distribution:
   represented across the pack
 - no app family or boundary type dominates the score
 
-Pack summaries may publish counts and coverage only. They must not publish task
-IDs, seeds, routes, oracle bodies, exploit hints, private context text, private
-logs, or local paths.
+Pack summaries may publish counts, roles, versions, and fingerprints only.
+They must not publish task IDs, seeds, routes, oracle bodies, exploit hints,
+private context text, raw private bundles, private logs, or local paths.
 
 ## Compatibility
 
@@ -102,5 +106,6 @@ Before a private pack is used for leaderboard claims, maintainers should have:
 - privacy check proving private manifests, raw result bundles, and panel logs
   are untracked
 
-This protocol supports leaderboard credibility, but it does not replace external
-task review or protected execution.
+This protocol supports maintainer-private scoring governance credibility, but
+it does not replace external task review or protected execution. Public-safe
+claim wording is enforced by `python3 scripts/check_claim_boundary.py`.
