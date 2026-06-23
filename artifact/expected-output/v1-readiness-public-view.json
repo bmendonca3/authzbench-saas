@@ -109,7 +109,7 @@
       "id": "paper_and_artifact_readiness",
       "passed": false,
       "unmet": [
-        "release-affecting files changed after benchmark_source_sha: docs/checkpoints/2026-06-08-v1-readiness-hardening-history.md, docs/reviews/2026-06-05-api-tokens-panel-summary.md, docs/reviews/2026-06-05-audit-settings-panel-summary.md, docs/reviews/2026-06-05-baseline-registry-panel-context.md, docs/reviews/2026-06-05-baseline-registry-panel-summary.md, docs/reviews/2026-06-05-bearer-replay-panel-summary.md, docs/reviews/2026-06-05-benchmark-improvement-panel-summary.md, docs/reviews/2026-06-05-ci-validation-panel-summary.md, docs/reviews/2026-06-05-deepseek-current-baseline-panel-summary.md, docs/reviews/2026-06-05-docker-runtime-ci-panel-summary.md"
+        "release-affecting files changed after benchmark_source_sha: artifact/docs-alignment-stale-wording-inventory.md, docs/checkpoints/2026-06-08-v1-readiness-hardening-history.md, docs/reviews/2026-06-05-api-tokens-panel-summary.md, docs/reviews/2026-06-05-audit-settings-panel-summary.md, docs/reviews/2026-06-05-baseline-registry-panel-context.md, docs/reviews/2026-06-05-baseline-registry-panel-summary.md, docs/reviews/2026-06-05-bearer-replay-panel-summary.md, docs/reviews/2026-06-05-benchmark-improvement-panel-summary.md, docs/reviews/2026-06-05-ci-validation-panel-summary.md, docs/reviews/2026-06-05-deepseek-current-baseline-panel-summary.md"
       ]
     },
     {
