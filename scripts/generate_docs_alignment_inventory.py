@@ -223,12 +223,14 @@ def main() -> None:
         "externally validated", "community benchmark",
         "leaderboard-grade", "v1 release-ready", "v1.0 released",
         "open for third-party submissions", "community submission open",
-        "SaaS-validated", "real-world validated", "AppSec-reviewed",
+        "SaaS-validated", "SaaS-provider-validated", "real-world validated", "AppSec-reviewed",
         "validated model benchmark", "production vulnerability discovery benchmark",
         "state-of-the-art benchmark", "SOTA security benchmark",
         "Kaggle hosted", "Kaggle leaderboard ready",
         "hosted submission operation", "public leaderboard operation",
         "community-benchmark",
+        "Harbor-accepted", "Kaggle-accepted", "platform-accepted",
+        "externally reviewed", "industry-standard benchmark",
     ]
     for rel, line_num, phrase, action, excerpt in rows:
         # Escape pipes in excerpt

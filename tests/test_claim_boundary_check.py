@@ -363,6 +363,52 @@ class ClaimBoundaryCheckTests(unittest.TestCase):
         self.assertIn("SaaS-validated", phrases)
         self.assertIn("v1.0 released", phrases)
 
+    def test_new_variant_phrases_in_claim_text_fail(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "readme.md").write_text(
+                "This is a Harbor-accepted, SaaS-provider-validated, externally reviewed, "
+                "industry-standard benchmark and platform accepted.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/readme.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertFalse(result["passed"], result)
+        phrases = sorted(finding["phrase"] for finding in result["findings"])
+        self.assertIn("Harbor-accepted", phrases)
+        self.assertIn("SaaS-provider-validated", phrases)
+        self.assertIn("externally reviewed", phrases)
+        self.assertIn("industry-standard benchmark", phrases)
+        self.assertIn("platform accepted", phrases)
+
+    def test_new_variant_phrases_in_negated_text_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "readme.md").write_text(
+                "This is not Harbor-accepted, SaaS-provider-validated, externally reviewed, "
+                "industry-standard benchmark, or platform accepted.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "docs/readme.md"], cwd=root, check=True, text=True)
+            subprocess.run(
+                ["git", "-c", "user.email=test@test", "-c", "user.name=test", "commit", "-m", "init", "-q"],
+                cwd=root,
+                check=True,
+                text=True,
+            )
+            result = _run_check(root)
+        self.assertTrue(result["passed"], result)
+
 
 if __name__ == "__main__":
     unittest.main()
