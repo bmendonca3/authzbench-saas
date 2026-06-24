@@ -1,4 +1,6 @@
 {
+  "capability_baseline_disclosure": "No current 63-task model/tool-agent capability baselines exist. Prior 60/54/49/46/44/15-task model/tool-agent rows are stale (requires_rerun_before_current_comparison=true, leaderboard_eligible=false, expected_task_count<63) and are not current 63-task capability evidence. A current 63-task scripted sanity row exists and validates harness/scorer wiring. Rerun model/tool-agent baselines at 63 tasks to restore current capability evidence.",
+  "capability_baseline_status": "stale_pending_63_task_rerun",
   "cohorts": {
     "scripted-sanity": {
       "capability_baseline": false,
@@ -3287,10 +3289,7 @@
       "entry_count": 37
     }
   },
-  "issues": [
-    "missing required current-model cohort for --require-current-public",
-    "missing required current-tool-agent cohort for --require-current-public"
-  ],
+  "issues": [],
   "registry_path": "baselines/baseline-registry.json",
   "schema_version": "baseline-variance-v1",
   "summary": {

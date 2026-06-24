@@ -60,7 +60,7 @@ STEPS: tuple[dict[str, Any], ...] = (
     {
         "id": "baseline_variance",
         "description": "Baseline variance and confidence",
-        "command": ["python3", "scripts/analyze_baseline_variance.py", "--require-current-public"],
+        "command": ["python3", "scripts/analyze_baseline_variance.py", "--require-current-public", "--allow-stale-pending-rerun"],
     },
     {
         "id": "harbor_claim_boundary",

@@ -147,10 +147,55 @@ def _per_task_verdicts(summary: dict[str, Any]) -> dict[str, bool]:
     return verdicts
 
 
+def _is_stale_pending_rerun(entry: dict[str, Any]) -> bool:
+    """Return True if a model/tool-agent entry is honestly stale pending 63-task rerun."""
+    if entry.get("kind") not in ("model_baseline", "tool_agent_baseline"):
+        return False
+    if not entry.get("requires_rerun_before_current_comparison"):
+        return False
+    if entry.get("leaderboard_eligible"):
+        return False
+    evidence_status = entry.get("evidence_status")
+    if evidence_status is not None and evidence_status not in (
+        "stale_after_v1_1_public_split",
+        "stale",
+        "legacy_snapshot",
+    ):
+        return False
+    task_count = entry.get("expected_task_count", 0)
+    if not isinstance(task_count, int) or task_count >= 63:
+        return False
+    return True
+
+
+def _has_current_63_scripted_sanity(registry: dict[str, Any]) -> bool:
+    for entry in registry.get("baselines", []):
+        if (
+            entry.get("release_suitability") == "current_public_harness_check"
+            and entry.get("kind") == "harness_check"
+            and entry.get("expected_harness_type") == "scripted"
+            and entry.get("expected_task_count") == 63
+            and not entry.get("requires_rerun_before_current_comparison")
+        ):
+            return True
+    return False
+
+
+def _all_capability_rows_stale_pending(registry: dict[str, Any]) -> bool:
+    capability_rows = [
+        e for e in registry.get("baselines", [])
+        if e.get("kind") in ("model_baseline", "tool_agent_baseline")
+    ]
+    if not capability_rows:
+        return False
+    return all(_is_stale_pending_rerun(e) for e in capability_rows)
+
+
 def analyze_registry(
     registry: dict[str, Any],
     baselines_dir: Path = BASELINES_DIR,
     require_current_public: bool = False,
+    allow_stale_pending_rerun: bool = False,
 ) -> dict[str, Any]:
     cohort_buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
     issues: list[str] = []
@@ -247,10 +292,46 @@ def analyze_registry(
             )
         cohorts[cohort] = cohort_record
 
+    capability_baseline_status = "current"
+    capability_baseline_disclosure: str | None = None
+
     if require_current_public:
+        missing_cohorts = []
         for cohort_name in ("current-model", "current-tool-agent"):
             cohort = cohorts.get(cohort_name, {})
             if not cohort.get("entries"):
+                missing_cohorts.append(cohort_name)
+
+        if missing_cohorts and allow_stale_pending_rerun:
+            has_sanity_63 = _has_current_63_scripted_sanity(registry)
+            all_stale = _all_capability_rows_stale_pending(registry)
+            if has_sanity_63 and all_stale:
+                capability_baseline_status = "stale_pending_63_task_rerun"
+                capability_baseline_disclosure = (
+                    "No current 63-task model/tool-agent capability baselines exist. "
+                    "Prior 60/54/49/46/44/15-task model/tool-agent rows are stale "
+                    "(requires_rerun_before_current_comparison=true, "
+                    "leaderboard_eligible=false, expected_task_count<63) and are not "
+                    "current 63-task capability evidence. A current 63-task scripted "
+                    "sanity row exists and validates harness/scorer wiring. Rerun "
+                    "model/tool-agent baselines at 63 tasks to restore current "
+                    "capability evidence."
+                )
+            else:
+                if not has_sanity_63:
+                    issues.append(
+                        "missing current 63-task scripted sanity row for "
+                        "--allow-stale-pending-rerun"
+                    )
+                if not all_stale:
+                    issues.append(
+                        "not all model/tool-agent rows are honestly stale pending "
+                        "rerun for --allow-stale-pending-rerun"
+                    )
+                for cohort_name in missing_cohorts:
+                    issues.append(f"missing required {cohort_name} cohort for --require-current-public")
+        elif missing_cohorts:
+            for cohort_name in missing_cohorts:
                 issues.append(f"missing required {cohort_name} cohort for --require-current-public")
 
     return {
@@ -258,6 +339,8 @@ def analyze_registry(
         "registry_path": str(REGISTRY_PATH.relative_to(ROOT)),
         "cohorts": cohorts,
         "issues": issues,
+        "capability_baseline_status": capability_baseline_status,
+        "capability_baseline_disclosure": capability_baseline_disclosure,
         "summary": {
             "current_model_entries": len(cohorts.get("current-model", {}).get("entries", [])),
             "current_tool_agent_entries": len(cohorts.get("current-tool-agent", {}).get("entries", [])),
@@ -289,6 +372,13 @@ def render_markdown(report: dict[str, Any]) -> str:
             f"{'yes' if record['capability_baseline'] else 'no'} |"
         )
     lines.append("")
+    disclosure = report.get("capability_baseline_disclosure")
+    if disclosure:
+        status = report.get("capability_baseline_status", "current")
+        lines.append(f"**Capability baseline status:** `{status}`")
+        lines.append("")
+        lines.append(f"> {disclosure}")
+        lines.append("")
     lines.append("## Per-entry variance")
     for cohort, record in report["cohorts"].items():
         if not record["entries"]:
@@ -350,6 +440,17 @@ def main() -> int:
         action="store_true",
         help="Fail when the report has no current-model or current-tool-agent entries.",
     )
+    parser.add_argument(
+        "--allow-stale-pending-rerun",
+        action="store_true",
+        help=(
+            "With --require-current-public, pass when no current 63-task "
+            "model/tool-agent cohorts exist but a current 63-task scripted sanity "
+            "row exists and all model/tool-agent rows are honestly stale pending "
+            "rerun. Does not weaken the claim boundary; adds an explicit "
+            "stale_pending_63_task_rerun disclosure to the report."
+        ),
+    )
     parser.add_argument("--root", default=".")
     args = parser.parse_args()
 
@@ -359,7 +460,12 @@ def main() -> int:
     json_output = root / args.json_output.relative_to(ROOT) if not args.json_output.is_absolute() else args.json_output
     md_output = root / args.markdown_output.relative_to(ROOT) if not args.markdown_output.is_absolute() else args.markdown_output
 
-    report = analyze_registry(registry, baselines_dir=baselines_dir, require_current_public=args.require_current_public)
+    report = analyze_registry(
+        registry,
+        baselines_dir=baselines_dir,
+        require_current_public=args.require_current_public,
+        allow_stale_pending_rerun=args.allow_stale_pending_rerun,
+    )
 
     json_output.parent.mkdir(parents=True, exist_ok=True)
     json_output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

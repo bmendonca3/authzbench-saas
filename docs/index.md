@@ -27,6 +27,7 @@ If you are running evaluations, reviewing code, or adding new tasks to the bench
 * **[Task Quality Rubric](task-quality-rubric.md)**: Guidelines for writing new vulnerable and secure control tasks.
 * **[Scoring & Submissions Guide](scoring-and-submissions.md)**: Replay-based scoring mechanics, submission schema, and anti-gaming policy.
 * **[Baseline Credibility](baseline-credibility.md)**: Baseline registry labels, current scripted sanity interpretation, and stale/historical baseline guidance.
+* **[Baseline Rerun Readiness Runbook](baseline-rerun-readiness-runbook.md)**: Exact commands, prerequisites, and post-run steps for rerunning model and tool-agent baselines at the current 63-task public split.
 * **[Harbor Integration Runbook](harbor-integration-runbook.md)**: Scaffolding, parity validator, and CLI commands for Harbor adapters.
 * **[v1 Readiness Checklist](v1-readiness-checklist.md)**: The release checklist and public-view readiness fixture gates for v1.0-internal.
 * **[Validation Commands](validation-commands.md)**: Guide to running public, maintainer, and privacy checks.

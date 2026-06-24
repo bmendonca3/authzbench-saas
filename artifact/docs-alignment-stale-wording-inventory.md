@@ -7,9 +7,9 @@ Total hits: 305
 
 | Action | Count |
 | --- | --- |
-| replace | 14 |
+| replace | 15 |
 | keep-forbidden | 6 |
-| keep-negated | 132 |
+| keep-negated | 131 |
 | keep-historical | 153 |
 | needs-dad | 0 |
 
@@ -143,7 +143,7 @@ Total hits: 305
 | CHANGELOG.md | 34 | leaderboard row | keep-historical | builder from repeated protected summaries to validator-ready leaderboard rows. |
 | CHANGELOG.md | 65 | leaderboard eligibility | keep-historical | repeated runs, and leaderboard eligibility are machine-checkable. |
 | CHANGELOG.md | 163 | [censored] | keep-historical | reviewed`, `[censored] ready`, `[censored]`, |
-| README.md | 16 | [censored] | keep-negated | > a [censored], [censored] benchmark, Harbor-accepted or |
+| README.md | 16 | [censored] | keep-negated | > a [censored], [censored] benchmark, [censored] or |
 | README.md | 25 | [censored] | keep-negated | Current repository state: the public v0.0 release tag exists; this branch packages the v1.0-internal internally validate |
 | README.md | 49 | third-party submissions | keep-negated | - External review, SaaS-provider validation, [censored] operation, Harbor/Kaggle/platform acceptance, and third- |
 | README.md | 57 | leaderboard readiness | keep-negated | review, SaaS-provider validation, [censored] readiness, or platform |
@@ -228,7 +228,7 @@ Total hits: 305
 | docs/claims-and-evidence.md | 17 | external validation | keep-negated | not a claim of external validation. |
 | docs/claims-and-evidence.md | 20 | platform acceptance | keep-negated | validation, [censored] operation, or platform acceptance. |
 | docs/claims-and-evidence.md | 21 | third-party submissions | keep-negated | Those are deferred validation tracks. This is not [censored] operation, not platform acceptance, and not third-p |
-| docs/claims-and-evidence.md | 31 | [censored] | keep-negated | \| **`v1.0-internal` complete** \| Supported \| `docs/releases/v1.0-internal.md` and public-view readiness checklist succes |
+| docs/claims-and-evidence.md | 31 | [censored] | keep-negated | \| **`v1.0-internal` complete** \| Supported \| `docs/releases/v1.0-internal.md`; public-view readiness fixture match with  |
 | docs/claims-and-evidence.md | 34 | [censored] | replace | \| **Local Harbor adapter path** \| Supported \| `authzbench_harbor/` package, local smoke execution, and parity verificati |
 | docs/claims-and-evidence.md | 38 | current model baseline | keep-negated | \| **Current scripted sanity baseline** \| Supported \| Fresh 63-task scripted sanity baseline summaries \| "current model b |
 | docs/claims-and-evidence.md | 43 | hosted public leaderboard | keep-forbidden | \| **Hosted public leaderboard** \| Not done \| Design specification only; no hosted execution implemented \| "hosted leader |
@@ -268,14 +268,14 @@ Total hits: 305
 | docs/harbor-integration-runbook.md | 8 | platform acceptance | keep-negated | Harbor platform acceptance, external review completion, [censored] |
 | docs/harbor-integration-runbook.md | 40 | platform acceptance | keep-negated | (see the parity experiment section below). Harbor platform acceptance, |
 | docs/harbor-integration-runbook.md | 45 | platform acceptance | keep-negated | - Harbor platform acceptance or endorsement; |
-| docs/harbor-integration-runbook.md | 49 | v1-ready | keep-negated | - `v1-ready` evidence in the external sense. |
-| docs/harbor-integration-runbook.md | 53 | external validation | keep-negated | assert Harbor acceptance or any other external validation. See |
-| docs/harbor-integration-runbook.md | 68 | platform acceptance | keep-negated | \| Platform acceptance \| Blocked \| `artifact/harbor-adapter-readiness-blockers.json` \| |
-| docs/harbor-integration-runbook.md | 69 | external validation | keep-negated | \| [censored] / external review \| Deferred to v2 \| Not claimed; v2 external validation track \| |
-| docs/harbor-integration-runbook.md | 72 | platform acceptance | keep-negated | public-safe and reviewer-verifiable. Platform acceptance is blocked on |
-| docs/harbor-integration-runbook.md | 211 | platform acceptance | keep-negated | public repo-side adapter surface. It does not claim Harbor platform acceptance, |
-| docs/harbor-integration-runbook.md | 212 | leaderboard readiness | keep-negated | [censored] readiness, or v1 external-readiness evidence. |
-| docs/harbor-integration-runbook.md | 281 | platform acceptance | replace | repo-side compatibility wrapper. Harbor platform acceptance and publishing |
+| docs/harbor-integration-runbook.md | 49 | v1-ready | replace | - `v1-ready` evidence in the external sense. |
+| docs/harbor-integration-runbook.md | 54 | external validation | keep-negated | assert Harbor acceptance or any other external validation. See |
+| docs/harbor-integration-runbook.md | 69 | platform acceptance | keep-negated | \| Platform acceptance \| Blocked \| `artifact/harbor-adapter-readiness-blockers.json` \| |
+| docs/harbor-integration-runbook.md | 70 | external validation | keep-negated | \| [censored] / external review \| Deferred to v2 \| Not claimed; v2 external validation track \| |
+| docs/harbor-integration-runbook.md | 73 | platform acceptance | keep-negated | public-safe and reviewer-verifiable. Platform acceptance is blocked on |
+| docs/harbor-integration-runbook.md | 212 | platform acceptance | keep-negated | public repo-side adapter surface. It does not claim Harbor platform acceptance, |
+| docs/harbor-integration-runbook.md | 213 | leaderboard readiness | keep-negated | [censored] readiness, or v1 external-readiness evidence. |
+| docs/harbor-integration-runbook.md | 282 | platform acceptance | replace | repo-side compatibility wrapper. Harbor platform acceptance and publishing |
 | docs/harbor-parity-per-task-contract.md | 39 | platform acceptance | keep-historical | - `public_claim_boundary` (must not claim Harbor platform acceptance, |
 | docs/harbor-parity-per-task-contract.md | 40 | leaderboard readiness | keep-historical | Kaggle acceptance, [censored] readiness, SaaS-provider |
 | docs/harbor-parity-per-task-contract.md | 41 | third-party submissions | keep-historical | validation, external review, or third-party submissions) |

@@ -28,7 +28,7 @@ This ledger defines the boundary between supported claims and forbidden stronger
 
 | Claim / Category | Status | Evidence | Forbidden Stronger Wording |
 | --- | --- | --- | --- |
-| **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md` and public-view readiness checklist success | "community benchmark", "externally validated benchmark", "hosted leaderboard operation benchmark" |
+| **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md`; public-view readiness fixture match with `--allow-incomplete`; current fixture reports `v1_ready: false` with 1 unmet gate under honest post-cleanup evidence; internal/non-external scope only | "community benchmark", "externally validated benchmark", "hosted leaderboard operation benchmark" |
 | **63 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "hosted leaderboard operation public split" |
 | **48 private holdout tasks** | Supported by fingerprint / count | Ignored local private packs, rotation metadata, and public redaction summaries | "publicly reproducible private holdouts", "open private holdout task list" |
 | **Local Harbor adapter path** | Supported | `authzbench_harbor/` package, local smoke execution, and parity verification | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready" |
