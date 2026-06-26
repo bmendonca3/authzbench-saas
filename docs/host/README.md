@@ -5,6 +5,7 @@ Welcome to the AuthZBench-SaaS host review workspace. This folder contains all t
 ## Navigation
 
 * **[Host Review Package](host-review-package.md)**: Main entry point explaining the evaluation scope and review questions.
+* **[Kaggle Follow-Up Todo](kaggle-followup-todo.md)**: Current Kaggle-thread action ledger, access blockers, and next-email note.
 * **[Host Status & Reproducibility Matrix](host-status-and-reproducibility.md)**: Live status, verification commands, and reproducibility tracking.
 * **[Hosting Model Options](hosting-model.md)**: Decisions on data custody, metric details, and display policies.
 * **[Host Operations Runbook](host-operations-runbook.md)**: Leakage response protocols and rotation guidelines.

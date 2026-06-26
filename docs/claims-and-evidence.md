@@ -31,7 +31,7 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md`; public-view readiness fixture match with `--allow-incomplete`; current fixture reports `v1_ready: false` with 1 unmet gate under honest post-cleanup evidence; internal/non-external scope only | "community benchmark", "externally validated benchmark", "hosted leaderboard operation benchmark" |
 | **63 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "hosted leaderboard operation public split" |
 | **48 private holdout tasks** | Supported by fingerprint / count | Ignored local private packs, rotation metadata, and public redaction summaries | "publicly reproducible private holdouts", "open private holdout task list" |
-| **Local Harbor adapter path** | Supported | `authzbench_harbor/` package, local smoke execution, and parity verification | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready" |
+| **Local Harbor adapter path** | Supported | `authzbench_harbor/` package, local smoke execution, and parity methodology contract; current checked-in local smoke has `parity_verified=false` until real multi-task Harbor/native parity evidence is recorded | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready" |
 | **Local / containerized submission smoke** | Supported | `artifact/submission-runner-smoke.json` and local test suites | "hosted leaderboard", "hosted submission operation" |
 | **Deterministic backend-replay scorer** | Supported | Scorer package codebase and test suites | "human-judged scoring", "model-graded scoring" |
 | **Public / private split with holdout governance** | Supported | Rotation and lifecycle specification documents | "public leaderboard operation", "open private holdout reuse" |
@@ -58,7 +58,7 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **Scorer replay** | Submitted evidence can be verified against backend behavior. | The agent interacted with a live target unless request logs are correlated. |
 | **Secure controls** | The benchmark penalizes false positives and over-reporting. | All real SaaS false-positive patterns are covered. |
 | **Rotation metadata** | Private packs are defined, verified, and gitignored. | Public reproducibility of the private holdouts. |
-| **Harbor adapter skeleton** | Target shape is Harbor-compatible; locally smoked. | Harbor platform acceptance or passing Harbor-side execution. |
+| **Harbor adapter skeleton** | Target shape is Harbor-compatible; locally smoked. | Harbor platform acceptance, Harbor parity verification, or hosted Harbor-side operation. |
 
 ---
 

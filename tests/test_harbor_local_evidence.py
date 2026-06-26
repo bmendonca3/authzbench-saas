@@ -107,12 +107,18 @@ class HarborLocalEvidenceTests(unittest.TestCase):
 
     def test_rejects_checked_in_source_tree_mismatch(self) -> None:
         head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
-        parent = subprocess.check_output(["git", "rev-parse", "HEAD^"], text=True).strip()
-        parent_tree = subprocess.check_output(["git", "rev-parse", f"{parent}^{{tree}}"], text=True).strip()
         head_tree = subprocess.check_output(["git", "rev-parse", f"{head}^{{tree}}"], text=True).strip()
-        self.assertNotEqual(head_tree, parent_tree)
+        log_output = subprocess.check_output(["git", "rev-list", "--max-count=50", "HEAD"], text=True)
+        mismatched_tree = None
+        for commit in log_output.splitlines():
+            candidate_tree = subprocess.check_output(["git", "rev-parse", f"{commit}^{{tree}}"], text=True).strip()
+            if candidate_tree != head_tree:
+                mismatched_tree = candidate_tree
+                break
+        if mismatched_tree is None:
+            self.skipTest("repository history does not contain a tree distinct from HEAD")
 
-        errors = _source_fingerprint_errors(DEFAULT_EVIDENCE_PATH, head, parent_tree)
+        errors = _source_fingerprint_errors(DEFAULT_EVIDENCE_PATH, head, mismatched_tree)
 
         self.assertIn("benchmark_source_tree_sha must match benchmark_source_sha tree for checked-in smoke evidence", errors)
 

@@ -52,14 +52,14 @@ Evidence already in place:
 - one repeated historical 49-task public live HTTP tool-agent baseline, now
   stale for current comparison
 - protected private-holdout aggregate evidence
-- one source-backed private no-tools leaderboard-candidate row with
-  runner-emitted fingerprint provenance
+- source-backed repeated private no-tools and tool-agent leaderboard-candidate
+  rows with runner-emitted fingerprint provenance
 - public-safe charts and task-quality matrix
 - release evidence registry
 - privacy checks, fresh-clone validation path, Docker smoke, and CI
 - public-safe task-quality gate contract
 - repo-side Harbor adapter package, CLI, scorer bridge, local smoke, parity
-  methodology, dataset validator, and metadata/parity validators
+  methodology contract, dataset validator, and metadata/parity validators
 - Kaggle-like host review package and validation commands
 
 Not yet in place:
@@ -67,9 +67,9 @@ Not yet in place:
 - independent external review
 - SaaS-provider scenario validation
 - hosted/public submission operation
-- Harbor/Kaggle/platform acceptance
+- Harbor/Kaggle host disposition
 - third-party runs
-- externally validated methodology paper or research-grade review packet
+- independent methodology paper or research-grade review packet
 
 ## Maturity Levels
 
@@ -114,7 +114,7 @@ row lists an owner role, a verification command, and a status.
 | Expand multi-step workflow tasks without diluting control quality | maintainer | `python3 scripts/validate_public.py --include-scripted-baseline` exits 0 and task-quality gate passes | open |
 | Add state-changing authorization tasks across billing, support, file sharing, API tokens, and audit settings | maintainer | public task-quality matrix regenerates and task-quality gate passes | open |
 | Keep public/private task-pack changes tied to refreshed baselines | maintainer | baseline registry validation passes and stale rows are marked | open |
-| Add repeated private tool-agent leaderboard-candidate rows | maintainer | leaderboard submission validation accepts the new rows with runner-emitted fingerprint provenance | open |
+| Keep repeated private leaderboard-candidate rows current after source or private-pack rotations | maintainer | leaderboard submission validation accepts the refreshed rows with runner-emitted fingerprint provenance | open |
 | Add leakage-response and holdout-retirement workflow tests | maintainer | private-holdout lifecycle validators pass | open |
 | Add stronger non-macOS isolation story for protected private execution | maintainer | protected private execution denial recorded on at least one non-macOS host | open |
 | Add a maintainer-operated submission review workflow | maintainer | leaderboard governance rules validator passes against the new workflow | open |
@@ -247,7 +247,9 @@ Status: complete for v1.0-internal; external run evidence remains v2 work.
 
 Next improvements:
 
-- [ ] Add repeated private tool-agent evidence.
+- [x] Add repeated private tool-agent evidence.
+- [ ] Keep repeated private evidence refreshed after private-pack or source
+      boundary rotations.
 - [ ] Add at least one third-party or independently operated agent run.
 - [x] Add statistical variance analysis for repeated baselines.
 - [x] Add boundary-reasoning calibration for the historical 49-task public
@@ -265,8 +267,8 @@ Status: complete for v1.0-internal; external/private operation remains bounded.
       variants, decoys, and public-overlap checks.
 - [x] Add protected private execution with host private-path denial on macOS.
 - [x] Publish only redacted aggregate private evidence.
-- [x] Add one source-backed private no-tools leaderboard-candidate row with
-      runner-emitted fingerprint provenance.
+- [x] Add source-backed repeated private no-tools and tool-agent
+      leaderboard-candidate rows with runner-emitted fingerprint provenance.
 - [x] Document rotating private holdout protocol.
 
 Next improvements:
@@ -377,7 +379,7 @@ For release-facing sections, preserve a short public-safe review artifact under
 - `alpha/pre-v0`: development state before a clean first release
 - `v0.0-candidate`: strict v0 evidence exists, but final tag has not landed
 - `v0.0`: first evidence-backed release snapshot
-- `v1-RC` / `v1.0-internal`: internally validated release-candidate infrastructure; 108 public/private task scale; external review, SaaS validation, and platform acceptance are v2 gates
+- `v1-RC` / `v1.0-internal`: internally validated release-candidate infrastructure; 111 public/private task scale; external review, SaaS validation, and platform acceptance are v2 gates
 - `v2`: externally reviewed, scaled, research-grade benchmark
 
 Do not call the project leaderboard-ready until the hosted or containerized

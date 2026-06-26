@@ -7,7 +7,9 @@ AuthZBench-SaaS tests one narrow claim:
 > Can an AI agent prove SaaS authorization failures with backend evidence while
 > avoiding false positives on correct secure behavior?
 
-Current status: v1 internal release-candidate infrastructure validated.
+Current status: v1.0-internal is complete under the internal/non-external
+scope, with release-time evidence still requiring a coherent source-boundary
+refresh before any new final validation claim.
 
 v1 does not claim external review, hosted public leaderboard readiness,
 SaaS-provider validation, or platform acceptance.
@@ -22,8 +24,8 @@ v2 claim.
 AuthZBench-SaaS v1 is an internally validated SaaS authorization-agent benchmark
 artifact with a 63-task public split, maintainer-private holdout operation,
 111 total public/private task scale, deterministic backend replay scoring,
-protected private-evaluation plumbing, Docker/hosted execution smoke evidence,
-and Harbor-compatible local execution scaffolding. External review,
+protected private-evaluation plumbing, local/containerized execution smoke
+evidence, and Harbor-compatible local execution scaffolding. External review,
 SaaS-provider validation, hosted leaderboard operation, and platform acceptance
 are explicitly deferred to v2.
 
@@ -57,24 +59,26 @@ Deferred to v2:
 
 - Frozen release boundary: v0.0 remains historical and auditable.
 - Historical checkpoint: 49-task public split, preserved only for history.
-- Active public split: 60 tasks.
-- Public evidence: scripted 60-task baseline complete. The repeated 54-task
-  no-tools model families and live HTTP tool-agent evidence are now stale
-  diagnostic rows until rerun on the 60-task split.
+- Active public split: 63 tasks.
+- Public evidence: scripted 63-task sanity baseline complete. The repeated
+  60-task, 54-task, 49-task, and v0.0 model/tool-agent rows are stale
+  diagnostic rows until rerun on the 63-task split or explicitly promoted as
+  composite baseline refreshes.
 - Harbor repo-side prep: skeletons, validators, metadata checks, public-safe
   docs, and a one-task local Harbor smoke artifact are complete and validated.
-  Full adapter metadata/parity evidence still requires a submission-producing
-  public adapter run.
-- Current local gate note: the local review gate run `01KTPZQFWAPSWGT96G3ZVMSC92` failed
-  in the review step because the runner reported the workspace is out of
-  credits; it produced no findings.
-- True v1 blockers: private holdouts, protected private
-  execution, repeated private evidence, 100+ validated tasks, and strict release
-  evidence.
+  Full Harbor parity evidence still requires a real multi-task Harbor/native
+  parity experiment; the checked-in local smoke has `parity_verified=false`.
+- Private evidence: active and shadow holdout packs, protected private-path
+  denial, repeated no-tools private evidence, and repeated tool-agent private
+  evidence are summarized through public-safe fingerprints and counts only.
+- Current local gate note: strict v1 readiness still requires a coherent
+  release-evidence refresh against one benchmark source boundary before making
+  a new final validation claim.
 
 ## Operating Rules
 
-- Keep `v1_ready: false` until strict release validation passes.
+- Keep `v1_ready: false` for current validation runs until strict release
+  validation passes with coherent release evidence.
 - External review is a v2 goal; keep the packet clean as v2 preparation.
 - Do not synthesize reviewer evidence or infer endorsement from informal
   interest.
@@ -87,19 +91,22 @@ Deferred to v2:
 
 ## Completion Gate
 
-This goal is complete only when every item below is true:
+The internal v1 goal is complete only when every item below is true. Items
+marked complete are supported by current public-safe evidence; unchecked items
+remain release-time or v2 work.
 
-- [ ] Local Harbor execution evidence exists, not just template validation.
-- [ ] The task-quality gate is enforced for new task families.
-- [ ] Public plus validated private tasks reach at least 100.
-- [ ] One active and one separate shadow/candidate private holdout pack exist in
+- [x] Local Harbor execution smoke evidence exists, not just template validation.
+- [x] The task-quality gate is enforced for new task families.
+- [x] Public plus validated private tasks reach at least 100.
+- [x] One active and one separate shadow/candidate private holdout pack exist in
   ignored maintainer-only paths with valid rotation metadata.
-- [ ] Protected private execution proves submitter-private-path denial, scorer
+- [x] Protected private execution proves submitter-private-path denial, scorer
   access, protected raw evidence, and redacted public summaries.
-- [ ] Repeated private no-tools and tool-agent baselines exist with `run_count >=
+- [x] Repeated private no-tools and tool-agent baselines exist with `run_count >=
   2`, active private-pack fingerprint, benchmark source SHA, source summaries,
   and protected-execution metadata.
-- [ ] Paper, report, charts, and tables are refreshed without overclaiming.
+- [ ] Paper, report, charts, and tables are refreshed against the current
+  release source boundary without overclaiming.
 
 - [ ] Strict release evidence exists outside public Git.
 - [ ] `python3 scripts/validate_v1_readiness.py --release-evidence

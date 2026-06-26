@@ -23,7 +23,7 @@ the v1 release.
 ## Objectives
 
 ### 1. Refresh and expand baselines
-- Rerun the full 60-task public split across at least three no-tools models
+- Rerun the full 63-task public split across at least three no-tools models
   (e.g., GPT-4-o, Claude 3, Gemini) and two distinct tool-agent scaffolds.
 - Capture per-task scores, mean +/- standard error and confidence intervals.
 - Mark every existing baseline as `historical` if it does not come from

@@ -2,12 +2,13 @@
 
 Last updated: 2026-06-23
 
-## v1 Prep Status
+## v1.0-Internal Status
 
-v1 work has started as planning and readiness work only. The source of truth for
-the startup gate is `docs/v1-readiness-checklist.md`.
+v1.0-internal is complete under the internal/non-external release definition.
+The source of truth for detailed gate status is
+`docs/v1-readiness-checklist.md`.
 
-Current v1-prep boundary:
+Current v1.0-internal boundary:
 
 - v0.0 remains frozen historical release evidence.
 - `main` is post-v0 active development and carries billing-entitlement,
@@ -18,14 +19,15 @@ Current v1-prep boundary:
 - The preceding 49-task split has five repeated no-tools Kiro model families
   and one repeated live HTTP Kiro tool-agent family with 49/49 target-request
   correlation in both runs. All are stale for current 63-task comparison.
-- v1-prep does not imply hosted leaderboard operation, v1 release-ready status, or
-  community-scale benchmark maturity.
+- v1.0-internal does not imply hosted leaderboard operation, external
+  validation, platform acceptance, or community-scale benchmark maturity.
 - Harbor preparation includes repo-side adapter/runbook artifacts plus a
   tracked one-task local Harbor smoke for task/agent/verifier wiring. Adapter
-  parity, hosted/containerized release execution, private execution, and
-  multi-task Harbor evidence remain incomplete.
+  parity and multi-task Harbor evidence remain incomplete; local/containerized
+  submission smoke and private execution evidence are tracked as public-safe
+  summaries.
 
-Current main / v1-prep split:
+Current main / v1.0-internal split:
 
 - 63 public task manifests
 - 27 vulnerable tasks
@@ -45,13 +47,13 @@ Current main / v1-prep split:
 - five repeated 49-task no-tools Kiro model-family baselines, now stale
 - one repeated 49-task live HTTP Kiro tool-agent baseline, now stale
 
-## Current v1-Prep Public Split And Frozen v0.0 Snapshot
+## Current v1.0-Internal Public Split And Frozen v0.0 Snapshot
 
 AuthZBench-SaaS currently contains a 63-task public split. The v0.0
 release snapshot remains frozen at 46 public tasks and is preserved in the
 baseline registry as historical evidence.
 
-### Current main / v1-prep split
+### Current main / v1.0-internal split
 
 - 6 Dockerized synthetic SaaS targets
 - 63 public task manifests
@@ -143,9 +145,9 @@ baseline registry as historical evidence.
 
 ## Verified Locally
 
-The following checks have been run successfully for the released v0.0 scaffold.
-Public-only checkouts can use `--allow-incomplete` because private holdouts are
-intentionally absent from public Git history:
+The following checks are the expected local validation set. Public-only
+checkouts can use `--allow-incomplete` because private holdouts are intentionally
+absent from public Git history:
 
 ```bash
 python3 -Wd -m unittest discover -s tests

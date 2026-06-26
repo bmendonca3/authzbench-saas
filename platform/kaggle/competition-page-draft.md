@@ -18,7 +18,7 @@ Submissions are ranked using the following priority tiers (matching `docs/scorin
 6. **v0 mean score**: Standard count-level success metric.
 
 ## Data
-- **Public Split**: 60 public tasks for local developer diagnostics and validation.
+- **Public Split**: 63 public tasks for local developer diagnostics and validation.
 - **Private Split**: 48 private holdout tasks held in custody for final leaderboard evaluation.
 
 ## Submission Format

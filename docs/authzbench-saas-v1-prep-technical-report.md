@@ -6,9 +6,9 @@ post-v0 development state while preserving the frozen v0.0 claim boundary.
 ## Claim Boundary
 
 AuthZBench-SaaS v0.0 is the released historical artifact. Current `main` is now
-post-v0 active development. It contains two v1 task-expansion slices and a
-60-task public split, but it is not a v1 release, a hosted leaderboard, or a
-community-scale benchmark.
+post-v0 active development. It contains the v1 task-expansion slices plus the
+v1.1 multi-step discovery wave and a 63-task public split, but it is not a v1
+release, a hosted leaderboard, or a community-scale benchmark.
 
 The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
 46-task release baselines, 49-task v1-prep model/tool-agent baselines, and

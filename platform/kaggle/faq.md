@@ -19,7 +19,7 @@ The evidence bundle contains per-task `submission.json` files. For vulnerable ta
 Only submissions evaluated against the private split using host-controlled or maintainer-operated private runs are eligible to produce private leaderboard-candidate rows, subject to evidence replay and verification.
 
 ## What is diagnostic only?
-The public split (60 tasks) is diagnostic only. It is intended for local validation and debugging. Public split rows are never eligible as private leaderboard-candidate rows.
+The public split (63 tasks) is diagnostic only. It is intended for local validation and debugging. Public split rows are never eligible as private leaderboard-candidate rows.
 
 ## How are private holdouts protected?
 Private holdouts are stored in a separate directory (`tasks_private/`) that is excluded from the public Git history and ignored. Only aggregate fingerprints and public-safe summaries are checked in. Scorer runs read private tasks in a restricted environment.
