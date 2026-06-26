@@ -25,7 +25,7 @@ Hi Ivan,
 
 Thanks again. I started the Kaggle setup path, but the published setup doc is blocked for me at the moment. When I open it while signed in as brian.mendonca6@gmail.com, Google says I need permission to access it and may need to sign in as a different user. Could you grant access to that address, or tell me which account I should use?
 
-In the meantime, I cleaned up the host-review package so the public-facing Kaggle materials match the current repo state: 63 public tasks, 48 private holdout tasks summarized publicly, and 111 total public/private tasks. I also kept the wording conservative: this is a Kaggle/Harbor review package, not an accepted or hosted benchmark.
+In the meantime, I cleaned up the host-review package so the public-facing Kaggle materials match the current repo state: 63 public tasks, 48 private holdout tasks summarized publicly, and 111 total public/private tasks. I also kept the wording conservative: this is a Kaggle/Harbor review package, not an accepted or hosted benchmark. The current 63-task baseline is the deterministic scripted sanity check; model/tool-agent reruns for the expanded split are still pending.
 
 Once I can access the setup instructions, I can finish the org/share step and then adapt the repo to the Docker/Harbor shape Kaggle prefers.
 

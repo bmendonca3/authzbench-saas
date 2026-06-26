@@ -7,9 +7,9 @@ Status: single-page status and reproducibility summary for Kaggle host reviewers
 ## 1. Current Status
 
 * **Last updated**: 2026-06-26
-* **Current candidate**: 63-task Kaggle/Harbor host-review package update on branch `main`; exact pushed commit and CI run should be recorded after upstream validation completes.
+* **Current candidate**: 63-task Kaggle/Harbor host-review package update on branch `main`; use the exact commit and latest green GitHub Actions run for the checkout under review.
 * **Local validation**: rerun on 2026-06-26 for this candidate package; rerun after any follow-up change before calling a future package frozen.
-* **Last CI-verified host packet candidate**: `bba7007e7bac50ac69d32f650e461869228baa1d`; retained below as historical evidence, not as a claim about the current working checkout.
+* **CI validation**: exact-head CI is required before freezing or sharing a package. Historical references below are retained as prior evidence, not as claims about later commits.
 
 ### What Is Done (Repo-Side)
 
@@ -26,6 +26,8 @@ Status: single-page status and reproducibility summary for Kaggle host reviewers
 * [x] Local Harbor execution smoke verified (`artifact/harbor-adapter-smoke.json`)
 * [x] Per-task reward parity verified: **6/6 tasks, 100% match rate** (`artifact/harbor-parity-experiment.json`)
 * [x] Harbor adapter metadata documented (`artifact/harbor-adapter-metadata.json`)
+
+Public CI may still report `harbor_execution_verified=false` when the Harbor CLI is not installed in the runner. That is an environment-availability flag, separate from the checked-in local Harbor smoke and parity evidence above.
 
 #### Host-Review Package
 * [x] Host-review package document ([Host Review Package](host-review-package.md))
@@ -70,8 +72,8 @@ Status: single-page status and reproducibility summary for Kaggle host reviewers
 | Surface | Command / Evidence | Status / Last Checked UTC | Checked By | Environment (OS/Python) | Re-run Command / Failure Action |
 | --- | --- | --- | --- | --- | --- |
 | **Public Validation** | `python3 scripts/validate_public.py --include-scripted-baseline` | `2026-06-26 local` | Maintainer | macOS / Python 3.11 | `python3 scripts/validate_public.py --include-scripted-baseline` / Fail on errors |
-| **Full CI Validation** | GitHub Actions Run ID: `28057052847` | Passing at commit `bba7007` | CI Runner | Ubuntu / Python 3.11 | Inspect Actions logs / Fail on CI failures |
-| **Container Smoke** | `--include-container-smoke` | Passing in CI (Run `28057052847`) | CI Runner | Ubuntu / Python 3.11 (with Docker) | Check containerized logs / Fail on Docker errors |
+| **Full CI Validation** | Latest green GitHub Actions run on branch `main` | Required for the exact commit under review | CI Runner | Ubuntu / Python 3.11 | Inspect Actions logs / Fail on CI failures |
+| **Container Smoke** | `--include-container-smoke` | Required in CI for the exact commit under review | CI Runner | Ubuntu / Python 3.11 (with Docker) | Check containerized logs / Fail on Docker errors |
 | **Host-Presentation** | `python3 scripts/validate_host_presentation.py --skip-public-validation --timeout-seconds 120` | `2026-06-26 local` | Maintainer | macOS / Python 3.11 | `python3 scripts/validate_host_presentation.py` / Fail on link or template mismatch |
 | **Review Bundle Check** | `python3 scripts/build_host_review_bundle.py --check` | `2026-06-26 local` | Maintainer | macOS / Python 3.11 | `python3 scripts/build_host_review_bundle.py --check` / Regenerate manifest if out of sync |
 | **Public Sample CSV** | `python3 scripts/validate_kaggle_sample_submission.py` | `2026-06-26 local` | Maintainer | macOS / Python 3.11 | `python3 scripts/validate_kaggle_sample_submission.py` / Fix format mismatch |
@@ -79,19 +81,19 @@ Status: single-page status and reproducibility summary for Kaggle host reviewers
 | **Private Holdout Custody** | active/shadow count and fingerprint summaries | Summarized in `docs/private-holdout-lifecycle.md` and `docs/host/host-operations-runbook.md` | Maintainer | Not applicable | Review custody boundary / Check manifest.json |
 | **Host Model** | Model A + Model B (Model C deferred) | Decision recorded in hosting memo | Maintainer | Not applicable | Host accepts or changes proposal |
 
-### Latest CI Verification Reference
-* **Latest Verified Commit** (historical CI-verified candidate): `bba7007e7bac50ac69d32f650e461869228baa1d`
-* **Actions Workflow Run ID**: `28057052847`
-* **Actions Run URL**: https://github.com/bmendonca3/authzbench-saas/actions/runs/28057052847
-* **Conclusion**: `success`
-* **Scope note**: This CI run verifies the historical candidate commit above. A new final host-review candidate requires a fresh exact-head validation and CI reference.
+### CI Verification Reference
+* **Latest Verified Commit**: the exact commit under review must match the latest green branch run before freezing or sharing the package.
+* **Latest branch run**: https://github.com/bmendonca3/authzbench-saas/actions/workflows/validate.yml?query=branch%3Amain
+* **Conclusion required before freezing**: `success` on the exact commit under review.
+* **Historical CI-verified candidate**: `bba7007e7bac50ac69d32f650e461869228baa1d` in Actions run `28057052847`.
+* **Scope note**: Historical runs support continuity only. A final host-review candidate requires a fresh exact-head validation and CI reference.
 
 ---
 
 ## 5. Host Packet Versioning
 
 ### Reference Versions
-* **Repository Commit SHA**: pending final clean host-review candidate.
+* **Repository Commit SHA**: use the exact commit under review from `git rev-parse HEAD` and the matching green Actions run.
 * **Historical CI-Verified Candidate SHA**: `bba7007e7bac50ac69d32f650e461869228baa1d`
 * **Historical Actions Workflow Run ID**: `28057052847`
 * **Host Review Bundle Manifest SHA-256**: [Generated at build time]
@@ -104,7 +106,7 @@ Status: single-page status and reproducibility summary for Kaggle host reviewers
   author={AuthZBench Team},
   year={2026},
   howpublished={\url{https://github.com/bmendonca3/authzbench-saas}},
-  note={Host Review Package Candidate Commit pending final exact-head validation}
+  note={Host Review Package Candidate Commit to be resolved from the exact reviewed checkout}
 }
 ```
 
