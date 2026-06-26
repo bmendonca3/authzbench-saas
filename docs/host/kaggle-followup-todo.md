@@ -30,7 +30,7 @@ In the meantime, I cleaned up the host-review package so the public-facing Kaggl
 Once I can access the setup instructions, I can finish the org/share step and then adapt the repo to the Docker/Harbor shape Kaggle prefers.
 
 Thanks,
-Brian
+bmendonca3
 ```
 
 ## Repo-Verified Current State
