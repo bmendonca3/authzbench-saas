@@ -60,14 +60,16 @@ Deferred to v2:
 - Frozen release boundary: v0.0 remains historical and auditable.
 - Historical checkpoint: 49-task public split, preserved only for history.
 - Active public split: 63 tasks.
-- Public evidence: scripted 63-task sanity baseline complete. The repeated
-  60-task, 54-task, 49-task, and v0.0 model/tool-agent rows are stale
-  diagnostic rows until rerun on the 63-task split or explicitly promoted as
-  composite baseline refreshes.
-- Harbor repo-side prep: skeletons, validators, metadata checks, public-safe
-  docs, and a one-task local Harbor smoke artifact are complete and validated.
-  Full Harbor parity evidence still requires a real multi-task Harbor/native
-  parity experiment; the checked-in local smoke has `parity_verified=false`.
+- Public evidence: scripted 63-task sanity baseline complete. Fourteen saved
+  full-63-task model/tool-agent executions have offline policy-v2 rescores with
+  explicit derivation, fail-closed adapter/runner handling, and content-hash
+  provenance. Older 60-task, 54-task, 49-task, and v0.0 rows remain stale or
+  historical.
+- Harbor repo-side prep: the adapter and dataset builder are packaged, an
+  isolated wheel-install/CLI smoke passes, and the checked-in six-task local
+  empty-findings experiment records six-of-six per-task native reward parity.
+  Full 63-task/model parity, hosted operation, and platform acceptance remain
+  v2 gates.
 - Private evidence: active and shadow holdout packs, protected private-path
   denial, repeated no-tools private evidence, and repeated tool-agent private
   evidence are summarized through public-safe fingerprints and counts only.
@@ -89,11 +91,14 @@ Deferred to v2:
   scorer, and task-quality checks pass.
 - Keep `docs/goal.md` local unless explicitly approved for commit.
 
-## Completion Gate
+## Internal Completion And Strict Release Gates
 
-The internal v1 goal is complete only when every item below is true. Items
-marked complete are supported by current public-safe evidence; unchecked items
-remain release-time or v2 work.
+The bounded internal v1 implementation scope is complete for the checked items
+below. The separate unchecked list is intentionally stricter: it blocks a new
+final release/readiness claim, but it does not retroactively make the internal
+implementation milestone incomplete.
+
+Internal-complete evidence:
 
 - [x] Local Harbor execution smoke evidence exists, not just template validation.
 - [x] The task-quality gate is enforced for new task families.
@@ -105,9 +110,11 @@ remain release-time or v2 work.
 - [x] Repeated private no-tools and tool-agent baselines exist with `run_count >=
   2`, active private-pack fingerprint, benchmark source SHA, source summaries,
   and protected-execution metadata.
+
+Strict release-time or v2 gates:
+
 - [ ] Paper, report, charts, and tables are refreshed against the current
   release source boundary without overclaiming.
-
 - [ ] Strict release evidence exists outside public Git.
 - [ ] `python3 scripts/validate_v1_readiness.py --release-evidence
   <external-json>` passes without `--allow-incomplete`.
@@ -142,12 +149,12 @@ execution evidence.
 
 Acceptance:
 
-- [ ] Harbor CLI/package/SDK availability is recorded from public instructions.
-- [ ] A minimal public Harbor skeleton dataset runs through the real Harbor path.
-- [ ] `adapter_metadata.json` is generated from the runtime, not copied.
-- [ ] `parity_experiment.json` compares Harbor output with matching native
+- [x] Harbor CLI/package/SDK availability is recorded from public instructions.
+- [x] A minimal public Harbor skeleton dataset runs through the real Harbor path.
+- [x] `adapter_metadata.json` is generated from the runtime, not copied.
+- [x] `parity_experiment.json` compares Harbor output with matching native
   AuthZBench-SaaS public-run evidence.
-- [ ] Public outputs remain redacted.
+- [x] Public outputs remain redacted.
 
 Commands:
 
@@ -156,10 +163,15 @@ python3 scripts/check_harbor_local_execution.py
 python3 scripts/validate_harbor_integration.py
 python3 scripts/validate_harbor_adapter_blockers.py
 python3 scripts/validate_harbor_adapter_templates.py
+python3 scripts/validate_packaged_harbor.py
 ```
 
 Blocker rule: if the runtime is unavailable, record the exact missing package,
 command, or environment requirement and leave this track blocked.
+
+Current disposition: the bounded local-execution objective is complete for the
+six-task public empty-findings sample. Do not generalize it to full-dataset or
+representative model parity, hosted operation, or Harbor platform acceptance.
 
 ### 3. Task-Quality Verification
 

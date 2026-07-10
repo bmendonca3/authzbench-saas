@@ -101,7 +101,9 @@ re-running the 60-task live baselines to bring them to 63 tasks, or
 two-tier public-split evidence. That work is the v1.1 wave, which has now
 promoted this cohort into `tasks/<app>/` and re-anchored the scripted
 sanity baseline at 63 tasks; the prior live model/tool-agent rows are
-marked `current_public_stale` pending their 63-task reruns.
+marked `current_public_stale`. Saved full-63-task executions now have current
+policy-v2 offline rescores with explicit derivation; they are not described as
+fresh model reruns.
 
 This spec is the design record for the cohort. When a v1.1 wave
 extends the public split, the first new public task should be tagged

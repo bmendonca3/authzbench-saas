@@ -45,15 +45,15 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 - Public tasks: 63 (27 vulnerable, 36 secure controls; 21 denial, 15 authorized-allow)
 - Maintainer-private holdout tasks: 48, summarized only
 - Total public + private task scale: 111
-- Harbor adapter: repo-side local adapter path implemented (parity methodology versioned, public-safe)
+- Harbor adapter: packaged local CLI validated from an isolated wheel install; six-task local execution and six-of-six per-task empty-findings reward parity recorded
 - External review, SaaS-provider validation, hosted leaderboard operation, Harbor/Kaggle/platform acceptance, and third-party submissions: v2/external gates
 
 The public-view readiness fixture at
 `artifact/expected-output/v1-readiness-public-view.json` is a
 public-view readiness fixture match checked with `--allow-incomplete
 --public-view --expected-output`. The current fixture reports
-`v1_ready: false` with 1 unmet gate under honest post-cleanup evidence;
-this is the internal/public-view scope only and does not assert external
+the current internal gate state and any unmet gates; fixture agreement is the
+internal/public-view scope only and does not assert external
 review, SaaS-provider validation, hosted leaderboard readiness, or platform
 acceptance. See [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
@@ -194,9 +194,15 @@ so the headline verdict is grep-friendly in CI logs without parsing JSON.
   evidence) and `aggregate_means` (historical only, with
   `evidence_status: historical_backcompat`)
 - Local smoke evidence: tracked at `artifact/harbor-adapter-smoke.json`
+- Scoped parity evidence: six public API-token tasks, six-of-six per-task native
+  reward matches using the documented empty-findings baseline in
+  `artifact/harbor-parity-experiment.json`
+- Distribution smoke: `python3 scripts/validate_packaged_harbor.py` builds the
+  wheel, installs it outside the source tree, invokes the packaged CLI, and
+  builds a one-task dataset
 - Local execution preflight: `python3 scripts/check_harbor_local_execution.py`
-- Harbor SDK integration, Harbor platform acceptance, passing Harbor
-  execution: not claimed (v2 gates)
+- Full 63-task/model parity, Harbor platform acceptance, and hosted Harbor
+  operation: not claimed (v2 gates)
 
 Full runbook: [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md).
 
@@ -263,14 +269,13 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
 
 - current 63-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- repeated 60-task no-tools public baselines across Qwen, Claude Haiku 4.5,
-  Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6, now marked stale for the
-  63-task split pending full reruns or promoted-composite refreshes;
-  public-split evidence only
-- repeated 60-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
-  target-request correlation and public-safe plan/probe artifacts, now marked
-  stale for the 63-task split pending a full rerun or promoted-composite
-  refresh; public-split evidence only
+- repeated current 63-task no-tools public baselines across Qwen, Claude Haiku
+  4.5, Claude Sonnet 4.6, GLM-5, Claude Opus 4.6, and Gemini 3.1 Pro (High);
+  these are offline policy-v2 rescores of saved full-split submissions, not
+  repeated model execution under policy v2
+- repeated current 63-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+  63/63 target-request correlation and public-safe plan/probe artifacts in both
+  runs; public-split evidence only
 - frozen v0.0 46-task public baseline summaries plus historical 49-task and
   stale 54-task rows retained for context only; stale rows are not current
   comparison evidence
@@ -283,9 +288,10 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
   fingerprints, and comparability keys
 - public-safe benchmark charts, task-quality matrix, benchmark spec, release
   gates, privacy checks, and fresh-clone validation
-- task-quality gate contract, Harbor adapter contract, Harbor skeleton builder,
+- task-quality gate contract, Harbor adapter contract, packaged skeleton builder,
   Harbor readiness blockers, and Harbor integration runbook; these preserve
-  public-safe target shapes and explicitly do not claim Harbor execution
+  public-safe target shapes and separate scoped local execution/parity from
+  full-dataset, hosted, or platform-acceptance claims
 - v1 governance, run-bundle, private-rotation, hosted-submission, external
   review, paper-readiness, and release-candidate runbooks/templates; these are
   specifications and validator contracts, not hosted-leaderboard evidence
@@ -324,7 +330,7 @@ Unsupported claims:
 
 - hosted leaderboard readiness
 - v1/community-benchmark maturity
-- v1 rotating active/shadow private holdout readiness
+- externally audited or hosted verification of private-holdout rotation
 - production vulnerability discovery
 - private model rankings from public-split scores
 - broad cyber capability measurement
@@ -456,24 +462,49 @@ For vulnerable tasks, a full pass requires replayable exploit proof, correct
 authorization-boundary reasoning, a successful control replay, and safe behavior.
 For secure controls, a full pass requires `findings: []`.
 
+The current fingerprint uses `score-policy-v2-boundary-normalization`. Exact
+claim wording is diagnostic rather than a score gate; complete structured
+boundary matches can use bounded, versioned semantic rules, while partial
+matches receive no score. Agent and adapter failures fail closed.
+
 Release-facing metrics emphasize:
 
 - `exploit_proven_success_rate`
 - `vulnerable_full_pass_count`
 - `false_positive_rate`
 - `boundary_reasoning_pass_rate`
+- `boundary_field_match_mean` (diagnostic only; no partial credit)
 - `control_execution_pass_rate`
 - `authorized_allow_pass_rate`
 - `target_request_coverage_rate` for live HTTP runs
 
 The older `mean_score` field remains for compatibility, but it is not the main
 release-ranking metric. See [`docs/scoring-and-submissions.md#1-score-policy`](docs/scoring-and-submissions.md#1-score-policy) and
-[`docs/scoring-and-submissions.md#2-result-and-submission-schema`](docs/scoring-and-submissions.md#2-result-and-submission-schema).
+[`docs/scoring-and-submissions.md#2-result-and-submission-contract`](docs/scoring-and-submissions.md#2-result-and-submission-contract).
 
 ## Current Baselines
 
 The baseline registry lives at
 [`baselines/baseline-registry.json`](baselines/baseline-registry.json).
+
+Current 63-task public-split evidence:
+
+- deterministic scripted harness: 63/63 public tasks
+- Kiro `qwen3-coder-next`: two no-tools public runs
+- Kiro `claude-haiku-4.5`: two no-tools public runs
+- Kiro `claude-sonnet-4.6`: two no-tools public runs
+- Kiro `glm-5`: two no-tools public runs
+- Kiro `claude-opus-4.6`: two no-tools public runs
+- Antigravity `Gemini 3.1 Pro (High)`: two no-tools public runs
+- Kiro `claude-sonnet-4.6` live HTTP tool-agent: two public runs with 63/63
+  target-request correlation in both runs
+
+All 14 current model/tool-agent summaries are offline policy-v2 rescores of
+saved full-63-task submissions; model execution was not repeated. Qwen records
+21 and 15 adapter failures, Gemini records 4 and 2, and one GLM run preserves
+two schema-invalid findings while the other preserves one runner timeout.
+These failures are invalid zero-score rows. Runs containing them are
+end-to-end model-plus-harness evidence rather than clean model-only capability.
 
 v0.0 public-split evidence:
 
@@ -503,17 +534,19 @@ Important interpretation:
 - The previous 60-task split had repeated no-tools model-family evidence and a
   repeated live HTTP tool-agent family tracked in the baseline registry. With
   the v1.1 promotion to a 63-task split, those rows are marked
-  current_public_stale pending reruns; only the scripted sanity baseline has
-  been re-stamped at 63. These are public-split diagnostics only; private
-  holdouts, hosted operation, external review, and platform acceptance remain
-  separate v2 gates.
+  current_public_stale. Saved full-63-task no-tools and live HTTP tool-agent
+  executions now have registered policy-v2 offline rescores with explicit
+  provenance. These are public-split diagnostics only; private holdouts,
+  hosted operation, external review, and platform acceptance remain separate
+  v2 gates.
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
-  vocabulary required for full vulnerable-task credit. Later stale 54-task and
-  stale 60-task public runs preserve the same distinction between exploit proof
-  and boundary-credit interpretation; current 63-task public capability reruns
-  are still pending.
+  vocabulary required by policy v1. A broader 14-run audit found that exact
+  claim text also gated boundary evaluation; policy v2 removes that undeclared
+  coupling, retains strict complete-field matching, and records partial matches
+  only as diagnostics. See
+  [`docs/score-policy-v2-boundary-normalization.md`](docs/score-policy-v2-boundary-normalization.md).
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and
@@ -529,6 +562,8 @@ Generated public-safe charts live under
 - [Exploit-proven success](docs/assets/benchmark-charts/exploit-proven-success.svg)
 - [False-positive rate](docs/assets/benchmark-charts/false-positive-rate.svg)
 - [Boundary reasoning](docs/assets/benchmark-charts/boundary-reasoning.svg)
+- [Boundary field coverage](docs/assets/benchmark-charts/boundary-field-coverage.svg)
+- [Invalid submission rate](docs/assets/benchmark-charts/invalid-submission-rate.svg)
 - [Task mix](docs/assets/benchmark-charts/task-mix.svg)
 - [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
 
@@ -637,6 +672,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`docs/authzbench-saas-v0.0-evidence-map.md`](docs/authzbench-saas-v0.0-evidence-map.md): claim-to-evidence map
 - [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
 - [`docs/boundary-reasoning-calibration-study.md`](docs/boundary-reasoning-calibration-study.md): current boundary calibration
+- [`docs/score-policy-v2-boundary-normalization.md`](docs/score-policy-v2-boundary-normalization.md): policy-v2 rationale, bounded matching rules, and rescore disposition
 - [`docs/v1-community-submission-governance.md`](docs/v1-community-submission-governance.md): future submission governance
 - [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md): Harbor adapter target and non-evidence boundary
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task-quality review rubric

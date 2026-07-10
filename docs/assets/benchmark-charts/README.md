@@ -19,5 +19,7 @@ Included charts:
 - `exploit-proven-success.svg`: vulnerable-task exploit proof
 - `false-positive-rate.svg`: secure-control false-positive rate
 - `boundary-reasoning.svg`: authorization-boundary reasoning
+- `boundary-field-coverage.svg`: diagnostic policy-v2 boundary-field coverage
+- `invalid-submission-rate.svg`: malformed and fail-closed execution output rate
 - `task-mix.svg`: public and redacted private task mix
 - `evidence-readiness.svg`: current evidence gaps

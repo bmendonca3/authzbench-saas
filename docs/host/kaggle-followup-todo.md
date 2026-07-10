@@ -25,7 +25,7 @@ Hi Ivan,
 
 Thanks again. I started the Kaggle setup path, but the published setup doc is blocked for me at the moment. When I open it while signed in as brian.mendonca6@gmail.com, Google says I need permission to access it and may need to sign in as a different user. Could you grant access to that address, or tell me which account I should use?
 
-In the meantime, I cleaned up the host-review package so the public-facing Kaggle materials match the current repo state: 63 public tasks, 48 private holdout tasks summarized publicly, and 111 total public/private tasks. I also kept the wording conservative: this is a Kaggle/Harbor review package, not an accepted or hosted benchmark. The current 63-task baseline is the deterministic scripted sanity check; model/tool-agent reruns for the expanded split are still pending.
+In the meantime, I cleaned up the host-review package so the public-facing Kaggle materials match the current repo state: 63 public tasks, 48 private holdout tasks summarized publicly, and 111 total public/private tasks. I also kept the wording conservative: this is a Kaggle/Harbor review package, not an accepted or hosted benchmark. The current public evidence includes the deterministic scripted sanity check and offline policy-v2 rescores of saved full-63-task model/tool-agent submissions; the models were not rerun under v2 and harness failures remain explicit.
 
 Once I can access the setup instructions, I can finish the org/share step and then adapt the repo to the Docker/Harbor shape Kaggle prefers.
 
@@ -39,7 +39,7 @@ bmendonca3
 - Current public/private scale: 63 public tasks plus 48 maintainer-private holdout tasks, 111 total.
 - Count evidence: `find tasks -name '*.json' -type f | wc -l` returns 63, and `artifact/v1-task-scale-roadmap.json` records `current_validated_private_holdout_task_count=48`.
 - Claim boundary: v1.0-internal is internal/non-external only. Do not claim Kaggle acceptance, Harbor acceptance, hosted leaderboard operation, external validation, SaaS-provider validation, or third-party submissions.
-- Current model/tool-agent baselines are stale for 63-task comparison until rerun or explicitly promoted through the documented composite-refresh path.
+- Fourteen saved full-63-task model/tool-agent runs have current policy-v2 offline rescores with explicit derivation and fail-closed execution metadata; older 60-task and smaller rows remain stale.
 - Current stale-wording cleanup: host-facing Kaggle materials now say 63 public tasks and 111 public/private task scale. Historical 60-task baseline variance entries remain historical because they describe older `current_public_stale` rows.
 
 ## Maintainer todo

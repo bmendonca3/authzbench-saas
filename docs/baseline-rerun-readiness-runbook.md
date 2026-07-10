@@ -2,11 +2,17 @@
 
 > **See also:** [`docs/baseline-credibility.md`](baseline-credibility.md) for stale-baseline labeling and [`docs/claims-and-evidence.md`](claims-and-evidence.md) for the canonical claim ledger.
 
-This runbook documents the exact commands, prerequisites, and post-run steps for rerunning model and tool-agent baselines at the current 63-task public split. It is ready to execute when Kiro CLI access is restored.
+This runbook documents the exact commands, prerequisites, and post-run steps
+for fresh model and tool-agent re-execution at the current 63-task public split.
+It remains useful when a fresh prompt/adapter/environment run is required.
 
 ## Why This Exists
 
-All model and tool-agent baselines are stale at 60/54/49/46/44/15 tasks. The current public split is 63 tasks. The scripted sanity baseline at 63 tasks is current and validates harness/scorer wiring, but it is not model or tool-agent capability evidence. Rerunning the baselines at 63 tasks restores current capability evidence and allows the `--require-current-public` strict path to pass without `--allow-stale-pending-rerun`.
+Older model and tool-agent baselines at 60/54/49/46/44/15 tasks are stale. The
+current public split is 63 tasks. Fourteen saved full-63-task executions now
+have current offline policy-v2 rescores with explicit provenance, so the
+registry's strict current-public path passes. Those rows are not fresh model
+executions under v2; use this runbook when that stronger evidence is needed.
 
 ## Prerequisites
 

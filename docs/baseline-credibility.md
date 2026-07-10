@@ -2,7 +2,13 @@
 
 AuthZBench-SaaS should not treat every run artifact as a leaderboard result.
 Baseline files need to say what they prove, what they do not prove, and whether
-they are current enough for the v1.0-internal label. Stale baselines are not current 63-task capability evidence and are a roadmap gap for stronger current comparisons, not a blocker to the v1.0-internal label. Leaderboard-candidate rows are inside the repo evidence model, not hosted leaderboard operation, not platform acceptance, and not third-party submissions.
+they are current enough for the v1.0-internal label. The registry now contains
+current 63-task public-split no-tools and live HTTP tool-agent rows, derived by
+offline policy-v2 rescoring of saved full-split submissions; older 60-task,
+54-task, 49-task, 46-task, and 44-task rows remain stale or historical audit
+evidence. Leaderboard-candidate rows are inside the repo
+evidence model, not hosted leaderboard operation, not platform acceptance, and
+not third-party submissions.
 
 ## Registry
 
@@ -25,10 +31,12 @@ The registry separates:
 It also labels every summary as one of:
 
 - `current_public_split`: valid for the current public task split. For model
-  and tool-agent rows this can be a full current-split rerun, or an explicitly
-  labeled `promoted_cohort_delta_merge` composite when a prior immutable public
-  baseline is combined with fresh reruns of only the newly promoted public
-  tasks. Composite rows must not be described as full reruns.
+  and tool-agent rows this can be a full current-split rerun, an offline rescore
+  of saved full-split submissions with validated content-hash provenance, or an
+  explicitly labeled `promoted_cohort_delta_merge` composite when a prior
+  immutable public baseline is combined with fresh reruns of only the newly
+  promoted public tasks. Neither offline rescores nor composites may be
+  described as fresh full reruns.
 - `current_public_harness_check`: current public split, but only a deterministic
   harness sanity check.
 - `current_public_stale`: previously current public-split evidence that no
@@ -44,15 +52,12 @@ as current-comparable evidence.
 
 ## v0 Baseline Bar
 
-The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
-63-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
-46-task release snapshot. The 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6,
-GLM-5, and Claude Opus 4.6 no-tools families are stale, and the 54-task
-`claude-sonnet-4.6` live HTTP tool-agent family is stale until rerun.
-The preceding 49-task split has five repeated
-no-tools model-family baselines plus one repeated live HTTP tool-agent family,
-but every one of those rows is stale for current 63-task comparison. The old
-46-task evidence remains auditable as frozen v0.0 release evidence.
+The baseline sub-gate currently has six repeated 63-task no-tools model-family
+baselines (five Kiro families plus Antigravity Gemini) and one repeated 63-task live HTTP Kiro
+`claude-sonnet-4.6` tool-agent family on the live public split. The frozen v0.0
+46-task release snapshot remains auditable release evidence. The 60-task,
+54-task, and 49-task Kiro rows are stale for current 63-task comparison, and
+the old 46-task evidence remains frozen v0.0 release evidence.
 
 The v0 baseline bar is:
 
@@ -91,6 +96,30 @@ It proves the expanded v1-prep public split, scorer, and scripted oracle path
 agree. It is not model capability evidence, a leaderboard-candidate row, private-holdout
 evidence, or a substitute for current model or tool-agent baselines.
 
+The seven current 63-task model/tool-agent families each have two preserved
+full-split executions. Their submissions were rescored offline under
+`score-policy-v2-boundary-normalization`; the models were not executed again.
+The derived summaries bind source evidence, current scorer/rescore sources, and
+task rows with hashes, and the validator recomputes their aggregates.
+
+This disposition matters for interpretation:
+
+- Haiku, Sonnet, Opus, and the live Sonnet tool-agent pair have zero adapter or
+  infrastructure failures in both runs.
+- Qwen has 21 and 15 adapter failures; its second run also preserves one outer
+  runner failure. Gemini has 4 and 2 adapter failures, with one infrastructure
+  failure in its second run. These rows fail closed at zero and make those runs
+  end-to-end model-plus-harness evidence rather than clean model-only evidence.
+- GLM run 1 has two invalid findings that omitted the required
+  `out_of_scope_actions` list; run 2 has one preserved runner timeout.
+- Policy v2 reports complete boundary credit only when every expected field
+  matches exactly or through the bounded semantic rules. Partial-field coverage
+  is diagnostic and receives no score.
+
+The current summaries are comparable only within the policy-v2 fingerprint and
+their recorded result derivation. They are not fresh model executions under a
+new prompt/adapter, private-holdout results, or hosted leaderboard rows.
+
 The stale 54-task `qwen3-coder-next` no-tools baseline has two runs on the
 stale 54-task fingerprint. They pass 32 and 33 tasks, prove 0 and 3 of 21 vulnerable
 replays, keep vulnerable boundary reasoning at `0.0`, and fully pass no
@@ -102,7 +131,9 @@ to a valid empty-findings fallback, so the task remains in the denominator and
 can pass a secure control or fail a vulnerable task. The summaries also explain
 the 60-second inner model-call timeout and 75-second outer per-task timeout.
 Run 1's `0.9524` vulnerable safety rate is caused by an invalid submission from
-an outer runner failure, not an unsafe action. This is stale public-split
+an outer runner failure, not an unsafe action. Its historical policy-v1
+`false_positive_rate` also used the broader control-failure meaning; policy v2
+reports false findings and `control_failure_rate` separately. This is stale public-split
 evidence for one model family, not current 63-task evidence, private evidence,
 a stable cross-model comparison, or a leaderboard-candidate row.
 
@@ -251,12 +282,10 @@ The registry uses `requires_rerun_before_current_comparison` to mark stale rows.
 That field means the row cannot support live 63-task comparison. It does not
 mean the frozen v0.0 release snapshot itself needs to be rerun.
 
-The current public scripted sanity milestone is restored for the 63-task
-fingerprint, but current public model/tool-agent capability coverage is not
-restored yet. The repeated 60-task no-tools and live HTTP tool-agent rows are
-stale until full 63-task reruns or promoted-composite refreshes complete.
-Public baselines must be paired with protected private-holdout operation before
-leaderboard claims.
+The current public scripted sanity milestone, repeated no-tools Kiro
+model-family coverage, and repeated live HTTP Kiro tool-agent coverage are all
+restored for the 63-task fingerprint. Public baselines must still be paired with
+protected private-holdout operation before leaderboard claims.
 
 ## Reviewer validation and interpretation
 
@@ -273,7 +302,9 @@ public task suite, baseline registry, task quality gate, claim-boundary
 check, and the public-view readiness fixture match.
 
 Current scripted sanity is deterministic harness verification only. It is
-not model capability evidence, not leaderboard evidence, not private-holdout evidence, and not external validation. Older 60-task,
-54-task, 49-task, 46-task, and 44-task rows are stale or historical
-release-snapshot evidence only; they do not count toward current 63-task
-model-family coverage or repeated-baseline coverage.
+not model capability evidence, not leaderboard evidence, not private-holdout
+evidence, and not external validation. The current 63-task no-tools and live
+HTTP tool-agent rows are public-split end-to-end model/harness evidence only;
+failure-free pairs support cleaner model-output comparison. Older
+60-task, 54-task, 49-task, 46-task, and 44-task rows are stale or historical
+release-snapshot evidence only.

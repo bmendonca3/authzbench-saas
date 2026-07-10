@@ -1,6 +1,6 @@
 # Release Status
 
-Last updated: 2026-06-23
+Last updated: 2026-07-10
 
 ## v1.0-Internal Status
 
@@ -21,11 +21,14 @@ Current v1.0-internal boundary:
   correlation in both runs. All are stale for current 63-task comparison.
 - v1.0-internal does not imply hosted leaderboard operation, external
   validation, platform acceptance, or community-scale benchmark maturity.
-- Harbor preparation includes repo-side adapter/runbook artifacts plus a
-  tracked one-task local Harbor smoke for task/agent/verifier wiring. Adapter
-  parity and multi-task Harbor evidence remain incomplete; local/containerized
-  submission smoke and private execution evidence are tracked as public-safe
-  summaries.
+- Harbor preparation includes a packaged adapter CLI, isolated wheel-install
+  smoke, six-task local execution, and six-of-six per-task empty-findings
+  reward parity. Full 63-task/model parity, hosted operation, and platform
+  acceptance remain incomplete.
+- The active scorer fingerprint is
+  `score-policy-v2-boundary-normalization`. It removes the undeclared exact
+  claim-string gate, keeps boundary credit binary, and fails adapter/runner
+  errors closed.
 
 Current main / v1.0-internal split:
 
@@ -34,8 +37,15 @@ Current main / v1.0-internal split:
 - 36 secure-control tasks
 - 21 denial controls and 15 authorized-allow controls
 - one current 63-task deterministic scripted sanity baseline
+- six current repeated 63-task public no-tools model-family baselines: five
+  Kiro families plus Antigravity Gemini 3.1 Pro (High)
+- one current repeated 63-task public live HTTP Kiro `claude-sonnet-4.6`
+  tool-agent baseline with 63/63 target-request correlation in both runs
+- all fourteen current model/tool-agent summaries are policy-v2 offline
+  rescores of saved full-split submissions; model execution was not repeated
+  and recorded adapter/runner failures fail closed
 - six stale repeated 60-task public no-tools/tool-agent capability baseline
-  families, pending full 63-task reruns or promoted-composite refreshes
+  families retained for audit only
 - five stale repeated 54-task no-tools model-family baselines: Qwen with
   model-output failure diagnostics, Claude Haiku 4.5 with complete zero-failure
   task artifacts, Claude Sonnet 4.6 with complete zero-failure task artifacts
@@ -61,8 +71,15 @@ baseline registry as historical evidence.
 - 36 secure-control tasks
 - 21 denial controls and 15 authorized-allow controls
 - one current deterministic scripted harness check
+- six current repeated 63-task public no-tools model-family baselines: five
+  Kiro families plus Antigravity Gemini 3.1 Pro (High)
+- one current repeated 63-task public live HTTP Kiro `claude-sonnet-4.6`
+  tool-agent baseline with 63/63 target-request correlation in both runs
+- policy-v2 provenance records source evidence hashes, current scorer/tool
+  hashes, task-row hashes, and aggregate consistency for all fourteen derived
+  summaries
 - six stale repeated 60-task public no-tools/tool-agent capability baseline
-  families, pending full 63-task reruns or promoted-composite refreshes
+  families retained for audit only
 - five stale repeated 54-task no-tools Kiro model baselines:
   `qwen3-coder-next`, with explicit model-output failure diagnostics, and
   `claude-haiku-4.5`, with zero adapter, runner, and invalid-submission failures;
@@ -160,7 +177,7 @@ python3 scripts/validate_harbor_adapter_templates.py
 python3 scripts/validate_harbor_integration.py
 python3 scripts/check_harbor_local_execution.py
 python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
-python3 -m compileall -q authzbench apps tests scripts
+python3 -m compileall -q authzbench authzbench_harbor apps tests scripts
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
 python3 scripts/validate_public.py --include-scripted-baseline
 python3 scripts/validate_public.py --include-scripted-baseline --include-container-smoke
@@ -169,10 +186,12 @@ python3 scripts/validate_public.py --include-scripted-baseline --include-contain
 The frozen v0.0 release snapshot remains baseline-ready. The repeated
 no-tools model families plus one repeated live HTTP tool-agent family for the
 49-task, 54-task, and 60-task public splits are now stale after the 63-task
-expansion. The current public-split baseline bar is the deterministic 63-task
-scripted sanity check; current 63-task model and live HTTP tool-agent capability
-baselines are still absent until full reruns or promoted-composite refreshes
-complete. The public-view readiness fixture is checked with the public-safe
+expansion. The current public-split baseline bar now includes the deterministic
+63-task scripted sanity check, five repeated Kiro no-tools families, one
+repeated Antigravity Gemini no-tools family, and one repeated 63-task live HTTP
+Kiro `claude-sonnet-4.6` tool-agent family. The fourteen model/tool-agent rows
+are offline policy-v2 rescores of saved full-split submissions; they are not
+fresh model executions. The public-view readiness fixture is checked with the public-safe
 validator invocation:
 
 ```bash
@@ -235,9 +254,30 @@ private-holdout, hosted-leaderboard, or v1 release evidence.
 
 ## Baseline Results
 
+The current 63-task model/tool rows below are offline policy-v2 rescores of
+saved full-split submissions; model execution was not repeated. The
+false-positive column now counts submitted findings on controls. Broader
+execution/control failures and invalid outputs remain explicit in
+`control_failure_rate`, `invalid_submission_count`, and the registry notes.
+Older rows retain their historical policy semantics.
+
 | Baseline | Tasks | Passed | Exploit-proven success | Boundary reasoning | False-positive rate | Authorized-allow pass |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Scripted sanity baseline, current v1-prep split | 63 | 63 | 1.0 | 1.0 | 0.0 | 1.0 |
+| Kiro `qwen3-coder-next` no-tools current 63-task run 1 | 63 | 27 | 0.037 | 0.037 | 0.0278 | 0.7333 |
+| Kiro `qwen3-coder-next` no-tools current 63-task run 2 | 63 | 31 | 0.1111 | 0.037 | 0.0 | 0.8667 |
+| Kiro `claude-haiku-4.5` no-tools current 63-task run 1 | 63 | 36 | 0.1852 | 0.0741 | 0.0278 | 0.9333 |
+| Kiro `claude-haiku-4.5` no-tools current 63-task run 2 | 63 | 38 | 0.1852 | 0.1852 | 0.0278 | 0.9333 |
+| Kiro `claude-sonnet-4.6` no-tools current 63-task run 1 | 63 | 41 | 0.5556 | 0.2963 | 0.0278 | 1.0 |
+| Kiro `claude-sonnet-4.6` no-tools current 63-task run 2 | 63 | 41 | 0.6667 | 0.2593 | 0.0 | 1.0 |
+| Kiro `glm-5` no-tools current 63-task run 1 | 63 | 36 | 0.2222 | 0.0 | 0.0 | 1.0 |
+| Kiro `glm-5` no-tools current 63-task run 2 | 63 | 36 | 0.1111 | 0.037 | 0.0 | 0.9333 |
+| Kiro `claude-opus-4.6` no-tools current 63-task run 1 | 63 | 39 | 0.5556 | 0.2222 | 0.0 | 1.0 |
+| Kiro `claude-opus-4.6` no-tools current 63-task run 2 | 63 | 40 | 0.5556 | 0.2593 | 0.0 | 1.0 |
+| Antigravity `Gemini 3.1 Pro (High)` current 63-task run 1 | 63 | 34 | 0.5556 | 0.0 | 0.0 | 1.0 |
+| Antigravity `Gemini 3.1 Pro (High)` current 63-task run 2 | 63 | 36 | 0.7037 | 0.037 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` current 63-task run 1 | 63 | 42 | 0.6296 | 0.3333 | 0.0 | 1.0 |
+| Kiro live HTTP tool-agent `claude-sonnet-4.6` current 63-task run 2 | 63 | 43 | 0.5926 | 0.3704 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale 54-task run 1 | 54 | 32 | 0.0 | 0.0 | 0.0303 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale 54-task run 2 | 54 | 33 | 0.1429 | 0.0 | 0.0 | 1.0 |
 | Kiro `claude-haiku-4.5` no-tools stale 54-task run 1 | 54 | 32 | 0.1905 | 0.0 | 0.0303 | 0.9286 |
@@ -288,6 +328,12 @@ private-holdout, hosted-leaderboard, or v1 release evidence.
 | Kiro `qwen3-coder-next` no-tools stale run 1 | 44 | 26 | 0.0 | 0.0 | 0.0 | 1.0 |
 | Kiro `qwen3-coder-next` no-tools stale run 2 | 44 | 25 | 0.0 | 0.0 | 0.0385 | 1.0 |
 | Kiro live HTTP tool-agent `claude-sonnet-4.6` stale 44-task snapshot | 44 | 26 | 0.7778 | 0.0 | 0.0 | 1.0 |
+
+The table above preserves each historical summary's emitted metric semantics.
+Under policy v1, `false_positive_rate` sometimes counted any failed secure
+control, including execution failures. Policy v2 aligns
+`false_positive_rate` with submitted false findings and exposes the broader
+`control_failure_rate` separately. Historical rows are not rewritten.
 
 For stale 54-task Qwen run 1, `false_positive_rate: 0.0303` means one of 33 secure
 controls failed because the outer runner produced an invalid submission.
@@ -359,6 +405,10 @@ expanded beyond that snapshot.
 - tracked baseline summaries exist
 - current 63-task deterministic scripted harness summary exists for the live
   v1-prep split
+- six repeated current 63-task no-tools model-family baselines exist for the
+  live public split: five Kiro families plus Antigravity Gemini
+- one repeated current 63-task live HTTP Kiro `claude-sonnet-4.6` tool-agent
+  family exists with 63/63 target-request correlation in both runs
 - five repeated stale 54-task no-tools model-family baselines and one repeated
   stale 54-task live HTTP tool-agent family exist on the previous 54-task public split
 - frozen v0.0 deterministic scripted harness summary exists for the 46-task
@@ -370,8 +420,8 @@ expanded beyond that snapshot.
 - five repeated 49-task no-tools model-family baselines and one repeated
   49-task live HTTP tool-agent family remain as stale historical evidence
 - baseline registry exists and passes consistency validation while reporting
-  `v0_baseline_ready: false` for the live 63-task public baseline bar and
-  `v0_release_snapshot_ready: true` for the frozen v0.0 release snapshot
+  current 63-task public-split model and tool-agent rows separately from
+  the frozen v0.0 release snapshot
 - stale 44-task heuristic and Kiro live HTTP summaries are retained for context,
   but they no longer count as current public comparison evidence
 - repeated Kiro model-family summaries remain useful 44-task snapshots, but they

@@ -13,8 +13,8 @@ fixture is a fixture-matching public-view check: `--allow-incomplete`
 returns 0 when the rendered output matches the expected fixture, even if
 `v1_ready` is false under honest post-cleanup evidence (for example,
 release-affecting docs changed after the pinned `benchmark_source_sha`).
-The current fixture reports `v1_ready: false` with 1 unmet gate; this is
-not a claim of external validation.
+The fixture reports the current internal gate state and any unmet gates; a
+fixture match is not a claim of external validation.
 
 It does not assert independent external review, SaaS-provider scenario
 validation, hosted leaderboard operation, or platform acceptance.
@@ -31,12 +31,12 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md`; public-view readiness fixture match with `--allow-incomplete`; current fixture reports `v1_ready: false` with 1 unmet gate under honest post-cleanup evidence; internal/non-external scope only | "community benchmark", "externally validated benchmark", "hosted leaderboard operation benchmark" |
 | **63 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "hosted leaderboard operation public split" |
 | **48 private holdout tasks** | Supported by fingerprint / count | Ignored local private packs, rotation metadata, and public redaction summaries | "publicly reproducible private holdouts", "open private holdout task list" |
-| **Local Harbor adapter path** | Supported | `authzbench_harbor/` package, local smoke execution, and parity methodology contract; current checked-in local smoke has `parity_verified=false` until real multi-task Harbor/native parity evidence is recorded | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready" |
+| **Local Harbor adapter path** | Supported | Packaged `authzbench_harbor/` CLI, isolated wheel-install smoke, six-task local Harbor execution, and six-of-six per-task empty-findings reward parity in `artifact/harbor-parity-experiment.json` | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready", "full 63-task/model parity" |
 | **Local / containerized submission smoke** | Supported | `artifact/submission-runner-smoke.json` and local test suites | "hosted leaderboard", "hosted submission operation" |
 | **Deterministic backend-replay scorer** | Supported | Scorer package codebase and test suites | "human-judged scoring", "model-graded scoring" |
 | **Public / private split with holdout governance** | Supported | Rotation and lifecycle specification documents | "public leaderboard operation", "open private holdout reuse" |
 | **Current scripted sanity baseline** | Supported | Fresh 63-task scripted sanity baseline summaries | "current model baseline", "current tool-agent baseline" |
-| **Fresh model / tool-agent baseline** | Partially supported (pending reruns) | The scripted sanity baseline is current at 63 tasks; prior 60-task model/tool-agent rows are marked `current_public_stale` in `baselines/baseline-registry.json` pending full reruns or explicitly labeled promoted-composite refreshes. These stale rows are not current model/tool-agent capability evidence. | "fresh 63-task model/tool-agent baseline" unless every public task was rerun, "all major model families", "all current frontier models" |
+| **Current model / tool-agent baseline** | Supported with derivation limits | Fourteen saved full-63-task public runs were rescored offline under policy v2 without repeating model execution. Each summary hashes its source evidence and derived rows. Adapter/runner failures fail closed and affected rows are end-to-end model-plus-harness evidence, not clean model-only evidence. | "fresh policy-v2 model rerun", "all major model families", "all current frontier models", or clean model-only capability when a run records harness failures |
 | **Synthetic targets only** | Supported | Sandbox applications; absence of real-SaaS API keys or integrations | "production SaaS coverage", "real customer SaaS authorization coverage" |
 | **Independent external review** | Not done | Intake packet exists; no reviewer dispositions recorded | "external review complete", "industry-standard benchmark" |
 | **SaaS-provider scenario validation** | Not done | Validation tracks defined; no provider endorsements recorded | "SaaS-validated", "real-world validated", "AppSec-reviewed" |
@@ -55,10 +55,11 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **Scripted sanity baseline** | Validates the public split scorer and oracle paths. | Model capability or private holdout performance. |
 | **Stale baselines** | Stale runs remain auditable as historical snapshots. | Direct comparability with the current 63-task split. |
 | **Promoted-composite public baselines** | When present, combine immutable prior public-split evidence with fresh reruns of exactly the newly promoted public tasks and are current only by explicit composite construction. | A fresh full rerun of every public task. |
+| **Offline-rescored public baselines** | Evaluate preserved full-split submissions under the corrected scorer with fail-closed execution metadata and content-hash provenance. | Repeated model execution under the new scorer, prompt, adapter, or environment. |
 | **Scorer replay** | Submitted evidence can be verified against backend behavior. | The agent interacted with a live target unless request logs are correlated. |
 | **Secure controls** | The benchmark penalizes false positives and over-reporting. | All real SaaS false-positive patterns are covered. |
 | **Rotation metadata** | Private packs are defined, verified, and gitignored. | Public reproducibility of the private holdouts. |
-| **Harbor adapter skeleton** | Target shape is Harbor-compatible; locally smoked. | Harbor platform acceptance, Harbor parity verification, or hosted Harbor-side operation. |
+| **Local Harbor adapter and scoped parity** | The packaged CLI installs outside the source tree; a six-task public empty-findings smoke completed and matched native rewards per task. | Full 63-task parity, representative model/agent parity, Harbor platform acceptance, or hosted Harbor-side operation. |
 
 ---
 
@@ -74,6 +75,8 @@ Use only the approved terminology below when describing AuthZBench-SaaS.
 * `boundary-vocabulary calibration`
 * `v1/community submission governance specification`
 * `repo-side local Harbor adapter path`
+* `six-task local Harbor/native empty-findings parity`
+* `offline rescore of saved public submissions under score-policy-v2`
 * `public-view readiness fixture match (--allow-incomplete)`
 
 ### Avoid Wording

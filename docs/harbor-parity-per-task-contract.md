@@ -72,18 +72,16 @@ schema `harbor-parity-experiment-v1`. Required fields:
 
 ## Current state
 
-At the time of this writing, Harbor CLI is not installed. The live
-`artifact/harbor-parity-experiment.json` is therefore marked
-`evidence_status=blocked` and `parity_verified=false`. The
-`per_task_pairing` contract is fully declared (methodology, threshold,
-tolerance, empty per-task maps) so the next run of
-`scripts/run_harbor_parity_experiment.py` can populate the maps without
-schema changes.
+The current `artifact/harbor-parity-experiment.json` records a completed local
+six-task public empty-findings experiment with
+`evidence_status=current`, `parity_methodology=per_task_pairing`, and
+`parity_verified=true`. All six per-task native scores match Harbor rewards.
+This is scoped local parity, not full 63-task/model parity or platform
+acceptance. Harbor CLI discovery in a fresh checkout may still be false even
+though the redacted run evidence remains tracked.
 
-The historical aggregate-means file is preserved for back-compat with
-the pre per-task reward extraction era. The new live file points at
-the historical file via `historical_backcompat_pointer` so reviewers
-can find both.
+The historical aggregate-means file is preserved separately for back-compat
+with the pre per-task reward extraction era.
 
 ## What v1 release evidence requires
 

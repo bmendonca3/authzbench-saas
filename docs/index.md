@@ -26,6 +26,7 @@ If you are running evaluations, reviewing code, or adding new tasks to the bench
 * **[Benchmark Specification](benchmark-spec.md)**: Benchmark design, evaluation split, and claim boundaries.
 * **[Task Quality Rubric](task-quality-rubric.md)**: Guidelines for writing new vulnerable and secure control tasks.
 * **[Scoring & Submissions Guide](scoring-and-submissions.md)**: Replay-based scoring mechanics, submission schema, and anti-gaming policy.
+* **[Score Policy v2 Boundary Normalization](score-policy-v2-boundary-normalization.md)**: Evidence-backed rationale, bounded semantic rules, fail-closed execution, and offline-rescore provenance.
 * **[Baseline Credibility](baseline-credibility.md)**: Baseline registry labels, current scripted sanity interpretation, and stale/historical baseline guidance.
 * **[Baseline Rerun Readiness Runbook](baseline-rerun-readiness-runbook.md)**: Exact commands, prerequisites, and post-run steps for rerunning model and tool-agent baselines at the current 63-task public split.
 * **[Harbor Integration Runbook](harbor-integration-runbook.md)**: Scaffolding, parity validator, and CLI commands for Harbor adapters.

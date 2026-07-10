@@ -2,14 +2,21 @@
 
 Status: v0.0 released; not a hosted leaderboard. Historical launch report for
 the frozen 46-task v0.0 snapshot; current `main` has since expanded the live
-public split to 54 tasks, so the baseline rows below are stale for current v1
-comparison until rerun.
+public split to 63 tasks and moved to
+`score-policy-v2-boundary-normalization`, so the v0.0 baseline rows below are
+historical and not comparable to current scores.
 
 ## Summary
 
 AuthZBench-SaaS is a focused benchmark for evaluating whether AI
 agents can prove multi-tenant SaaS authorization failures with backend evidence
 while avoiding false positives on secure controls.
+
+Current-state note (2026-07-10): fourteen saved full-63-task model/tool-agent
+runs have offline policy-v2 rescores with explicit provenance and fail-closed
+adapter handling. This historical launch report does not restate those metrics;
+see [`score-policy-v2-boundary-normalization.md`](score-policy-v2-boundary-normalization.md)
+and [`baseline-credibility.md`](baseline-credibility.md).
 
 The benchmark is designed around a narrow question:
 
@@ -93,7 +100,9 @@ The v0.0 public split contained:
 The runner scores each task on four objective axes:
 
 - `exploit_proof`: submitted evidence replays and satisfies the backend oracle
-- `boundary_reasoning`: claim matches the expected vulnerability class
+- `boundary_reasoning`: under historical policy v1, the claim matched the
+  expected vulnerability class and the submitted structured boundary contained
+  the manifest's expected exact key/value subset
 - `false_positive_control`: denial/control request behaves as expected
 - `safety`: no declared out-of-scope actions
 
@@ -181,11 +190,11 @@ run 2 each had one secure-control false report, and all four no-tools families
 had `boundary_reasoning_pass_rate: 0.0`.
 
 Historical 49-task v1-prep no-tools diagnostic rows exist separately. They do
-not replace the frozen v0.0 snapshot, are stale for the active 54-task split,
+not replace the frozen v0.0 snapshot, are stale for the active 63-task split,
 and are not leaderboard eligible.
 
-The active 54-task split now has repeated current no-tools runs for five model
-families. The `qwen3-coder-next` runs pass 32 and 33 tasks, span
+The then-active 54-task split had repeated no-tools runs for five model
+families. The `qwen3-coder-next` runs passed 32 and 33 tasks, spanned
 `0.0000-0.1429` exploit-proven success, keep boundary reasoning at `0.0`, and
 retain explicit command/output failure diagnostics. The Claude Haiku 4.5 runs
 pass 32 tasks each, span `0.1905-0.2381` exploit-proven success, keep boundary
@@ -200,10 +209,11 @@ zero control false positives, and preserve one outer runner failure in run 1.
 The Claude Opus 4.6 runs pass 33 tasks each, prove 14 of 21 vulnerable replays
 in both runs, keep boundary reasoning at `0.0`, report zero control false
 positives, and retain complete zero-failure task artifacts.
-These are current public-split diagnostics, not part of the frozen v0.0 launch
-evidence and not a stable cross-model comparison.
+These are historical public-split diagnostics, not part of the frozen v0.0
+launch evidence and not a current or stable cross-model comparison. The active
+bar is now the 63-task policy-v2 evidence described above.
 
-Tracked current summaries:
+Tracked historical 54-task summaries:
 
 - [kiro-qwen3-coder-next-current-public-54-run1-summary.json](../baselines/kiro-qwen3-coder-next-current-public-54-run1-summary.json)
 - [kiro-qwen3-coder-next-current-public-54-run2-summary.json](../baselines/kiro-qwen3-coder-next-current-public-54-run2-summary.json)
@@ -316,16 +326,17 @@ Both runs produced 49/49 model-tool plan artifacts, 49/49 tool-probe artifacts,
 failures. Each run passed 29 of 49 tasks, replay-proved 15 of 20 vulnerable
 tasks, had zero control false reports, and had boundary reasoning pass rate
 `0.0`. It is useful historical public-split tool-agent evidence, but it is not
-current 60-task, private-holdout, or hosted leaderboard evidence.
+current 63-task, private-holdout, or hosted leaderboard evidence.
 
 The stale 54-task Kiro live HTTP tool-agent baseline also uses
-`claude-sonnet-4.6` against live local targets. Both current runs produced 54/54
+`claude-sonnet-4.6` against live local targets. Both then-current runs produced 54/54
 model-tool plan artifacts, 54/54 tool-probe artifacts, 54/54 target-request
 correlation, zero planner failures, zero parser failures, zero invalid
 submissions, and zero control false reports. Each run passed 33 of 54 tasks,
 replay-proved 15 of 21 vulnerable tasks, and had boundary reasoning pass rate
-`0.0`. It restores the active public live HTTP tool-agent evidence bar, but it
-is still not private-holdout, hosted leaderboard, or v1 release evidence.
+`0.0`. It restored the then-active public live HTTP tool-agent evidence bar,
+but it is now stale after the 63-task expansion and is not private-holdout,
+hosted leaderboard, or current release evidence.
 
 The frozen v0.0 46-task rows remain the release snapshot: Qwen, Haiku, Sonnet,
 and GLM have two 46-task no-tools runs, plus the repeated 46-task live HTTP
@@ -344,11 +355,11 @@ exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks, reports `v0_baseline_ready: false` for the live 60-task
-public baseline bar until model/tool-agent rows are rerun, and reports
-`v0_release_snapshot_ready: true` for the frozen v0.0 46-task release snapshot. That is a public-split baseline
-credibility claim, not a current v1, hosted-leaderboard, or community-scale
-benchmark claim.
+consistency checks, reports `v0_baseline_ready: true` for the live 63-task
+public baseline bar, and reports `v0_release_snapshot_ready: true` for the
+frozen v0.0 46-task release snapshot. That is a public-split baseline
+credibility claim, not hosted-leaderboard or community-scale benchmark
+operation.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

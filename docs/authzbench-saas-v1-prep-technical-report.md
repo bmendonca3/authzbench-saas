@@ -11,9 +11,8 @@ v1.1 multi-step discovery wave and a 63-task public split, but it is not a v1
 release, a hosted leaderboard, or a community-scale benchmark.
 
 The frozen v0.0 evidence remains auditable at the 46-task release boundary. The
-46-task release baselines, 49-task v1-prep model/tool-agent baselines, and
-54-task v1-prep model/tool-agent baselines are stale for current 63-task
-comparison. Repeated 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5,
+46-task release baselines and the 49-task, 54-task, and 60-task v1-prep
+model/tool-agent baselines are stale for current 63-task comparison. Repeated 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6, GLM-5,
 and Claude Opus 4.6 no-tools families plus the repeated 54-task Claude Sonnet
 4.6 live HTTP tool-agent family remain public-split diagnostic evidence only;
 they do not provide current 63-task comparison, private-holdout,
@@ -45,15 +44,31 @@ that the expanded manifests, scorer, scripted oracle path, and baseline registry
 agree. It does not prove model capability, leaderboard eligibility,
 private-holdout performance, or v1 readiness.
 
+Seven repeated 63-task model/tool-agent families are current public-split
+evidence: five Kiro no-tools families, Antigravity Gemini 3.1 Pro (High), and a
+Kiro live HTTP Sonnet tool-agent family. Their fourteen saved full-split
+submissions were rescored offline under
+`score-policy-v2-boundary-normalization`; model execution was not repeated.
+The summaries record source and target provenance, fail adapter/runner errors
+closed, and separate submitted false findings from broader control failures.
+Runs with harness failures are end-to-end model-plus-harness evidence, not clean
+model-only capability. See
+[`score-policy-v2-boundary-normalization.md`](score-policy-v2-boundary-normalization.md)
+for the aggregate disposition.
+
+The remaining paragraphs in this section preserve historical 54-task
+diagnostics rather than restating current policy-v2 results.
+
 Two stale 54-task `qwen3-coder-next` no-tools runs provide repeated diagnostic
 evidence for one model family. They pass 32 and 33 tasks, span
 `0.0000-0.1429` exploit-proven success, keep vulnerable boundary reasoning at
 `0.0000`, and fully pass no vulnerable task. Their summaries retain seven and
 twelve task-level adapter failures, including inner Kiro command failures and
-outputs without a usable submission object. Those failures become valid
-empty-findings fallbacks that remain in the scored denominator; the first run
+outputs without a usable submission object. Under the historical adapter,
+those failures became valid empty-findings fallbacks in the scored denominator; the first run
 also has two outer runner failures that become invalid submissions. The pair is
-public-split evidence only.
+stale public-split evidence only. Current adapters and policy-v2 rescoring fail
+these paths closed.
 
 Two stale 54-task `claude-haiku-4.5` no-tools runs provide a second repeated
 model family. Both pass 32 tasks, prove 4 and 5 of 21 vulnerable replays, keep
@@ -121,11 +136,16 @@ keys, but do not preserve the oracle-compatible boundary vocabulary required by
 high-exploit-proof, zero-boundary-credit pattern, but the calibration study
 itself remains scoped to the 49-task checkpoint. The zero boundary-reasoning
 result is therefore a valid score-contract result, not a reason to
-retroactively relax scoring.
+retroactively relax policy-v1 scoring. A later fourteen-run audit found that
+exact oracle claim text also gated boundary evaluation. Policy v2 removes that
+undeclared coupling while keeping complete-field boundary credit strict; v1
+rows remain historical and are not directly compared to v2.
 
 The current registry separates:
 
 - `current_public_harness_check` for deterministic current-split sanity checks
+- `current_public_split` with explicit `result_derivation` for current
+  full-split model/tool rows
 - `current_public_stale` for formerly current rows that need rerun before live
   comparison
 - `legacy_snapshot` for older historical rows

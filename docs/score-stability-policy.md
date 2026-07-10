@@ -8,7 +8,7 @@ the benchmark changes.
 
 | State | Meaning |
 | --- | --- |
-| `current_public_split` | Valid for the current public task set and current scorer profile. Model/tool rows must also state whether they are full reruns or `promoted_cohort_delta_merge` composites. |
+| `current_public_split` | Valid for the current public task set and current scorer profile. Model/tool rows must state whether they are runner-emitted full reruns, `promoted_cohort_delta_merge` composites, or offline rescores of saved full-split submissions. |
 | `current_public_stale` | Run on a recently superseded public task set; useful context, but rerun required before current comparison or v0 claims. |
 | `current_private_holdout` | Maintainer-side private holdout run for release-candidate evidence. |
 | `legacy_snapshot` | Historical run kept for context, not comparable to current results. |
@@ -80,6 +80,20 @@ Scorer changes should state whether they affect:
 If the change affects pass/fail behavior, re-run current public baselines before
 using the changed scorer for public comparison claims.
 
+When preserved per-task submissions and execution metadata exist, an offline
+rescore may replace model re-execution for a scorer-only change. The derived
+summary must identify the old and new score-policy versions, state that model
+execution was not repeated, hash the source summary/submission/score sets and
+current scorer/rescore sources, bind the derived task rows, recompute all
+aggregates, and preserve adapter/runner failures fail closed. Call this an
+offline rescore of saved submissions, not a fresh model rerun.
+
+The transition from `score-policy-v1` to
+`score-policy-v2-boundary-normalization` is intentionally comparability
+breaking. V1 claim-exact scores remain historical; v2 independently evaluates
+complete structured boundary matches and enforces the documented vulnerable
+finding schema.
+
 ## Leaderboard Compatibility
 
 Leaderboard-candidate rows are comparable only when they use the same:
@@ -87,6 +101,7 @@ Leaderboard-candidate rows are comparable only when they use the same:
 - benchmark version or release archive
 - scored split
 - scorer profile
+- score-policy version and result derivation
 - task set
 - local row eligibility policy
 

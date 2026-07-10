@@ -55,8 +55,9 @@ like:
 The audit used a full census, not a sample, because each run had only 15
 exploit-proven vulnerable tasks. For each qualifying task in both runs, the
 submitted `finding.boundary` object was compared to the public task's
-`expected_boundary` object. The scorer currently requires the submitted
-boundary to contain the expected keys and exact public-safe values as a subset.
+`expected_boundary` object. At the time, `score-policy-v1` required the
+submitted boundary to contain the expected keys and exact public-safe values as
+a subset.
 
 The classification below uses the primary cause visible from the submitted
 boundary object:
@@ -111,7 +112,7 @@ objects.
 
 ## Interpretation
 
-The current evidence does not support a simple claim that the tool-agent failed
+The audited policy-v1 evidence does not support a simple claim that the tool-agent failed
 to understand every authorization boundary. It supports a narrower and more
 useful claim:
 
@@ -119,15 +120,15 @@ useful claim:
 > did not reliably translate that evidence into the benchmark's required
 > boundary vocabulary.
 
-That is still a real benchmark failure under the current scoring contract. The
-scorer asks for a machine-checkable actor, role, tenant, object, or scope
-boundary; a free-form proof with alternate keys is not enough for a full
-vulnerable-task pass.
+That was still a real benchmark failure under the then-current policy-v1
+contract. The scorer asked for a machine-checkable actor, role, tenant, object,
+or scope boundary; a free-form proof with alternate keys was not enough for a
+full vulnerable-task pass.
 
 ## Decision
 
-Keep current v0/v1-prep boundary scoring strict for existing comparisons.
-Do not retroactively award boundary credit to the current runs. The zero
+Keep the historical v0/v1-prep policy-v1 scores unchanged for existing
+comparisons. Do not retroactively award boundary credit to those runs. The zero
 boundary-reasoning result is accurate under `score-policy-v1` and should remain
 reported as such.
 
@@ -170,3 +171,26 @@ python3 scripts/validate_baseline_registry.py
 
 The ignored local run bundles were used only to inspect public per-task
 `submission.json` and `score.json` files. They must remain untracked.
+
+## 2026-07-10 Follow-up: policy-v2 disposition
+
+The decision above remains the historical disposition for policy-v1 scores; it
+was not rewritten retroactively. A broader audit of all fourteen saved 63-task
+public runs subsequently found an additional scorer coupling: boundary
+evaluation ran only when `finding.claim` exactly equaled the oracle's hidden
+claim string. Of 155 v1 exploit-proven vulnerable rows, only one had that exact
+claim. Claim wording was not a declared weighted score dimension, so this gate
+prevented the original study from distinguishing structured boundary quality
+from oracle-phrase reproduction.
+
+The corrected scorer is versioned as
+`score-policy-v2-boundary-normalization`. It evaluates the boundary independently
+from claim wording, accepts only bounded structural key/value and
+dimension-specific ID normalization, requires every expected dimension for
+binary credit, and reports partial matches without scoring them. Policy-v1
+scores remain historical and are not directly comparable to v2.
+
+The preserved full-split submissions were rescored offline; models were not
+executed again. The current derivation, fail-closed adapter disposition, and
+aggregate evidence are documented in
+[`score-policy-v2-boundary-normalization.md`](score-policy-v2-boundary-normalization.md).
