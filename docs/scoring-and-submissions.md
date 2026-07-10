@@ -128,7 +128,7 @@ Every direct `score_submission` result uses the following stable top-level field
 {
   "task_id": "pm_bola_read_alpha_from_beta",
   "passed": false,
-  "score": 0.65,
+  "score": 0.75,
   "invalid_submission": false,
   "submission_finding_count": 1,
   "control_replay_passed": true,
