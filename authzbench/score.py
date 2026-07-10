@@ -344,7 +344,7 @@ def _vulnerable_finding_error(finding: dict[str, Any]) -> str | None:
         return "finding.claim must be a non-empty string"
     evidence = finding.get("evidence")
     if not isinstance(evidence, list) or not evidence:
-        return "finding.evidence must be a non-empty list"
+        return "finding evidence must be a list with at least one item (field: finding.evidence)"
     if not isinstance(finding.get("boundary"), dict):
         return "finding.boundary must be an object"
     impact = finding.get("impact")
