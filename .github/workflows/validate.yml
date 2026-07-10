@@ -37,7 +37,7 @@ jobs:
           docker compose version
 
       - name: Run scorer contract tests
-        run: python -m pytest tests/test_scorer_adversarial_submissions.py tests/test_scorer_submission_contract.py -q
+        run: python -m unittest discover -s tests -p 'test_scorer*.py'
 
       - name: Check public readiness fixture
         run: python scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json
