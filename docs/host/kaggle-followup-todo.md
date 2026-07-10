@@ -7,12 +7,19 @@ Status: current working ledger for the June 2026 Google/Kaggle AuthZBench-SaaS t
 - Ivan Leo's June 25, 2026 note asks for a Kaggle organization account and benchmark share in the correct format before Kaggle can start porting toward a Harbor-compatible hosted spec.
 - Kaggle expects the organization/setup step to take about 24 hours for approval after submission.
 - Kaggle can then review how to port AuthZBench-SaaS toward a Harbor-compatible spec for hosting.
-- Latest Gmail scope checked: `in:anywhere subject:"AuthZBench-SaaS" newer_than:30d -in:spam -in:trash`.
-- Latest actionable message: Ivan's June 25, 2026 follow-up. Meg's later message in the same thread is a reaction, not a new request.
+- Latest Gmail scope checked on July 10, 2026: exact subject and term searches,
+  Google/Kaggle sender-domain searches, sent mail, recent mail, spam, and trash.
+- Latest inbound actionable message: Ivan's June 25, 2026 follow-up. Meg's
+  later message in the same thread is a reaction, not a new request.
+- Latest outbound message: the June 26 access request below. No later reply was
+  found in the thread, the onboarding alias, spam, or trash.
 
 ## Access note for future email
 
-Include this note in the next Kaggle reply unless access is fixed first:
+Include this note in the next Kaggle reply unless access is fixed first. Also
+ask whether the current public `kaggle b` task workflow supersedes the older
+organization/share document, because the public Kaggle tooling has evolved
+since the June 25 note.
 
 > I tried opening the published setup document while signed in as `brian.mendonca6@gmail.com`, but Google shows: "You need permission to access this published document. You are signed in as brian.mendonca6@gmail.com, but you don't have permission to access this published document. You may need to sign in as a different user." If there is a different account I should use, or if access can be granted to this address, I can complete that setup step.
 
@@ -23,11 +30,13 @@ Do not send without explicit approval.
 ```text
 Hi Ivan,
 
-Thanks again. I started the Kaggle setup path, but the published setup doc is blocked for me at the moment. When I open it while signed in as brian.mendonca6@gmail.com, Google says I need permission to access it and may need to sign in as a different user. Could you grant access to that address, or tell me which account I should use?
+Quick follow-up on AuthZBench-SaaS. The published setup document is still blocked for brian.mendonca6@gmail.com. Could you grant access, tell me which account to use, or confirm whether the newer public `kaggle b` task workflow replaces that organization/share step?
 
-In the meantime, I cleaned up the host-review package so the public-facing Kaggle materials match the current repo state: 63 public tasks, 48 private holdout tasks summarized publicly, and 111 total public/private tasks. I also kept the wording conservative: this is a Kaggle/Harbor review package, not an accepted or hosted benchmark. The current public evidence includes the deterministic scripted sanity check and offline policy-v2 rescores of saved full-63-task model/tool-agent submissions; the models were not rerun under v2 and harness failures remain explicit.
+The repo now has a packaged Harbor adapter, an isolated wheel/CLI/scorer smoke, a real local Harbor execution smoke, and exact per-task native/Harbor reward parity on a six-task public subset. Draft PR #79 consolidates the scorer, manifest, provenance, packaging, and host-review changes: https://github.com/bmendonca3/authzbench-saas/pull/79
 
-Once I can access the setup instructions, I can finish the org/share step and then adapt the repo to the Docker/Harbor shape Kaggle prefers.
+The public package remains intentionally conservative: it is not presented as Kaggle-accepted, Harbor-accepted, hosted, externally validated, or release-ready. The fourteen current model/tool-agent summaries are offline re-scores of saved submissions; model execution was not repeated.
+
+Once the setup path is clear, I can complete the required organization/share or `kaggle b` step and provide the generated Harbor package for review. If your hosted Docker/Harbor contract differs from the public CLI flow, the expected container, artifact, and scorer interface would be the most useful next input.
 
 Thanks,
 bmendonca3
@@ -44,15 +53,24 @@ bmendonca3
 
 ## Maintainer todo
 
-1. Get access to the Google setup document or ask Kaggle which account should be used.
+1. Get access to the Google setup document, learn which account should be used,
+   or confirm that the current public `kaggle b` flow supersedes it.
 2. Complete the Kaggle organization/share step only after explicit user approval.
-3. Reconcile any setup-doc requirements with `platform/kaggle/` sample submission and dry-run bundle artifacts.
-4. Refresh host-facing candidate metadata once exact-head validation and CI are available.
-5. Keep the next email short: confirm the repo package, mention the document-access blocker, ask for the preferred account/access path, and offer to align the repo to Kaggle's Docker/Harbor spec once shared.
+3. Reconcile the confirmed onboarding path with `platform/kaggle/`, the packaged
+   Harbor adapter, and the current public Kaggle task/run artifact model.
+4. Use draft PR #79 as the remotely inspectable integration candidate; do not
+   close its source drafts until exact-head CI and the integrated diff are confirmed.
+5. Keep the next email short: link PR #79, state the completed repo-side Harbor
+   evidence, preserve the non-acceptance boundaries, and ask for one concrete
+   onboarding path plus any host-specific Docker/scorer differences.
 
 ## Verification ledger
 
-- Gmail thread read: the most recent actionable messages confirm Ivan's June 25 request and the onboarding alias.
+- Gmail thread audit: 13-message AuthZBench-SaaS thread read in full; the latest
+  outbound message is the June 26 access request and no later reply was found.
+- Remote integration candidate: draft PR #79 at publication HEAD
+  `1c089d1a378d617faf5261dd842fb1712bd48b0a`; exact-head Public validation and
+  Host presentation checks passed on GitHub Actions.
 - Count checks: 63 public task manifests in `tasks/`; 48 validated private holdout tasks in `artifact/v1-task-scale-roadmap.json`.
 - Claim-boundary validation: `python3 scripts/check_claim_boundary.py`.
 - Markdown link validation: `python3 scripts/check_markdown_links.py`.
