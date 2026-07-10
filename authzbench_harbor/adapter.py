@@ -7,14 +7,10 @@ claim Harbor platform acceptance, external review, or hosted leaderboard readine
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
-from scripts.build_harbor_dataset_skeleton import build_harbor_dataset_skeleton  # noqa: E402
+from .dataset_builder import build_harbor_dataset_skeleton
 
 
 ADAPTER_VERSION = "0.1.0"

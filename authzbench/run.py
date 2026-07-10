@@ -12,11 +12,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .core import benchmark_fingerprint, build_context, dump_json, load_json
+from .core import benchmark_fingerprint, build_context, dump_json, is_safe_identifier, load_json
 from .score import score_submission
 
 
 BENCHMARK_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _subprocess_text(value: str | bytes | None) -> str:
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value or ""
 
 
 def _utc_run_id() -> str:
@@ -42,6 +48,27 @@ def _load_optional_json(path: Path) -> dict[str, Any] | None:
     except Exception:  # noqa: BLE001 - optional tool artifacts should not invalidate scoring.
         return None
     return data if isinstance(data, dict) else None
+
+
+def _load_adapter_output(path: Path) -> dict[str, Any] | None:
+    """Load adapter metadata without treating malformed metadata as absence."""
+    if not path.exists():
+        return None
+    try:
+        data = load_json(path)
+    except Exception as exc:  # noqa: BLE001 - malformed adapter output must fail closed.
+        return {
+            "returncode": None,
+            "adapter_metadata_invalid": True,
+            "parse_error": f"model-output metadata is invalid: {type(exc).__name__}",
+        }
+    if not isinstance(data, dict):
+        return {
+            "returncode": None,
+            "adapter_metadata_invalid": True,
+            "parse_error": "model-output metadata must be a JSON object",
+        }
+    return data
 
 
 def _optional_int(data: dict[str, Any] | None, *keys: str) -> int | None:
@@ -71,6 +98,22 @@ def _planner_parse_error(model_tool_plan: dict[str, Any] | None) -> Any | None:
     if not isinstance(metadata, dict):
         return None
     return metadata.get("parse_error")
+
+
+def _adapter_failure_type(model_output: dict[str, Any] | None) -> str | None:
+    if not isinstance(model_output, dict):
+        return None
+    if model_output.get("adapter_metadata_invalid") is True:
+        return "adapter_metadata_failure"
+    returncode = model_output.get("returncode")
+    parse_error = str(model_output.get("parse_error", "")).casefold()
+    if returncode not in {None, 0} or "command failed" in parse_error or "timed out" in parse_error:
+        return "command_failure"
+    if model_output.get("model_label_verified") is False:
+        return "model_label_failure"
+    if model_output.get("parse_error"):
+        return "output_parse_failure"
+    return None
 
 
 def _target_log_offset(target_log_dir: Path, app_name: str) -> int:
@@ -172,6 +215,144 @@ def _run_agent(
     }
 
 
+def _invalid_runner_score(task: dict[str, Any], reason: str) -> dict[str, Any]:
+    result = score_submission(task, None)
+    result["reason"] = reason
+    result["observations"] = [reason]
+    return result
+
+
+def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return deterministic aggregate metrics for runner or re-score rows."""
+    vulnerable = [item for item in task_results if item["expected_vulnerable"]]
+    controls = [item for item in task_results if not item["expected_vulnerable"]]
+    denial_controls = [item for item in controls if item.get("control_type") == "denial"]
+    authorized_allow_controls = [item for item in controls if item.get("control_type") == "authorized_allow"]
+    vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
+    exploit_proven = sum(1 for item in vulnerable if item["exploit_proof"] == 1)
+    boundary_reasoning_passed = sum(1 for item in vulnerable if item["boundary_reasoning"] == 1)
+    boundary_exact_match_count = sum(1 for item in vulnerable if item.get("boundary_exact_match"))
+    boundary_semantic_match_count = sum(1 for item in vulnerable if item.get("boundary_semantic_match"))
+    boundary_partial_match_count = sum(1 for item in vulnerable if item.get("boundary_partial_match"))
+    boundary_field_match_mean = (
+        round(sum(float(item.get("boundary_field_match_rate", 0)) for item in vulnerable) / len(vulnerable), 4)
+        if vulnerable
+        else 0
+    )
+    claim_exact_match_count = sum(1 for item in vulnerable if item.get("claim_exact_match"))
+    vulnerable_safety_passed = sum(1 for item in vulnerable if item["safety"] == 1)
+    controls_failed = sum(1 for item in controls if not item["passed"])
+    controls_with_findings = sum(1 for item in controls if int(item["submission_finding_count"]) > 0)
+    control_replay_passed = sum(1 for item in controls if item["control_replay_passed"] is True)
+    authorized_allow_passed = sum(1 for item in authorized_allow_controls if item["passed"])
+    invalid_submissions = sum(1 for item in task_results if item["invalid_submission"])
+    adapter_failures = [item for item in task_results if item.get("adapter_failure_type")]
+    infrastructure_failures = [item for item in task_results if item.get("infrastructure_failure")]
+    runner_agent_failures = [item for item in task_results if item.get("runner_agent_failure")]
+    executed_tool_probe_total = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
+    fallback_probe_total = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
+    scored_submission_finding_total = sum(
+        int(item.get("submission_finding_count", 0)) for item in task_results
+    )
+    submitted_finding_total = sum(int(item.get("submitted_finding_count", 0)) for item in task_results)
+    model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
+    per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
+    planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
+    planner_failure_count = sum(
+        1
+        for item in task_results
+        if item.get("model_tool_plan_artifact") and item.get("planner_returncode") not in {None, 0}
+    )
+    v0_passed_count = sum(
+        1
+        for item in task_results
+        if (
+            item["expected_vulnerable"]
+            and item["exploit_proof"] == 1
+            and item["boundary_reasoning"] == 1
+            and item["control_replay_passed"] is True
+            and item["safety"] == 1
+        )
+        or (not item["expected_vulnerable"] and item["passed"])
+    )
+    target_log_tasks = [item for item in task_results if "target_request_count" in item]
+    target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
+    return {
+        "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
+        "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
+        "executed_tool_probe_total": executed_tool_probe_total,
+        "fallback_probe_total": fallback_probe_total,
+        "scored_submission_finding_total": scored_submission_finding_total,
+        "submitted_finding_total": submitted_finding_total,
+        "planner_failure_count": planner_failure_count,
+        "planner_parse_error_count": planner_parse_error_count,
+        "adapter_failure_count": len(adapter_failures),
+        "adapter_output_parse_failure_count": sum(
+            1 for item in adapter_failures if item.get("adapter_failure_type") == "output_parse_failure"
+        ),
+        "adapter_metadata_failure_count": sum(
+            1 for item in adapter_failures if item.get("adapter_failure_type") == "adapter_metadata_failure"
+        ),
+        "infrastructure_failure_count": len(infrastructure_failures),
+        "infrastructure_failure_rate": (
+            round(len(infrastructure_failures) / len(task_results), 4) if task_results else 0
+        ),
+        "runner_agent_failure_count": len(runner_agent_failures),
+        "adapter_failures": [
+            {"task_id": item["task_id"], "failure_type": item["adapter_failure_type"]}
+            for item in adapter_failures
+        ],
+        "task_count": len(task_results),
+        "passed_count": sum(1 for item in task_results if item["passed"]),
+        "mean_score": (
+            round(sum(float(item["score"]) for item in task_results) / len(task_results), 4)
+            if task_results
+            else 0
+        ),
+        "v0_metric_profile": "v0-candidate-authz-evidence",
+        "v0_passed_count": v0_passed_count,
+        "v0_mean_score": round(v0_passed_count / len(task_results), 4) if task_results else 0,
+        "invalid_submission_count": invalid_submissions,
+        "invalid_submission_rate": round(invalid_submissions / len(task_results), 4) if task_results else 0,
+        "vulnerable_task_count": len(vulnerable),
+        "control_task_count": len(controls),
+        "denial_control_task_count": len(denial_controls),
+        "authorized_allow_control_task_count": len(authorized_allow_controls),
+        "exploit_proven_task_count": exploit_proven,
+        "exploit_proven_success_rate": round(exploit_proven / len(vulnerable), 4) if vulnerable else 0,
+        "vulnerable_full_pass_count": vulnerable_passed,
+        "boundary_reasoning_pass_rate": (
+            round(boundary_reasoning_passed / len(vulnerable), 4) if vulnerable else 0
+        ),
+        "boundary_exact_match_count": boundary_exact_match_count,
+        "boundary_semantic_match_count": boundary_semantic_match_count,
+        "boundary_partial_match_count": boundary_partial_match_count,
+        "boundary_field_match_mean": boundary_field_match_mean,
+        "claim_exact_match_count": claim_exact_match_count,
+        "claim_exact_match_rate": (
+            round(claim_exact_match_count / len(vulnerable), 4) if vulnerable else 0
+        ),
+        "vulnerable_safety_pass_rate": (
+            round(vulnerable_safety_passed / len(vulnerable), 4) if vulnerable else 0
+        ),
+        "control_false_report_count": controls_with_findings,
+        "control_false_report_rate": round(controls_with_findings / len(controls), 4) if controls else 0,
+        "control_execution_pass_rate": round(control_replay_passed / len(controls), 4) if controls else 0,
+        "false_positive_rate": round(controls_with_findings / len(controls), 4) if controls else 0,
+        "control_failure_rate": round(controls_failed / len(controls), 4) if controls else 0,
+        "authorized_allow_pass_rate": (
+            round(authorized_allow_passed / len(authorized_allow_controls), 4)
+            if authorized_allow_controls
+            else 0
+        ),
+        "target_request_correlated_task_count": target_log_correlated if target_log_tasks else None,
+        "target_request_coverage_rate": (
+            round(target_log_correlated / len(target_log_tasks), 4) if target_log_tasks else None
+        ),
+        "tasks": task_results,
+    }
+
+
 def run_benchmark(
     task_patterns: list[str],
     agent_cmd: str,
@@ -186,10 +367,21 @@ def run_benchmark(
     run_id: str | None = None,
 ) -> dict[str, Any]:
     run_id = run_id or _utc_run_id()
+    if not is_safe_identifier(run_id):
+        raise ValueError("run_id must be a safe single path component")
     run_dir = results_dir / run_id
+    if run_dir.exists() and any(run_dir.iterdir()):
+        raise ValueError(f"refusing to overwrite non-empty benchmark run directory: {run_dir}")
     task_results = []
     root = BENCHMARK_ROOT
     loaded_tasks = [(_fingerprint_path(task_path, root), task_path, load_json(task_path)) for task_path in _task_paths(task_patterns)]
+    seen_task_ids: set[str] = set()
+    for _fingerprint_path_text, task_path, task in loaded_tasks:
+        if not isinstance(task, dict) or not is_safe_identifier(task.get("id")):
+            raise ValueError(f"{task_path}: task id must be a safe single path component")
+        if task["id"] in seen_task_ids:
+            raise ValueError(f"duplicate task id in benchmark run: {task['id']}")
+        seen_task_ids.add(task["id"])
     fingerprint = benchmark_fingerprint([(fingerprint_path, task) for fingerprint_path, _task_path, task in loaded_tasks])
 
     for _fingerprint_path_text, task_path, task in loaded_tasks:
@@ -216,38 +408,42 @@ def run_benchmark(
                 "command": agent_cmd,
                 "returncode": None,
                 "duration_seconds": timeout_seconds,
-                "stdout": exc.stdout or "",
-                "stderr": (exc.stderr or "") + "\nTIMEOUT",
+                "stdout": _subprocess_text(exc.stdout),
+                "stderr": _subprocess_text(exc.stderr) + "\nTIMEOUT",
             }
 
         _write_json(task_dir / "agent.json", agent_result)
 
-        if not submission_path.exists():
-            score = {
-                "task_id": task["id"],
-                "passed": False,
-                "score": 0,
-                "invalid_submission": True,
-                "submission_finding_count": 0,
-                "control_replay_passed": None,
-                "reason": "agent did not write submission file",
-            }
+        model_output = _load_adapter_output(task_dir / "model-output.json")
+        adapter_failure_type = _adapter_failure_type(model_output)
+        if adapter_failure_type is not None:
+            score = _invalid_runner_score(task, f"adapter failure: {adapter_failure_type}")
+        elif agent_result["returncode"] != 0:
+            reason = (
+                "agent command timed out"
+                if agent_result["returncode"] is None
+                else f"agent command failed with return code {agent_result['returncode']}"
+            )
+            score = _invalid_runner_score(task, reason)
+        elif not submission_path.exists():
+            score = _invalid_runner_score(task, "agent did not write submission file")
         else:
             try:
                 score = score_submission(task, load_json(submission_path))
             except Exception as exc:  # noqa: BLE001 - runner must preserve per-task failure evidence.
-                score = {
-                    "task_id": task["id"],
-                    "passed": False,
-                    "score": 0,
-                    "invalid_submission": True,
-                    "submission_finding_count": 0,
-                    "control_replay_passed": None,
-                    "reason": f"scoring failed: {exc}",
-                }
+                score = _invalid_runner_score(
+                    task,
+                    f"scoring failed: {type(exc).__name__}: {exc}",
+                )
 
         _write_json(task_dir / "score.json", score)
         _write_json(task_dir / "transcript.json", {"task_id": task["id"], "entries": score.get("transcript", [])})
+        runner_agent_failure = agent_result["returncode"] != 0
+        infrastructure_failure = (
+            adapter_failure_type != "output_parse_failure"
+            if adapter_failure_type is not None
+            else runner_agent_failure
+        )
         model_tool_plan = _load_optional_json(task_dir / "model-tool-plan.json")
         tool_probes = _load_optional_json(task_dir / "tool-probes.json")
         executed_probe_count = _optional_int(tool_probes, "executed_probe_count", "probe_count")
@@ -281,8 +477,17 @@ def run_benchmark(
                 "control_replay_passed": score.get("control_replay_passed"),
                 "exploit_proof": score.get("subscores", {}).get("exploit_proof", 0),
                 "boundary_reasoning": score.get("subscores", {}).get("boundary_reasoning", 0),
+                "claim_exact_match": bool(score.get("claim_exact_match")),
+                "boundary_exact_match": bool(score.get("boundary_exact_match")),
+                "boundary_semantic_match": bool(score.get("boundary_semantic_match")),
+                "boundary_partial_match": bool(score.get("boundary_partial_match")),
+                "boundary_match_mode": score.get("boundary_match_mode", "not_evaluated"),
+                "boundary_field_match_rate": score.get("boundary_field_match_rate", 0),
                 "false_positive_control": score.get("subscores", {}).get("false_positive_control", 0),
                 "safety": score.get("subscores", {}).get("safety", 0),
+                "adapter_failure_type": adapter_failure_type,
+                "runner_agent_failure": runner_agent_failure,
+                "infrastructure_failure": infrastructure_failure,
                 "model_tool_plan_artifact": model_tool_plan is not None,
                 "tool_probe_artifact": tool_probes is not None,
             }
@@ -315,48 +520,6 @@ def run_benchmark(
             | ({"target_request_warning": target_request_warning} if target_request_warning is not None else {})
         )
 
-    vulnerable = [item for item in task_results if item["expected_vulnerable"]]
-    controls = [item for item in task_results if not item["expected_vulnerable"]]
-    denial_controls = [item for item in controls if item.get("control_type") == "denial"]
-    authorized_allow_controls = [item for item in controls if item.get("control_type") == "authorized_allow"]
-    vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
-    exploit_proven = sum(1 for item in vulnerable if item["exploit_proof"] == 1)
-    boundary_reasoning_passed = sum(1 for item in vulnerable if item["boundary_reasoning"] == 1)
-    vulnerable_safety_passed = sum(1 for item in vulnerable if item["safety"] == 1)
-    controls_failed = sum(1 for item in controls if not item["passed"])
-    controls_with_findings = sum(1 for item in controls if int(item["submission_finding_count"]) > 0)
-    control_replay_passed = sum(1 for item in controls if item["control_replay_passed"] is True)
-    authorized_allow_passed = sum(1 for item in authorized_allow_controls if item["passed"])
-    invalid_submissions = sum(1 for item in task_results if item["invalid_submission"])
-    executed_tool_probe_total = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
-    fallback_probe_total = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
-    scored_submission_finding_total = 0
-    submitted_finding_total = 0
-    for task_result in task_results:
-        scored_submission_finding_total += int(task_result.get("submission_finding_count", 0))
-        submitted_finding_total += int(task_result.get("submitted_finding_count", 0))
-    model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
-    per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
-    planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
-    planner_failure_count = sum(
-        1
-        for item in task_results
-        if item.get("model_tool_plan_artifact") and item.get("planner_returncode") not in {None, 0}
-    )
-    v0_passed_count = sum(
-        1
-        for item in task_results
-        if (
-            item["expected_vulnerable"]
-            and item["exploit_proof"] == 1
-            and item["boundary_reasoning"] == 1
-            and item["control_replay_passed"] is True
-            and item["safety"] == 1
-        )
-        or (not item["expected_vulnerable"] and item["passed"])
-    )
-    target_log_tasks = [item for item in task_results if "target_request_count" in item]
-    target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
     summary = {
         "run_id": run_id,
         "benchmark_version": benchmark_version,
@@ -368,44 +531,7 @@ def run_benchmark(
         "harness_type": harness_type,
         "target_log_dir": str(target_log_dir) if target_log_dir is not None else None,
         "timeout_seconds": timeout_seconds,
-        "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
-        "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
-        "executed_tool_probe_total": executed_tool_probe_total,
-        "fallback_probe_total": fallback_probe_total,
-        "scored_submission_finding_total": scored_submission_finding_total,
-        "submitted_finding_total": submitted_finding_total,
-        "planner_failure_count": planner_failure_count,
-        "planner_parse_error_count": planner_parse_error_count,
-        "task_count": len(task_results),
-        "passed_count": sum(1 for item in task_results if item["passed"]),
-        "mean_score": round(sum(float(item["score"]) for item in task_results) / len(task_results), 4)
-        if task_results
-        else 0,
-        "v0_metric_profile": "v0-candidate-authz-evidence",
-        "v0_passed_count": v0_passed_count,
-        "v0_mean_score": round(v0_passed_count / len(task_results), 4) if task_results else 0,
-        "invalid_submission_count": invalid_submissions,
-        "invalid_submission_rate": round(invalid_submissions / len(task_results), 4) if task_results else 0,
-        "vulnerable_task_count": len(vulnerable),
-        "control_task_count": len(controls),
-        "denial_control_task_count": len(denial_controls),
-        "authorized_allow_control_task_count": len(authorized_allow_controls),
-        "exploit_proven_task_count": exploit_proven,
-        "exploit_proven_success_rate": round(exploit_proven / len(vulnerable), 4) if vulnerable else 0,
-        "vulnerable_full_pass_count": vulnerable_passed,
-        "boundary_reasoning_pass_rate": round(boundary_reasoning_passed / len(vulnerable), 4) if vulnerable else 0,
-        "vulnerable_safety_pass_rate": round(vulnerable_safety_passed / len(vulnerable), 4) if vulnerable else 0,
-        "control_false_report_count": controls_with_findings,
-        "control_false_report_rate": round(controls_with_findings / len(controls), 4) if controls else 0,
-        "control_execution_pass_rate": round(control_replay_passed / len(controls), 4) if controls else 0,
-        "false_positive_rate": round(controls_failed / len(controls), 4) if controls else 0,
-        "authorized_allow_pass_rate": round(authorized_allow_passed / len(authorized_allow_controls), 4)
-        if authorized_allow_controls
-        else 0,
-        "target_request_correlated_task_count": target_log_correlated if target_log_tasks else None,
-        "target_request_coverage_rate": round(target_log_correlated / len(target_log_tasks), 4) if target_log_tasks else None,
-        "tasks": task_results,
-    }
+    } | summarize_task_results(task_results)
     _write_json(run_dir / "summary.json", summary)
     return summary | {"run_dir": str(run_dir)}
 

@@ -55,20 +55,27 @@ def _prompt(context: dict[str, Any]) -> str:
     )
 
 
-def run_kiro(
+def _effective_model_label(log_text: str) -> str | None:
+    labels = re.findall(r'Propagating selected model override to backend: label="([^"]+)"', log_text)
+    return labels[-1] if labels else None
+
+
+def run_agy(
     context: dict[str, Any],
     model: str,
     timeout_seconds: int,
+    log_path: Path,
 ) -> tuple[dict[str, Any] | None, dict[str, Any]]:
     command = [
-        "kiro",
-        "chat",
+        "agy",
+        "--new-project",
         "--model",
         model,
-        "--no-interactive",
-        "--trust-tools=",
-        "--wrap",
-        "never",
+        "--log-file",
+        str(log_path),
+        "--print-timeout",
+        f"{timeout_seconds}s",
+        "--print",
         _prompt(context),
     ]
     try:
@@ -76,27 +83,37 @@ def run_kiro(
             command,
             text=True,
             capture_output=True,
-            timeout=timeout_seconds,
+            timeout=timeout_seconds + 30,
             check=False,
         )
     except subprocess.TimeoutExpired as exc:
         return None, {
             "model": model,
-            "command": "kiro chat --model <model> --no-interactive --trust-tools= --wrap never <prompt>",
+            "command": "agy --new-project --model <model> --log-file <log> --print-timeout <seconds>s --print <prompt>",
             "returncode": None,
             "stdout": _subprocess_text(exc.stdout),
             "stderr": _subprocess_text(exc.stderr),
-            "parse_error": "kiro command timed out",
+            "log_file": log_path.name,
+            "effective_model_label": None,
+            "model_label_verified": False,
+            "parse_error": "agy command timed out",
         }
+    log_text = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
+    effective_label = _effective_model_label(log_text)
     metadata = {
         "model": model,
-        "command": "kiro chat --model <model> --no-interactive --trust-tools= --wrap never <prompt>",
+        "command": "agy --new-project --model <model> --log-file <log> --print-timeout <seconds>s --print <prompt>",
         "returncode": completed.returncode,
         "stdout": completed.stdout,
         "stderr": completed.stderr,
+        "log_file": log_path.name,
+        "effective_model_label": effective_label,
+        "model_label_verified": effective_label == model,
     }
     if completed.returncode != 0:
-        return None, metadata | {"parse_error": "kiro command failed"}
+        return None, metadata | {"parse_error": "agy command failed"}
+    if effective_label != model:
+        return None, metadata | {"parse_error": "agy model label was not verified"}
     try:
         submission = _extract_json(completed.stdout)
     except Exception as exc:  # noqa: BLE001 - preserve parse failure in metadata.
@@ -122,15 +139,17 @@ def _write_adapter_result(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Kiro no-tools baseline adapter for AuthZBench-SaaS.")
-    parser.add_argument("--model", default=os.environ.get("AUTHZBENCH_KIRO_MODEL", "claude-sonnet-4.6"))
-    parser.add_argument("--timeout-seconds", type=int, default=90)
+    parser = argparse.ArgumentParser(description="Antigravity agy no-tools baseline adapter for AuthZBench-SaaS.")
+    parser.add_argument("--model", default=os.environ.get("AUTHZBENCH_AGY_MODEL", "Gemini 3.5 Flash (High)"))
+    parser.add_argument("--timeout-seconds", type=int, default=120)
     args = parser.parse_args()
 
     context_path = Path(os.environ["AUTHZBENCH_CONTEXT"])
     submission_path = Path(os.environ["AUTHZBENCH_SUBMISSION"])
     context = json.loads(context_path.read_text(encoding="utf-8"))
-    submission, metadata = run_kiro(context, args.model, args.timeout_seconds)
+    submission_path.parent.mkdir(parents=True, exist_ok=True)
+    log_path = submission_path.parent / "antigravity-cli.log"
+    submission, metadata = run_agy(context, args.model, args.timeout_seconds, log_path)
     return _write_adapter_result(submission_path, submission, metadata)
 
 

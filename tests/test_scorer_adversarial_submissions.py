@@ -64,6 +64,7 @@ def _vuln_finding(**overrides):
             "victim_tenant": "alpha",
         },
         "impact": "Beta member can read Alpha task data.",
+        "out_of_scope_actions": [],
     }
     finding.update(overrides)
     return {"findings": [finding]}
@@ -296,6 +297,7 @@ class BoundaryAliasTests(unittest.TestCase):
                         "victim_workspace": "apex workspace",
                     },
                     "impact": "synonym phrasing boundary",
+                    "out_of_scope_actions": [],
                 }
             ]
         }

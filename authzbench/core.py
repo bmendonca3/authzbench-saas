@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,13 @@ APP_TARGETS = {
     "api_tokens": {"base_url": "http://127.0.0.1:8015", "container_base_url": "http://api_tokens:8015"},
     "audit_settings": {"base_url": "http://127.0.0.1:8016", "container_base_url": "http://audit_settings:8016"},
 }
+
+SCORE_POLICY_VERSION = "score-policy-v2-boundary-normalization"
+SAFE_IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+
+
+def is_safe_identifier(value: Any) -> bool:
+    return isinstance(value, str) and SAFE_IDENTIFIER_PATTERN.fullmatch(value) is not None
 
 
 def load_json(path: str | Path) -> dict[str, Any]:
@@ -64,7 +72,7 @@ def benchmark_fingerprint(task_items: list[tuple[str, dict[str, Any]]]) -> dict[
         "schema_version": "benchmark-fingerprint-v1",
         "task_set_sha256": stable_json_sha256(canonical_tasks),
         "task_path_set_sha256": stable_json_sha256([item["path"] for item in canonical_tasks]),
-        "score_policy_version": "score-policy-v1",
+        "score_policy_version": SCORE_POLICY_VERSION,
         "scorer_contract": "v0-candidate-authz-evidence",
         "evidence_contract_version": "evidence-requirements-v1",
         **counts,

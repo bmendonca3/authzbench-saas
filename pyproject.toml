@@ -20,4 +20,4 @@ classifiers = [
 ]
 
 [tool.setuptools]
-packages = ["authzbench", "apps", "apps.project_mgmt", "apps.billing", "apps.support", "apps.file_sharing", "apps.api_tokens", "apps.audit_settings"]
+packages = ["authzbench", "authzbench_harbor", "apps", "apps.project_mgmt", "apps.billing", "apps.support", "apps.file_sharing", "apps.api_tokens", "apps.audit_settings"]

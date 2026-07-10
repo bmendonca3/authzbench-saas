@@ -7,11 +7,12 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import load_json
+from authzbench.core import build_context, load_json
 from authzbench_harbor.scorer_bridge import run_scorer_bridge
 from authzbench_harbor.schemas import SCORER_BRIDGE_OUTPUT_SCHEMA_VERSION
 
@@ -35,6 +36,7 @@ class TestRunScorerBridge(unittest.TestCase):
         result = run_scorer_bridge(task, submission)
         self.assertEqual(result["reward"], 1.0)
         self.assertTrue(result["passed"])
+        self.assertFalse(result["invalid_submission"])
         self.assertFalse(result["authzbench"]["false_positive"])
         self.assertEqual(result["schema_version"], SCORER_BRIDGE_OUTPUT_SCHEMA_VERSION)
 
@@ -55,6 +57,49 @@ class TestRunScorerBridge(unittest.TestCase):
         self.assertEqual(result["reward"], 0.0)
         self.assertFalse(result["passed"])
         self.assertFalse(result["authzbench"]["exploit_proof_valid"])
+
+    def test_exploit_proof_diagnostic_is_independent_of_full_task_pass(self) -> None:
+        task = _load_task("pm_bola_read_alpha_from_beta")
+        refs = build_context(task)["refs"]
+        submission = {
+            "findings": [
+                {
+                    "claim": "Cross-tenant task disclosure",
+                    "boundary": {},
+                    "impact": "Cross-tenant private task disclosure",
+                    "out_of_scope_actions": [],
+                    "evidence": [
+                        {
+                            "request": {
+                                "actor": "beta_member",
+                                "method": "GET",
+                                "path": (
+                                    f"/api/projects/{refs['ALPHA_PROJECT_ID']}"
+                                    f"/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}"
+                                ),
+                            }
+                        }
+                    ],
+                }
+            ]
+        }
+
+        result = run_scorer_bridge(task, submission)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(result["authzbench"]["exploit_proof_valid"], result)
+        self.assertFalse(result["authzbench"]["boundary_reasoning_pass"], result)
+
+    def test_internal_scorer_error_does_not_leak_exception_text(self) -> None:
+        task = _load_task("pm_same_tenant_read_control")
+        with patch(
+            "authzbench_harbor.scorer_bridge.score_submission",
+            side_effect=RuntimeError("sensitive internal detail"),
+        ):
+            result = run_scorer_bridge(task, {"findings": []})
+
+        self.assertTrue(result["invalid_submission"], result)
+        self.assertEqual(result["authzbench"]["errors"], ["scorer raised RuntimeError"])
 
     def test_invalid_submission_not_dict_fails_closed(self) -> None:
         task = _load_task("pm_same_tenant_read_control")
