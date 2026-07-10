@@ -183,7 +183,7 @@ The leaderboard policy in this section describes local row eligibility and compa
 Reviewers can verify scorer behavior, public validation, and claim-boundary safety without private access:
 
 ```bash
-python3 -m pytest tests/test_scorer_adversarial_submissions.py tests/test_scorer_submission_contract.py -q
+python3 -m unittest discover -s tests -p 'test_scorer*.py'
 python3 scripts/validate_public.py --include-scripted-baseline
 python3 scripts/check_claim_boundary.py
 ```
@@ -192,4 +192,4 @@ The adversarial scorer suites pin verdicts for empty, malformed, wrong-actor, wr
 
 The public validation gate runs the public task suite, baseline registry, task-quality gate, claim-boundary check, and public-view readiness fixture match. The claim-boundary check verifies that forbidden claim phrases do not appear outside allowed negation or historical contexts.
 
-None of these commands requires private holdouts, Docker-only live model access, hosted leaderboard access, or external platform acceptance.
+These commands do not require private holdouts, Docker-only live model access, hosted leaderboard access, or external platform acceptance.
