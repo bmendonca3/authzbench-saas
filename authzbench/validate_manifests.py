@@ -281,7 +281,11 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
                     errors.append(f"{path}: evidence_requirements[{index}] must be an object")
                     continue
                 requirement_index = requirement.get("index")
-                if not isinstance(requirement_index, int) or requirement_index < 0:
+                if (
+                    isinstance(requirement_index, bool)
+                    or not isinstance(requirement_index, int)
+                    or requirement_index < 0
+                ):
                     errors.append(f"{path}: evidence_requirements[{index}].index must be a non-negative integer")
                 elif requirement_index in seen_requirement_indexes:
                     errors.append(f"{path}: duplicate evidence_requirements index: {requirement_index}")
@@ -291,7 +295,10 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
                     errors.append(f"{path}: evidence_requirements[{index}].request is required")
                 elif not isinstance(requirement["request"], dict):
                     errors.append(f"{path}: evidence_requirements[{index}].request must be an object")
-                if "status" in requirement and not isinstance(requirement["status"], int):
+                if "status" in requirement and (
+                    isinstance(requirement["status"], bool)
+                    or not isinstance(requirement["status"], int)
+                ):
                     errors.append(f"{path}: evidence_requirements[{index}].status must be an integer when supplied")
                 if "body_contains" not in requirement and "status" not in requirement:
                     errors.append(f"{path}: evidence_requirements[{index}] must include status or body_contains")

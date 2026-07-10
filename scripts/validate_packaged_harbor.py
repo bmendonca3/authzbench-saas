@@ -32,7 +32,7 @@ def _run(command: list[str], *, cwd: Path, env: dict[str, str] | None = None) ->
     return completed
 
 
-def _packaging_python() -> tuple[str, str]:
+def _packaging_python() -> tuple[str, str, str]:
     candidates = [sys.executable]
     candidates.extend(
         executable
@@ -44,20 +44,26 @@ def _packaging_python() -> tuple[str, str]:
             [
                 executable,
                 "-c",
-                "import sys; print('.'.join(map(str, sys.version_info[:3]))); "
-                "raise SystemExit(sys.version_info < (3, 10))",
+                "import importlib.metadata, sys; "
+                "version = importlib.metadata.version('setuptools'); "
+                "print('.'.join(map(str, sys.version_info[:3])) + '|' + version); "
+                "parts = tuple(int(part) for part in version.split('.')[:2]); "
+                "raise SystemExit(sys.version_info < (3, 10) or parts < (68, 0))",
             ],
             text=True,
             capture_output=True,
             check=False,
         )
         if completed.returncode == 0:
-            return executable, completed.stdout.strip()
-    raise RuntimeError("packaged Harbor validation requires Python 3.10 or newer")
+            python_version, setuptools_version = completed.stdout.strip().split("|", maxsplit=1)
+            return executable, python_version, setuptools_version
+    raise RuntimeError(
+        "packaged Harbor validation requires Python 3.10 or newer with setuptools 68 or newer"
+    )
 
 
 def validate_packaged_harbor() -> dict[str, object]:
-    packaging_python, python_version = _packaging_python()
+    packaging_python, python_version, setuptools_version = _packaging_python()
     with tempfile.TemporaryDirectory(prefix="authzbench-wheel-smoke-") as tmp:
         temp_root = Path(tmp)
         source_copy = temp_root / "source"
@@ -80,6 +86,8 @@ def validate_packaged_harbor() -> dict[str, object]:
                 "wheel",
                 ".",
                 "--no-deps",
+                "--no-build-isolation",
+                "--no-index",
                 "--no-cache-dir",
                 "--wheel-dir",
                 str(wheel_dir),
@@ -213,6 +221,7 @@ def validate_packaged_harbor() -> dict[str, object]:
             "passed": True,
             "distribution_name": distribution_name,
             "python_version": python_version,
+            "setuptools_version": setuptools_version,
             "wheel_name": wheel_path.name,
             "required_member_count": len(required_members),
             "built_task_count": manifest["task_count"],
