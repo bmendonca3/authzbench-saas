@@ -7,7 +7,7 @@
   "agent_cmd": "python3 scripts/kiro_baseline_agent.py --model glm-5 --timeout-seconds 90",
   "authorized_allow_control_task_count": 15,
   "authorized_allow_pass_rate": 1.0,
-  "benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+  "benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 15,
     "control_task_count": 36,
@@ -71,7 +71,7 @@
     "source_score_set_sha256": "2d6cc989c5a04e9b5408c5b64ab1b58cb78a5aa5420a0f20bc6f833229166e8c",
     "source_submission_set_sha256": "8902d0b638f4460ece5c53b21e9d84f62daad46b4c6bd8092f7bc553681f22e5",
     "source_summary_sha256": "64517c5a263f6e02782c3bfd2e78ba2ab407179e6c34a5eb21caa77ab97be48b",
-    "target_benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+    "target_benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
     "target_score_policy_version": "score-policy-v2-boundary-normalization"
   },
   "run_id": "20260706T163521852102Z-81808593",

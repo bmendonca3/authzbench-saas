@@ -24,7 +24,7 @@
   "agent_cmd": "python3 scripts/agy_baseline_agent.py --model \"Gemini 3.1 Pro (High)\" --timeout-seconds 240",
   "authorized_allow_control_task_count": 15,
   "authorized_allow_pass_rate": 1.0,
-  "benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+  "benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 15,
     "control_task_count": 36,
@@ -88,7 +88,7 @@
     "source_score_set_sha256": "7a897791da19cc5aa1fd7fe361dda3a01262c6b0dc2a20d7c7e75877c967deb9",
     "source_submission_set_sha256": "3e3ec5414f8e66f6f7b3e2bd3dbc4403071827ae0fa1331924252b3ef5a1c7ee",
     "source_summary_sha256": "8555e613d33f02ac2138caa086194586b46f2a2363634112ddc8ce0c9c1556f4",
-    "target_benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+    "target_benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
     "target_score_policy_version": "score-policy-v2-boundary-normalization"
   },
   "run_id": "20260706T195807943306Z-eacf63e2",

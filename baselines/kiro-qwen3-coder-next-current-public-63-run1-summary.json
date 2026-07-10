@@ -92,7 +92,7 @@
   "agent_cmd": "python3 scripts/kiro_baseline_agent.py --model qwen3-coder-next --timeout-seconds 90",
   "authorized_allow_control_task_count": 15,
   "authorized_allow_pass_rate": 0.7333,
-  "benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+  "benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 15,
     "control_task_count": 36,
@@ -156,7 +156,7 @@
     "source_score_set_sha256": "ff3bbbf0e99e4d1aeb7621fa307fe12d13f1c3686d90036ce564e706e622d799",
     "source_submission_set_sha256": "35f542f68d0ee293cac9d242ed1e732ff3cd935b5693091adb1fb5e89d8141fe",
     "source_summary_sha256": "ad6d2cd8c577fde7d16ed50132ca1e93eb3872879e6c770f0584085c9c86b814",
-    "target_benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+    "target_benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
     "target_score_policy_version": "score-policy-v2-boundary-normalization"
   },
   "run_id": "20260706T051148444803Z-4e34acca",

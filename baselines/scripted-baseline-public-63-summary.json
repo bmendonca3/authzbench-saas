@@ -7,7 +7,7 @@
   "agent_cmd": "python3 scripts/scripted_baseline_agent.py",
   "authorized_allow_control_task_count": 15,
   "authorized_allow_pass_rate": 1.0,
-  "benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+  "benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 15,
     "control_task_count": 36,
@@ -52,7 +52,7 @@
   "per_task_tool_probe_artifact_count": 0,
   "planner_failure_count": 0,
   "planner_parse_error_count": 0,
-  "run_id": "20260710T162018017109Z-364c7cde",
+  "run_id": "20260710T191627265662Z-22ee7888",
   "runner_agent_failure_count": 0,
   "scored_submission_finding_total": 27,
   "submitted_finding_total": 0,
@@ -1763,7 +1763,7 @@
       "tool_probe_artifact": false
     }
   ],
-  "timeout_seconds": 10,
+  "timeout_seconds": 60,
   "v0_mean_score": 1.0,
   "v0_metric_profile": "v0-candidate-authz-evidence",
   "v0_passed_count": 63,

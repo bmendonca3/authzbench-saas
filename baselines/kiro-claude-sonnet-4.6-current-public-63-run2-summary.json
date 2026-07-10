@@ -7,7 +7,7 @@
   "agent_cmd": "python3 scripts/kiro_baseline_agent.py --model claude-sonnet-4.6 --timeout-seconds 90",
   "authorized_allow_control_task_count": 15,
   "authorized_allow_pass_rate": 1.0,
-  "benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+  "benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
   "benchmark_fingerprint": {
     "authorized_allow_control_task_count": 15,
     "control_task_count": 36,
@@ -71,7 +71,7 @@
     "source_score_set_sha256": "abefa653cfb1c4542a5388b7adac8fc29077799a2f21e90ecbb92d8c245694e6",
     "source_submission_set_sha256": "7452a5160087bb1657b15bfb00fd2002ea77e95cccc2b84dd5112681a432d032",
     "source_summary_sha256": "dd8f4d26d0a0577e565416d3dda8799fd4b249a31568fd747563e3f88284b424",
-    "target_benchmark_commit_sha": "5aa8963ab67b1f71d8a84dd2d4b843d4c95cfb3e",
+    "target_benchmark_commit_sha": "f41fe52d66c9113956912f53b3f640d8dcfbe292",
     "target_score_policy_version": "score-policy-v2-boundary-normalization"
   },
   "run_id": "20260706T162723241032Z-5a9cfb6b",
