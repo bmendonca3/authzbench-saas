@@ -42,6 +42,18 @@ def _current_commit_sha() -> str:
     return value
 
 
+def _require_commit_exists(value: str) -> None:
+    completed = subprocess.run(
+        ["git", "cat-file", "-e", f"{value}^{{commit}}"],
+        cwd=BENCHMARK_ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise ValueError("target_benchmark_commit_sha does not resolve to a local Git commit")
+
+
 def _public_relative_path(value: str, field: str) -> str:
     path = Path(value)
     if path.is_absolute() or not path.parts or ".." in path.parts:
@@ -127,6 +139,7 @@ def rescore_run(
     target_commit = target_benchmark_commit_sha or _current_commit_sha()
     if not re.fullmatch(r"[0-9a-f]{40}", target_commit):
         raise ValueError("target_benchmark_commit_sha must be a 40-character lowercase Git SHA")
+    _require_commit_exists(target_commit)
 
     source_summary_path = source_run_dir / "summary.json"
     source_summary = load_json(source_summary_path)
@@ -155,6 +168,7 @@ def rescore_run(
     fingerprint_items: list[tuple[str, dict[str, Any]]] = []
     submission_hashes: list[dict[str, str | None]] = []
     source_score_hashes: list[dict[str, str | None]] = []
+    source_model_output_hashes: list[dict[str, str | None]] = []
     rescored_score_hashes: list[dict[str, str]] = []
 
     for source_row in source_summary["tasks"]:
@@ -174,7 +188,8 @@ def rescore_run(
         source_task_dir = source_run_dir / task_id
         submission_path = source_task_dir / "submission.json"
         source_score_path = source_task_dir / "score.json"
-        model_output = _load_adapter_output(source_task_dir / "model-output.json")
+        model_output_path = source_task_dir / "model-output.json"
+        model_output = _load_adapter_output(model_output_path)
         adapter_failure_type = _adapter_failure_type(model_output)
         runner_agent_failure = source_row.get("agent_returncode") != 0
 
@@ -183,6 +198,12 @@ def rescore_run(
         )
         source_score_hashes.append(
             {"task_id": task_id, "sha256": _file_sha256(source_score_path) if source_score_path.is_file() else None}
+        )
+        source_model_output_hashes.append(
+            {
+                "task_id": task_id,
+                "sha256": _file_sha256(model_output_path) if model_output_path.is_file() else None,
+            }
         )
 
         if adapter_failure_type is not None:
@@ -239,6 +260,7 @@ def rescore_run(
         "source_summary_sha256": _file_sha256(source_summary_path),
         "source_submission_set_sha256": stable_json_sha256(submission_hashes),
         "source_score_set_sha256": stable_json_sha256(source_score_hashes),
+        "source_model_output_set_sha256": stable_json_sha256(source_model_output_hashes),
         "rescored_score_set_sha256": stable_json_sha256(rescored_score_hashes),
         "rescored_task_rows_sha256": stable_json_sha256(rescored_rows),
         "scorer_source_sha256": _file_sha256(BENCHMARK_ROOT / "authzbench" / "score.py"),

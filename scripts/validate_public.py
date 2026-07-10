@@ -184,6 +184,7 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
     run([sys.executable, "scripts/validate_harbor_adapter_blockers.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_adapter_templates.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_integration.py"], cwd)
+    run([sys.executable, "scripts/validate_packaged_harbor.py"], cwd)
     run([sys.executable, "scripts/check_harbor_local_execution.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_local_evidence.py"], cwd)
     run([sys.executable, "scripts/generate_task_quality_matrix.py"], cwd)
@@ -200,7 +201,20 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         ],
         cwd,
     )
-    run([sys.executable, "-m", "compileall", "-q", "authzbench", "apps", "tests", "scripts"], cwd)
+    run(
+        [
+            sys.executable,
+            "-m",
+            "compileall",
+            "-q",
+            "authzbench",
+            "authzbench_harbor",
+            "apps",
+            "tests",
+            "scripts",
+        ],
+        cwd,
+    )
     scan_privacy(cwd)
     if include_scripted_baseline:
         commit = subprocess.run(

@@ -83,6 +83,7 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "claude-opus-4.6": "Claude Opus 4.6",
             "claude-haiku-4.5": "Claude Haiku 4.5",
             "deepseek-3.2": "DeepSeek 3.2",
+            "Gemini 3.1 Pro (High)": "Gemini 3.1 Pro",
             "glm-5": "GLM-5",
             "qwen3-coder-next": "Qwen3 Coder Next",
         }.get(model, model)
@@ -94,20 +95,38 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "kind": entry["kind"],
             "harness_type": entry.get("expected_harness_type"),
             "release_suitability": entry["release_suitability"],
+            "result_derivation": entry.get("result_derivation", "legacy_or_runner_emitted"),
             "requires_rerun_before_current_comparison": bool(
                 entry.get("requires_rerun_before_current_comparison")
             ),
             "run_count": len(artifacts),
             "task_count": artifacts[0]["task_count"],
-            "pass_rate": mean(item["passed_count"] / item["task_count"] for item in artifacts),
-            "exploit_proven_success_rate": mean(item["exploit_proven_success_rate"] for item in artifacts),
-            "false_positive_rate": mean(item["false_positive_rate"] for item in artifacts),
-            "boundary_reasoning_pass_rate": mean(item["boundary_reasoning_pass_rate"] for item in artifacts),
-            "target_request_coverage_rate": mean(
+            "pass_rate": round(mean(item["passed_count"] / item["task_count"] for item in artifacts), 4),
+            "exploit_proven_success_rate": round(mean(item["exploit_proven_success_rate"] for item in artifacts), 4),
+            "false_positive_rate": round(mean(item["false_positive_rate"] for item in artifacts), 4),
+            "control_failure_rate": round(
+                mean(float(item.get("control_failure_rate", 0)) for item in artifacts),
+                4,
+            ),
+            "boundary_reasoning_pass_rate": round(mean(item["boundary_reasoning_pass_rate"] for item in artifacts), 4),
+            "boundary_field_match_mean": round(mean(
+                float(item.get("boundary_field_match_mean", 0)) for item in artifacts
+            ), 4),
+            "invalid_submission_rate": round(mean(
+                float(item.get("invalid_submission_rate", 0)) for item in artifacts
+            ), 4),
+            "adapter_failure_rate": round(mean(
+                int(item.get("adapter_failure_count", 0)) / int(item["task_count"])
+                for item in artifacts
+            ), 4),
+            "infrastructure_failure_rate": round(mean(
+                float(item.get("infrastructure_failure_rate", 0)) for item in artifacts
+            ), 4),
+            "target_request_coverage_rate": round(mean(
                 item["target_request_coverage_rate"]
                 for item in artifacts
                 if isinstance(item.get("target_request_coverage_rate"), (int, float))
-            )
+            ), 4)
             if any(isinstance(item.get("target_request_coverage_rate"), (int, float)) for item in artifacts)
             else None,
         }
@@ -158,7 +177,13 @@ def grouped_metric_chart(rows: list[dict[str, Any]]) -> str:
         status = "current split" if not is_stale else f'stale {row["task_count"]}-task split; rerun required'
         label = row["label"] if not is_stale else f'{row["label"]} (stale)'
         body.append(text(36, y + 22, label, size=13, color="gray" if is_stale else "text", weight="600"))
-        body.append(text(36, y + 40, f'{row["kind"].replace("_", " ")}; {row["run_count"]} run(s); {status}', size=11, color="muted"))
+        derivation = {
+            "offline_rescore_from_saved_public_submissions": "offline v2",
+            "promoted_cohort_delta_merge": "promoted composite",
+            "runner_emitted": "runner emitted",
+        }.get(str(row["result_derivation"]), "legacy derivation")
+        kind = "tool agent" if row["kind"] == "tool_agent_baseline" else "model"
+        body.append(text(36, y + 40, f'{kind}; {row["run_count"]} runs; {status}; {derivation}', size=11, color="muted"))
         for i, (key, _, color) in enumerate(metrics):
             value = float(row[key])
             x = left + i * metric_gap
@@ -374,6 +399,8 @@ def main() -> int:
             "exploit-proven-success.svg",
             "false-positive-rate.svg",
             "boundary-reasoning.svg",
+            "boundary-field-coverage.svg",
+            "invalid-submission-rate.svg",
             "task-mix.svg",
             "evidence-readiness.svg",
         ],
@@ -423,9 +450,32 @@ def main() -> int:
             rows,
             metric_key="boundary_reasoning_pass_rate",
             title="Boundary Reasoning",
-            subtitle="How often reports correctly identified the tenant, role, token, or object boundary.",
-            explanation="This separates real authorization reasoning from generic vulnerability language.",
+            subtitle="Policy-v2 rate of complete structured tenant, role, token, or object boundary matches.",
+            explanation="Every expected field must match; partial boundary coverage receives no score.",
             color_key="orange",
+        ),
+    )
+    write(
+        ASSET_DIR / "boundary-field-coverage.svg",
+        focused_metric_chart(
+            rows,
+            metric_key="boundary_field_match_mean",
+            title="Boundary Field Coverage",
+            subtitle="Diagnostic mean expected-field coverage under policy v2; this is not partial score.",
+            explanation="Use with the binary boundary-pass chart to distinguish partial structure from a complete boundary.",
+            color_key="orange",
+        ),
+    )
+    write(
+        ASSET_DIR / "invalid-submission-rate.svg",
+        focused_metric_chart(
+            rows,
+            metric_key="invalid_submission_rate",
+            title="Invalid Submission Rate",
+            subtitle="Malformed outputs and fail-closed adapter/runner failures in tracked public runs.",
+            explanation="Lower is better. A fallback empty-findings object is not scored after an execution failure.",
+            color_key="red",
+            lower_is_better=True,
         ),
     )
     write(ASSET_DIR / "task-mix.svg", task_mix_chart(registry["public_split"], private_summaries))
@@ -456,6 +506,8 @@ def main() -> int:
                 "- `exploit-proven-success.svg`: vulnerable-task exploit proof",
                 "- `false-positive-rate.svg`: secure-control false-positive rate",
                 "- `boundary-reasoning.svg`: authorization-boundary reasoning",
+                "- `boundary-field-coverage.svg`: diagnostic policy-v2 boundary-field coverage",
+                "- `invalid-submission-rate.svg`: malformed and fail-closed execution output rate",
                 "- `task-mix.svg`: public and redacted private task mix",
                 "- `evidence-readiness.svg`: current evidence gaps",
                 "",

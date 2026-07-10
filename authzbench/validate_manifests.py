@@ -76,6 +76,14 @@ def _is_non_empty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def _is_meaningful_json_match(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, (dict, list, str)):
+        return bool(value)
+    return True
+
+
 
 def _validate_foundational_shapes(path: Path, data: dict[str, Any]) -> tuple[list[str], bool]:
     """Validate types used by later semantic checks.
@@ -118,6 +126,17 @@ def _validate_foundational_shapes(path: Path, data: dict[str, Any]) -> tuple[lis
     if not isinstance(oracle, dict):
         errors.append(f"{path}: oracle must be an object")
         invalid = True
+    else:
+        if not _is_non_empty_string(oracle.get("claim")):
+            errors.append(f"{path}: oracle.claim must be a non-empty string")
+            invalid = True
+        status = oracle.get("status")
+        if isinstance(status, bool) or not isinstance(status, int):
+            errors.append(f"{path}: oracle.status must be an integer")
+            invalid = True
+        if not _is_meaningful_json_match(oracle.get("body_contains")):
+            errors.append(f"{path}: oracle.body_contains must be non-empty")
+            invalid = True
 
     controls = data.get("controls")
     if not isinstance(controls, list) or not controls:
@@ -126,6 +145,28 @@ def _validate_foundational_shapes(path: Path, data: dict[str, Any]) -> tuple[lis
     elif any(not isinstance(control, dict) for control in controls):
         errors.append(f"{path}: every controls item must be an object")
         invalid = True
+    else:
+        for index, control in enumerate(controls):
+            for field in ("name", "actor", "method", "path"):
+                if not _is_non_empty_string(control.get(field)):
+                    errors.append(
+                        f"{path}: controls[{index}].{field} must be a non-empty string"
+                    )
+                    invalid = True
+            status = control.get("status")
+            if isinstance(status, bool) or not isinstance(status, int):
+                errors.append(f"{path}: controls[{index}].status must be an integer")
+                invalid = True
+            if "body" in control and not isinstance(control["body"], dict):
+                errors.append(f"{path}: controls[{index}].body must be an object when supplied")
+                invalid = True
+            if "body_contains" in control and not _is_meaningful_json_match(
+                control["body_contains"]
+            ):
+                errors.append(
+                    f"{path}: controls[{index}].body_contains must be non-empty when supplied"
+                )
+                invalid = True
 
     return errors, invalid
 

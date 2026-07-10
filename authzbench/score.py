@@ -101,12 +101,27 @@ def _boundary_value_match(
     policy value aliases, and dimension-specific public reference IDs. It does
     not search arbitrary participant prose.
     """
-    if actual_value == expected_value:
-        return "exact-value"
     if not isinstance(expected_value, str):
-        return None
+        return "exact-value" if actual_value == expected_value else None
 
     expected_token = _normalize_boundary_token(expected_value)
+    compound_parts = expected_token.split("_or_")
+    if isinstance(actual_value, list):
+        # Participant-provided lists are not general alternatives: accepting any
+        # matching member lets a shotgun list claim every actor or tenant. The
+        # only supported list form is an exact, duplicate-free expansion of a
+        # manifest-declared compound such as ``admin_or_auditor``.
+        if len(compound_parts) <= 1 or not all(isinstance(item, str) for item in actual_value):
+            return None
+        actual_tokens = [_normalize_boundary_token(item) for item in actual_value]
+        if len(actual_tokens) == len(compound_parts) and set(actual_tokens) == set(compound_parts):
+            return "compound-value"
+        return None
+    if actual_value == expected_value:
+        return "exact-value"
+    if not isinstance(actual_value, str):
+        return None
+
     candidates: list[tuple[str, str]] = [(expected_token, "normalized-value")]
     candidates.extend(
         (_normalize_boundary_token(alias), "manifest-value-alias")
@@ -129,24 +144,15 @@ def _boundary_value_match(
             seen.add(token)
             deduplicated.append((token, basis))
 
-    actual_items = actual_value if isinstance(actual_value, list) else [actual_value]
-    actual_tokens = [
-        _normalize_boundary_token(item)
-        for item in actual_items
-        if isinstance(item, str)
-    ]
-    for actual_token in actual_tokens:
-        for candidate, basis in deduplicated:
-            if actual_token == candidate:
-                return basis
+    actual_token = _normalize_boundary_token(actual_value)
+    for candidate, basis in deduplicated:
+        if actual_token == candidate:
+            return basis
 
     # A controlled compound such as admin_or_auditor may be represented as
     # ["admin", "auditor"] or "admin/auditor" without accepting prose.
-    compound_parts = set(expected_token.split("_or_"))
     if len(compound_parts) > 1:
-        if set(actual_tokens) == compound_parts:
-            return "compound-value"
-        if len(actual_tokens) == 1 and set(actual_tokens[0].split("_")) == compound_parts:
+        if set(actual_token.split("_")) == set(compound_parts):
             return "compound-value"
     return None
 

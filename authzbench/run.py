@@ -106,8 +106,10 @@ def _adapter_failure_type(model_output: dict[str, Any] | None) -> str | None:
     if model_output.get("adapter_metadata_invalid") is True:
         return "adapter_metadata_failure"
     returncode = model_output.get("returncode")
+    if isinstance(returncode, bool) or not isinstance(returncode, int):
+        return "adapter_metadata_failure"
     parse_error = str(model_output.get("parse_error", "")).casefold()
-    if returncode not in {None, 0} or "command failed" in parse_error or "timed out" in parse_error:
+    if returncode != 0 or "command failed" in parse_error or "timed out" in parse_error:
         return "command_failure"
     if model_output.get("model_label_verified") is False:
         return "model_label_failure"

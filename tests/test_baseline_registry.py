@@ -32,6 +32,7 @@ CURRENT_GLM_60_ID = "kiro-glm-5-current-public-60"
 CURRENT_OPUS_60_ID = "kiro-claude-opus-4-6-current-public-60"
 CURRENT_TOOL_AGENT_60_ID = "kiro-live-tool-agent-sonnet-current-public-60"
 CURRENT_SCRIPTED_63_ID = "scripted-sanity-public-63"
+CURRENT_QWEN_63_ID = "kiro-qwen3-coder-next-current-public-63"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
@@ -81,6 +82,7 @@ def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, 
             "run_date": "2026-06-20",
             "evidence_status": "current_promoted_composite",
             "baseline_construction": "promoted_cohort_delta_merge",
+            "result_derivation": "promoted_cohort_delta_merge",
             "base_public_task_count": 60,
             "delta_public_task_count": 3,
             "merged_public_task_count": 63,
@@ -151,32 +153,25 @@ def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, 
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_keeps_60_task_rows_stale_after_63_task_expansion(self) -> None:
+    def test_current_registry_keeps_60_task_rows_stale_and_63_task_rows_current(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 38, result)
+        self.assertEqual(result["baseline_count"], 45, result)
         self.assertEqual(result["public_split"]["task_count"], 63, result)
-        self.assertEqual(result["current_public_model_family_count"], 0, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
-        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
+        self.assertEqual(result["current_public_model_family_count"], 7, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 7, result)
+        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
         self.assertTrue(result["has_current_public_scripted_sanity_baseline"], result)
-        self.assertFalse(result["has_current_public_model_or_tool_agent_baseline"], result)
-        self.assertFalse(result["v0_baseline_ready"], result)
+        self.assertTrue(result["has_current_public_model_or_tool_agent_baseline"], result)
+        self.assertTrue(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
         self.assertEqual(len(result["release_snapshots"]), 1, result)
         self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertEqual(
-            result["unmet_v0_requirements"],
-            [
-                "current public model families: 0 of 5",
-                "repeated model baselines: 0 of 5",
-                "missing current public tool-agent baseline",
-            ],
-        )
+        self.assertEqual(result["unmet_v0_requirements"], [])
 
         registry = load_json(REGISTRY)
         current_scripted_63 = _baseline_by_id(registry, CURRENT_SCRIPTED_63_ID)
@@ -831,6 +826,38 @@ class BaselineRegistryTests(unittest.TestCase):
             result,
         )
 
+    def test_rejects_rescore_summary_with_stale_source_hash(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["run_artifacts"][0]
+            summary = load_json(summary_path)
+            summary["rescore_provenance"]["scorer_source_sha256"] = "0" * 64
+            summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("does not match current source" in error for error in result["errors"]), result)
+
+    def test_rejects_rescore_summary_with_tampered_task_row_or_aggregate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["run_artifacts"][0]
+            summary = load_json(summary_path)
+            summary["tasks"][0]["score"] = 1
+            summary["passed_count"] = 63
+            summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("task-row digest" in error for error in result["errors"]), result)
+        self.assertTrue(any("passed_count" in error and "recomputed value" in error for error in result["errors"]), result)
+
     def test_accepts_current_promoted_composite_with_explicit_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
@@ -839,8 +866,8 @@ class BaselineRegistryTests(unittest.TestCase):
             result = validate_registry(registry_path)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["current_public_model_family_count"], 1, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
+        self.assertEqual(result["current_public_model_family_count"], 7, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 8, result)
 
     def test_rejects_current_promoted_composite_without_explicit_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

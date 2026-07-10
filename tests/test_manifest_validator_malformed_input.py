@@ -169,6 +169,26 @@ class MalformedManifestValidationTests(unittest.TestCase):
         self.assertIn("boundary_aliases.attacker_actor must be a non-empty list of strings", joined)
         self.assertIn("boundary_aliases contains unknown expected boundary key", joined)
 
+    def test_incomplete_oracle_and_control_objects_fail_before_scoring(self) -> None:
+        manifest = _valid_manifest()
+        manifest["oracle"] = {"claim": "no_vulnerability"}
+        manifest["controls"] = [{}]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            _write_json(path, manifest)
+            result = validate_patterns([str(path)])
+            completed = _run_cli(path)
+
+        self.assertFalse(result["passed"], result)
+        joined = "\n".join(result["errors"])
+        self.assertIn("oracle.status must be an integer", joined)
+        self.assertIn("oracle.body_contains must be non-empty", joined)
+        for field in ("name", "actor", "method", "path"):
+            self.assertIn(f"controls[0].{field} must be a non-empty string", joined)
+        self.assertIn("controls[0].status must be an integer", joined)
+        self.assertEqual(completed.returncode, 1, completed)
+        self.assertEqual(completed.stderr, "", completed)
+
     def test_deep_template_nesting_returns_json_without_traceback(self) -> None:
         manifest = _valid_manifest()
         nested: object = "value"

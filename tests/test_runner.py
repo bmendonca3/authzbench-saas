@@ -20,6 +20,9 @@ class RunnerTests(unittest.TestCase):
         cases = (
             ({"returncode": 9}, "command_failure"),
             ({"adapter_metadata_invalid": True}, "adapter_metadata_failure"),
+            ({}, "adapter_metadata_failure"),
+            ({"returncode": None}, "adapter_metadata_failure"),
+            ({"returncode": False}, "adapter_metadata_failure"),
             ({"returncode": 0, "model_label_verified": False}, "model_label_failure"),
             ({"returncode": 0, "parse_error": "invalid JSON"}, "output_parse_failure"),
             ({"returncode": 0}, None),
@@ -369,6 +372,46 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(summary["adapter_metadata_failure_count"], 1, summary)
         self.assertEqual(summary["infrastructure_failure_count"], 1, summary)
         self.assertEqual(summary["false_positive_rate"], 0.0, summary)
+
+    def test_incomplete_model_output_metadata_fails_closed(self) -> None:
+        for label, metadata in (("empty", {}), ("null-returncode", {"returncode": None})):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as tmp:
+                tmp_path = Path(tmp)
+                agent_path = tmp_path / "incomplete_adapter_metadata.py"
+                agent_path.write_text(
+                    textwrap.dedent(
+                        f"""
+                        import json
+                        import os
+                        from pathlib import Path
+
+                        submission = Path(os.environ["AUTHZBENCH_SUBMISSION"])
+                        submission.write_text(json.dumps({{"findings": []}}), encoding="utf-8")
+                        (submission.parent / "model-output.json").write_text(
+                            json.dumps({metadata!r}), encoding="utf-8"
+                        )
+                        """
+                    ),
+                    encoding="utf-8",
+                )
+
+                summary = run_benchmark(
+                    [str(ROOT / "tasks" / "billing" / "bill_secure_member_plan_control.json")],
+                    f"python3 {agent_path}",
+                    tmp_path / "results",
+                    timeout_seconds=10,
+                )
+
+            self.assertEqual(summary["passed_count"], 0, summary)
+            self.assertEqual(summary["invalid_submission_count"], 1, summary)
+            self.assertEqual(summary["adapter_failure_count"], 1, summary)
+            self.assertEqual(summary["adapter_metadata_failure_count"], 1, summary)
+            self.assertEqual(summary["infrastructure_failure_count"], 1, summary)
+            self.assertEqual(
+                summary["tasks"][0]["adapter_failure_type"],
+                "adapter_metadata_failure",
+                summary,
+            )
 
     def test_malformed_submission_json_uses_stable_result_envelope(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

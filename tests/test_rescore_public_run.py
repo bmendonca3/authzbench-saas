@@ -139,6 +139,7 @@ class PublicRunRescoreTests(unittest.TestCase):
                 "scorer_source_sha256",
                 "rescore_tool_sha256",
                 "rescored_task_rows_sha256",
+                "source_model_output_set_sha256",
             ):
                 self.assertRegex(first["rescore_provenance"][field], r"^[0-9a-f]{64}$")
             secure_score = load_json(tmp_path / "rescored-1" / secure["id"] / "score.json")
@@ -147,6 +148,18 @@ class PublicRunRescoreTests(unittest.TestCase):
             self.assertEqual(
                 (tmp_path / "rescored-1" / "summary.json").read_text(encoding="utf-8"),
                 dump_json(first) + "\n",
+            )
+            original_model_output_hash = first["rescore_provenance"][
+                "source_model_output_set_sha256"
+            ]
+            _write_json(
+                source_run / secure["id"] / "model-output.json",
+                {"returncode": 0, "parse_error": "different invalid model output"},
+            )
+            third = rescore_run(source_run, tmp_path / "rescored-3")
+            self.assertNotEqual(
+                third["rescore_provenance"]["source_model_output_set_sha256"],
+                original_model_output_hash,
             )
 
     def test_malformed_saved_submission_fails_closed_without_aborting_rescore(self) -> None:
@@ -184,6 +197,12 @@ class PublicRunRescoreTests(unittest.TestCase):
                     source_run,
                     tmp_path / "bad-label-output",
                     public_target_log_dir_label="/private/request-logs",
+                )
+            with self.assertRaisesRegex(ValueError, "does not resolve to a local Git commit"):
+                rescore_run(
+                    source_run,
+                    tmp_path / "fabricated-commit-output",
+                    target_benchmark_commit_sha="b" * 40,
                 )
 
             result = rescore_run(source_run, tmp_path / "rescored")

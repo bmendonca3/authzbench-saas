@@ -18,7 +18,7 @@ It is intentionally a script you run on demand, not part of every CI run.
 Usage:
     python3 scripts/analyze_baseline_variance.py
     python3 scripts/analyze_baseline_variance.py --require-current-public
-    python3 scripts/analyze_baseline_variance.py --json
+    python3 scripts/analyze_baseline_variance.py --json-output artifact/variance.json
 """
 
 from __future__ import annotations
@@ -431,6 +431,13 @@ def render_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _display_path(path: Path, root: Path) -> str:
+    try:
+        return str(path.relative_to(root))
+    except ValueError:
+        return str(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
@@ -457,8 +464,8 @@ def main() -> int:
     root = Path(args.root).resolve()
     registry = json.loads((root / REGISTRY_PATH.relative_to(ROOT)).read_text(encoding="utf-8"))
     baselines_dir = root / BASELINES_DIR.relative_to(ROOT)
-    json_output = root / args.json_output.relative_to(ROOT) if not args.json_output.is_absolute() else args.json_output
-    md_output = root / args.markdown_output.relative_to(ROOT) if not args.markdown_output.is_absolute() else args.markdown_output
+    json_output = args.json_output if args.json_output.is_absolute() else root / args.json_output
+    md_output = args.markdown_output if args.markdown_output.is_absolute() else root / args.markdown_output
 
     report = analyze_registry(
         registry,
@@ -478,8 +485,8 @@ def main() -> int:
             print(f"  - {issue}", file=sys.stderr)
         return 1
     print(
-        f"baseline variance: wrote {json_output.relative_to(root)} and"
-        f" {md_output.relative_to(root)}; cohorts={list(report['cohorts'])}"
+        f"baseline variance: wrote {_display_path(json_output, root)} and"
+        f" {_display_path(md_output, root)}; cohorts={list(report['cohorts'])}"
     )
     return 0
 

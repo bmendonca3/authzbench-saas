@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -31,7 +32,32 @@ def _run(command: list[str], *, cwd: Path, env: dict[str, str] | None = None) ->
     return completed
 
 
+def _packaging_python() -> tuple[str, str]:
+    candidates = [sys.executable]
+    candidates.extend(
+        executable
+        for name in ("python3.13", "python3.12", "python3.11", "python3.10")
+        if (executable := shutil.which(name)) is not None
+    )
+    for executable in dict.fromkeys(candidates):
+        completed = subprocess.run(
+            [
+                executable,
+                "-c",
+                "import sys; print('.'.join(map(str, sys.version_info[:3]))); "
+                "raise SystemExit(sys.version_info < (3, 10))",
+            ],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if completed.returncode == 0:
+            return executable, completed.stdout.strip()
+    raise RuntimeError("packaged Harbor validation requires Python 3.10 or newer")
+
+
 def validate_packaged_harbor() -> dict[str, object]:
+    packaging_python, python_version = _packaging_python()
     with tempfile.TemporaryDirectory(prefix="authzbench-wheel-smoke-") as tmp:
         temp_root = Path(tmp)
         source_copy = temp_root / "source"
@@ -46,26 +72,41 @@ def validate_packaged_harbor() -> dict[str, object]:
             )
         wheel_dir = temp_root / "wheel"
         wheel_dir.mkdir()
-        _run(
+        build_result = _run(
             [
-                sys.executable,
+                packaging_python,
                 "-m",
                 "pip",
                 "wheel",
                 ".",
                 "--no-deps",
-                "--no-build-isolation",
+                "--no-cache-dir",
                 "--wheel-dir",
                 str(wheel_dir),
             ],
             cwd=source_copy,
         )
-        wheels = list(wheel_dir.glob("authzbench_saas-*.whl"))
+        wheels = list(wheel_dir.glob("*.whl"))
         if len(wheels) != 1:
-            raise RuntimeError(f"expected one authzbench wheel, found {len(wheels)}")
+            names = sorted(path.name for path in wheel_dir.iterdir())
+            raise RuntimeError(
+                f"expected one wheel, found {len(wheels)}; directory entries={names}; "
+                f"pip stdout={build_result.stdout.strip()!r}"
+            )
         wheel_path = wheels[0]
         with zipfile.ZipFile(wheel_path) as archive:
             names = set(archive.namelist())
+            metadata_members = sorted(name for name in names if name.endswith(".dist-info/METADATA"))
+            if len(metadata_members) != 1:
+                raise RuntimeError("wheel must contain exactly one distribution METADATA file")
+            metadata = archive.read(metadata_members[0]).decode("utf-8", errors="replace")
+        name_match = re.search(r"^Name:\s*(.+?)\s*$", metadata, flags=re.MULTILINE)
+        distribution_name = name_match.group(1) if name_match else ""
+        normalized_distribution_name = re.sub(r"[-_.]+", "-", distribution_name).lower()
+        if normalized_distribution_name != "authzbench-saas":
+            raise RuntimeError(
+                f"wheel distribution name is not authzbench-saas: {distribution_name!r}"
+            )
         required_members = {
             "authzbench/__init__.py",
             "authzbench_harbor/__init__.py",
@@ -85,7 +126,7 @@ def validate_packaged_harbor() -> dict[str, object]:
         isolated_env.pop("PYTHONPATH", None)
         _run(
             [
-                sys.executable,
+                packaging_python,
                 "-m",
                 "pip",
                 "install",
@@ -104,7 +145,7 @@ def validate_packaged_harbor() -> dict[str, object]:
             "runpy.run_module('authzbench_harbor.cli', run_name='__main__')"
         )
         _run(
-            [sys.executable, "-I", "-c", module_runner, str(install_dir), "--help"],
+            [packaging_python, "-I", "-c", module_runner, str(install_dir), "--help"],
             cwd=temp_root,
             env=isolated_env,
         )
@@ -116,7 +157,7 @@ def validate_packaged_harbor() -> dict[str, object]:
         output_dir = temp_root / "dataset"
         completed = _run(
             [
-                sys.executable,
+                packaging_python,
                 "-I",
                 "-c",
                 module_runner,
@@ -149,7 +190,7 @@ def validate_packaged_harbor() -> dict[str, object]:
         )
         _run(
             [
-                sys.executable,
+                packaging_python,
                 "-I",
                 "-c",
                 bridge_runner,
@@ -170,6 +211,8 @@ def validate_packaged_harbor() -> dict[str, object]:
 
         return {
             "passed": True,
+            "distribution_name": distribution_name,
+            "python_version": python_version,
             "wheel_name": wheel_path.name,
             "required_member_count": len(required_members),
             "built_task_count": manifest["task_count"],
