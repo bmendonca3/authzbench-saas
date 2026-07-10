@@ -25,11 +25,13 @@ VALID_SPLITS = {"public", "private_holdout"}
 VALID_CONTROL_TYPES = {"denial", "authorized_allow"}
 
 
+
 def _manifest_paths(patterns: list[str]) -> list[Path]:
     paths: list[Path] = []
     for pattern in patterns:
         paths.extend(Path(path) for path in glob.glob(pattern, recursive=True))
     return sorted({path for path in paths if path.is_file()})
+
 
 
 def _contains_unresolved_template(value: Any) -> bool:
@@ -42,12 +44,70 @@ def _contains_unresolved_template(value: Any) -> bool:
     return False
 
 
+
 def _is_public_tasks_path(path: Path) -> bool:
     return len(path.parts) >= 3 and path.parts[-3] == "tasks"
 
 
+
 def _is_private_holdout_path(path: Path) -> bool:
     return "tasks_private" in path.parts and "holdout" in path.parts
+
+
+
+def _is_non_empty_string(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+
+def _validate_foundational_shapes(path: Path, data: dict[str, Any]) -> tuple[list[str], bool]:
+    """Validate types used by later semantic checks.
+
+    The validator is intentionally callable on untrusted host/contributor input.
+    Return field-specific errors before operations such as set membership,
+    ``str.startswith``, or ``dict.get`` can raise on malformed JSON shapes.
+    """
+
+    errors: list[str] = []
+    invalid = False
+
+    for field in ("id", "app", "seed", "policy", "objective", "output_schema"):
+        if not _is_non_empty_string(data.get(field)):
+            errors.append(f"{path}: {field} must be a non-empty string")
+            invalid = True
+
+    expected_vulnerable = data.get("expected_vulnerable")
+    if not isinstance(expected_vulnerable, bool):
+        errors.append(f"{path}: expected_vulnerable must be a boolean")
+        invalid = True
+
+    split = data.get("split", "public")
+    if not isinstance(split, str):
+        errors.append(f"{path}: split must be a string")
+        invalid = True
+
+    allowed_hosts = data.get("allowed_hosts")
+    if not isinstance(allowed_hosts, list) or not allowed_hosts or not all(
+        _is_non_empty_string(host) for host in allowed_hosts
+    ):
+        errors.append(f"{path}: allowed_hosts must be a non-empty list of strings")
+        invalid = True
+
+    oracle = data.get("oracle")
+    if not isinstance(oracle, dict):
+        errors.append(f"{path}: oracle must be an object")
+        invalid = True
+
+    controls = data.get("controls")
+    if not isinstance(controls, list) or not controls:
+        errors.append(f"{path}: controls must be a non-empty list")
+        invalid = True
+    elif any(not isinstance(control, dict) for control in controls):
+        errors.append(f"{path}: every controls item must be an object")
+        invalid = True
+
+    return errors, invalid
+
 
 
 def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
@@ -56,13 +116,24 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
         data = load_json(path)
     except Exception as exc:  # noqa: BLE001 - validators should report file failures without raw tracebacks.
         return [f"{path}: failed to load JSON manifest: {type(exc).__name__}"]
+    if not isinstance(data, dict):
+        return [f"{path}: manifest root must be an object"]
+
     missing = sorted(REQUIRED_FIELDS - set(data))
     if missing:
         errors.append(f"{path}: missing fields: {', '.join(missing)}")
         return errors
-    if data["id"] in seen_ids:
-        errors.append(f"{path}: duplicate id: {data['id']}")
-    seen_ids.add(data["id"])
+
+    shape_errors, foundational_shapes_invalid = _validate_foundational_shapes(path, data)
+    errors.extend(shape_errors)
+    if foundational_shapes_invalid:
+        return errors
+
+    task_id = data["id"]
+    if task_id in seen_ids:
+        errors.append(f"{path}: duplicate id: {task_id}")
+    seen_ids.add(task_id)
+
     split = data.get("split", "public")
     if split not in VALID_SPLITS:
         errors.append(f"{path}: split must be one of: {', '.join(sorted(VALID_SPLITS))}")
@@ -70,22 +141,22 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
         errors.append(f"{path}: private_holdout split must not live under public tasks/")
     if _is_private_holdout_path(path) and split != "private_holdout":
         errors.append(f"{path}: tasks_private/holdout manifests must use split=private_holdout")
-    if split == "private_holdout" and str(data["seed"]).startswith("public-"):
+    if split == "private_holdout" and data["seed"].startswith("public-"):
         errors.append(f"{path}: private_holdout seed must not use public-* prefix")
-    if not isinstance(data["controls"], list) or not data["controls"]:
-        errors.append(f"{path}: controls must be a non-empty list")
-    if data.get("expected_vulnerable") is True and data["oracle"].get("claim") == "no_vulnerability":
+
+    oracle = data["oracle"]
+    if data["expected_vulnerable"] is True and oracle.get("claim") == "no_vulnerability":
         errors.append(f"{path}: vulnerable task has no_vulnerability oracle")
-    if data.get("expected_vulnerable") is True and not isinstance(data.get("expected_boundary"), dict):
+    if data["expected_vulnerable"] is True and not isinstance(data.get("expected_boundary"), dict):
         errors.append(f"{path}: vulnerable task must include expected_boundary")
-    if data.get("expected_vulnerable") is False and data["oracle"].get("claim") != "no_vulnerability":
+    if data["expected_vulnerable"] is False and oracle.get("claim") != "no_vulnerability":
         errors.append(f"{path}: secure-control task must use no_vulnerability oracle")
-    if data.get("expected_vulnerable") is False:
+    if data["expected_vulnerable"] is False:
         control_type = data.get("control_type")
         if control_type not in VALID_CONTROL_TYPES:
             errors.append(f"{path}: secure-control task must set control_type to denial or authorized_allow")
         else:
-            status = data["oracle"].get("status")
+            status = oracle.get("status")
             if isinstance(status, int):
                 if control_type == "authorized_allow" and not (200 <= status < 300):
                     errors.append(f"{path}: authorized_allow control must have a 2xx oracle status")
@@ -104,7 +175,7 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
             errors.append(f"{path}: unresolved template in {section_name}")
     evidence_requirements = data.get("evidence_requirements")
     if evidence_requirements is not None:
-        if data.get("expected_vulnerable") is not True:
+        if data["expected_vulnerable"] is not True:
             errors.append(f"{path}: evidence_requirements are only supported for vulnerable tasks")
         elif not isinstance(evidence_requirements, list) or not evidence_requirements:
             errors.append(f"{path}: evidence_requirements must be a non-empty list when supplied")
@@ -134,6 +205,7 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
     return errors
 
 
+
 def validate_patterns(patterns: list[str]) -> dict[str, Any]:
     paths = _manifest_paths(patterns)
     seen_ids: set[str] = set()
@@ -149,9 +221,12 @@ def validate_patterns(patterns: list[str]) -> dict[str, Any]:
         except Exception as exc:  # noqa: BLE001 - keep malformed private packs from dumping stack traces.
             errors.append(f"{path}: failed to load JSON manifest: {type(exc).__name__}")
             continue
+        if not isinstance(data, dict):
+            errors.append(f"{path}: manifest root must be an object")
+            continue
         if data.get("expected_vulnerable") is True:
             vulnerable += 1
-        else:
+        elif data.get("expected_vulnerable") is False:
             controls += 1
             if data.get("control_type") == "denial":
                 denial_controls += 1
@@ -170,6 +245,7 @@ def validate_patterns(patterns: list[str]) -> dict[str, Any]:
         "private_holdout_count": private,
         "errors": errors,
     }
+
 
 
 def main() -> int:
