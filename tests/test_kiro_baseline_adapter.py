@@ -7,16 +7,54 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts.kiro_baseline_agent import _extract_json, _write_adapter_result, run_kiro
+from scripts.kiro_baseline_agent import (
+    _extract_json,
+    _extract_json_with_metadata,
+    _write_adapter_result,
+    run_kiro,
+)
 
 
 class KiroBaselineAdapterTests(unittest.TestCase):
     def test_extracts_plain_json(self) -> None:
         self.assertEqual(_extract_json('{"findings": []}')["findings"], [])
+        _submission, output_format, compliant = _extract_json_with_metadata('{"findings": []}')
+        self.assertEqual(output_format, "plain_json")
+        self.assertTrue(compliant)
 
     def test_extracts_fenced_json(self) -> None:
         text = '```json\n{"findings": [{"claim": "x"}]}\n```'
         self.assertEqual(_extract_json(text)["findings"][0]["claim"], "x")
+        _submission, output_format, compliant = _extract_json_with_metadata(text)
+        self.assertEqual(output_format, "fenced_json")
+        self.assertFalse(compliant)
+
+    def test_records_explicit_model_effort_and_prompt_provenance(self) -> None:
+        completed = subprocess.CompletedProcess(
+            args=["kiro"],
+            returncode=0,
+            stdout='{"findings": [], "verification": []}',
+            stderr="",
+        )
+        with patch("scripts.kiro_baseline_agent.subprocess.run", return_value=completed) as mocked:
+            submission, metadata = run_kiro(
+                {"candidate_requests": [{"actor": "demo", "method": "GET", "path": "/api/x"}]},
+                "claude-sonnet-5",
+                5,
+                effort="high",
+                kiro_cli_version="kiro-cli 2.12.1",
+            )
+
+        command = mocked.call_args.args[0]
+        self.assertEqual(submission["findings"], [])
+        self.assertEqual(metadata["requested_model"], "claude-sonnet-5")
+        self.assertEqual(metadata["requested_effort"], "high")
+        self.assertEqual(metadata["kiro_cli_version"], "kiro-cli 2.12.1")
+        self.assertRegex(metadata["prompt_sha256"], r"^[0-9a-f]{64}$")
+        self.assertEqual(metadata["output_format"], "plain_json")
+        self.assertTrue(metadata["json_only_compliant"])
+        self.assertIn("--effort", command)
+        self.assertIn("high", command)
 
     def test_extracts_final_findings_after_transcript_json(self) -> None:
         text = (

@@ -32,6 +32,11 @@ here.
 - `task-quality-gate-contract.json`: public-safe acceptance contract for task
   quality gates enforced during public validation. It is not external review
   evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
+- `kiro-multimodel-blinded-public-diagnostic-2026-07-12.json`: public-safe
+  aggregate from the first blinded host-replayed multi-model diagnostic. Raw
+  run bundles remain ignored; the aggregate is not registry, leaderboard,
+  private-holdout, hosted, cross-family, or statistically stable ranking
+  evidence.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1.0-internal public-view readiness.

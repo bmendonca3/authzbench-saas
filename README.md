@@ -420,8 +420,15 @@ Git.
 
 ## Evaluate an Agent
 
-`python3 -m authzbench.run` gives an agent a rendered task context and expects a
-structured JSON submission.
+For new public diagnostics, use `python3 -m authzbench.evaluate`. It applies the
+`blinded-control-evidence-v1` protocol: opaque case ids, neutral participant
+wording, a per-task working directory, participant verification evidence on
+secure controls, source/prompt/CLI provenance, calibrated metrics, and completed
+run exits that are separate from model accuracy.
+
+`python3 -m authzbench.run` remains the historical score-policy-v2 runner used by
+the tracked offline rescores. Keeping that path stable preserves their
+provenance; new-protocol results are not directly comparable to those rows.
 
 The runner provides:
 
@@ -433,9 +440,10 @@ The runner provides:
 Example:
 
 ```bash
-python3 -m authzbench.run \
+ROOT="$(pwd)"
+python3 -m authzbench.evaluate \
   --task 'tasks/*/*.json' \
-  --agent-cmd 'python3 my_agent.py --context {context} --out {submission}' \
+  --agent-cmd "python3 $ROOT/my_agent.py --context {context} --out {submission}" \
   --results-dir results/my-agent \
   --timeout-seconds 30 \
   --benchmark-commit-sha "$(git rev-parse HEAD)" \
@@ -443,6 +451,12 @@ python3 -m authzbench.run \
   --model my-model \
   --harness-type custom
 ```
+
+The absolute agent path matters because the blinded protocol starts the agent
+inside its per-task artifact directory. This working-directory isolation is not
+an operating-system sandbox; containerize filesystem-capable untrusted agents.
+See [`docs/benchmark-quality-plan.md`](docs/benchmark-quality-plan.md) for the
+threat model, measured gaps, Kiro command, and phased improvement plan.
 
 After a run, inspect:
 

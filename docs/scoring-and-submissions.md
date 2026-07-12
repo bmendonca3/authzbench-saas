@@ -14,6 +14,13 @@ must not be directly ranked against v2 results. The change rationale and
 rescore disposition are recorded in
 [`score-policy-v2-boundary-normalization.md`](score-policy-v2-boundary-normalization.md).
 
+New diagnostic executions may additionally use the versioned
+`blinded-control-evidence-v1` evaluation protocol through
+`python3 -m authzbench.evaluate`. That protocol changes participant context and
+secure-control evidence requirements without rewriting historical policy-v2
+artifacts. Its rows are not directly comparable to legacy-context rows. See
+[`benchmark-quality-plan.md`](benchmark-quality-plan.md).
+
 ### Why `mean_score` Is Insufficient
 
 `mean_score` mixes multiple dimensions into one number. On vulnerable tasks, partial credit might be awarded for secure controls even when the exploit proof or boundary reasoning is incorrect or incomplete.
@@ -41,6 +48,18 @@ For maintainer-private scoring governance and leaderboard-candidate rows, prefer
 | `target_request_coverage_rate` | Coverage rate of live-target HTTP requests, for live targets only |
 | `invalid_submission_rate` | Rate of malformed, missing, or unscorable task outputs |
 | `v0_mean_score` | Headline binary aggregate: `v0_passed_count / task_count`, with no partial credit |
+
+The blinded protocol also emits:
+
+| Metric | Description / Primary Use |
+| --- | --- |
+| `vulnerable_full_pass_rate` | Binary full-pass rate on vulnerable tasks |
+| `secure_control_pass_rate` | Secure controls with healthy replay, no false finding, and participant verification evidence |
+| `control_verification_pass_rate` | Secure controls backed by a matching participant-supplied request |
+| `authorization_balanced_accuracy` | Mean of vulnerable full-pass rate and secure-control pass rate |
+| `authz_discrimination_index` | Vulnerable full-pass rate minus false-positive rate; reported with the profile `authz-discrimination-v1` |
+| `*_interval_95` | Wilson 95% interval for the corresponding binomial task rate |
+| `adapter_json_only_compliance_rate` | Fraction of parseable adapter outputs that followed the JSON-only instruction exactly |
 
 ### Leaderboard Sorting Rule
 
@@ -121,6 +140,32 @@ A secure-control submission that found no authorization issue uses:
   "findings": []
 }
 ```
+
+Under `blinded-control-evidence-v1`, an empty-only response does not receive
+secure-control credit. The participant must also supply at least one request it
+selected plus a participant-reported expected HTTP status; the host replays it
+and checks both that status and the declared control observation:
+
+```json
+{
+  "findings": [],
+  "verification": [
+    {
+      "request": {
+        "actor": "beta_member",
+        "method": "GET",
+        "path": "/api/secure/projects/example/tasks/example"
+      },
+      "expected": {"status": 403}
+    }
+  ]
+}
+```
+
+The verification requirement is an evaluation-protocol gate layered over the
+historical scorer. This preserves exact legacy rescoring while preventing a
+unreasoned empty-only abstention from receiving verified-control credit in
+new runs.
 
 The task manifest's `output_schema` text is the per-task source of truth for required finding fields. In the current public tasks, a vulnerable finding requires a non-empty `claim`, non-empty `evidence` list containing request objects, a `boundary` object, a non-empty `impact` string, and an `out_of_scope_actions` list.
 

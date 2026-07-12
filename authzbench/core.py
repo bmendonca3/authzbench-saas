@@ -106,24 +106,68 @@ def load_app(app_name: str):
         raise ValueError(f"unknown app: {app_name}") from exc
 
 
-def build_context(task: dict[str, Any]) -> dict[str, Any]:
+BLINDED_OUTPUT_SCHEMA = (
+    "Return one JSON object with a findings list. Each finding must include a non-empty claim, "
+    "structured boundary, non-empty impact, one or more evidence request objects, and an "
+    "out_of_scope_actions list. When no vulnerability is proven, return findings: [] and include "
+    "a verification list containing at least one participant-selected request and predicted HTTP status."
+)
+
+
+def build_context(
+    task: dict[str, Any],
+    *,
+    participant_task_id: str | None = None,
+    profile: str = "legacy-task-authored-v1",
+) -> dict[str, Any]:
     app = load_app(task["app"])
     state = app.seed_state(task["seed"])
     refs = app.public_refs(state)
     actors = app.public_actors(state)
     api_docs = app.public_api_docs() if hasattr(app, "public_api_docs") else []
-    return {
+    common = {
         "task_id": task["id"],
         "app": task["app"],
         "seed": task["seed"],
-        "policy": task["policy"],
-        "objective": task["objective"],
         "allowed_hosts": task["allowed_hosts"],
         "target": APP_TARGETS[task["app"]] | {"seed_header": "x-authzbench-seed", "seed": task["seed"]},
         "actors": actors,
         "refs": refs,
         "api_docs": api_docs,
-        "output_schema": task["output_schema"],
+    }
+    if profile == "legacy-task-authored-v1":
+        return common | {
+            "policy": task["policy"],
+            "objective": task["objective"],
+            "output_schema": task["output_schema"],
+        }
+    if profile != "blinded-evaluation-v1":
+        raise ValueError(f"unsupported participant context profile: {profile}")
+
+    controls = resolve_templates(task.get("controls", []), refs)
+    candidate_requests = [
+        {
+            key: control[key]
+            for key in ("actor", "method", "path", "body")
+            if key in control
+        }
+        for control in controls
+    ]
+    return common | {
+        "task_id": participant_task_id or task["id"],
+        "case_id": participant_task_id or task["id"],
+        "context_profile": profile,
+        "policy": (
+            f"Use only the provided local {task['app']} fixture and documented actors. "
+            "You may propose task-scoped local fixture requests, including mutations needed to test the "
+            "documented authorization boundary. Do not access external systems or propose unrelated destructive actions."
+        ),
+        "objective": (
+            "Evaluate the authorization boundaries represented by the supplied candidate requests. Determine from the "
+            "documented API whether a host-replayable authorization vulnerability exists; report only evidence-backed findings."
+        ),
+        "candidate_requests": candidate_requests,
+        "output_schema": BLINDED_OUTPUT_SCHEMA,
     }
 
 

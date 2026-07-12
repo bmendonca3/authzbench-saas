@@ -54,6 +54,30 @@ executions under v2; use this runbook when that stronger evidence is needed.
 
 Expected operational budget is 756 Kiro chat invocations plus local Docker runtime. Monetary cost depends on the active Kiro plan/provider billing and must be checked in Kiro before execution.
 
+### New blinded-protocol diagnostic
+
+Before repeating the legacy matrix, run one complete public diagnostic through
+the blinded protocol documented in
+[`benchmark-quality-plan.md`](benchmark-quality-plan.md). It uses opaque case
+ids, neutral context, participant control evidence, and stronger provenance.
+Because it is a different evaluation protocol, do not mix its numbers with the
+historical policy-v2 context rows.
+
+```bash
+ROOT="$(pwd)"
+PYTHON="python3.11"
+MODEL="claude-sonnet-5"  # verify with: kiro chat --list-models
+
+"$PYTHON" -m authzbench.evaluate \
+  --task 'tasks/*/*.json' \
+  --agent-cmd "$PYTHON $ROOT/scripts/kiro_baseline_agent.py --model $MODEL --effort high --timeout-seconds 120" \
+  --results-dir "results/kiro-$MODEL-blinded-public-63" \
+  --timeout-seconds 150 \
+  --agent kiro_baseline_agent \
+  --model "$MODEL" \
+  --harness-type no-tools-model
+```
+
 ## Commands
 
 ### 1. Scripted sanity baseline (no Kiro needed)
@@ -83,7 +107,7 @@ for MODEL in claude-sonnet-4.6 claude-haiku-4.5 claude-opus-4.6 glm-5 qwen3-code
       --benchmark-commit-sha "$BENCHMARK_COMMIT_SHA" \
       --agent kiro_baseline_agent \
       --model "$MODEL" \
-      --harness-type no-tools
+      --harness-type no-tools-model
   done
 done
 ```
@@ -99,7 +123,7 @@ for RUN in 1 2; do
     --task 'tasks/*/*.json' \
     --agent-cmd 'python3 scripts/kiro_live_tool_agent.py --model claude-sonnet-4.6 --timeout-seconds 45 --max-probes 6' \
     --results-dir "results/kiro-live-tool-agent-sonnet-current-public-63-run${RUN}" \
-    --timeout-seconds 75 \
+    --timeout-seconds 120 \
     --benchmark-commit-sha "$BENCHMARK_COMMIT_SHA" \
     --agent kiro_live_tool_agent \
     --model claude-sonnet-4.6 \
@@ -110,10 +134,14 @@ done
 
 ## Post-Run Steps
 
-1. **Copy run summaries into `baselines/`:**
+1. **Locate the nested run summaries and copy each to an explicit,
+   collision-free registry filename:**
    ```bash
-   cp results/kiro-*-current-public-63-run*/summary.json baselines/
+   find results -path '*current-public-63-run*/*/summary.json' -print
    ```
+   Review each printed summary first, then copy it to the exact `summary_path`
+   named by the intended registry entry. Do not bulk-copy generic
+   `summary.json` filenames because they collide.
 
 2. **Update `baselines/baseline-registry.json`** from stale 60-task rows to new 63-task rows. For each model family:
    - Set `expected_task_count: 63`
