@@ -20,7 +20,7 @@
 
 ## External Evidence Boundary
 
-The original authenticated preflight reached Codex CLI execution but failed before model inference because the workspace was out of credits. A later clean-source admission completed all 27 configuration decisions, then the full phase exhausted credits after one complete 63-task row and 25 tasks of the next row. The remaining 23 full rows are incomplete and cannot be compared. The historic public blocker artifact must remain consistent with its ignored raw event/stderr hashes; current-run evidence remains ignored until a separately reviewed public-safe aggregate is produced.
+The original authenticated preflight reached Codex CLI execution but failed before model inference because the workspace was out of credits. A later clean-source admission completed all 27 configuration decisions, then the full phase exhausted credits after one complete 63-task row and 25 tasks of the next row. The remaining 23 full rows are incomplete and cannot be compared. The historic public blocker artifact remains bound to its ignored raw event/stderr hashes; the later raw run evidence also remains ignored, with only the reviewed aggregate in `artifact/openai-codex-hosted-diagnostic-2026-07-12.json` tracked publicly.
 
 ## Completion Rule
 

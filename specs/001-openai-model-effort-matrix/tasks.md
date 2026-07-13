@@ -38,4 +38,4 @@
 
 ## Blocked Task
 
-- T016-T017 remain externally blocked after credits were exhausted during the full phase. One configuration completed 63/63; 23 admitted configurations are incomplete and excluded from comparison, while three `gpt-5.4` efforts were excluded during admission on direct capacity failures. Do not retry until the exact workspace-credit sentinel is absent.
+- T016 remains externally blocked after credits were exhausted during the full phase. One configuration completed 63/63; 23 admitted configurations are incomplete and excluded from comparison, while three `gpt-5.4` efforts were excluded during admission on direct capacity failures. Do not retry until the exact workspace-credit sentinel is absent.
