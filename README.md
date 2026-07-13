@@ -480,9 +480,16 @@ diagnostic and are not eligible for current registry promotion while the hidden
 runtime profile context is neither disabled nor source-bound.
 
 The frozen 27-configuration surface is in
-`artifact/openai-codex-model-effort-matrix-2026-07-12.json`. The current real
+`artifact/openai-codex-model-effort-matrix-2026-07-12.json`. The historic
 pre-inference blocker evidence is in
-`artifact/openai-codex-credit-blocker-2026-07-12.json`.
+`artifact/openai-codex-credit-blocker-2026-07-12.json`. The later clean-source
+admission and attempted full-phase aggregate is in
+`artifact/openai-codex-hosted-diagnostic-2026-07-12.json`: 24 of 27
+configurations were admitted, three `gpt-5.4` efforts were excluded on direct
+capacity failures, one admitted configuration completed 63/63 tasks, and 23
+full rows are incomplete after workspace credits were exhausted. Only the
+complete row is model-quality evidence, and one requested-only public row is
+not a cross-configuration comparison or ranking.
 The matrix is derived from the public-safe normalized catalog in
 `artifact/openai-codex-model-catalog-2026-07-12.json`; validation binds its
 digest and configuration set.

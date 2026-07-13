@@ -30,6 +30,7 @@
 
 - [x] CHK014 No dependency installation, private-holdout access, repository initialization, force action, merge, or credential discovery is implied.
 - [x] CHK015 Hosted execution is retried only after the exact run-wide blocker is absent.
+- [x] CHK016 Public aggregate requirements distinguish complete diagnostic rows from partial or infrastructure-failed rows and prohibit rankings when fewer than two rows complete.
 
 ## Review Result
 

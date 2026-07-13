@@ -130,6 +130,8 @@ REQUEST_METHODS = {"GET", "POST", "PUT", "PATCH", "DELETE"}
 CREDIT_BLOCKER_MESSAGE = (
     "Your workspace is out of credits. Ask your workspace owner to refill in order to continue."
 )
+CURRENT_CREDIT_BLOCKER_MESSAGE = "Your workspace is out of credits. Add credits to continue."
+CREDIT_BLOCKER_MESSAGES = frozenset({CREDIT_BLOCKER_MESSAGE, CURRENT_CREDIT_BLOCKER_MESSAGE})
 PROMPT_HASH_SCOPE = "host_supplied_user_prompt_only"
 PROFILE_SKILL_LOADING_STATUS = "not_disabled_by_current_codex_cli_surface"
 
@@ -153,7 +155,7 @@ def _global_blocker_code(events_text: str, stderr_text: str) -> str | None:
         if not isinstance(message, str):
             error = event.get("error")
             message = error.get("message") if isinstance(error, dict) else None
-        if message == CREDIT_BLOCKER_MESSAGE:
+        if message in CREDIT_BLOCKER_MESSAGES:
             return "codex_workspace_out_of_credits"
     return None
 

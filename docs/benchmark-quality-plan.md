@@ -230,6 +230,21 @@ content-hash record is
 The source was dirty and the model identity was requested-only, so it is not a
 comparable row. The real stderr also showed profile skill-loader activity; the
 exposed CLI feature list contains no switch to disable that loader. The public
-artifact records this as a non-source-bound runtime-context limitation. The
-matrix runner stops on that global blocker; it will not fan out 27 doomed
-requests.
+artifact records this as a non-source-bound runtime-context limitation.
+
+The later clean-source admission evaluated all 27 declared configurations: 24
+were admitted and `gpt-5.4` medium/high/xhigh were excluded when the service
+reported capacity before inference. In the full phase, `gpt-5.4-mini`/low
+completed 63/63 tasks with zero adapter or infrastructure failures and zero tool
+attempts. It passed 22 tasks, had mean score 0.3984, proved 4/27 vulnerable
+tasks, fully passed 0/27 vulnerable tasks, passed 61.11% of secure controls,
+made two false control reports, and had authorization balanced accuracy 0.3055.
+
+Workspace credits were exhausted after 25 successful tasks of the next row.
+The remaining 23 admitted full rows are incomplete and excluded from quality
+comparison. The public-safe aggregate is
+[`artifact/openai-codex-hosted-diagnostic-2026-07-12.json`](../artifact/openai-codex-hosted-diagnostic-2026-07-12.json).
+The observed service wording had changed from the original blocker preflight;
+the classifier now uses an exact allowlist for both observed top-level messages
+while preserving model-text spoof resistance. Future runs stop on the first
+matching global blocker rather than fanning out doomed requests.

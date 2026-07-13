@@ -56,6 +56,14 @@ here.
   comparable benchmark row. It also records that the prompt hash excludes
   hidden runtime profile context and that profile skill-loader activity was
   observed without an exposed disable switch.
+- `openai-codex-hosted-diagnostic-2026-07-12.json`: public-safe aggregate from
+  the clean-source 27-configuration admission and attempted full phase. It
+  records 24 admissions, three capacity exclusions, one complete 63-task
+  `gpt-5.4-mini`/low diagnostic row, and 23 incomplete full rows after workspace
+  credits were exhausted. Raw result bundles remain ignored. The single
+  complete requested-only row is not cross-configuration, registry,
+  leaderboard, private-holdout, API, platform-hosted evaluation, or stable
+  ranking evidence.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1.0-internal public-view readiness.

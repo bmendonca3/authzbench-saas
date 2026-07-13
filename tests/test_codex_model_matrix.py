@@ -8,7 +8,12 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts.codex_baseline_agent import PROFILE_SKILL_LOADING_STATUS, PROMPT_HASH_SCOPE
+from scripts.codex_baseline_agent import (
+    CREDIT_BLOCKER_MESSAGE,
+    CURRENT_CREDIT_BLOCKER_MESSAGE,
+    PROFILE_SKILL_LOADING_STATUS,
+    PROMPT_HASH_SCOPE,
+)
 from scripts.run_codex_model_matrix import (
     DEFAULT_MATRIX,
     DEFAULT_ADMISSION_TASK,
@@ -177,18 +182,19 @@ class CodexModelMatrixTests(unittest.TestCase):
         self.assertIn("adapter CLI version does not match the matrix", reasons)
 
     def test_global_credit_blocker_is_detected_from_raw_event_evidence(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            run_dir = Path(tmp)
-            case_dir = run_dir / "case-123"
-            case_dir.mkdir()
-            (case_dir / "codex-events.jsonl").write_text(
-                '{"type":"error","message":"Your workspace is out of credits. Ask your workspace owner to refill in order to continue."}\n',
-                encoding="utf-8",
-            )
+        for message in (CREDIT_BLOCKER_MESSAGE, CURRENT_CREDIT_BLOCKER_MESSAGE):
+            with self.subTest(message=message), tempfile.TemporaryDirectory() as tmp:
+                run_dir = Path(tmp)
+                case_dir = run_dir / "case-123"
+                case_dir.mkdir()
+                (case_dir / "codex-events.jsonl").write_text(
+                    json.dumps({"type": "error", "message": message}) + "\n",
+                    encoding="utf-8",
+                )
 
-            blocker = _global_blocker(run_dir)
+                blocker = _global_blocker(run_dir)
 
-        self.assertEqual(blocker, "codex_workspace_out_of_credits")
+            self.assertEqual(blocker, "codex_workspace_out_of_credits")
 
     def test_global_credit_blocker_is_not_spoofed_by_model_text(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -491,6 +497,44 @@ class CodexModelMatrixTests(unittest.TestCase):
                 "output_schema_sha256": "cfdbba230d14a6b1dee02bca45798e99ed1bdfb2a75af9454a5bf5565c6c9ea1",
             },
         )
+
+    def test_public_hosted_diagnostic_artifact_preserves_incomplete_claim_boundary(self) -> None:
+        artifact = json.loads(
+            (ROOT / "artifact/openai-codex-hosted-diagnostic-2026-07-12.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        admission = artifact["admission"]
+        full = artifact["full_execution"]
+        row = artifact["completed_diagnostic_rows"][0]
+
+        self.assertEqual(admission["declared_configuration_count"], 27)
+        self.assertEqual(
+            admission["admitted_configuration_count"]
+            + admission["excluded_configuration_count"],
+            admission["attempted_configuration_count"],
+        )
+        self.assertEqual(len(admission["excluded_configurations"]), 3)
+        self.assertEqual(full["completed_configuration_count"], 1)
+        self.assertEqual(full["incomplete_configuration_count"], 23)
+        self.assertEqual(
+            full["inference_completed_task_count"] + full["infrastructure_failure_count"],
+            full["evaluator_task_artifact_count"],
+        )
+        self.assertEqual(len(full["zero_inference_configuration_ids"]), 22)
+        self.assertEqual(row["task_count"], 63)
+        self.assertEqual(row["task_completion_count"], 63)
+        self.assertEqual(row["tool_attempt_count"], 0)
+        self.assertTrue(row["diagnostic_row_complete"])
+        self.assertFalse(row["registry_eligible"])
+        self.assertFalse(artifact["comparison"]["cross_configuration_comparison_eligible"])
+        self.assertFalse(artifact["comparison"]["ranking_eligible"])
+        for digest in (
+            admission["report_sha256"],
+            full["report_sha256"],
+            row["summary_sha256"],
+        ):
+            self.assertRegex(digest, r"^[0-9a-f]{64}$")
 
     def test_evaluator_command_hashes_adapter_runner_and_matrix_sources(self) -> None:
         config = {"id": "gpt-5-4-mini-low", "model": "gpt-5.4-mini", "effort": "low"}

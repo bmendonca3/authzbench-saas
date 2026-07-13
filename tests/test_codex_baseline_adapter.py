@@ -12,6 +12,7 @@ from unittest.mock import patch
 
 from scripts.codex_baseline_agent import (
     CREDIT_BLOCKER_MESSAGE,
+    CURRENT_CREDIT_BLOCKER_MESSAGE,
     DISABLED_FEATURES,
     PROFILE_SKILL_LOADING_STATUS,
     PROMPT_HASH_SCOPE,
@@ -329,29 +330,27 @@ class CodexBaselineAdapterTests(unittest.TestCase):
         self.assertEqual(metadata["returncode"], 75)
 
     def test_credit_classifier_requires_exact_top_level_failure_event(self) -> None:
-        exact = _event_text(
-            {"type": "error", "message": CREDIT_BLOCKER_MESSAGE},
-            {"type": "turn.failed", "error": {"message": CREDIT_BLOCKER_MESSAGE}},
-        )
-        model_text = _event_text(
-            {"type": "thread.started"},
-            {"type": "turn.started"},
-            {
-                "type": "item.completed",
-                "item": {
-                    "id": "m1",
-                    "type": "agent_message",
-                    "text": CREDIT_BLOCKER_MESSAGE,
-                },
-            },
-            {"type": "turn.completed"},
-        )
+        for message in (CREDIT_BLOCKER_MESSAGE, CURRENT_CREDIT_BLOCKER_MESSAGE):
+            with self.subTest(message=message):
+                exact = _event_text(
+                    {"type": "error", "message": message},
+                    {"type": "turn.failed", "error": {"message": message}},
+                )
+                model_text = _event_text(
+                    {"type": "thread.started"},
+                    {"type": "turn.started"},
+                    {
+                        "type": "item.completed",
+                        "item": {"id": "m1", "type": "agent_message", "text": message},
+                    },
+                    {"type": "turn.completed"},
+                )
 
-        self.assertEqual(
-            _global_blocker_code(exact, ""),
-            "codex_workspace_out_of_credits",
-        )
-        self.assertIsNone(_global_blocker_code(model_text, CREDIT_BLOCKER_MESSAGE))
+                self.assertEqual(
+                    _global_blocker_code(exact, ""),
+                    "codex_workspace_out_of_credits",
+                )
+                self.assertIsNone(_global_blocker_code(model_text, message))
 
     def test_writer_separates_raw_events_and_stderr_from_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

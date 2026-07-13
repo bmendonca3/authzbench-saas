@@ -38,7 +38,7 @@ No exception is approved. Any implementation that weakens one of these gates mus
 2. Validate event streams as an ordered lifecycle, not merely as a set containing a terminal event.
 3. Normalize the model-facing schema to the benchmark submission contract with exact-key validation.
 4. Hash raw event, stderr, prompt, schema, adapter source, protocol, and matrix inputs for audit without publishing raw content.
-5. Create a run-level blocker sentinel only for exact global policy/credit classifiers; do not generalize arbitrary model errors into a global stop.
+5. Create a run-level blocker sentinel only for an exact allowlist of observed global policy/credit messages; keep legacy and current workspace-credit wording covered, and do not generalize arbitrary model errors into a global stop.
 6. Treat model-output and parse failures as scored row content when infrastructure completed.
 7. Require nonexisting destination run/report paths so stale evidence cannot be reused silently.
 8. Make full admission depend on a complete 27-row smoke report that is itself validated against current source.

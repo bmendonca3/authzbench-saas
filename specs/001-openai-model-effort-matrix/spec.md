@@ -82,6 +82,7 @@ A reviewer can reproduce why a configuration was admitted, excluded, completed, 
 - **FR-012**: The matrix runner MUST exit nonzero when a phase is incomplete and use a distinct status for the global hosted-service blocker.
 - **FR-013**: Every row MUST state that its prompt hash covers only the host-supplied user prompt and MUST record the current profile-skill loading limitation; such rows remain diagnostic while that runtime context is neither disabled nor source-bound.
 - **FR-014**: The exact-head publication workflow MUST use a current Node 24 artifact-upload action and pass its public-validation and host-presentation jobs without a deprecated-runtime annotation.
+- **FR-015**: A public matrix aggregate MUST reconcile all admission decisions and full-phase completion/failure counts, publish metrics only for complete rows, and mark cross-configuration comparison unavailable when fewer than two rows complete.
 
 ### Key Entities
 
@@ -100,6 +101,7 @@ A reviewer can reproduce why a configuration was admitted, excluded, completed, 
 - **SC-005**: Public documentation never represents a credit-blocked preflight, requested-only identity, public-split result, or incomplete run as a verified model-quality ranking.
 - **SC-006**: Admission and full-completion tests reject rows that omit or misstate prompt-hash scope or profile-skill loading status.
 - **SC-007**: The exact pushed head passes both GitHub Actions jobs with the host-review bundle uploaded by `actions/upload-artifact@v7` and no Node 20 action warning.
+- **SC-008**: The public matrix aggregate reconciles admitted plus excluded configurations to 27, reconciles inference-completed plus infrastructure-failed task artifacts to the attempted full-task total, and exposes no ranking from incomplete rows.
 
 ## Assumptions
 

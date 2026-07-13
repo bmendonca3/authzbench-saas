@@ -28,12 +28,14 @@
 ## Phase 4 - Hosted Execution And Publication
 
 - [x] T014 Establish a committed clean source boundary with `bmendonca3` authorship and push only after the upstream publication gate.
-- [ ] T015 Retry the 27 one-task smokes serially when workspace credits are available; validate exact complete coverage.
+- [x] T015 Retry the 27 one-task smokes serially when workspace credits are available; validate exact complete coverage.
 - [ ] T016 Run all 63 public tasks for every admitted configuration serially and preserve raw ignored evidence.
 - [ ] T017 Publish only complete public-safe comparison artifacts and refresh PR state/CI without merging.
 - [x] T018 Migrate host-review artifact upload from the deprecated Node 20 action line to `actions/upload-artifact@v7` and verify fresh exact-head GitHub CI.
 - [x] T019 Replace deprecated web-search feature flags with the current top-level disabled config, preserve rejection of pre-turn item events, and verify one clean hosted admission smoke before resuming the matrix.
+- [x] T020 Add the current exact workspace-credit wording to the top-level failure allowlist after the full run exposed classifier drift; preserve model-text spoof resistance and matrix-wide short-circuit tests.
+- [x] T021 Publish a public-safe admission/full-phase aggregate with source/report hashes, one complete diagnostic row, incomplete-row counts, and an explicit no-ranking boundary.
 
 ## Blocked Task
 
-- T015-T017 remain externally blocked while the authenticated Codex workspace returns the exact out-of-credits failure before inference. The implementation and blocker evidence are published; model-comparison artifacts must wait for hosted execution.
+- T016-T017 remain externally blocked after credits were exhausted during the full phase. One configuration completed 63/63; 23 admitted configurations are incomplete and excluded from comparison, while three `gpt-5.4` efforts were excluded during admission on direct capacity failures. Do not retry until the exact workspace-credit sentinel is absent.
