@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from authzbench.core import build_context, dump_json, load_json
-from scripts.rescore_public_run import rescore_run
+from scripts.rescore_public_run import _require_clean_target_checkout, rescore_run
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +41,26 @@ def _source_row(task: dict, task_path: str, *, score: float, passed: bool) -> di
 
 
 class PublicRunRescoreTests(unittest.TestCase):
+    def test_rescore_requires_clean_checkout_at_target_commit(self) -> None:
+        target_commit = "a" * 40
+
+        with patch(
+            "scripts.rescore_public_run._current_commit_sha",
+            return_value="b" * 40,
+        ):
+            with self.assertRaisesRegex(ValueError, "checked-out Git HEAD"):
+                _require_clean_target_checkout(target_commit)
+
+        with patch(
+            "scripts.rescore_public_run._current_commit_sha",
+            return_value=target_commit,
+        ), patch(
+            "scripts.rescore_public_run.subprocess.run",
+            return_value=subprocess.CompletedProcess([], 0, stdout=" M authzbench/run.py\n", stderr=""),
+        ):
+            with self.assertRaisesRegex(ValueError, "clean worktree"):
+                _require_clean_target_checkout(target_commit)
+
     def test_rescore_is_deterministic_and_adapter_failures_fail_closed(self) -> None:
         vulnerable_path = "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json"
         secure_path = "tasks/billing/bill_secure_member_plan_control.json"
@@ -106,8 +128,9 @@ class PublicRunRescoreTests(unittest.TestCase):
             _write_json(source_run / "summary.json", source_summary)
             original_summary_text = (source_run / "summary.json").read_text(encoding="utf-8")
 
-            first = rescore_run(source_run, tmp_path / "rescored-1")
-            second = rescore_run(source_run, tmp_path / "rescored-2")
+            with patch("scripts.rescore_public_run._require_clean_target_checkout"):
+                first = rescore_run(source_run, tmp_path / "rescored-1")
+                second = rescore_run(source_run, tmp_path / "rescored-2")
 
             self.assertEqual(first, second)
             self.assertEqual((source_run / "summary.json").read_text(encoding="utf-8"), original_summary_text)
@@ -156,7 +179,8 @@ class PublicRunRescoreTests(unittest.TestCase):
                 source_run / secure["id"] / "model-output.json",
                 {"returncode": 0, "parse_error": "different invalid model output"},
             )
-            third = rescore_run(source_run, tmp_path / "rescored-3")
+            with patch("scripts.rescore_public_run._require_clean_target_checkout"):
+                third = rescore_run(source_run, tmp_path / "rescored-3")
             self.assertNotEqual(
                 third["rescore_provenance"]["source_model_output_set_sha256"],
                 original_model_output_hash,
@@ -190,22 +214,23 @@ class PublicRunRescoreTests(unittest.TestCase):
                 },
             )
 
-            with self.assertRaisesRegex(ValueError, "must not contain one another"):
-                rescore_run(source_run, source_run / "derived")
-            with self.assertRaisesRegex(ValueError, "public-safe relative path"):
-                rescore_run(
-                    source_run,
-                    tmp_path / "bad-label-output",
-                    public_target_log_dir_label="/private/request-logs",
-                )
-            with self.assertRaisesRegex(ValueError, "does not resolve to a local Git commit"):
-                rescore_run(
-                    source_run,
-                    tmp_path / "fabricated-commit-output",
-                    target_benchmark_commit_sha="b" * 40,
-                )
+            with patch("scripts.rescore_public_run._require_clean_target_checkout"):
+                with self.assertRaisesRegex(ValueError, "must not contain one another"):
+                    rescore_run(source_run, source_run / "derived")
+                with self.assertRaisesRegex(ValueError, "public-safe relative path"):
+                    rescore_run(
+                        source_run,
+                        tmp_path / "bad-label-output",
+                        public_target_log_dir_label="/private/request-logs",
+                    )
+                with self.assertRaisesRegex(ValueError, "does not resolve to a local Git commit"):
+                    rescore_run(
+                        source_run,
+                        tmp_path / "fabricated-commit-output",
+                        target_benchmark_commit_sha="b" * 40,
+                    )
 
-            result = rescore_run(source_run, tmp_path / "rescored")
+                result = rescore_run(source_run, tmp_path / "rescored")
             score = load_json(tmp_path / "rescored" / secure["id"] / "score.json")
 
         self.assertEqual(result["invalid_submission_count"], 1, result)

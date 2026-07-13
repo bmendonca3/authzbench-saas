@@ -14,6 +14,11 @@
   "requested_effort": "high",
   "kiro_cli_version": "kiro-cli 2.12.1",
   "raw_run_bundles_tracked": false,
+  "protocol_manifest_scope": "pre-explicit-agent-and-replay-source-binding",
+  "provenance_limitations": [
+    "The recorded source set predates required --agent-source provenance and explicit replay-app source hashing.",
+    "The aggregate is preserved as preliminary diagnostic evidence and is not an exact-source reproduction baseline."
+  ],
   "valid_comparable_rows": [
     {
       "model": "claude-opus-4.8",
@@ -87,11 +92,11 @@
     "all_valid_source_sets_identical": true,
     "all_valid_rows_have_opaque_participant_paths": true,
     "all_valid_rows_have_zero_canonical_id_leaks_in_participant_contexts_or_paths": true,
-    "all_valid_rows_have_zero_tool_attempts": true,
+    "all_valid_rows_have_no_tool_probe_telemetry": true,
     "all_valid_rows_have_zero_adapter_failures": true,
     "all_valid_rows_have_zero_infrastructure_failures": true,
     "all_valid_rows_have_zero_invalid_submissions": true,
     "all_valid_rows_have_zero_strict_json_only_outputs": true
   },
-  "claim_boundary": "Single-run public diagnostics from a dirty worktree. These rows are not registry, leaderboard, private-holdout, hosted, cross-family, or statistically stable model-ranking evidence."
+  "claim_boundary": "Single-run public diagnostics from a dirty worktree before explicit adapter/replay-source binding. Tool-probe telemetry was not captured, so no tool-attempt claim is made. These rows are not exact-source reproduction, registry, leaderboard, private-holdout, hosted, cross-family, or statistically stable model-ranking evidence."
 }

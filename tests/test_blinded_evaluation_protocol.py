@@ -13,6 +13,9 @@ from authzbench.core import build_context, load_json
 from authzbench.evaluate import (
     _evaluate_control_verification,
     _exit_code,
+    _protocol_manifest,
+    _protocol_source_paths,
+    _verified_benchmark_commit_sha,
     _wilson_interval,
     run_evaluation,
 )
@@ -68,6 +71,34 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
         self.assertGreaterEqual(interval["lower"], 0)
         self.assertLessEqual(interval["upper"], 1)
         self.assertIsNone(_wilson_interval(0, 0))
+
+    def test_protocol_manifest_hashes_explicit_agent_and_all_replay_apps(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            agent_source = Path(tmp) / "custom_adapter.py"
+            agent_source.write_text("print('first')\n", encoding="utf-8")
+            first = _protocol_manifest(_protocol_source_paths([agent_source]))
+            agent_source.write_text("print('second')\n", encoding="utf-8")
+            second = _protocol_manifest(_protocol_source_paths([agent_source]))
+
+        self.assertIn("agent_source_1", first["source_sha256"])
+        self.assertIn("app:apps/project_mgmt/app.py", first["source_sha256"])
+        self.assertIn("app:apps/request_logging.py", first["source_sha256"])
+        self.assertNotIn("kiro_adapter", first["source_sha256"])
+        self.assertNotEqual(first["source_set_sha256"], second["source_set_sha256"])
+        with self.assertRaisesRegex(ValueError, "agent source path"):
+            _protocol_source_paths([])
+
+    def test_evaluation_commit_label_must_match_observed_head(self) -> None:
+        git_provenance = {"git_commit_sha": "a" * 40}
+
+        self.assertEqual(
+            _verified_benchmark_commit_sha(git_provenance, "a" * 40),
+            "a" * 40,
+        )
+        with self.assertRaisesRegex(ValueError, "exactly match"):
+            _verified_benchmark_commit_sha(git_provenance, "b" * 40)
+        with self.assertRaisesRegex(ValueError, "unable to resolve Git HEAD"):
+            _verified_benchmark_commit_sha({}, None)
 
     def test_blinded_context_removes_authored_outcome_and_canonical_id(self) -> None:
         vulnerable = load_json(
@@ -142,6 +173,7 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
                 tmp_path / "results",
                 timeout_seconds=10,
                 run_id="blinded-unit-run",
+                agent_source_paths=[agent_path],
             )
             participant_case_id = summary["tasks"][0]["participant_case_id"]
             task_dir = Path(summary["run_dir"]) / participant_case_id

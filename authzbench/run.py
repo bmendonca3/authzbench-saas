@@ -76,7 +76,7 @@ def _optional_int(data: dict[str, Any] | None, *keys: str) -> int | None:
         return None
     for key in keys:
         value = data.get(key)
-        if isinstance(value, int):
+        if isinstance(value, int) and not isinstance(value, bool):
             return value
     return None
 
@@ -224,6 +224,45 @@ def _invalid_runner_score(task: dict[str, Any], reason: str) -> dict[str, Any]:
     return result
 
 
+def summarize_tool_probe_telemetry(task_results: list[dict[str, Any]]) -> dict[str, Any]:
+    count_fields = (
+        "executed_probe_count",
+        "fallback_probe_count",
+        "submitted_finding_count",
+    )
+    artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact") is True)
+    complete_rows = [
+        item
+        for item in task_results
+        if item.get("tool_probe_artifact") is True
+        and all(
+            isinstance(item.get(field), int) and not isinstance(item.get(field), bool)
+            for field in count_fields
+        )
+    ]
+    if task_results and len(complete_rows) == len(task_results):
+        status = "complete"
+    elif artifact_count == 0:
+        status = "unobserved"
+    else:
+        status = "partial"
+    totals = {
+        field: sum(int(item[field]) for item in complete_rows) if status == "complete" else None
+        for field in count_fields
+    }
+    return {
+        "per_task_tool_probe_artifact_count": artifact_count,
+        "tool_probe_telemetry_complete_task_count": len(complete_rows),
+        "tool_probe_telemetry_coverage_rate": (
+            round(len(complete_rows) / len(task_results), 4) if task_results else None
+        ),
+        "tool_probe_telemetry_status": status,
+        "executed_tool_probe_total": totals["executed_probe_count"],
+        "fallback_probe_total": totals["fallback_probe_count"],
+        "submitted_finding_total": totals["submitted_finding_count"],
+    }
+
+
 def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]:
     """Return deterministic aggregate metrics for runner or re-score rows."""
     vulnerable = [item for item in task_results if item["expected_vulnerable"]]
@@ -251,14 +290,11 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
     adapter_failures = [item for item in task_results if item.get("adapter_failure_type")]
     infrastructure_failures = [item for item in task_results if item.get("infrastructure_failure")]
     runner_agent_failures = [item for item in task_results if item.get("runner_agent_failure")]
-    executed_tool_probe_total = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
-    fallback_probe_total = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
     scored_submission_finding_total = sum(
         int(item.get("submission_finding_count", 0)) for item in task_results
     )
-    submitted_finding_total = sum(int(item.get("submitted_finding_count", 0)) for item in task_results)
     model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
-    per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
+    tool_telemetry = summarize_tool_probe_telemetry(task_results)
     planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
     planner_failure_count = sum(
         1
@@ -281,11 +317,7 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
     target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
     return {
         "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
-        "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
-        "executed_tool_probe_total": executed_tool_probe_total,
-        "fallback_probe_total": fallback_probe_total,
         "scored_submission_finding_total": scored_submission_finding_total,
-        "submitted_finding_total": submitted_finding_total,
         "planner_failure_count": planner_failure_count,
         "planner_parse_error_count": planner_parse_error_count,
         "adapter_failure_count": len(adapter_failures),
@@ -352,7 +384,7 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
             round(target_log_correlated / len(target_log_tasks), 4) if target_log_tasks else None
         ),
         "tasks": task_results,
-    }
+    } | tool_telemetry
 
 
 def run_benchmark(

@@ -54,6 +54,23 @@ def _require_commit_exists(value: str) -> None:
         raise ValueError("target_benchmark_commit_sha does not resolve to a local Git commit")
 
 
+def _require_clean_target_checkout(target_commit: str) -> None:
+    current_commit = _current_commit_sha()
+    if current_commit != target_commit:
+        raise ValueError("target_benchmark_commit_sha must match the checked-out Git HEAD")
+    status = subprocess.run(
+        ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+        cwd=BENCHMARK_ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if status.returncode != 0:
+        raise ValueError("unable to verify that the target benchmark worktree is clean")
+    if status.stdout.strip():
+        raise ValueError("rescore requires a clean worktree at the target benchmark commit")
+
+
 def _public_relative_path(value: str, field: str) -> str:
     path = Path(value)
     if path.is_absolute() or not path.parts or ".." in path.parts:
@@ -140,6 +157,7 @@ def rescore_run(
     if not re.fullmatch(r"[0-9a-f]{40}", target_commit):
         raise ValueError("target_benchmark_commit_sha must be a 40-character lowercase Git SHA")
     _require_commit_exists(target_commit)
+    _require_clean_target_checkout(target_commit)
 
     source_summary_path = source_run_dir / "summary.json"
     source_summary = load_json(source_summary_path)
@@ -287,7 +305,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--target-benchmark-commit-sha",
-        help="Committed target scorer/task source SHA (defaults to git rev-parse HEAD).",
+        help="Checked-out clean target scorer/task source SHA (defaults to git rev-parse HEAD).",
     )
     args = parser.parse_args()
     summary = rescore_run(

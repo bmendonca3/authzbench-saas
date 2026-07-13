@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from authzbench.core import load_json
-from scripts.promote_public_baseline_delta import ROOT, promote
+from scripts.promote_public_baseline_delta import ROOT, _git_head, _require_clean_worktree, promote
 
 
 PROMOTED_TASK_IDS = {
@@ -25,7 +27,30 @@ def _write_summary(path: Path, template: dict, tasks: list[dict], *, run_id: str
 
 
 class PromotePublicBaselineDeltaTests(unittest.TestCase):
-    def test_promotes_exact_delta_into_current_public_composite(self) -> None:
+    def test_promoted_summary_commit_label_must_match_head(self) -> None:
+        with self.assertRaisesRegex(ValueError, "exactly match"):
+            promote(
+                ROOT / "baselines" / "scripted-baseline-public-63-summary.json",
+                ROOT / "baselines" / "scripted-baseline-public-63-summary.json",
+                output_path=ROOT / "unused.json",
+                run_id="unused",
+                interpretation="unused",
+                promotion_annotation="unused",
+                benchmark_commit_sha="0" * 40,
+                expected_base_task_count=0,
+                expected_delta_task_ids=set(),
+            )
+
+    def test_promoted_summary_requires_clean_worktree(self) -> None:
+        with patch(
+            "scripts.promote_public_baseline_delta.subprocess.run",
+            return_value=subprocess.CompletedProcess([], 0, stdout=" M tasks/billing/example.json\n", stderr=""),
+        ):
+            with self.assertRaisesRegex(ValueError, "clean worktree"):
+                _require_clean_worktree()
+
+    @patch("scripts.promote_public_baseline_delta._require_clean_worktree")
+    def test_promotes_exact_delta_into_current_public_composite(self, _clean: object) -> None:
         template = load_json(ROOT / "baselines" / "scripted-baseline-public-63-summary.json")
         base_tasks = [task for task in template["tasks"] if task["task_id"] not in PROMOTED_TASK_IDS]
         delta_tasks = [task for task in template["tasks"] if task["task_id"] in PROMOTED_TASK_IDS]
@@ -47,7 +72,7 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
                 run_id="merged-63",
                 interpretation="synthetic promoted-composite test",
                 promotion_annotation="test composite; not a full rerun",
-                benchmark_commit_sha="0" * 40,
+                benchmark_commit_sha=_git_head(),
                 expected_base_task_count=60,
                 expected_delta_task_ids=PROMOTED_TASK_IDS,
             )
@@ -64,7 +89,8 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
             [task["id"] for _, task in sorted((path.relative_to(ROOT).as_posix(), load_json(path)) for path in (ROOT / "tasks").glob("*/*.json"))],
         )
 
-    def test_rejects_delta_that_is_not_exact_promoted_task_set(self) -> None:
+    @patch("scripts.promote_public_baseline_delta._require_clean_worktree")
+    def test_rejects_delta_that_is_not_exact_promoted_task_set(self, _clean: object) -> None:
         template = load_json(ROOT / "baselines" / "scripted-baseline-public-63-summary.json")
         base_tasks = [task for task in template["tasks"] if task["task_id"] not in PROMOTED_TASK_IDS]
         bad_delta_tasks = [task for task in template["tasks"] if task["task_id"] in PROMOTED_TASK_IDS][:2]
@@ -85,7 +111,7 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
                     run_id="merged-63",
                     interpretation="synthetic promoted-composite test",
                     promotion_annotation="test composite; not a full rerun",
-                    benchmark_commit_sha="0" * 40,
+                    benchmark_commit_sha=_git_head(),
                     expected_base_task_count=60,
                     expected_delta_task_ids=PROMOTED_TASK_IDS,
                 )

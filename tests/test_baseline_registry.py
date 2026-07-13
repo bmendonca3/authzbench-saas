@@ -839,7 +839,7 @@ class BaselineRegistryTests(unittest.TestCase):
             result = validate_registry(registry_path)
 
         self.assertFalse(result["passed"], result)
-        self.assertTrue(any("does not match current source" in error for error in result["errors"]), result)
+        self.assertTrue(any("does not match target commit source" in error for error in result["errors"]), result)
 
     def test_rejects_rescore_summary_with_tampered_task_row_or_aggregate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

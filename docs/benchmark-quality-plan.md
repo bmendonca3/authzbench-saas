@@ -122,6 +122,7 @@ MODEL="claude-sonnet-5"
 "$PYTHON" -m authzbench.evaluate \
   --task 'tasks/*/*.json' \
   --agent-cmd "$PYTHON $ROOT/scripts/kiro_baseline_agent.py --model $MODEL --effort high --timeout-seconds 120" \
+  --agent-source "$ROOT/scripts/kiro_baseline_agent.py" \
   --results-dir "results/kiro-$MODEL-blinded-public-63" \
   --timeout-seconds 150 \
   --agent kiro_baseline_agent \
@@ -137,12 +138,16 @@ boundary, repeated runs, and registry/provenance review.
 
 Four local high-effort Kiro runs completed all 63 public tasks under protocol
 manifest `2359b92f...` and source set `db602fb2...`. Every valid row had 63
-opaque participant paths, 63 unique prompts, zero tool attempts, and zero
-adapter, infrastructure, or invalid-submission failures.
+opaque participant paths, 63 unique prompts, and zero adapter, infrastructure,
+or invalid-submission failures. Tool-probe telemetry was not captured, so these
+diagnostics do not make a tool-attempt claim.
 
 The public-safe aggregate is recorded in
 [`artifact/kiro-multimodel-blinded-public-diagnostic-2026-07-12.json`](../artifact/kiro-multimodel-blinded-public-diagnostic-2026-07-12.json).
-Raw run bundles remain ignored local evidence.
+Raw run bundles remain ignored local evidence. These runs predate required
+`--agent-source` provenance and explicit replay-app hashing, so the aggregate is
+pre-hardening diagnostic evidence rather than an exact-source reproduction
+baseline.
 
 | Model | Binary pass | Mean score | Exploit proof | Full vulnerable | Secure controls | False reports | Balanced accuracy |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

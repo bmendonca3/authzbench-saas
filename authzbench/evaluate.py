@@ -80,7 +80,7 @@ def _wilson_interval(successes: int, total: int, z: float = 1.96) -> dict[str, A
     }
 
 
-def _git_provenance(root: Path) -> dict[str, Any]:
+def _git_provenance(root: Path, source_paths: dict[str, Path]) -> dict[str, Any]:
     def run(*args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             ["git", *args],
@@ -93,7 +93,14 @@ def _git_provenance(root: Path) -> dict[str, Any]:
 
     head = run("rev-parse", "HEAD")
     status = run("status", "--porcelain=v1", "--untracked-files=no")
-    diff = run("diff", "--binary", "HEAD", "--", "authzbench", "scripts/kiro_baseline_agent.py")
+    root_resolved = root.resolve()
+    tracked_source_paths = []
+    for path in source_paths.values():
+        try:
+            tracked_source_paths.append(path.resolve().relative_to(root_resolved).as_posix())
+        except ValueError:
+            continue
+    diff = run("diff", "--binary", "HEAD", "--", *sorted(set(tracked_source_paths)))
     return {
         "git_commit_sha": head.stdout.strip() if head.returncode == 0 else None,
         "tracked_worktree_dirty": bool(status.stdout.strip()) if status.returncode == 0 else None,
@@ -105,14 +112,35 @@ def _git_provenance(root: Path) -> dict[str, Any]:
     }
 
 
-def _protocol_manifest() -> dict[str, Any]:
+def _resolve_agent_source_paths(agent_source_paths: list[Path | str] | None) -> list[Path]:
+    if not agent_source_paths:
+        raise ValueError("at least one agent source path is required for evaluation provenance")
+    resolved_paths = sorted(
+        {Path(path).expanduser().resolve() for path in agent_source_paths},
+        key=lambda path: path.as_posix(),
+    )
+    for path in resolved_paths:
+        if not path.is_file():
+            raise ValueError(f"agent source path must be a readable file: {path}")
+    return resolved_paths
+
+
+def _protocol_source_paths(agent_source_paths: list[Path | str] | None) -> dict[str, Path]:
     source_paths = {
         "core": BENCHMARK_ROOT / "authzbench/core.py",
         "legacy_runner": BENCHMARK_ROOT / "authzbench/run.py",
         "scorer": BENCHMARK_ROOT / "authzbench/score.py",
         "evaluation_runner": Path(__file__).resolve(),
-        "kiro_adapter": BENCHMARK_ROOT / "scripts/kiro_baseline_agent.py",
     }
+    app_root = BENCHMARK_ROOT / "apps"
+    for path in sorted(app_root.rglob("*.py")):
+        source_paths[f"app:{path.relative_to(BENCHMARK_ROOT).as_posix()}"] = path
+    for index, path in enumerate(_resolve_agent_source_paths(agent_source_paths), start=1):
+        source_paths[f"agent_source_{index}"] = path
+    return source_paths
+
+
+def _protocol_manifest(source_paths: dict[str, Path]) -> dict[str, Any]:
     source_hashes = {name: _file_sha256(path) for name, path in source_paths.items()}
     manifest: dict[str, Any] = {
         "schema_version": "authzbench-evaluation-protocol-manifest-v1",
@@ -132,6 +160,17 @@ def _protocol_manifest() -> dict[str, Any]:
     }
     manifest["manifest_sha256"] = stable_json_sha256(manifest)
     return manifest
+
+
+def _verified_benchmark_commit_sha(
+    git_provenance: dict[str, Any], benchmark_commit_sha: str | None
+) -> str:
+    observed_commit_sha = git_provenance.get("git_commit_sha")
+    if not isinstance(observed_commit_sha, str) or not observed_commit_sha:
+        raise ValueError("unable to resolve Git HEAD for benchmark provenance")
+    if benchmark_commit_sha is not None and benchmark_commit_sha != observed_commit_sha:
+        raise ValueError("benchmark_commit_sha must exactly match the observed Git HEAD")
+    return observed_commit_sha
 
 
 def _evaluate_control_verification(
@@ -311,6 +350,7 @@ def run_evaluation(
     harness_type: str | None = None,
     target_log_dir: Path | None = None,
     run_id: str | None = None,
+    agent_source_paths: list[Path | str] | None = None,
 ) -> dict[str, Any]:
     run_id = run_id or _utc_run_id()
     if not is_safe_identifier(run_id):
@@ -337,8 +377,12 @@ def run_evaluation(
     fingerprint = benchmark_fingerprint(
         [(path_text, task) for path_text, _task_path, task in loaded_tasks]
     )
-    protocol = _protocol_manifest()
-    git_provenance = _git_provenance(root)
+    source_paths = _protocol_source_paths(agent_source_paths)
+    protocol = _protocol_manifest(source_paths)
+    git_provenance = _git_provenance(root, source_paths)
+    resolved_benchmark_commit_sha = _verified_benchmark_commit_sha(
+        git_provenance, benchmark_commit_sha
+    )
     task_results: list[dict[str, Any]] = []
 
     for _fingerprint_path_text, task_path, task in loaded_tasks:
@@ -518,7 +562,7 @@ def run_evaluation(
     summary = {
         "run_id": run_id,
         "benchmark_version": benchmark_version,
-        "benchmark_commit_sha": benchmark_commit_sha or git_provenance["git_commit_sha"],
+        "benchmark_commit_sha": resolved_benchmark_commit_sha,
         "benchmark_fingerprint": fingerprint,
         "benchmark_source_provenance": git_provenance,
         "evaluation_protocol": protocol,
@@ -547,6 +591,12 @@ def main() -> int:
     )
     parser.add_argument("--task", action="append", required=True)
     parser.add_argument("--agent-cmd", required=True)
+    parser.add_argument(
+        "--agent-source",
+        action="append",
+        required=True,
+        help="Adapter source file to hash for provenance; repeat for every source file.",
+    )
     parser.add_argument("--results-dir", default="results")
     parser.add_argument("--timeout-seconds", type=int, default=120)
     parser.add_argument("--benchmark-version", default="alpha-0.0.1-public-scaffold-local")
@@ -571,6 +621,7 @@ def main() -> int:
         harness_type=args.harness_type,
         target_log_dir=(Path(args.target_log_dir).resolve() if args.target_log_dir else None),
         run_id=args.run_id,
+        agent_source_paths=args.agent_source,
     )
     print(dump_json(summary))
     return _exit_code(summary, require_all_pass=args.require_all_pass)

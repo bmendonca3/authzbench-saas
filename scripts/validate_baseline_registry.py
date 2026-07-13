@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -96,6 +97,16 @@ RESCORE_HASH_FIELDS = {
     "scorer_source_sha256",
     "rescore_tool_sha256",
 }
+TOOL_TELEMETRY_COVERAGE_FIELDS = {
+    "tool_probe_telemetry_complete_task_count",
+    "tool_probe_telemetry_coverage_rate",
+    "tool_probe_telemetry_status",
+}
+TOOL_TELEMETRY_TOTAL_FIELDS = {
+    "executed_tool_probe_total",
+    "fallback_probe_total",
+    "submitted_finding_total",
+}
 VALID_ADAPTER_FAILURE_TYPES = {
     "adapter_metadata_failure",
     "command_failure",
@@ -110,6 +121,33 @@ def _file_sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+_TARGET_SOURCE_HASH_CACHE: dict[str, dict[str, str | None]] = {}
+
+
+def _target_source_hashes(target_commit: str) -> dict[str, str | None]:
+    cached = _TARGET_SOURCE_HASH_CACHE.get(target_commit)
+    if cached is not None:
+        return cached
+    source_paths = {
+        "scorer_source_sha256": "authzbench/score.py",
+        "runner_source_sha256": "authzbench/run.py",
+        "rescore_tool_sha256": "scripts/rescore_public_run.py",
+    }
+    hashes: dict[str, str | None] = {}
+    for field, relative_path in source_paths.items():
+        completed = subprocess.run(
+            ["git", "show", f"{target_commit}:{relative_path}"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+        hashes[field] = (
+            hashlib.sha256(completed.stdout).hexdigest() if completed.returncode == 0 else None
+        )
+    _TARGET_SOURCE_HASH_CACHE[target_commit] = hashes
+    return hashes
 
 # Required provenance fields on every "current" entry. These were
 # introduced after the v1.0-internal release per
@@ -201,16 +239,16 @@ def _validate_rescore_provenance(
     for field in sorted(RESCORE_HASH_FIELDS):
         if not re.fullmatch(r"[0-9a-f]{64}", str(provenance.get(field, ""))):
             errors.append(f"{entry_id}: {location} rescore_provenance.{field} must be a SHA-256 digest")
-    live_source_hashes = {
-        "scorer_source_sha256": _file_sha256(ROOT / "authzbench" / "score.py"),
-        "runner_source_sha256": _file_sha256(ROOT / "authzbench" / "run.py"),
-        "rescore_tool_sha256": _file_sha256(ROOT / "scripts" / "rescore_public_run.py"),
-    }
-    for field, expected in live_source_hashes.items():
-        if provenance.get(field) != expected:
-            errors.append(
-                f"{entry_id}: {location} rescore_provenance.{field} does not match current source"
-            )
+    if isinstance(target_commit, str) and re.fullmatch(r"[0-9a-f]{40}", target_commit):
+        for field, expected in _target_source_hashes(target_commit).items():
+            if expected is None:
+                errors.append(
+                    f"{entry_id}: {location} cannot read rescore source at target benchmark commit"
+                )
+            elif provenance.get(field) != expected:
+                errors.append(
+                    f"{entry_id}: {location} rescore_provenance.{field} does not match target commit source"
+                )
 
     tasks = summary.get("tasks")
     if not isinstance(tasks, list):
@@ -260,6 +298,14 @@ def _validate_rescore_provenance(
         return
     for field, expected in recomputed.items():
         if field == "tasks":
+            continue
+        if field in TOOL_TELEMETRY_COVERAGE_FIELDS and field not in summary:
+            continue
+        if (
+            field in TOOL_TELEMETRY_TOTAL_FIELDS
+            and "tool_probe_telemetry_status" not in summary
+            and recomputed["tool_probe_telemetry_status"] != "complete"
+        ):
             continue
         if summary.get(field) != expected:
             errors.append(

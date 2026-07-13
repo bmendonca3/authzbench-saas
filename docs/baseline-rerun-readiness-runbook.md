@@ -71,6 +71,7 @@ MODEL="claude-sonnet-5"  # verify with: kiro chat --list-models
 "$PYTHON" -m authzbench.evaluate \
   --task 'tasks/*/*.json' \
   --agent-cmd "$PYTHON $ROOT/scripts/kiro_baseline_agent.py --model $MODEL --effort high --timeout-seconds 120" \
+  --agent-source "$ROOT/scripts/kiro_baseline_agent.py" \
   --results-dir "results/kiro-$MODEL-blinded-public-63" \
   --timeout-seconds 150 \
   --agent kiro_baseline_agent \

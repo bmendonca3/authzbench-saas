@@ -426,6 +426,9 @@ wording, a per-task working directory, participant verification evidence on
 secure controls, source/prompt/CLI provenance, calibrated metrics, and completed
 run exits that are separate from model accuracy.
 
+Provide every adapter source file with repeated `--agent-source` flags so the
+protocol manifest hashes the adapter alongside the evaluator and replay sources.
+
 `python3 -m authzbench.run` remains the historical score-policy-v2 runner used by
 the tracked offline rescores. Keeping that path stable preserves their
 provenance; new-protocol results are not directly comparable to those rows.
@@ -444,6 +447,7 @@ ROOT="$(pwd)"
 python3 -m authzbench.evaluate \
   --task 'tasks/*/*.json' \
   --agent-cmd "python3 $ROOT/my_agent.py --context {context} --out {submission}" \
+  --agent-source "$ROOT/my_agent.py" \
   --results-dir results/my-agent \
   --timeout-seconds 30 \
   --benchmark-commit-sha "$(git rev-parse HEAD)" \
