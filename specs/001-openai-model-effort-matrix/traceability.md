@@ -15,6 +15,7 @@
 | FR-011 | `artifact/openai-codex-credit-blocker-2026-07-12.json` | Public contract test and direct ignored raw-hash reconciliation | Verified |
 | FR-012 | Matrix CLI exit policy | Complete/incomplete/global-blocker exit-code tests | Verified |
 | FR-013 | Adapter runtime-context metadata and matrix gates | Prompt-hash scope and profile-skill status propagation/admission tests | Verified |
+| FR-014 | `.github/workflows/validate.yml` | Exact-head GitHub Actions public-validation and host-presentation jobs; action annotation audit | Verified |
 
 ## External Evidence Boundary
 

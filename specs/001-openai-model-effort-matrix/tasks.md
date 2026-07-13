@@ -27,11 +27,12 @@
 
 ## Phase 4 - Hosted Execution And Publication
 
-- [ ] T014 Establish a committed clean source boundary with `bmendonca3` authorship and push only after the upstream publication gate.
+- [x] T014 Establish a committed clean source boundary with `bmendonca3` authorship and push only after the upstream publication gate.
 - [ ] T015 Retry the 27 one-task smokes serially when workspace credits are available; validate exact complete coverage.
 - [ ] T016 Run all 63 public tasks for every admitted configuration serially and preserve raw ignored evidence.
 - [ ] T017 Publish only complete public-safe comparison artifacts and refresh PR state/CI without merging.
+- [x] T018 Migrate host-review artifact upload from the deprecated Node 20 action line to `actions/upload-artifact@v7` and verify fresh exact-head GitHub CI.
 
 ## Blocked Task
 
-- T015-T017 remain externally blocked while the authenticated Codex workspace returns the exact out-of-credits failure before inference. Local adapter, tests, documentation, and publication of blocker evidence can continue.
+- T015-T017 remain externally blocked while the authenticated Codex workspace returns the exact out-of-credits failure before inference. The implementation and blocker evidence are published; model-comparison artifacts must wait for hosted execution.
