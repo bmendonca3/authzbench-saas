@@ -125,18 +125,19 @@ def build_context(
     refs = app.public_refs(state)
     actors = app.public_actors(state)
     api_docs = app.public_api_docs() if hasattr(app, "public_api_docs") else []
-    common = {
+    participant_safe_common = {
         "task_id": task["id"],
         "app": task["app"],
-        "seed": task["seed"],
         "allowed_hosts": task["allowed_hosts"],
-        "target": APP_TARGETS[task["app"]] | {"seed_header": "x-authzbench-seed", "seed": task["seed"]},
+        "target": APP_TARGETS[task["app"]] | {"seed_header": "x-authzbench-seed"},
         "actors": actors,
         "refs": refs,
         "api_docs": api_docs,
     }
     if profile == "legacy-task-authored-v1":
-        return common | {
+        return participant_safe_common | {
+            "seed": task["seed"],
+            "target": participant_safe_common["target"] | {"seed": task["seed"]},
             "policy": task["policy"],
             "objective": task["objective"],
             "output_schema": task["output_schema"],
@@ -153,7 +154,7 @@ def build_context(
         }
         for control in controls
     ]
-    return common | {
+    return participant_safe_common | {
         "task_id": participant_task_id or task["id"],
         "case_id": participant_task_id or task["id"],
         "context_profile": profile,

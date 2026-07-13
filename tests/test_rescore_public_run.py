@@ -121,9 +121,20 @@ class PublicRunRescoreTests(unittest.TestCase):
                 "target_log_dir": None,
                 "timeout_seconds": 10,
                 "tasks": [
-                    _source_row(vulnerable, vulnerable_path, score=0.75, passed=False),
+                    _source_row(
+                        vulnerable,
+                        str((ROOT / vulnerable_path).resolve()),
+                        score=0.75,
+                        passed=False,
+                    )
+                    | {
+                        "private_task_note": "/Users/example/private-task-note",
+                        "planner_parse_error": "/Users/example/private-planner-log",
+                        "target_request_warning": "/Users/example/private-target-log",
+                    },
                     _source_row(secure, secure_path, score=1, passed=True),
                 ],
+                "private_workspace": "/Users/example/private-workspace",
             }
             _write_json(source_run / "summary.json", source_summary)
             original_summary_text = (source_run / "summary.json").read_text(encoding="utf-8")
@@ -135,6 +146,12 @@ class PublicRunRescoreTests(unittest.TestCase):
             self.assertEqual(first, second)
             self.assertEqual((source_run / "summary.json").read_text(encoding="utf-8"), original_summary_text)
             self.assertEqual(first["task_count"], 2, first)
+            self.assertEqual(first["tasks"][0]["task_path"], vulnerable_path)
+            self.assertNotIn("private_task_note", first["tasks"][0])
+            self.assertIs(first["tasks"][0]["planner_parse_error"], True)
+            self.assertNotIn("target_request_warning", first["tasks"][0])
+            self.assertNotIn("private_workspace", first)
+            self.assertNotIn("agent_cmd", first)
             self.assertEqual(first["passed_count"], 1, first)
             self.assertEqual(first["invalid_submission_count"], 1, first)
             self.assertEqual(first["adapter_failure_count"], 1, first)
@@ -185,6 +202,30 @@ class PublicRunRescoreTests(unittest.TestCase):
                 third["rescore_provenance"]["source_model_output_set_sha256"],
                 original_model_output_hash,
             )
+
+    def test_rescore_rejects_task_paths_outside_repository_root(self) -> None:
+        secure_path = "tasks/billing/bill_secure_member_plan_control.json"
+        secure = load_json(ROOT / secure_path)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            outside_task = tmp_path / "outside-task.json"
+            _write_json(outside_task, secure)
+            source_run = tmp_path / "outside-path-run"
+            _write_json(
+                source_run / "summary.json",
+                {
+                    "run_id": source_run.name,
+                    "benchmark_fingerprint": {"score_policy_version": "score-policy-v1"},
+                    "tasks": [
+                        _source_row(secure, str(outside_task), score=1, passed=True),
+                    ],
+                },
+            )
+
+            with patch("scripts.rescore_public_run._require_clean_target_checkout"):
+                with self.assertRaisesRegex(ValueError, "escapes repository root"):
+                    rescore_run(source_run, tmp_path / "rescored")
 
     def test_malformed_saved_submission_fails_closed_without_aborting_rescore(self) -> None:
         secure_path = "tasks/billing/bill_secure_member_plan_control.json"

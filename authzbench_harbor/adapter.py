@@ -10,10 +10,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from . import __version__
 from .dataset_builder import build_harbor_dataset_skeleton
 
 
-ADAPTER_VERSION = "0.1.0"
+ADAPTER_VERSION = __version__
 
 
 def build_dataset(

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import glob
+import hashlib
 import json
 import re
 import shutil
@@ -12,9 +13,27 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 
 from authzbench.core import build_context, dump_json, load_json
+from authzbench_harbor import __version__ as ADAPTER_VERSION
 
 
 SCHEMA_VERSION = "harbor-dataset-skeleton-v1"
+
+
+def verifier_source_set_sha256(root: Path) -> str:
+    entries = []
+    source_paths = [root / "authzbench" / "core.py", root / "authzbench" / "score.py"]
+    source_paths.extend(sorted((root / "apps").rglob("*.py")))
+    for path in source_paths:
+        if "__pycache__" in path.parts:
+            continue
+        entries.append(
+            {
+                "path": path.relative_to(root).as_posix(),
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+        )
+    payload = json.dumps(entries, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _task_paths(patterns: list[str]) -> list[Path]:
@@ -388,16 +407,18 @@ def build_harbor_dataset_skeleton(
         (tests_dir / "Dockerfile").write_text(_verifier_environment_dockerfile(), encoding="utf-8")
         (verifier_dir / "task_manifest.json").write_text(dump_json(task) + "\n", encoding="utf-8")
         (tests_dir / "task_manifest.json").write_text(dump_json(task) + "\n", encoding="utf-8")
-        for package_name in ("authzbench", "apps"):
-            package_source = ROOT / package_name
-            package_destination = tests_dir / package_name
-            if package_destination.exists():
-                shutil.rmtree(package_destination)
-            shutil.copytree(
-                package_source,
-                package_destination,
-                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
-            )
+        authzbench_destination = tests_dir / "authzbench"
+        authzbench_destination.mkdir(parents=True, exist_ok=True)
+        for source_name in ("__init__.py", "core.py", "score.py"):
+            shutil.copy2(ROOT / "authzbench" / source_name, authzbench_destination / source_name)
+        apps_destination = tests_dir / "apps"
+        if apps_destination.exists():
+            shutil.rmtree(apps_destination)
+        shutil.copytree(
+            ROOT / "apps",
+            apps_destination,
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+        )
         (task_dir / "instruction.md").write_text(_instruction(task, "environment/context.json"), encoding="utf-8")
         (task_dir / "task.toml").write_text(_task_toml(task, task_path=task_path, harness_lane=harness_lane), encoding="utf-8")
         solution_path = solution_dir / "solve.sh"
@@ -473,6 +494,7 @@ def build_harbor_dataset_skeleton(
         )
 
     manifest = {
+        "adapter_version": ADAPTER_VERSION,
         "schema_version": SCHEMA_VERSION,
         "evidence_status": "generated_public_skeleton",
         "claim_boundary": "This generated dataset skeleton is not Harbor execution evidence, not Harbor acceptance, and not v1 readiness.",
@@ -483,6 +505,7 @@ def build_harbor_dataset_skeleton(
         "oracle_solution_mode": oracle_solution_mode,
         "dataset_toml": "dataset.toml",
         "reference_run_config": "run_authzbench_saas.yaml",
+        "verifier_source_set_sha256": verifier_source_set_sha256(ROOT),
         "tasks": tasks,
     }
     (output_dir / "dataset.toml").write_text(_dataset_toml(tasks, harness_lane=harness_lane), encoding="utf-8")

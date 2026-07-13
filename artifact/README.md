@@ -35,7 +35,8 @@ here.
 - `kiro-multimodel-blinded-public-diagnostic-2026-07-12.json`: public-safe
   aggregate from the first blinded host-replayed multi-model diagnostic. Raw
   run bundles remain ignored. The runs predate required adapter/replay-source
-  binding and are not exact-source reproduction, registry, leaderboard,
+  binding, use requested-only model labels without independently verified
+  effective backend labels, and are not exact-source reproduction, registry, leaderboard,
   private-holdout, hosted, cross-family, or statistically stable ranking evidence.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout

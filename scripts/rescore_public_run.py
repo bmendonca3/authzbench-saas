@@ -19,6 +19,30 @@ from authzbench.score import score_submission
 
 RESCORE_SCHEMA_VERSION = "public-run-rescore-v1"
 
+PUBLIC_SOURCE_SUMMARY_FIELDS = (
+    "run_id",
+    "benchmark_version",
+    "agent",
+    "model",
+    "harness_type",
+    "timeout_seconds",
+)
+
+PUBLIC_SOURCE_TASK_BOOL_FIELDS = (
+    "model_tool_plan_artifact",
+    "tool_probe_artifact",
+)
+
+PUBLIC_SOURCE_TASK_INT_FIELDS = (
+    "executed_probe_count",
+    "fallback_probe_count",
+    "submitted_finding_count",
+    "planner_returncode",
+    "target_request_count",
+)
+
+PUBLIC_TARGET_REQUEST_WARNINGS = {"target_log_missing", "no_target_requests_correlated"}
+
 
 def _file_sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -106,6 +130,8 @@ def _invalid_score(task: dict[str, Any], reason: str) -> dict[str, Any]:
 
 def _updated_task_row(
     source_row: dict[str, Any],
+    task: dict[str, Any],
+    public_task_path: str,
     score: dict[str, Any],
     *,
     adapter_failure_type: str | None,
@@ -116,7 +142,30 @@ def _updated_task_row(
         if adapter_failure_type is not None
         else runner_agent_failure
     )
-    return source_row | {
+    public_source_fields: dict[str, Any] = {}
+    agent_returncode = source_row.get("agent_returncode")
+    if agent_returncode is None or (
+        isinstance(agent_returncode, int) and not isinstance(agent_returncode, bool)
+    ):
+        public_source_fields["agent_returncode"] = agent_returncode
+    for field in PUBLIC_SOURCE_TASK_BOOL_FIELDS:
+        if isinstance(source_row.get(field), bool):
+            public_source_fields[field] = source_row[field]
+    for field in PUBLIC_SOURCE_TASK_INT_FIELDS:
+        value = source_row.get(field)
+        if isinstance(value, int) and not isinstance(value, bool):
+            public_source_fields[field] = value
+    planner_parse_error = source_row.get("planner_parse_error")
+    if planner_parse_error is not None and planner_parse_error != "":
+        public_source_fields["planner_parse_error"] = True
+    target_request_warning = source_row.get("target_request_warning")
+    if target_request_warning in PUBLIC_TARGET_REQUEST_WARNINGS:
+        public_source_fields["target_request_warning"] = target_request_warning
+    return public_source_fields | {
+        "task_id": task["id"],
+        "task_path": public_task_path,
+        "expected_vulnerable": bool(task.get("expected_vulnerable")),
+        "control_type": task.get("control_type") if not task.get("expected_vulnerable") else None,
         "score": score.get("score", 0),
         "passed": bool(score.get("passed")),
         "invalid_submission": bool(score.get("invalid_submission")),
@@ -198,6 +247,7 @@ def rescore_run(
         if not is_safe_identifier(task_id):
             raise ValueError(f"{task_id!r}: task_id must be a safe single path component")
         task_path = _task_path(source_row)
+        public_task_path = task_path.relative_to(BENCHMARK_ROOT.resolve()).as_posix()
         task = load_json(task_path)
         if task.get("id") != task_id:
             raise ValueError(f"{task_id}: source row does not match task manifest id")
@@ -252,6 +302,8 @@ def rescore_run(
         rescored_rows.append(
             _updated_task_row(
                 source_row,
+                task,
+                public_task_path,
                 score,
                 adapter_failure_type=adapter_failure_type,
                 runner_agent_failure=runner_agent_failure,
@@ -260,7 +312,11 @@ def rescore_run(
 
     current_fingerprint = benchmark_fingerprint(fingerprint_items)
 
-    summary = dict(source_summary)
+    summary = {
+        field: source_summary[field]
+        for field in PUBLIC_SOURCE_SUMMARY_FIELDS
+        if field in source_summary
+    }
     summary["benchmark_commit_sha"] = target_commit
     summary["target_log_dir"] = target_log_dir
     summary["benchmark_fingerprint"] = current_fingerprint

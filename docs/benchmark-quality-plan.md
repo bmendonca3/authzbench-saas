@@ -54,7 +54,8 @@ The new protocol:
 - requires a participant-selected verification request and a participant-reported
   expected status that matches host replay before a secure control can receive credit;
 - records source hashes, tracked-diff provenance, prompt hashes, requested Kiro
-  model/effort, CLI version, output-format compliance, and protocol hash;
+  model/effort, CLI version, explicit model-identity verification status,
+  output-format compliance, and protocol hash;
 - separates completed-run exit status from model accuracy and uses a distinct
   exit for infrastructure failures;
 - adds Wilson 95% intervals, balanced authorization accuracy, and a
@@ -148,6 +149,11 @@ Raw run bundles remain ignored local evidence. These runs predate required
 `--agent-source` provenance and explicit replay-app hashing, so the aggregate is
 pre-hardening diagnostic evidence rather than an exact-source reproduction
 baseline.
+
+The Kiro CLI recorded explicit requested model options but did not expose an
+independently observed effective backend model label. These model names are
+therefore requested-only diagnostic labels. The current registry validator
+rejects blinded-protocol rows without verified effective model identity.
 
 | Model | Binary pass | Mean score | Exploit proof | Full vulnerable | Secure controls | False reports | Balanced accuracy |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

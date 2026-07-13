@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from authzbench.core import build_context, load_json
+from authzbench.core import build_context, load_json, replay_request
 from authzbench.evaluate import (
     _evaluate_control_verification,
     _exit_code,
@@ -49,6 +49,8 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
             },
         )
         self.assertEqual(context["task_id"], task["id"])
+        self.assertEqual(context["seed"], task["seed"])
+        self.assertEqual(context["target"]["seed"], task["seed"])
         self.assertNotIn("case_id", context)
         self.assertNotIn("context_profile", context)
 
@@ -134,6 +136,26 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
         self.assertEqual(vulnerable_context["output_schema"], secure_context["output_schema"])
         self.assertEqual(vulnerable_context["policy"], secure_context["policy"])
 
+    def test_blinded_context_withholds_raw_seed_without_breaking_host_replay(self) -> None:
+        task = load_json(
+            ROOT / "tasks/project_mgmt/pm_secure_cross_tenant_read_control.json"
+        )
+        raw_seed = task["seed"]
+        context = build_context(
+            task,
+            participant_task_id="case-seed-canary",
+            profile="blinded-evaluation-v1",
+        )
+
+        self.assertNotIn("seed", context)
+        self.assertNotIn("seed", context["target"])
+        self.assertNotIn(raw_seed, json.dumps(context, sort_keys=True))
+
+        request = context["candidate_requests"][0]
+        response = replay_request(task, request)
+        self.assertEqual(response["status"], 403, response)
+        self.assertEqual(response["body"], {"error": "forbidden"}, response)
+
     def test_runner_uses_opaque_case_id_and_isolated_task_workdir(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
@@ -156,6 +178,11 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
                         ],
                     }
                     Path(os.environ["AUTHZBENCH_SUBMISSION"]).write_text(json.dumps(submission))
+                    (Path(os.environ["AUTHZBENCH_SUBMISSION"]).parent / "model-output.json").write_text(json.dumps({
+                        "returncode": 0,
+                        "model_label_verified": None,
+                        "model_identity_status": "requested_only_unverified",
+                    }))
                     print(json.dumps({
                         "cwd": os.getcwd(),
                         "context_path": os.environ["AUTHZBENCH_CONTEXT"],
@@ -184,6 +211,8 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
         self.assertEqual(summary["passed_count"], 1, summary)
         self.assertEqual(summary["control_verification_required_count"], 1, summary)
         self.assertEqual(summary["control_verification_passed_count"], 1, summary)
+        self.assertEqual(summary["model_identity_status"], "requested_only_unverified")
+        self.assertEqual(summary["model_label_verified_task_count"], 0)
         self.assertEqual(Path(emitted["cwd"]).resolve(), task_dir.resolve())
         self.assertEqual(emitted["env_task_id"], emitted["context_task_id"])
         self.assertRegex(emitted["env_task_id"], r"^case-[0-9a-f]{16}$")
@@ -199,6 +228,12 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
         self.assertEqual(
             stored_context["candidate_observations"][0]["request"],
             stored_context["candidate_requests"][0],
+        )
+        self.assertNotIn("seed", stored_context)
+        self.assertNotIn("seed", stored_context["target"])
+        self.assertNotIn(
+            "public-v0-004",
+            json.dumps(stored_context, sort_keys=True),
         )
         self.assertEqual(
             stored_context["candidate_observations"][0]["response"]["status"],

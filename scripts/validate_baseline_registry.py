@@ -593,6 +593,25 @@ def _validate_summary_file(
                 )
         _validate_current_fingerprint(summary, current_fingerprint, entry_id, location, errors)
         if raw_entry.get("kind") in {"model_baseline", "tool_agent_baseline"}:
+            evaluation_protocol = summary.get("evaluation_protocol")
+            if (
+                isinstance(evaluation_protocol, dict)
+                and evaluation_protocol.get("version") == "blinded-control-evidence-v1"
+                and summary.get("model_identity_status") != "verified"
+            ):
+                errors.append(
+                    f"{entry_id}: {location} blinded protocol rows require verified effective "
+                    "model identity for current registry use"
+                )
+            if (
+                isinstance(evaluation_protocol, dict)
+                and evaluation_protocol.get("version") == "blinded-control-evidence-v1"
+                and summary.get("model_label_verified_task_count") != summary.get("task_count")
+            ):
+                errors.append(
+                    f"{entry_id}: {location} blinded protocol verified-model task count must "
+                    "equal task_count for current registry use"
+                )
             result_derivation = raw_entry.get("result_derivation")
             if result_derivation not in VALID_CURRENT_RESULT_DERIVATIONS:
                 errors.append(

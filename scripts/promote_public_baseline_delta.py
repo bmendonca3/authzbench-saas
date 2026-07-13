@@ -24,8 +24,10 @@ EXTRA_COUNT_FIELDS = (
 COMPATIBILITY_FIELDS = (
     "agent",
     "benchmark_version",
+    "evaluation_protocol",
     "harness_type",
     "model",
+    "model_identity_status",
 )
 
 FINGERPRINT_CONTRACT_FIELDS = (
@@ -249,7 +251,8 @@ def _metric_summary(tasks: list[dict[str, Any]]) -> dict[str, Any]:
         "control_false_report_count": controls_with_findings,
         "control_false_report_rate": _rate(controls_with_findings, len(controls)),
         "control_execution_pass_rate": _rate(control_replay_passed, len(controls)),
-        "false_positive_rate": _rate(controls_failed, len(controls)),
+        "false_positive_rate": _rate(controls_with_findings, len(controls)),
+        "control_failure_rate": _rate(controls_failed, len(controls)),
         "authorized_allow_pass_rate": _rate(authorized_allow_passed, len(authorized_allow_controls)),
         "target_request_correlated_task_count": target_log_correlated if target_log_tasks else None,
         "target_request_coverage_rate": _rate(target_log_correlated, len(target_log_tasks)) if target_log_tasks else None,
@@ -284,7 +287,9 @@ def promote(
             "agent",
             "agent_cmd",
             "benchmark_version",
+            "evaluation_protocol",
             "model",
+            "model_identity_status",
             "harness_type",
             "target_log_dir",
             "timeout_seconds",
@@ -322,6 +327,20 @@ def promote(
         summary["diagnostic_semantics"] = delta.get("diagnostic_semantics", base.get("diagnostic_semantics"))
     for field in EXTRA_COUNT_FIELDS:
         summary[field] = int(base.get(field, 0) or 0) + int(delta.get(field, 0) or 0)
+    if "model_label_verified_task_count" in base or "model_label_verified_task_count" in delta:
+        summary["model_label_verified_task_count"] = int(
+            base.get("model_label_verified_task_count", 0) or 0
+        ) + int(delta.get("model_label_verified_task_count", 0) or 0)
+    if "model_identity_status_counts" in base or "model_identity_status_counts" in delta:
+        merged_status_counts: dict[str, int] = {}
+        for source in (base, delta):
+            raw_counts = source.get("model_identity_status_counts")
+            if not isinstance(raw_counts, dict):
+                continue
+            for status, count in raw_counts.items():
+                if isinstance(status, str) and isinstance(count, int) and not isinstance(count, bool):
+                    merged_status_counts[status] = merged_status_counts.get(status, 0) + count
+        summary["model_identity_status_counts"] = dict(sorted(merged_status_counts.items()))
     if "model_output_failures" in base or "model_output_failures" in delta:
         summary["model_output_failures"] = [
             *(base.get("model_output_failures") if isinstance(base.get("model_output_failures"), list) else []),

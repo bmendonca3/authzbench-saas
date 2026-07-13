@@ -289,6 +289,15 @@ def summarize_evaluation_results(task_results: list[dict[str, Any]]) -> dict[str
     json_compliant = sum(
         1 for item in task_results if item.get("adapter_json_only_compliant") is True
     )
+    model_identity_statuses = Counter(
+        str(item["adapter_model_identity_status"])
+        for item in task_results
+        if item.get("adapter_model_identity_status")
+    )
+    if len(model_identity_statuses) == 1 and sum(model_identity_statuses.values()) == len(task_results):
+        model_identity_status = next(iter(model_identity_statuses))
+    else:
+        model_identity_status = "mixed_or_unobserved"
     infrastructure_failures = int(summary["infrastructure_failure_count"])
     summary.update(
         {
@@ -331,6 +340,11 @@ def summarize_evaluation_results(task_results: list[dict[str, Any]]) -> dict[str
                 round(json_compliant / sum(output_formats.values()), 4)
                 if output_formats
                 else None
+            ),
+            "model_identity_status": model_identity_status,
+            "model_identity_status_counts": dict(sorted(model_identity_statuses.items())),
+            "model_label_verified_task_count": sum(
+                1 for item in task_results if item.get("adapter_model_label_verified") is True
             ),
         }
     )
@@ -554,6 +568,9 @@ def run_evaluation(
                     "adapter_requested_model": model_output.get("requested_model"),
                     "adapter_requested_effort": model_output.get("requested_effort"),
                     "adapter_prompt_sha256": model_output.get("prompt_sha256"),
+                    "adapter_effective_model_label": model_output.get("effective_model_label"),
+                    "adapter_model_label_verified": model_output.get("model_label_verified"),
+                    "adapter_model_identity_status": model_output.get("model_identity_status"),
                 }
             )
         row.update({key: value for key, value in optional_values.items() if value is not None})

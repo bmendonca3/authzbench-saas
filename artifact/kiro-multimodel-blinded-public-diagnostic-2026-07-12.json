@@ -13,11 +13,14 @@
   "harness_type": "no-tools-model",
   "requested_effort": "high",
   "kiro_cli_version": "kiro-cli 2.12.1",
+  "model_identity_status": "requested_cli_labels_only_unverified",
+  "model_label_verified": false,
   "raw_run_bundles_tracked": false,
   "protocol_manifest_scope": "pre-explicit-agent-and-replay-source-binding",
   "provenance_limitations": [
     "The recorded source set predates required --agent-source provenance and explicit replay-app source hashing.",
-    "The aggregate is preserved as preliminary diagnostic evidence and is not an exact-source reproduction baseline."
+    "The aggregate is preserved as preliminary diagnostic evidence and is not an exact-source reproduction baseline.",
+    "Kiro recorded explicit requested model options but did not expose independently observed effective backend model labels."
   ],
   "valid_comparable_rows": [
     {
@@ -98,5 +101,5 @@
     "all_valid_rows_have_zero_invalid_submissions": true,
     "all_valid_rows_have_zero_strict_json_only_outputs": true
   },
-  "claim_boundary": "Single-run public diagnostics from a dirty worktree before explicit adapter/replay-source binding. Tool-probe telemetry was not captured, so no tool-attempt claim is made. These rows are not exact-source reproduction, registry, leaderboard, private-holdout, hosted, cross-family, or statistically stable model-ranking evidence."
+  "claim_boundary": "Single-run public diagnostics from a dirty worktree before explicit adapter/replay-source binding. Model names are requested CLI labels only and were not independently verified as effective backend labels. Tool-probe telemetry was not captured, so no tool-attempt claim is made. These rows are not exact-source reproduction, registry, leaderboard, private-holdout, hosted, cross-family, or statistically stable model-ranking evidence."
 }

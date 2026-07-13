@@ -110,6 +110,13 @@ def run_kiro(
         "requested_model": model,
         "requested_effort": effort,
         "model_selection_evidence": "explicit_kiro_cli_model_option",
+        "effective_model_label": None,
+        "model_label_verified": None,
+        "model_identity_status": "requested_only_unverified",
+        "model_identity_claim_boundary": (
+            "The Kiro CLI records the requested model option but does not expose an "
+            "independently observed effective backend model label."
+        ),
         "kiro_cli_version": kiro_cli_version,
         "prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
         "command": command_display,

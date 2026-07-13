@@ -8,7 +8,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 from authzbench.core import load_json
-from scripts.promote_public_baseline_delta import ROOT, _git_head, _require_clean_worktree, promote
+from scripts.promote_public_baseline_delta import (
+    ROOT,
+    _git_head,
+    _metric_summary,
+    _require_clean_worktree,
+    promote,
+)
 
 
 PROMOTED_TASK_IDS = {
@@ -27,6 +33,35 @@ def _write_summary(path: Path, template: dict, tasks: list[dict], *, run_id: str
 
 
 class PromotePublicBaselineDeltaTests(unittest.TestCase):
+    def test_composite_separates_false_reports_from_control_failures(self) -> None:
+        def control(*, passed: bool, finding_count: int) -> dict:
+            return {
+                "expected_vulnerable": False,
+                "control_type": "denial",
+                "passed": passed,
+                "exploit_proof": 0,
+                "boundary_reasoning": 1,
+                "safety": 1,
+                "submission_finding_count": finding_count,
+                "control_replay_passed": passed,
+                "invalid_submission": not passed,
+                "model_tool_plan_artifact": False,
+                "tool_probe_artifact": False,
+                "score": 1 if passed else 0,
+            }
+
+        metrics = _metric_summary(
+            [
+                control(passed=False, finding_count=0),
+                control(passed=False, finding_count=1),
+                control(passed=True, finding_count=0),
+            ]
+        )
+
+        self.assertEqual(metrics["control_false_report_count"], 1)
+        self.assertEqual(metrics["false_positive_rate"], 0.3333)
+        self.assertEqual(metrics["control_failure_rate"], 0.6667)
+
     def test_promoted_summary_commit_label_must_match_head(self) -> None:
         with self.assertRaisesRegex(ValueError, "exactly match"):
             promote(
@@ -64,6 +99,13 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
             output_path = tmp_path / "merged-63.json"
             _write_summary(base_path, template, base_tasks, run_id="base-60")
             _write_summary(delta_path, template, delta_tasks, run_id="delta-3")
+            for path, count in ((base_path, 60), (delta_path, 3)):
+                source = load_json(path)
+                source["evaluation_protocol"] = {"version": "blinded-control-evidence-v1"}
+                source["model_identity_status"] = "requested_only_unverified"
+                source["model_label_verified_task_count"] = 0
+                source["model_identity_status_counts"] = {"requested_only_unverified": count}
+                path.write_text(json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             summary = promote(
                 base_path,
@@ -84,6 +126,16 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
         self.assertEqual(summary["delta_public_task_count"], 3)
         self.assertEqual(summary["merged_public_task_count"], 63)
         self.assertEqual(set(summary["delta_task_ids"]), PROMOTED_TASK_IDS)
+        self.assertEqual(
+            summary["evaluation_protocol"],
+            {"version": "blinded-control-evidence-v1"},
+        )
+        self.assertEqual(summary["model_identity_status"], "requested_only_unverified")
+        self.assertEqual(summary["model_label_verified_task_count"], 0)
+        self.assertEqual(
+            summary["model_identity_status_counts"],
+            {"requested_only_unverified": 63},
+        )
         self.assertEqual(
             [task["task_id"] for task in summary["tasks"]],
             [task["id"] for _, task in sorted((path.relative_to(ROOT).as_posix(), load_json(path)) for path in (ROOT / "tasks").glob("*/*.json"))],

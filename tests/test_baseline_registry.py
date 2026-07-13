@@ -216,6 +216,7 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(current_qwen["run_count"], 2)
         self.assertEqual(current_qwen["release_suitability"], "current_public_stale")
         self.assertTrue(current_qwen["requires_rerun_before_current_comparison"])
+
         current_haiku = _baseline_by_id(registry, CURRENT_HAIKU_54_ID)
         self.assertEqual(current_haiku["expected_task_count"], 54)
         self.assertEqual(current_haiku["run_count"], 2)
@@ -247,6 +248,33 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(current_tool_agent["expected_harness_type"], "tool-agent")
         self.assertEqual(current_tool_agent["release_suitability"], "current_public_stale")
         self.assertTrue(current_tool_agent["requires_rerun_before_current_comparison"])
+
+    def test_rejects_current_blinded_row_without_verified_effective_model_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["summary_path"]
+            summary = load_json(summary_path)
+            summary["evaluation_protocol"] = {"version": "blinded-control-evidence-v1"}
+            summary["model_identity_status"] = "requested_only_unverified"
+            summary["model_label_verified_task_count"] = summary["task_count"] - 1
+            summary_path.write_text(
+                json.dumps(summary, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("require verified effective model identity" in error for error in result["errors"]),
+            result,
+        )
+        self.assertTrue(
+            any("verified-model task count" in error for error in result["errors"]),
+            result,
+        )
 
     def test_stale_49_task_model_repeats_share_one_benchmark_commit(self) -> None:
         registry = load_json(REGISTRY)
