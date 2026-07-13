@@ -84,7 +84,7 @@
   "excluded_surface": {
     "hidden_model": "codex-auto-review is hidden and review-only, so it is outside the visible general text-model surface",
     "none_reasoning_effort": "not exposed by this authenticated Codex catalog",
-    "openai_api": "OPENAI_API_KEY is not set; no API credential was searched for or copied"
+    "openai_api": "API-key execution is unavailable; no API credential was searched for or copied"
   },
   "current_blocker": {
     "code": "codex_workspace_out_of_credits",
