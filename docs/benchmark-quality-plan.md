@@ -176,3 +176,60 @@ statistically stable rankings. Opus led binary/control performance while Sonnet
 result reinforces the next priorities: version a structured claim taxonomy and
 participant-facing boundary schema, then repeat clean-source multi-seed runs
 before leaderboard use.
+
+## Authenticated Codex/OpenAI Matrix
+
+The authenticated Codex CLI 0.144.0-alpha.4 catalog snapshot exposes six
+OpenAI models and 27 compatible non-delegating model/effort configurations:
+
+- GPT-5.6 Sol, Terra, and Luna at low, medium, high, xhigh, and max;
+- GPT-5.5, GPT-5.4, and GPT-5.4 Mini at low, medium, high, and xhigh.
+
+Sol/Terra `ultra` are excluded because the catalog defines that effort as
+automatic task delegation, which changes the single-model no-tools harness.
+`none` is not exposed by this authenticated catalog. The exact catalog hash,
+public-safe normalized catalog, configuration list, and exclusions are frozen
+in
+[`artifact/openai-codex-model-effort-matrix-2026-07-12.json`](../artifact/openai-codex-model-effort-matrix-2026-07-12.json).
+The normalized source snapshot is
+[`artifact/openai-codex-model-catalog-2026-07-12.json`](../artifact/openai-codex-model-catalog-2026-07-12.json);
+it excludes raw model instructions while preserving the fields needed to
+recompute all 27 selected configurations.
+The Spec Kit-style requirements, plan, tasks, requirements checklist, and
+traceability map are versioned in
+[`specs/001-openai-model-effort-matrix/spec.md`](../specs/001-openai-model-effort-matrix/spec.md).
+They were created manually from the current official template contracts because
+the Spec Kit CLI is not installed in this environment; no CLI initialization is
+claimed.
+
+The new Codex adapter:
+
+- uses the same opaque blinded context and host replay as the Kiro protocol;
+- sends the prompt over stdin from a fresh temporary working directory;
+- requests a strict structured response and normalizes boundary pairs plus
+  JSON-encoded request bodies into the canonical submission schema;
+- disables the available tool, browser, app, plugin, workspace, and delegation
+  features and fails closed on any tool-like or unknown event;
+- preserves raw JSONL events and stderr separately while emitting hashes,
+  CLI/model/effort provenance, usage, terminal status, and complete/partial/
+  unobserved tool-attempt telemetry;
+- scopes the prompt hash to the host-supplied user prompt and records that the
+  current CLI exposes no profile-skill loading disable, so runtime profile
+  context remains a diagnostic comparability limitation;
+- admits requested-only model identity for public diagnostics but requires
+  verified effective identity on every task before current registry use.
+
+One real `gpt-5.4-mini`/low admission preflight reached the authenticated Codex
+runtime with the no-tools flags accepted, then failed before inference because
+the workspace was out of credits. The adapter classified it as a command and
+infrastructure failure, preserved a complete five-event failure stream, and
+recorded zero tool attempts. This is execution-blocker evidence, not model
+quality evidence. Its public-safe source, lifecycle, return-code, telemetry, and
+content-hash record is
+[`artifact/openai-codex-credit-blocker-2026-07-12.json`](../artifact/openai-codex-credit-blocker-2026-07-12.json).
+The source was dirty and the model identity was requested-only, so it is not a
+comparable row. The real stderr also showed profile skill-loader activity; the
+exposed CLI feature list contains no switch to disable that loader. The public
+artifact records this as a non-source-bound runtime-context limitation. The
+matrix runner stops on that global blocker; it will not fan out 27 doomed
+requests.

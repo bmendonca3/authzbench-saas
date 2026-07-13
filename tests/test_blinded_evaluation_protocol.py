@@ -15,6 +15,7 @@ from authzbench.evaluate import (
     _exit_code,
     _protocol_manifest,
     _protocol_source_paths,
+    _summarize_model_tool_attempt_telemetry,
     _verified_benchmark_commit_sha,
     _wilson_interval,
     run_evaluation,
@@ -73,6 +74,40 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
         self.assertGreaterEqual(interval["lower"], 0)
         self.assertLessEqual(interval["upper"], 1)
         self.assertIsNone(_wilson_interval(0, 0))
+
+    def test_model_tool_attempt_totals_require_complete_per_task_telemetry(self) -> None:
+        complete = _summarize_model_tool_attempt_telemetry(
+            [
+                {
+                    "adapter_tool_attempt_telemetry_status": "complete",
+                    "adapter_tool_attempt_count": 0,
+                    "adapter_tool_attempt_types": [],
+                },
+                {
+                    "adapter_tool_attempt_telemetry_status": "complete",
+                    "adapter_tool_attempt_count": 1,
+                    "adapter_tool_attempt_types": ["command_execution"],
+                },
+            ]
+        )
+        partial = _summarize_model_tool_attempt_telemetry(
+            [
+                {
+                    "adapter_tool_attempt_telemetry_status": "complete",
+                    "adapter_tool_attempt_count": 0,
+                },
+                {"adapter_tool_attempt_telemetry_status": "unobserved"},
+            ]
+        )
+
+        self.assertEqual(complete["model_tool_attempt_telemetry_status"], "complete")
+        self.assertEqual(complete["model_tool_attempt_total"], 1)
+        self.assertEqual(
+            complete["model_tool_attempt_type_counts"],
+            {"command_execution": 1},
+        )
+        self.assertEqual(partial["model_tool_attempt_telemetry_status"], "partial")
+        self.assertIsNone(partial["model_tool_attempt_total"])
 
     def test_protocol_manifest_hashes_explicit_agent_and_all_replay_apps(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -182,6 +217,13 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
                         "returncode": 0,
                         "model_label_verified": None,
                         "model_identity_status": "requested_only_unverified",
+                        "prompt_sha256": "0" * 64,
+                        "prompt_hash_scope": "host_supplied_user_prompt_only",
+                        "profile_skill_loading_status": "not_disabled_by_current_codex_cli_surface",
+                        "output_schema_sha256": "1" * 64,
+                        "tool_attempt_telemetry_status": "complete",
+                        "tool_attempt_count": 0,
+                        "tool_attempt_types": [],
                     }))
                     print(json.dumps({
                         "cwd": os.getcwd(),
@@ -213,6 +255,14 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
         self.assertEqual(summary["control_verification_passed_count"], 1, summary)
         self.assertEqual(summary["model_identity_status"], "requested_only_unverified")
         self.assertEqual(summary["model_label_verified_task_count"], 0)
+        self.assertEqual(
+            summary["tasks"][0]["adapter_prompt_hash_scope"],
+            "host_supplied_user_prompt_only",
+        )
+        self.assertEqual(
+            summary["tasks"][0]["adapter_profile_skill_loading_status"],
+            "not_disabled_by_current_codex_cli_surface",
+        )
         self.assertEqual(Path(emitted["cwd"]).resolve(), task_dir.resolve())
         self.assertEqual(emitted["env_task_id"], emitted["context_task_id"])
         self.assertRegex(emitted["env_task_id"], r"^case-[0-9a-f]{16}$")

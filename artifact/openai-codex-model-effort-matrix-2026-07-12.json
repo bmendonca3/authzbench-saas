@@ -1,0 +1,99 @@
+{
+  "schema_version": "authzbench-codex-model-effort-matrix-v1",
+  "status": "matrix_ready_execution_credit_blocked",
+  "date": "2026-07-12",
+  "execution_surface": "authenticated_codex_cli",
+  "codex_cli_version": "codex-cli 0.144.0-alpha.4",
+  "catalog_client_version": "0.144.0",
+  "catalog_fetched_at": "2026-07-13T02:19:35.287403Z",
+  "catalog_sha256": "216ccd0753cee24e4f593f55a3f3260e6ac37e899dc3a8e18f90822b448851cc",
+  "normalized_catalog_artifact": "artifact/openai-codex-model-catalog-2026-07-12.json",
+  "normalized_catalog_sha256": "3e48788289a5a8d3d5d0987edcd3adba725793100f50dc4b9aecb6865195074d",
+  "configuration_count": 27,
+  "admission_task": "tasks/project_mgmt/pm_secure_cross_tenant_read_control.json",
+  "models": [
+    {
+      "model": "gpt-5.6-sol",
+      "included_efforts": ["low", "medium", "high", "xhigh", "max"],
+      "excluded_efforts": {"ultra": "automatic task delegation changes the single-model no-tools harness"}
+    },
+    {
+      "model": "gpt-5.6-terra",
+      "included_efforts": ["low", "medium", "high", "xhigh", "max"],
+      "excluded_efforts": {"ultra": "automatic task delegation changes the single-model no-tools harness"}
+    },
+    {
+      "model": "gpt-5.6-luna",
+      "included_efforts": ["low", "medium", "high", "xhigh", "max"],
+      "excluded_efforts": {}
+    },
+    {
+      "model": "gpt-5.5",
+      "included_efforts": ["low", "medium", "high", "xhigh"],
+      "excluded_efforts": {}
+    },
+    {
+      "model": "gpt-5.4",
+      "included_efforts": ["low", "medium", "high", "xhigh"],
+      "excluded_efforts": {}
+    },
+    {
+      "model": "gpt-5.4-mini",
+      "included_efforts": ["low", "medium", "high", "xhigh"],
+      "excluded_efforts": {}
+    }
+  ],
+  "configurations": [
+    {"id": "gpt-5-6-sol-low", "model": "gpt-5.6-sol", "effort": "low"},
+    {"id": "gpt-5-6-sol-medium", "model": "gpt-5.6-sol", "effort": "medium"},
+    {"id": "gpt-5-6-sol-high", "model": "gpt-5.6-sol", "effort": "high"},
+    {"id": "gpt-5-6-sol-xhigh", "model": "gpt-5.6-sol", "effort": "xhigh"},
+    {"id": "gpt-5-6-sol-max", "model": "gpt-5.6-sol", "effort": "max"},
+    {"id": "gpt-5-6-terra-low", "model": "gpt-5.6-terra", "effort": "low"},
+    {"id": "gpt-5-6-terra-medium", "model": "gpt-5.6-terra", "effort": "medium"},
+    {"id": "gpt-5-6-terra-high", "model": "gpt-5.6-terra", "effort": "high"},
+    {"id": "gpt-5-6-terra-xhigh", "model": "gpt-5.6-terra", "effort": "xhigh"},
+    {"id": "gpt-5-6-terra-max", "model": "gpt-5.6-terra", "effort": "max"},
+    {"id": "gpt-5-6-luna-low", "model": "gpt-5.6-luna", "effort": "low"},
+    {"id": "gpt-5-6-luna-medium", "model": "gpt-5.6-luna", "effort": "medium"},
+    {"id": "gpt-5-6-luna-high", "model": "gpt-5.6-luna", "effort": "high"},
+    {"id": "gpt-5-6-luna-xhigh", "model": "gpt-5.6-luna", "effort": "xhigh"},
+    {"id": "gpt-5-6-luna-max", "model": "gpt-5.6-luna", "effort": "max"},
+    {"id": "gpt-5-5-low", "model": "gpt-5.5", "effort": "low"},
+    {"id": "gpt-5-5-medium", "model": "gpt-5.5", "effort": "medium"},
+    {"id": "gpt-5-5-high", "model": "gpt-5.5", "effort": "high"},
+    {"id": "gpt-5-5-xhigh", "model": "gpt-5.5", "effort": "xhigh"},
+    {"id": "gpt-5-4-low", "model": "gpt-5.4", "effort": "low"},
+    {"id": "gpt-5-4-medium", "model": "gpt-5.4", "effort": "medium"},
+    {"id": "gpt-5-4-high", "model": "gpt-5.4", "effort": "high"},
+    {"id": "gpt-5-4-xhigh", "model": "gpt-5.4", "effort": "xhigh"},
+    {"id": "gpt-5-4-mini-low", "model": "gpt-5.4-mini", "effort": "low"},
+    {"id": "gpt-5-4-mini-medium", "model": "gpt-5.4-mini", "effort": "medium"},
+    {"id": "gpt-5-4-mini-high", "model": "gpt-5.4-mini", "effort": "high"},
+    {"id": "gpt-5-4-mini-xhigh", "model": "gpt-5.4-mini", "effort": "xhigh"}
+  ],
+  "admission_requirements": [
+    "one task completed without adapter or infrastructure failure",
+    "structured JSON normalized into the canonical benchmark submission",
+    "requested model and effort recorded exactly",
+    "complete JSONL tool-attempt telemetry with zero attempts",
+    "host-supplied prompt, schema, CLI, protocol, adapter, and replay-source hashes present with explicit prompt-hash scope",
+    "runtime profile-skill loading limitation recorded; rows remain diagnostic while that context is not source-bound or disabled",
+    "model identity status recorded as verified or requested-only; requested-only rows remain diagnostic"
+  ],
+  "excluded_surface": {
+    "hidden_model": "codex-auto-review is hidden and review-only, so it is outside the visible general text-model surface",
+    "none_reasoning_effort": "not exposed by this authenticated Codex catalog",
+    "openai_api": "OPENAI_API_KEY is not set; no API credential was searched for or copied"
+  },
+  "current_blocker": {
+    "code": "codex_workspace_out_of_credits",
+    "evidence_artifact": "artifact/openai-codex-credit-blocker-2026-07-12.json",
+    "observed_on_configuration": "gpt-5-4-mini-low",
+    "adapter_classification": "command_failure_and_infrastructure_failure",
+    "tool_attempt_telemetry_status": "complete",
+    "tool_attempt_count": 0,
+    "model_inference_completed": false
+  },
+  "claim_boundary": "This file freezes the visible authenticated Codex model/effort surface and records an execution blocker. Prompt hashes cover only the host-supplied user prompt, and the current CLI surface did not expose a profile-skill loading disable. It is not model-quality evidence, not proof that all configurations ran, not API evidence, and not registry, leaderboard, private-holdout, hosted, or statistically stable ranking evidence."
+}

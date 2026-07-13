@@ -266,6 +266,47 @@ def _evaluate_control_verification(
     return score
 
 
+def _summarize_model_tool_attempt_telemetry(
+    task_results: list[dict[str, Any]],
+) -> dict[str, Any]:
+    complete_rows = [
+        item
+        for item in task_results
+        if item.get("adapter_tool_attempt_telemetry_status") == "complete"
+        and isinstance(item.get("adapter_tool_attempt_count"), int)
+        and not isinstance(item.get("adapter_tool_attempt_count"), bool)
+    ]
+    observed_rows = [
+        item
+        for item in task_results
+        if item.get("adapter_tool_attempt_telemetry_status") in {"complete", "partial"}
+    ]
+    if task_results and len(complete_rows) == len(task_results):
+        status = "complete"
+    elif observed_rows:
+        status = "partial"
+    else:
+        status = "unobserved"
+    type_counts: Counter[str] = Counter()
+    for item in observed_rows:
+        raw_types = item.get("adapter_tool_attempt_types")
+        if isinstance(raw_types, list):
+            type_counts.update(str(value) for value in raw_types if isinstance(value, str))
+    return {
+        "model_tool_attempt_telemetry_status": status,
+        "model_tool_attempt_complete_task_count": len(complete_rows),
+        "model_tool_attempt_coverage_rate": (
+            round(len(complete_rows) / len(task_results), 4) if task_results else 0
+        ),
+        "model_tool_attempt_total": (
+            sum(int(item["adapter_tool_attempt_count"]) for item in complete_rows)
+            if status == "complete"
+            else None
+        ),
+        "model_tool_attempt_type_counts": dict(sorted(type_counts.items())),
+    }
+
+
 def summarize_evaluation_results(task_results: list[dict[str, Any]]) -> dict[str, Any]:
     summary = summarize_task_results(task_results)
     vulnerable = [item for item in task_results if item["expected_vulnerable"]]
@@ -347,6 +388,7 @@ def summarize_evaluation_results(task_results: list[dict[str, Any]]) -> dict[str
                 1 for item in task_results if item.get("adapter_model_label_verified") is True
             ),
         }
+        | _summarize_model_tool_attempt_telemetry(task_results)
     )
     return summary
 
@@ -564,13 +606,24 @@ def run_evaluation(
                     "adapter_json_only_compliant": model_output.get(
                         "json_only_compliant"
                     ),
-                    "adapter_cli_version": model_output.get("kiro_cli_version"),
+                    "adapter_cli_version": model_output.get("cli_version")
+                    or model_output.get("kiro_cli_version"),
                     "adapter_requested_model": model_output.get("requested_model"),
                     "adapter_requested_effort": model_output.get("requested_effort"),
                     "adapter_prompt_sha256": model_output.get("prompt_sha256"),
+                    "adapter_prompt_hash_scope": model_output.get("prompt_hash_scope"),
+                    "adapter_profile_skill_loading_status": model_output.get(
+                        "profile_skill_loading_status"
+                    ),
+                    "adapter_output_schema_sha256": model_output.get("output_schema_sha256"),
                     "adapter_effective_model_label": model_output.get("effective_model_label"),
                     "adapter_model_label_verified": model_output.get("model_label_verified"),
                     "adapter_model_identity_status": model_output.get("model_identity_status"),
+                    "adapter_tool_attempt_telemetry_status": model_output.get(
+                        "tool_attempt_telemetry_status"
+                    ),
+                    "adapter_tool_attempt_count": model_output.get("tool_attempt_count"),
+                    "adapter_tool_attempt_types": model_output.get("tool_attempt_types"),
                 }
             )
         row.update({key: value for key, value in optional_values.items() if value is not None})

@@ -462,6 +462,61 @@ an operating-system sandbox; containerize filesystem-capable untrusted agents.
 See [`docs/benchmark-quality-plan.md`](docs/benchmark-quality-plan.md) for the
 threat model, measured gaps, Kiro command, and phased improvement plan.
 
+### Authenticated Codex/OpenAI matrix
+
+`scripts/codex_baseline_agent.py` provides a fail-closed Codex CLI adapter for
+the blinded protocol. It runs from a fresh temporary directory, disables the
+available shell, unified-exec, browser, app, plugin, computer-use, image,
+workspace, and delegation features, requests a strict structured response, and
+records the raw Codex JSONL event stream separately from normalized metadata.
+Unknown events, incomplete terminal state, model-label mismatch, or any tool
+attempt reject the task.
+
+`prompt_sha256` covers the host-supplied user prompt only. In Codex CLI
+0.144.0-alpha.4, `--ignore-user-config` and `--ignore-rules` do not disable
+profile skill loading, and the exposed feature list has no skill-loading
+switch. The adapter records that limitation on every row. These runs remain
+diagnostic and are not eligible for current registry promotion while the hidden
+runtime profile context is neither disabled nor source-bound.
+
+The frozen 27-configuration surface is in
+`artifact/openai-codex-model-effort-matrix-2026-07-12.json`. The current real
+pre-inference blocker evidence is in
+`artifact/openai-codex-credit-blocker-2026-07-12.json`.
+The matrix is derived from the public-safe normalized catalog in
+`artifact/openai-codex-model-catalog-2026-07-12.json`; validation binds its
+digest and configuration set.
+
+The requirement, plan, task, checklist, and requirement-to-evidence contracts
+for this matrix are in
+`specs/001-openai-model-effort-matrix/`. They follow the GitHub Spec Kit
+brownfield artifact structure; the repository was not initialized with the
+Spec Kit CLI.
+
+Run admission smokes serially from a clean checkout:
+
+```bash
+python3 scripts/run_codex_model_matrix.py \
+  --phase smoke \
+  --run-label run1
+```
+
+After every configuration is admitted, use the generated admission report for
+the 63-task phase:
+
+```bash
+python3 scripts/run_codex_model_matrix.py \
+  --phase full \
+  --run-label run1 \
+  --admission-report results/codex-openai-matrix/codex-matrix-smoke-run1.json
+```
+
+Matrix execution stops on a workspace-wide credit blocker instead of spending
+requests across all configurations. Effective model identity is reported as
+verified only when the Codex event stream exposes one unambiguous matching
+label; requested-only rows remain diagnostic and cannot enter the current
+blinded registry.
+
 After a run, inspect:
 
 - `summary.json`: aggregate counts and v0 evidence metrics

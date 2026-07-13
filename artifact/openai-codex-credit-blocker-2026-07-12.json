@@ -1,0 +1,65 @@
+{
+  "schema_version": "authzbench-codex-global-blocker-evidence-v1",
+  "status": "verified_pre_inference_global_blocker_dirty_source",
+  "date": "2026-07-12",
+  "run_id": "gpt-5-4-mini-low-credit-preflight-20260712",
+  "blocker": {
+    "code": "codex_workspace_out_of_credits",
+    "classification_method": "exact_error_message_match",
+    "scope": "authenticated_codex_workspace",
+    "model_inference_completed": false,
+    "hosted_retry_policy": "stop_remaining_configurations_until_blocker_is_absent"
+  },
+  "requested_configuration": {
+    "model": "gpt-5.4-mini",
+    "reasoning_effort": "low",
+    "model_identity_status": "requested_only_unverified",
+    "effective_model_label": null
+  },
+  "execution": {
+    "surface": "authenticated_codex_cli",
+    "cli_version": "codex-cli 0.144.0-alpha.4",
+    "codex_cli_returncode": 1,
+    "evaluator_agent_returncode": 2,
+    "event_count": 5,
+    "event_type_sequence": [
+      "thread.started",
+      "turn.started",
+      "item.completed:error",
+      "error",
+      "turn.failed"
+    ],
+    "event_stream_complete": true,
+    "terminal_status": "failed",
+    "top_level_stream_error": true,
+    "tool_attempt_telemetry_status": "complete",
+    "tool_attempt_count": 0,
+    "task_count": 1,
+    "evaluator_task_completion_count": 1,
+    "adapter_failure_count": 1,
+    "infrastructure_failure_count": 1,
+    "invalid_submission_count": 1
+  },
+  "runtime_context": {
+    "prompt_hash_scope": "host_supplied_user_prompt_only",
+    "profile_skill_loading_status": "loader_activity_observed_not_disabled",
+    "profile_skill_catalog_source_bound": false,
+    "comparison_effect": "diagnostic_only_until_runtime_profile_context_is_source_bound_or_disabled"
+  },
+  "source_binding": {
+    "benchmark_commit_sha": "1f73633587021c23f3a4774cf8d1de6ef66b6f58",
+    "tracked_worktree_dirty": true,
+    "tracked_diff_sha256": "3f1fb98a17d6981f074b616d7f0633b035abb0446181bcbb3fdcc9dfd54a5fe2",
+    "protocol_version": "blinded-control-evidence-v1",
+    "protocol_manifest_sha256": "1a528be8e24c19e1560437f910f4d55afc3686956d3664c9f98f9d918041686c",
+    "protocol_source_set_sha256": "1c04ac6018a50e32bd00e616a210c72cc8419396bd72336e9f6e1f886eba311d"
+  },
+  "content_hashes": {
+    "events_sha256": "131c1839cf0e73fe846d449499ceba3e844c37da27c9d73e5a0d8cc41acad1cb",
+    "stderr_sha256": "b7318ce49e5f6b0864b732a48fdb2a58833df687a3f87d1e9282d071e9d89364",
+    "prompt_sha256": "651ebdbd8374b4c7e268bbf9dc268f69cec9aee2e75d776080105b8308226ad2",
+    "output_schema_sha256": "cfdbba230d14a6b1dee02bca45798e99ed1bdfb2a75af9454a5bf5565c6c9ea1"
+  },
+  "comparison_eligible": false,
+  "claim_boundary": "This artifact proves that one authenticated Codex CLI preflight reached the current workspace and failed before model inference because the workspace was out of credits. The prompt hash covers only the host-supplied user prompt; the current CLI surface did not expose a profile-skill loading disable, and loader activity was observed. It is not model-quality evidence, not a clean-source benchmark row, not proof that another model or effort is compatible, not API evidence, and not registry, leaderboard, private-holdout, hosted-evaluation, or statistically stable ranking evidence."
+}
