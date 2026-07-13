@@ -44,6 +44,7 @@ No exception is approved. Any implementation that weakens one of these gates mus
 8. Make full admission depend on a complete 27-row smoke report that is itself validated against current source.
 9. Record that `prompt_sha256` covers only the host-supplied user prompt. The current Codex CLI exposes no profile-skill loading disable, so that runtime context limitation is explicit and disqualifies rows from non-diagnostic promotion.
 10. Preserve a public-safe normalized catalog and bind its digest and derived model/effort pairs into matrix loading and protocol provenance.
+11. Disable web search through the current top-level `web_search="disabled"` CLI config. Do not pass the deprecated `web_search_cached` or `web_search_request` feature flags, because their pre-turn diagnostic events correctly fail the strict lifecycle gate.
 
 ## Project Structure
 

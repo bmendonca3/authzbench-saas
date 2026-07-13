@@ -112,8 +112,6 @@ DISABLED_FEATURES = (
     "standalone_web_search",
     "tool_call_mcp_elicitation",
     "tool_suggest",
-    "web_search_cached",
-    "web_search_request",
     "workspace_dependencies",
 )
 
@@ -493,6 +491,8 @@ def _command(
         f'model_reasoning_effort="{effort}"',
         "--config",
         'approval_policy="never"',
+        "--config",
+        'web_search="disabled"',
         "--cd",
         str(workdir),
     ]

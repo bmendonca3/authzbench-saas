@@ -32,6 +32,7 @@
 - [ ] T016 Run all 63 public tasks for every admitted configuration serially and preserve raw ignored evidence.
 - [ ] T017 Publish only complete public-safe comparison artifacts and refresh PR state/CI without merging.
 - [x] T018 Migrate host-review artifact upload from the deprecated Node 20 action line to `actions/upload-artifact@v7` and verify fresh exact-head GitHub CI.
+- [x] T019 Replace deprecated web-search feature flags with the current top-level disabled config, preserve rejection of pre-turn item events, and verify one clean hosted admission smoke before resuming the matrix.
 
 ## Blocked Task
 

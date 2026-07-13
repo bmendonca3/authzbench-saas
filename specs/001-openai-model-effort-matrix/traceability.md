@@ -5,7 +5,7 @@
 | FR-001 | Matrix plus normalized catalog artifacts | Catalog digest/derivation, matrix schema, and exact configuration-set tests | Verified |
 | FR-002 | `scripts/run_codex_model_matrix.py` | Full smoke coverage/duplicate/omission tests; hosted smoke report | Partial |
 | FR-003 | `scripts/run_codex_model_matrix.py`, `authzbench/evaluate.py` | Source-binding and forged-summary tests | Verified |
-| FR-004 | `scripts/codex_baseline_agent.py` | Tool event, unknown event, malformed stream, lifecycle-order tests | Verified |
+| FR-004 | `scripts/codex_baseline_agent.py` | Tool event, unknown event, malformed stream, lifecycle-order tests, current CLI config regression, and one hosted admission smoke | Verified |
 | FR-005 | `scripts/codex_baseline_agent.py` | Extra-key, method, status, body, and boundary-shape tests | Verified |
 | FR-006 | Adapter run-level blocker sentinel | Multi-task fixture proves one remote invocation after exact blocker | Verified |
 | FR-007 | Adapter metadata and matrix completion policy | Fixture model failure remains scored; infra failure excludes completion | Verified |

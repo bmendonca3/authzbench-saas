@@ -112,6 +112,9 @@ class CodexBaselineAdapterTests(unittest.TestCase):
         self.assertIn("read-only", command)
         for feature in DISABLED_FEATURES:
             self.assertIn(feature, command)
+        self.assertIn('web_search="disabled"', command)
+        self.assertNotIn("web_search_cached", command)
+        self.assertNotIn("web_search_request", command)
 
     def test_requested_only_identity_is_explicit_when_events_have_no_model_label(self) -> None:
         events = _event_text(
@@ -203,6 +206,19 @@ class CodexBaselineAdapterTests(unittest.TestCase):
             ),
             "gpt-5.4-mini",
         )
+        pre_turn_item = _parse_event_stream(
+            _event_text(
+                {"type": "thread.started", "thread_id": "thread"},
+                {
+                    "type": "item.completed",
+                    "item": {"id": "warning", "type": "error", "message": "CLI warning"},
+                },
+                {"type": "turn.started"},
+                {"type": "item.completed", "item": {"id": "m1", "type": "agent_message"}},
+                {"type": "turn.completed", "usage": {}},
+            ),
+            "gpt-5.4-mini",
+        )
 
         self.assertTrue(valid["lifecycle_valid"])
         self.assertTrue(valid["event_stream_complete"])
@@ -215,6 +231,11 @@ class CodexBaselineAdapterTests(unittest.TestCase):
         )
         self.assertFalse(duplicate_start["lifecycle_valid"])
         self.assertIn("expected exactly one turn.started event", duplicate_start["lifecycle_errors"])
+        self.assertFalse(pre_turn_item["lifecycle_valid"])
+        self.assertIn(
+            "item events must occur between turn start and terminal",
+            pre_turn_item["lifecycle_errors"],
+        )
 
     def test_timeout_bytes_are_normalized_and_recorded(self) -> None:
         timeout = subprocess.TimeoutExpired(
