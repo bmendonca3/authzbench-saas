@@ -1,0 +1,56 @@
+{
+  "schema_version": "authzbench-harbor-local-evidence-v1",
+  "generated_at": "2026-07-22T23:01:29-07:00",
+  "claim_boundary": "Local Harbor 0.13.2 NOP/Oracle evidence only; not Kaggle-hosted execution, Model Proxy evidence, platform acceptance, independent review, or launch evidence.",
+  "runtime": {
+    "harbor_version": "0.13.2",
+    "environment": "docker",
+    "n_concurrent": 1,
+    "max_retries": 0,
+    "repeats_per_agent": 2,
+    "raw_jobs_retained_outside_repository": true
+  },
+  "artifact_contract": {
+    "reward_json_inspected": true,
+    "reward_text_inspected": true,
+    "score_json_inspected": true,
+    "result_json_inspected": true,
+    "oracle_submission_inspected": true,
+    "agent_artifact_note": "NOP emits no agent artifact; deterministic Oracle emits oracle.txt rather than trajectory.json. No model trajectory is claimed."
+  },
+  "summary": {
+    "total_cells": 12,
+    "completed_cells": 12,
+    "errored_cells": 0,
+    "retries": 0
+  },
+  "tasks": [
+    {
+      "task_id": "tok_cross_tenant_secret_read",
+      "pilot_behavior": "vulnerable",
+      "task_checksum": "ab30317dab1e2d3f03fe5608536dc4319bef2bc67fad6256a3515c097d60ff60",
+      "nop_rewards": [0.0, 0.0],
+      "oracle_rewards": [1.0, 1.0],
+      "nop_scores": [0.0, 0.0],
+      "oracle_scores": [1.0, 1.0]
+    },
+    {
+      "task_id": "tok_secure_export_scope_control",
+      "pilot_behavior": "secure_denial",
+      "task_checksum": "b685b3be345f8128058a9d36ba5995daa4fbbb98d5a9548d3cf8fa0bbd6315cd",
+      "nop_rewards": [0.0, 0.0],
+      "oracle_rewards": [1.0, 1.0],
+      "nop_scores": [0.0, 0.0],
+      "oracle_scores": [1.0, 1.0]
+    },
+    {
+      "task_id": "tok_export_token_reads_export_control",
+      "pilot_behavior": "authorized_allow",
+      "task_checksum": "2a93e591819e01b6f6cbe77810b87f012def4ed4919b354be6905d732d757e89",
+      "nop_rewards": [0.0, 0.0],
+      "oracle_rewards": [1.0, 1.0],
+      "nop_scores": [0.0, 0.0],
+      "oracle_scores": [1.0, 1.0]
+    }
+  ]
+}

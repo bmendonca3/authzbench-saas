@@ -1,0 +1,27 @@
+# Public-safe Harbor run target for generated skeleton datasets.
+# This file is not evidence that Harbor execution has been verified.
+job_name: authzbench-public-skeleton-smoke
+jobs_dir: ./harbor-jobs
+n_attempts: 1
+n_concurrent_trials: 1
+debug: true
+tasks:
+  - path: "tasks/tok_cross_tenant_secret_read"
+  - path: "tasks/tok_export_token_reads_export_control"
+  - path: "tasks/tok_secure_export_scope_control"
+
+# Default oracle-style verifier lane for structure checks.
+agents:
+  - name: oracle
+
+# Uncomment and verify concrete agents/models in a real Harbor run.
+# agents:
+#   - name: sample_agent
+#     model_name: provider/model-name
+
+environment:
+  type: docker
+  delete: true
+
+artifacts:
+  - /logs/artifacts

@@ -14,6 +14,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 from authzbench.core import build_context, dump_json, load_json
 from authzbench_harbor import __version__ as ADAPTER_VERSION
+from authzbench_harbor.public_pilot import (
+    build_public_pilot_reference_submission,
+    public_pilot_behavior,
+)
 
 
 SCHEMA_VERSION = "harbor-dataset-skeleton-v1"
@@ -177,7 +181,10 @@ def _environment_dockerfile() -> str:
         [
             "# Public-safe placeholder environment for the Harbor dataset skeleton.",
             "# This file is not Harbor execution evidence.",
-            "FROM python:3.11-slim",
+            "FROM python:3.11-alpine",
+            "# Harbor 0.13.2 wraps Docker exec commands with `bash -c`; the",
+            "# generated scripts remain POSIX sh, so forward that wrapper to sh.",
+            '''RUN printf '#!/bin/sh\\nexec /bin/sh "$@"\\n' > /bin/bash && chmod +x /bin/bash''',
             "WORKDIR /workspace",
             "ENV PYTHONUNBUFFERED=1",
             "COPY context.json environment/context.json",
@@ -194,7 +201,10 @@ def _verifier_environment_dockerfile() -> str:
         [
             "# Public-safe placeholder verifier environment for Harbor.",
             "# This file is not Harbor verifier/scorer parity evidence.",
-            "FROM python:3.11-slim",
+            "FROM python:3.11-alpine",
+            "# Harbor 0.13.2 wraps Docker exec commands with `bash -c`; the",
+            "# generated scripts remain POSIX sh, so forward that wrapper to sh.",
+            '''RUN printf '#!/bin/sh\\nexec /bin/sh "$@"\\n' > /bin/bash && chmod +x /bin/bash''',
             "WORKDIR /workspace",
             "ENV PYTHONUNBUFFERED=1",
             "ENV PYTHONPATH=/tests",
@@ -215,8 +225,8 @@ def _solution_script(task: dict[str, Any], *, oracle_solution_mode: str) -> str:
     if oracle_solution_mode == "none":
         return "\n".join(
             [
-                "#!/usr/bin/env bash",
-                "set -euo pipefail",
+                "#!/usr/bin/env sh",
+                "set -eu",
                 "echo 'AuthZBench-SaaS Harbor skeleton does not include a public oracle solution.' >&2",
                 "echo 'Run the scorer-controlled verifier against an agent submission instead.' >&2",
                 "exit 64",
@@ -227,8 +237,8 @@ def _solution_script(task: dict[str, Any], *, oracle_solution_mode: str) -> str:
         if task.get("expected_vulnerable") is False:
             return "\n".join(
                 [
-                    "#!/usr/bin/env bash",
-                    "set -euo pipefail",
+                    "#!/usr/bin/env sh",
+                    "set -eu",
                     "mkdir -p /logs/artifacts",
                     "cat > /logs/artifacts/submission.json <<'JSON'",
                     '{"findings":[]}',
@@ -240,24 +250,46 @@ def _solution_script(task: dict[str, Any], *, oracle_solution_mode: str) -> str:
         else:
             return "\n".join(
                 [
-                    "#!/usr/bin/env bash",
-                    "set -euo pipefail",
+                    "#!/usr/bin/env sh",
+                    "set -eu",
                     "echo 'AuthZBench-SaaS Harbor skeleton does not include a public oracle solution.' >&2",
                     "echo 'Run the scorer-controlled verifier against an agent submission instead.' >&2",
                     "exit 64",
                     "",
                 ]
             )
+    if oracle_solution_mode == "public-pilot-reference":
+        submission = build_public_pilot_reference_submission(task)
+        payload = json.dumps(submission, sort_keys=True, separators=(",", ":"))
+        return "\n".join(
+            [
+                "#!/usr/bin/env sh",
+                "set -eu",
+                "mkdir -p /logs/artifacts",
+                "cat > /logs/artifacts/submission.json <<'JSON'",
+                payload,
+                "JSON",
+                "echo 'Wrote deterministic public-pilot Oracle submission.' >&2",
+                "",
+            ]
+        )
     raise ValueError(f"unsupported oracle solution mode: {oracle_solution_mode}")
 
 
-def _instruction(task: dict[str, Any], context_relpath: str) -> str:
-    control_rule = (
-        "This is a secure-control task. Return an AuthZBench-SaaS submission with `findings: []` "
-        "unless you have explicit evidence that the control failed."
-        if task.get("expected_vulnerable") is False
-        else "This is a vulnerable-task candidate. Submit exactly one replayable finding only if backend evidence proves it."
-    )
+def _instruction(task: dict[str, Any], context_relpath: str, *, oracle_solution_mode: str) -> str:
+    if oracle_solution_mode == "public-pilot-reference":
+        control_rule = (
+            "Report exactly one replayable finding only when the supplied context proves an "
+            "authorization failure. Otherwise return `findings: []` with a participant-selected "
+            "verification request and predicted status."
+        )
+    else:
+        control_rule = (
+            "This is a secure-control task. Return an AuthZBench-SaaS submission with `findings: []` "
+            "unless you have explicit evidence that the control failed."
+            if task.get("expected_vulnerable") is False
+            else "This is a vulnerable-task candidate. Submit exactly one replayable finding only if backend evidence proves it."
+        )
     return "\n".join(
         [
             "# AuthZBench-SaaS Harbor Task",
@@ -278,7 +310,13 @@ def _instruction(task: dict[str, Any], context_relpath: str) -> str:
     )
 
 
-def _task_toml(task: dict[str, Any], *, task_path: Path, harness_lane: str) -> str:
+def _task_toml(
+    task: dict[str, Any],
+    *,
+    task_path: Path,
+    harness_lane: str,
+    oracle_solution_mode: str,
+) -> str:
     service_notes = [
         "no_tools lane uses rendered context only",
         "live_http_tool_agent lane requires target services and request correlation",
@@ -341,6 +379,14 @@ def _task_toml(task: dict[str, Any], *, task_path: Path, harness_lane: str) -> s
         'public_reward_text_path = "/logs/artifacts/reward.txt"',
         "",
     ]
+    if oracle_solution_mode == "public-pilot-reference":
+        lines[lines.index("[verifier]"):lines.index("[verifier]")] = [
+            'pilot_contract = "public-three-behavior-v1"',
+            f"pilot_behavior = {_toml_string(public_pilot_behavior(task))}",
+            "expected_nop_reward = 0.0",
+            "expected_oracle_reward = 1.0",
+            "",
+        ]
     return "\n".join(lines)
 
 
@@ -356,8 +402,10 @@ def build_harbor_dataset_skeleton(
 ) -> dict[str, Any]:
     if harness_lane not in {"no_tools", "live_http_tool_agent"}:
         raise ValueError("harness_lane must be no_tools or live_http_tool_agent")
-    if oracle_solution_mode not in {"none", "secure-control-empty-findings"}:
-        raise ValueError("oracle_solution_mode must be none or secure-control-empty-findings")
+    if oracle_solution_mode not in {"none", "secure-control-empty-findings", "public-pilot-reference"}:
+        raise ValueError(
+            "oracle_solution_mode must be none, secure-control-empty-findings, or public-pilot-reference"
+        )
     requested_task_ids = set(task_ids or [])
     task_paths = _task_paths(task_patterns)
     if any(_private_holdout_path(task_path) for task_path in task_paths):
@@ -401,7 +449,16 @@ def build_harbor_dataset_skeleton(
         verifier_dir.mkdir(parents=True, exist_ok=True)
         tests_dir.mkdir(parents=True, exist_ok=True)
 
-        context = build_context(task)
+        if oracle_solution_mode == "public-pilot-reference":
+            public_pilot_behavior(task)
+            participant_id = "case-" + hashlib.sha256(str(task["id"]).encode("utf-8")).hexdigest()[:12]
+            context = build_context(
+                task,
+                participant_task_id=participant_id,
+                profile="blinded-evaluation-v1",
+            )
+        else:
+            context = build_context(task)
         (environment_dir / "context.json").write_text(dump_json(context) + "\n", encoding="utf-8")
         (environment_dir / "Dockerfile").write_text(_environment_dockerfile(), encoding="utf-8")
         (tests_dir / "Dockerfile").write_text(_verifier_environment_dockerfile(), encoding="utf-8")
@@ -419,15 +476,31 @@ def build_harbor_dataset_skeleton(
             apps_destination,
             ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
         )
-        (task_dir / "instruction.md").write_text(_instruction(task, "environment/context.json"), encoding="utf-8")
-        (task_dir / "task.toml").write_text(_task_toml(task, task_path=task_path, harness_lane=harness_lane), encoding="utf-8")
+        (task_dir / "instruction.md").write_text(
+            _instruction(task, "environment/context.json", oracle_solution_mode=oracle_solution_mode),
+            encoding="utf-8",
+        )
+        (task_dir / "task.toml").write_text(
+            _task_toml(
+                task,
+                task_path=task_path,
+                harness_lane=harness_lane,
+                oracle_solution_mode=oracle_solution_mode,
+            ),
+            encoding="utf-8",
+        )
         solution_path = solution_dir / "solve.sh"
         solution_path.write_text(_solution_script(task, oracle_solution_mode=oracle_solution_mode), encoding="utf-8")
         solution_path.chmod(0o755)
+        score_invocation = (
+            "    score = score_submission(task, submission, require_control_verification=True)"
+            if oracle_solution_mode == "public-pilot-reference"
+            else "    score = score_submission(task, submission)"
+        )
         test_script = "\n".join(
             [
-                "#!/usr/bin/env bash",
-                "set -euo pipefail",
+                "#!/usr/bin/env sh",
+                "set -eu",
                 "mkdir -p /logs/artifacts /logs/verifier",
                 "if [ ! -s /logs/artifacts/submission.json ]; then",
                 "  python3 - <<'PY'",
@@ -441,7 +514,7 @@ def build_harbor_dataset_skeleton(
                 "    'invalid_submission': True,",
                 "    'reason': 'missing agent submission',",
                 "}",
-                "for path in (Path('/logs/artifacts/score.json'),):",
+                "for path in (Path('/logs/artifacts/score.json'), Path('/logs/verifier/score.json')):",
                 "    path.write_text(json.dumps(score, sort_keys=True) + '\\n')",
                 "reward = {'reward': 0.0}",
                 "for path in (Path('/logs/artifacts/reward.json'), Path('/logs/verifier/reward.json')):",
@@ -459,7 +532,7 @@ def build_harbor_dataset_skeleton(
                 "task = load_json('/tests/task_manifest.json')",
                 "try:",
                 "    submission = load_json('/logs/artifacts/submission.json')",
-                "    score = score_submission(task, submission)",
+                score_invocation,
                 "except Exception as exc:",
                 "    score = {",
                 "        'task_id': task.get('id'),",
@@ -468,7 +541,8 @@ def build_harbor_dataset_skeleton(
                 "        'invalid_submission': True,",
                 "        'reason': 'invalid agent submission: ' + type(exc).__name__,",
                 "    }",
-                "Path('/logs/artifacts/score.json').write_text(dump_json(score) + '\\n')",
+                "for path in (Path('/logs/artifacts/score.json'), Path('/logs/verifier/score.json')):",
+                "    path.write_text(dump_json(score) + '\\n')",
                 "reward = float(score.get('score') or 0)",
                 "Path('/logs/artifacts/reward.json').write_text(json.dumps({'reward': reward}) + '\\n')",
                 "Path('/logs/artifacts/reward.txt').write_text(f'{reward}\\n')",
@@ -482,16 +556,23 @@ def build_harbor_dataset_skeleton(
         script_path = tests_dir / "test.sh"
         script_path.write_text(test_script, encoding="utf-8")
         script_path.chmod(0o755)
-        tasks.append(
-            {
-                "id": task["id"],
-                "app": task["app"],
-                "expected_vulnerable": bool(task.get("expected_vulnerable")),
-                "harbor_task_dir": task_dir.relative_to(output_dir).as_posix(),
-                "oracle_solution_mode": oracle_solution_mode,
-                "source_task_path": _relative_to_root(task_path),
-            }
-        )
+        task_entry = {
+            "id": task["id"],
+            "app": task["app"],
+            "expected_vulnerable": bool(task.get("expected_vulnerable")),
+            "harbor_task_dir": task_dir.relative_to(output_dir).as_posix(),
+            "oracle_solution_mode": oracle_solution_mode,
+            "source_task_path": _relative_to_root(task_path),
+        }
+        if oracle_solution_mode == "public-pilot-reference":
+            task_entry.update(
+                {
+                    "pilot_behavior": public_pilot_behavior(task),
+                    "expected_nop_reward": 0.0,
+                    "expected_oracle_reward": 1.0,
+                }
+            )
+        tasks.append(task_entry)
 
     manifest = {
         "adapter_version": ADAPTER_VERSION,
@@ -521,7 +602,7 @@ def main() -> int:
     parser.add_argument("--harness-lane", choices=["no_tools", "live_http_tool_agent"], default="no_tools")
     parser.add_argument(
         "--oracle-solution-mode",
-        choices=["none", "secure-control-empty-findings"],
+        choices=["none", "secure-control-empty-findings", "public-pilot-reference"],
         default="none",
         help="Optional public oracle solution mode for local smoke runs. Default keeps skeletons non-oracle.",
     )
