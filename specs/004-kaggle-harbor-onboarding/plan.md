@@ -3,7 +3,8 @@
 ## Source And Gates
 
 - Integrated implementation source: this repository root on `main` at
-  `8597d6f6ce88de06d4eb728ce92990d128b05a8c`.
+  `2025dc00d7b7bf1a672855254abe52b14f7437fd`, plus the current preserved
+  uncommitted output-schema clarification.
 - Preserved pilot checkpoint: `7f3da26d9b0240fae2e0f324d91a10e02380a66b`
   on `feature/kaggle-harbor-pilot`, based on
   `aae81c0f5aa3e998f001b0a1d754fc3068a237ae`.
@@ -43,9 +44,11 @@
 
 ## External Continuation
 
-After explicit authorization, mint short-lived Kaggle credentials, verify Model
-Proxy, run one admitted LLM agent, and run the exact digest-bound task through
-Kaggle's published Harbor executor. Scale only after that pilot is stable.
+Kaggle authentication, direct Model Proxy health, and one local admitted LLM
+agent/verifier completion are now verified. After current authorization,
+commit and non-force push the coherent schema clarification and run that exact
+remote commit through Kaggle's published Harbor executor. Scale only after
+local/executor parity is explained.
 Organization forms, invitations, private synchronization, uploads, messages,
 publication, and launch remain separately gated.
 

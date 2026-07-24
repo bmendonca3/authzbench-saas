@@ -66,8 +66,9 @@ review, organization approval, private synchronization, and public launch.
   `[dataset]`, `[[dataset.authors]]`, and digest-backed `[[tasks]]`.
 - **FR-014**: Make every generated verifier write a CTRF report alongside
   score and reward artifacts, including fail-closed NOP behavior.
-- **FR-015**: Preserve a credential-safe Model Proxy health and one-agent run
-  contract; keep it `blocked` or `not-run` until explicitly authorized.
+- **FR-015**: Preserve credential-safe Model Proxy health and one-agent run
+  evidence; execute only with explicit authorization and keep compatibility,
+  isolation, executor, hosted, and acceptance claims separate.
 - **FR-016**: Preserve a version/digest-bound Kaggle executor parity contract;
   do not substitute a local run for executor evidence.
 - **FR-017**: Require a reviewed minimum scored-cohort size, cluster-disjoint

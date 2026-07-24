@@ -37,15 +37,19 @@
 
 - [x] Kaggle CLI authentication completed.
 - [x] Short-lived Model Proxy credentials minted and direct health verified.
-- [ ] One LLM agent run through Model Proxy completed.
-- [ ] LLM run trajectory, CTRF, score, and reward inspected.
+- [x] One LLM agent run through Model Proxy completed.
+- [x] LLM run trajectory, CTRF, score, reward, exceptions, and token use inspected.
 - [ ] Same task source/digests pass Kaggle's Harbor executor.
 - [x] Local/executor parity has a precise current blocker recorded.
 
-The authenticated Harbor smoke reached 22 proxy-backed model steps but timed
-out before submission and scored `0.0`; it is routing evidence, not a completed
-LLM benchmark result. A corrected `no_tools` instruction is tracked and locally
-validated, but its proxy rerun is blocked by the current DNS outage. The Kaggle
+The corrected mini-swe-agent run completed the secure-denial control through
+Model Proxy with a valid submission, passing CTRF and score, reward `1.0`, no
+trial exception, and inspected token data. Its final completion-marker step is
+recorded as terminalized without execution; batch and trial exception fields
+remain empty. Exact-secret scans found zero matches in the retained proxy and
+local-control files. Its temporary task copy used all-public network mode, so
+this is local compatibility evidence rather than verifier-isolation,
+Kaggle-executor, Kaggle-hosted, or platform-acceptance evidence. The Kaggle
 executor requires the exact source at a remote repository URL and commit; the
 current source is intentionally uncommitted/unpushed pending separate authority.
 

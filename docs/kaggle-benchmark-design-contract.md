@@ -1,15 +1,15 @@
 # Kaggle Benchmark Design Contract
 
-Status: current-starter local implementation and NOP/Oracle pilot verified;
-Kaggle review not yet requested
+Status: current-starter local controls and one local Model Proxy agent/verifier
+completion verified; Kaggle executor parity and review not yet completed
 Evidence date: 2026-07-24
-Implementation source: merged AuthzBench-SaaS main candidate; preserved pilot
-checkpoint `7f3da26`
+Implementation source: AuthZBench-SaaS `main` at `2025dc0` plus the current
+uncommitted output-schema clarification; historical pilot checkpoint `7f3da26`
 
 The executed generated-task checksums and compact local results are recorded in
 `artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json`. No hosted
-execution, credential minting, organization change, upload, publication, or
-launch action was taken.
+Kaggle executor run, organization change, upload, publication, or launch action
+is claimed.
 
 ## 1. Status And Claim Boundary
 
@@ -23,9 +23,12 @@ Observable check: every status artifact names the evidence layer as one of
 `local`, `kaggle-executor`, `platform-accepted`, `independently-validated`, or
 `launched`; only `local` may be set by this work.
 
-Local status is verified for the three-task NOP/Oracle pilot only: the prior
-12-cell repeat matrix and a fresh six-run current-starter matrix completed with
-zero exceptions. Every fresh run contains `trial.log` and verifier CTRF.
+Local status is verified for the three-task NOP/Oracle pilot and one
+Model-Proxy-backed secure-control compatibility run. The prior 12-cell repeat
+matrix and a fresh six-run current-starter matrix completed with zero
+exceptions; every fresh control run contains `trial.log` and verifier CTRF. The
+model run completed its agent and verifier, but its temporary public-network
+mode prevents treating it as network-isolation or Kaggle-executor evidence.
 
 ### Current official starter comparison
 
@@ -159,17 +162,32 @@ Observable check: a model-agent smoke has proxy request telemetry, no direct
 provider connection, redacted logs, and a fail-closed negative test for proxy
 bypass.
 
-Current evidence is partial. Kaggle OAuth, phone/identity verification,
-short-lived credential minting, and a direct proxy HTTP 200 response of `ok`
-are verified. Harbor then routed mini-swe-agent through the proxy for 22 model
-steps, but the original `no_tools` prompt timed out before submission and
-scored `0.0`. The generated instruction now explicitly forbids network probing
-and filesystem scans and requires immediate submission; the corrected exact
-dataset retains NOP `0.0` and Oracle `1.0` for all three tasks. A corrected
-proxy rerun is pending DNS recovery. Because local Harbor 0.13.2 Docker cannot
-enforce hostname allowlists or dynamic phase network switching, that temporary
-all-public compatibility run is not evidence for direct-provider denial or
-offline-verifier enforcement.
+Kaggle OAuth, phone/identity verification, short-lived credential minting, and
+a direct proxy HTTP 200 response of `ok` are verified. Harbor 0.13.2 adapter
+inspection establishes the required OpenAI-compatible configuration:
+provider-qualified model `openai/google/gemini-3.5-flash`,
+the OpenAI provider API-key variable carrying the short-lived proxy credential,
+the OpenAI API-base variable set to the Model Proxy `/openapi/v1` base, and the
+mini-swe-agent fallback-key variable unset because it otherwise takes
+precedence.
+
+The corrected local mini-swe-agent run completed the secure-denial control with
+a valid empty-findings submission, passing score and CTRF, reward `1.0`, and no
+trial exception. Its retained trajectory records seven ATIF steps, 24,514 input
+tokens, 6,007 cached-input tokens, and 2,552 output tokens. The final ATIF step
+is the required completion-marker command and records the action as not
+executed after terminalization; batch and trial exception fields remain empty.
+Exact-secret scans found zero credential or proxy-base matches in the retained
+proxy and local control files. The generated exact dataset also retains NOP
+`0.0` and Oracle `1.0` for all three tasks.
+
+This closes local Model Proxy agent/verifier completion, but not the entire
+observable check above. Local Harbor 0.13.2 Docker cannot enforce hostname
+allowlists or dynamic phase network switching, so the model run used a
+temporary task copy whose agent, environment, and verifier network modes were
+all `public`. It is compatibility evidence only, not direct-provider-denial,
+offline-verifier-isolation, Kaggle-executor, Kaggle-hosted, or platform
+acceptance evidence.
 
 ## 9. Pilot Acceptance
 
@@ -190,7 +208,8 @@ Local acceptance evidence: all three tasks retain two sequential NOP runs at
 `0.0` and two sequential Oracle runs at `1.0`. A fresh current-starter pass
 also completed one NOP and one Oracle per task with six `trial.log` files, six
 CTRF reports, and inspected score/reward artifacts. Deterministic controls do
-not establish a model trajectory or Model Proxy run.
+not establish the model result; the separately retained Model Proxy run
+establishes only local compatibility and completion.
 
 ## 10. Operations And Launch Proposal
 

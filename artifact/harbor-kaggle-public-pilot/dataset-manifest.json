@@ -16,7 +16,7 @@
       "expected_nop_reward": 0.0,
       "expected_oracle_reward": 1.0,
       "expected_vulnerable": true,
-      "harbor_content_digest": "sha256:4c42211064ac6fea08ef32bd014e4b4da46437e6e47a8b29fd98619994b2dc35",
+      "harbor_content_digest": "sha256:5982c34ae7dd457f29707c1bf6075082cb9d4a4352347feb893c248f51d8228b",
       "harbor_task_dir": "tasks/tok_cross_tenant_secret_read",
       "harbor_task_name": "authzbench-saas/tok_cross_tenant_secret_read",
       "id": "tok_cross_tenant_secret_read",
@@ -29,7 +29,7 @@
       "expected_nop_reward": 0.0,
       "expected_oracle_reward": 1.0,
       "expected_vulnerable": false,
-      "harbor_content_digest": "sha256:3c6c4555a25318b8f4e0d2666e631330972ff6b4a4f2dd51a99808589cab0f0c",
+      "harbor_content_digest": "sha256:2f91a7846a4efcde95653ac8189310bbad562de7ef4d5c86813c07c04f3a1b96",
       "harbor_task_dir": "tasks/tok_export_token_reads_export_control",
       "harbor_task_name": "authzbench-saas/tok_export_token_reads_export_control",
       "id": "tok_export_token_reads_export_control",
@@ -42,7 +42,7 @@
       "expected_nop_reward": 0.0,
       "expected_oracle_reward": 1.0,
       "expected_vulnerable": false,
-      "harbor_content_digest": "sha256:af7f69f367a7eb97be1bf511d9afc1442ca9e669248eb37af1f8f7ac80d23fce",
+      "harbor_content_digest": "sha256:03f8d6ffcf6beea87b1ddcc48528a9e8d992fb44f971580e3795a39b81ca7a50",
       "harbor_task_dir": "tasks/tok_secure_export_scope_control",
       "harbor_task_name": "authzbench-saas/tok_secure_export_scope_control",
       "id": "tok_secure_export_scope_control",
@@ -51,5 +51,5 @@
       "source_task_path": "tasks/api_tokens/tok_secure_export_scope_control.json"
     }
   ],
-  "verifier_source_set_sha256": "3d7900d4d4c2d0f828a024c511537c64150e2bf52c96eb5c734868704aa99571"
+  "verifier_source_set_sha256": "e09bcbe3105412f09b27055fec8cdf1410d6f44430e44278bda5dc3f56fedbb6"
 }

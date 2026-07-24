@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from authzbench.core import load_json
+from authzbench.core import build_context, load_json
 from authzbench.score import score_submission
 from authzbench_harbor.dataset_builder import build_harbor_dataset_skeleton
 from authzbench_harbor.public_pilot import (
@@ -52,6 +52,70 @@ class HarborPublicPilotTests(unittest.TestCase):
         self.assertEqual(score["score"], 0)
         self.assertFalse(score["passed"], score)
         self.assertFalse(score["control_verification_passed"], score)
+
+    def test_control_schema_matches_direct_harbor_verifier_enforcement(self) -> None:
+        task = load_json(PILOT_PATHS["tok_secure_export_scope_control"])
+        context = build_context(task, profile="blinded-evaluation-v1")
+        valid = build_public_pilot_reference_submission(task)
+        verification = valid["verification"][0]
+
+        self.assertIn(verification["request"], context["candidate_requests"])
+        self.assertIs(type(verification["expected"]["status"]), int)
+        valid_score = score_submission(task, valid, require_control_verification=True)
+        self.assertTrue(valid_score["passed"], valid_score)
+
+        malformed_submissions = [
+            {"findings": [], "verification": [{}]},
+            {
+                "findings": [],
+                "verification": [{"expected": {"status": 403}}],
+            },
+            {
+                "findings": [],
+                "verification": [{"request": context["candidate_requests"][0]}],
+            },
+            {
+                "findings": [],
+                "verification": [
+                    {
+                        "request": context["candidate_requests"][0],
+                        "expected": {"status": True},
+                    }
+                ],
+            },
+            {
+                "findings": [],
+                "verification": [
+                    {
+                        "request": context["candidate_requests"][0],
+                        "expected": {"status": "403"},
+                    }
+                ],
+            },
+        ]
+        for submission in malformed_submissions:
+            with self.subTest(submission=submission):
+                score = score_submission(
+                    task,
+                    submission,
+                    require_control_verification=True,
+                )
+                self.assertFalse(score["passed"], score)
+                self.assertTrue(score["invalid_submission"], score)
+                self.assertFalse(score["control_verification_passed"], score)
+
+        unmatched = copy.deepcopy(valid)
+        unmatched["verification"][0]["request"]["path"] = "/api/not-a-candidate"
+        unmatched_score = score_submission(
+            task,
+            unmatched,
+            require_control_verification=True,
+        )
+        self.assertFalse(unmatched_score["passed"], unmatched_score)
+        self.assertFalse(
+            unmatched_score["control_verification_passed"],
+            unmatched_score,
+        )
 
     def test_vulnerable_reference_rejects_wrong_actor_and_boundary(self) -> None:
         task = load_json(PILOT_PATHS["tok_cross_tenant_secret_read"])
@@ -112,6 +176,10 @@ class HarborPublicPilotTests(unittest.TestCase):
                 self.assertTrue(context["task_id"].startswith("case-"))
                 self.assertNotEqual(context["task_id"], task_id)
                 self.assertEqual(context["context_profile"], "blinded-evaluation-v1")
+                self.assertIn(
+                    'verification: [{"request": {...}, "expected": {"status": <integer>}}]',
+                    context["output_schema"],
+                )
                 self.assertNotIn("expected_vulnerable", json.dumps(context))
                 self.assertNotIn("exit 64", solution)
                 self.assertIn("deterministic public-pilot Oracle submission", solution)

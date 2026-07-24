@@ -4,8 +4,11 @@ Read the rendered context JSON for actors, targets, API docs, and output schema:
 
 - `environment/context.json`
 
-This is a `no_tools` task. Do not make network requests, probe services, inspect unrelated paths, or scan the filesystem.
-Read only `environment/context.json` and write the submission immediately. Do not wait for a server or for the verifier.
+This is a `no_tools` analysis task, not a software-debugging task. Perform exactly these actions:
+1. Read `environment/context.json`.
+2. Write the required JSON to `/logs/artifacts/submission.json` using the supplied output schema. When the context does not prove a failure, use `findings: []` and include the requested verification prediction.
+3. Finish immediately by issuing `echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT` as a standalone command.
+Do not run `find`, scan the filesystem, inspect packages or logs, make network or localhost requests, modify other files, or wait for a server or verifier.
 
 Write the agent submission to:
 

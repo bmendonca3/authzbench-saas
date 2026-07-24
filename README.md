@@ -212,6 +212,12 @@ so the headline verdict is grep-friendly in CI logs without parsing JSON.
   workflow. The tracked `dataset.toml` now matches that local starter contract,
   and its three digests match Harbor 0.13.2 `harbor add`. This is still an
   internal, non-published pilot; `harbor publish` was not run.
+- One local Harbor 0.13.2 mini-swe-agent run completed the secure-denial
+  control through Kaggle Model Proxy with a valid submission, passing CTRF and
+  score, reward `1.0`, no trial exception, and inspected token use. Its
+  temporary all-public network mode makes it compatibility evidence only, not
+  verifier-isolation, Kaggle-executor, Kaggle-hosted, platform-acceptance, or
+  launch evidence.
 - Full 63-task/model parity, Harbor platform acceptance, and hosted Harbor
   operation: not claimed (v2 gates)
 

@@ -1,6 +1,6 @@
 {
   "schema_version": "authzbench-harbor-local-evidence-v2",
-  "generated_at": "2026-07-24T08:51:58-07:00",
+  "generated_at": "2026-07-24T11:00:40-07:00",
   "claim_boundary": "Local Harbor 0.13.2 NOP/Oracle and current-starter compatibility evidence only; not Kaggle-hosted execution, Model Proxy evidence, platform acceptance, independent review, or launch evidence.",
   "runtime": {
     "harbor_version": "0.13.2",
@@ -8,9 +8,9 @@
     "n_concurrent": 1,
     "max_retries": 0,
     "raw_jobs_retained_outside_repository": true,
-    "fresh_job_root": "/private/tmp/authzbench-prompt-corrected-local-matrix-20260724",
+    "fresh_job_root": "/private/tmp/authzbench-explicit-schema-local-matrix-20260724",
     "prior_repeat_job_root": "/private/tmp/authzbench-harbor-pilot-runs-retained.20260722T2305",
-    "verifier_source_set_sha256": "3d7900d4d4c2d0f828a024c511537c64150e2bf52c96eb5c734868704aa99571"
+    "verifier_source_set_sha256": "e09bcbe3105412f09b27055fec8cdf1410d6f44430e44278bda5dc3f56fedbb6"
   },
   "manifest_contract": {
     "format": "dataset-authors-digest-tasks",
@@ -27,7 +27,7 @@
     "reward_json_inspected": true,
     "result_json_inspected": true,
     "oracle_submission_inspected": true,
-    "agent_artifact_note": "NOP emits no agent submission; deterministic Oracle writes the benchmark submission. No model trajectory or Model Proxy execution is claimed."
+    "agent_artifact_note": "NOP emits no agent submission; deterministic Oracle writes the benchmark submission. Model Proxy evidence is tracked separately."
   },
   "fresh_current_starter_validation": {
     "total_runs": 6,
@@ -49,8 +49,8 @@
     {
       "task_id": "tok_cross_tenant_secret_read",
       "pilot_behavior": "vulnerable",
-      "task_checksum": "b5c84605c1a75f0bd424c7c8a248b5d083338321629761f181dfea60047b991c",
-      "harbor_content_digest": "sha256:4c42211064ac6fea08ef32bd014e4b4da46437e6e47a8b29fd98619994b2dc35",
+      "task_checksum": "fef391268f64d1dd78b89d113c83ec8fbffbba007ce4cc0bcae330b66a057050",
+      "harbor_content_digest": "sha256:5982c34ae7dd457f29707c1bf6075082cb9d4a4352347feb893c248f51d8228b",
       "prior_nop_rewards": [
         0.0,
         0.0
@@ -65,8 +65,8 @@
     {
       "task_id": "tok_export_token_reads_export_control",
       "pilot_behavior": "authorized_allow",
-      "task_checksum": "0ee435fb66932406bc60d4a3bef446e80eb51fb70661cd58bd8170bfef62c3b0",
-      "harbor_content_digest": "sha256:3c6c4555a25318b8f4e0d2666e631330972ff6b4a4f2dd51a99808589cab0f0c",
+      "task_checksum": "9ab0efd0a958e7d03af18f6387ba2c75261dc2ac3109b8db9e0756f87da630bf",
+      "harbor_content_digest": "sha256:2f91a7846a4efcde95653ac8189310bbad562de7ef4d5c86813c07c04f3a1b96",
       "prior_nop_rewards": [
         0.0,
         0.0
@@ -81,8 +81,8 @@
     {
       "task_id": "tok_secure_export_scope_control",
       "pilot_behavior": "secure_denial",
-      "task_checksum": "77a60af988c0070eb1b5040291e372a8bb6c323e2aaea6f623798697cb584501",
-      "harbor_content_digest": "sha256:af7f69f367a7eb97be1bf511d9afc1442ca9e669248eb37af1f8f7ac80d23fce",
+      "task_checksum": "54794633781f776d62c03599748a1da626705f09458b23e113227e2fa8dac650",
+      "harbor_content_digest": "sha256:03f8d6ffcf6beea87b1ddcc48528a9e8d992fb44f971580e3795a39b81ca7a50",
       "prior_nop_rewards": [
         0.0,
         0.0

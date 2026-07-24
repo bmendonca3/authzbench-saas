@@ -1,6 +1,6 @@
 # Release Status
 
-Last updated: 2026-07-10
+Last updated: 2026-07-24
 
 ## v1.0-Internal Status
 
@@ -25,6 +25,13 @@ Current v1.0-internal boundary:
   smoke, six-task local execution, and six-of-six per-task empty-findings
   reward parity. Full 63-task/model parity, hosted operation, and platform
   acceptance remain incomplete.
+- Kaggle/Harbor onboarding now includes a current digest-backed three-task
+  public pilot, fresh local NOP `0.0` and Oracle `1.0` controls, and one
+  completed local mini-swe-agent secure-control run through Kaggle Model Proxy
+  with passing CTRF/score and reward `1.0`. That model run used a temporary
+  all-public task network mode and is compatibility evidence only; exact-commit
+  Kaggle executor parity, verifier-isolation proof, platform acceptance, and
+  launch remain open.
 - The active scorer fingerprint is
   `score-policy-v2-boundary-normalization`. It removes the undeclared exact
   claim-string gate, keeps boundary credit binary, and fails adapter/runner

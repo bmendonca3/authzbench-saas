@@ -25,8 +25,7 @@ exposing private holdouts, credentials, or verifier-only data.
 
 In priority order:
 
-1. The current user request and exact local repository
-   `/Users/brianmendonca/Documents/authzbench-saas`.
+1. The current user request and exact AuthZBench-SaaS repository root.
 2. Nicholas Kang's July 22 email. Gmail metadata confirms that the email did
    not contain a file attachment; it linked the onboarding guide, the public
    starter repository, and the dedicated Google Chat space.
@@ -172,6 +171,12 @@ not an FDE assignment, platform acceptance, or launch approval.
 - Verification: redacted command log, `trial.log`, trajectory, CTRF, reward,
   resource behavior, source/task fingerprint.
 - Approval gate: credentials, model call, executor access, and any Chat handoff.
+
+Current status: authentication, proxy health, and one local mini-swe-agent
+agent/verifier completion are verified. The completed run used a temporary
+all-public task copy, so it is compatibility evidence rather than isolation or
+Kaggle-executor evidence. Exact-commit executor parity remains blocked on
+current commit/push and credentialed-executor authorization.
 
 ### WP4 — Scale and independently validate
 

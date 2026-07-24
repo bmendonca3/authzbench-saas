@@ -121,7 +121,10 @@ BLINDED_OUTPUT_SCHEMA = (
     "Return one JSON object with a findings list. Each finding must include a non-empty claim, "
     "structured boundary, non-empty impact, one or more evidence request objects, and an "
     "out_of_scope_actions list. When no vulnerability is proven, return findings: [] and include "
-    "a verification list containing at least one participant-selected request and predicted HTTP status."
+    "a verification list containing at least one item. Each verification item must contain a request "
+    "object selected from candidate_requests, with actor, method, path, and body when present, plus an "
+    "expected object whose status field is the predicted integer HTTP status. The required shape is "
+    'verification: [{"request": {...}, "expected": {"status": <integer>}}].'
 )
 
 

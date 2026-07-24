@@ -169,6 +169,8 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
             self.assertNotIn("body_contains", request)
         self.assertEqual(vulnerable_context["objective"], secure_context["objective"])
         self.assertEqual(vulnerable_context["output_schema"], secure_context["output_schema"])
+        self.assertIn('verification: [{"request": {...}, "expected": {"status": <integer>}}]', vulnerable_context["output_schema"])
+        self.assertIn("selected from candidate_requests", vulnerable_context["output_schema"])
         self.assertEqual(vulnerable_context["policy"], secure_context["policy"])
 
     def test_blinded_context_withholds_raw_seed_without_breaking_host_replay(self) -> None:

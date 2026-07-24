@@ -19,7 +19,7 @@
 - [x] **T014** Emit and validate CTRF for missing-submission and scored verifier paths.
 - [x] **T015** Regenerate the public pilot; run and inspect fresh NOP/Oracle
   jobs; refresh compact evidence and local claim wording.
-- [ ] **T016** Run Model Proxy health and one LLM-agent control after explicit authorization.
+- [x] **T016** Run Model Proxy health and one LLM-agent control after explicit authorization.
 - [ ] **T017** Prove exact-source/digest parity on Kaggle's Harbor executor after authorization.
 - [ ] **T018** Freeze and independently review the scored cohort, contamination,
   AppSec, agent/tooling, and SaaS-provider validity gates.
