@@ -68,7 +68,21 @@ def svg(title: str, subtitle: str, width: int, height: int, body: list[str]) -> 
     return "\n".join(parts) + "\n"
 
 
-def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
+def _artifact_policy(artifact: dict[str, Any]) -> str:
+    policy = artifact.get("score_policy_version")
+    if isinstance(policy, str):
+        return policy
+    fingerprint = artifact.get("benchmark_fingerprint")
+    if isinstance(fingerprint, dict) and isinstance(fingerprint.get("score_policy_version"), str):
+        return fingerprint["score_policy_version"]
+    return "score-policy-v1"
+
+
+def baseline_rows(
+    registry: dict[str, Any],
+    *,
+    score_policy_version: str = "score-policy-v1",
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for entry in registry["baselines"]:
         if entry["release_suitability"] not in {"current_public_split", "current_public_stale"}:
@@ -77,6 +91,15 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             continue
         artifact_names = entry.get("run_artifacts") or [entry["summary_path"]]
         artifacts = [load_json(ROOT / "baselines" / name) for name in artifact_names]
+        expected_policy = entry.get("expected_score_policy_version", "score-policy-v1")
+        artifact_policies = {_artifact_policy(artifact) for artifact in artifacts}
+        if artifact_policies != {expected_policy}:
+            raise ValueError(
+                f"{entry['id']}: registry/artifact score policies do not match: "
+                f"registry={expected_policy!r}, artifacts={sorted(artifact_policies)!r}"
+            )
+        if expected_policy != score_policy_version:
+            continue
         model = str(entry.get("expected_model") or entry["id"])
         label = {
             "claude-sonnet-4.6": "Claude Sonnet 4.6",
@@ -99,6 +122,7 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
                 entry.get("requires_rerun_before_current_comparison")
             ),
             "run_count": len(artifacts),
+            "score_policy_version": expected_policy,
             "task_count": artifacts[0]["task_count"],
             "pass_rate": mean(item["passed_count"] / item["task_count"] for item in artifacts),
             "exploit_proven_success_rate": mean(item["exploit_proven_success_rate"] for item in artifacts),
@@ -357,6 +381,7 @@ def main() -> int:
     ]
     validate_private_summaries(private_summaries)
     rows = baseline_rows(registry)
+    policy_v2_rows = baseline_rows(registry, score_policy_version="score-policy-v2")
     baseline_sources: list[str] = ["baselines/baseline-registry.json"]
     for entry in registry["baselines"]:
         for artifact in entry.get("run_artifacts") or [entry.get("summary_path")]:
@@ -371,6 +396,7 @@ def main() -> int:
         ],
         "chart_files": [
             "current-public-baselines.svg",
+            "current-public-baselines-policy-v2.svg",
             "model-pass-rate.svg",
             "exploit-proven-success.svg",
             "false-positive-rate.svg",
@@ -380,10 +406,15 @@ def main() -> int:
         ],
         "public_split": registry["public_split"],
         "public_baselines": rows,
+        "public_baselines_by_score_policy": {
+            "score-policy-v1": rows,
+            "score-policy-v2": policy_v2_rows,
+        },
         "private_redacted_evidence_count": len(private_summaries),
         "claim_boundary": "Charts summarize public-safe artifacts. Stale public baselines are historical only and are not hosted leaderboard rankings.",
     }
     write(ASSET_DIR / "current-public-baselines.svg", grouped_metric_chart(rows))
+    write(ASSET_DIR / "current-public-baselines-policy-v2.svg", grouped_metric_chart(policy_v2_rows))
     write(
         ASSET_DIR / "model-pass-rate.svg",
         focused_metric_chart(
@@ -453,6 +484,7 @@ def main() -> int:
                 "Included charts:",
                 "",
                 "- `current-public-baselines.svg`: compact multi-metric overview",
+                "- `current-public-baselines-policy-v2.svg`: policy-v2-only multi-metric overview",
                 "- `model-pass-rate.svg`: model pass rate",
                 "- `exploit-proven-success.svg`: vulnerable-task exploit proof",
                 "- `false-positive-rate.svg`: secure-control false-positive rate",

@@ -81,6 +81,15 @@ current scoring/evidence contract without exposing task IDs in the fingerprint
 object. Historical 44-task and legacy snapshots are allowed to remain useful
 diagnostics, but they do not satisfy this current-public comparability check.
 
+For a future current model or tool-agent row produced through an adapter,
+`requires_zero_adapter_failures: true` is an opt-in promotion gate. Every primary
+and repeated summary must then report one `model-output.json` artifact per task,
+zero adapter failures, zero unverified model labels, and zero invalid
+submissions. It must not be attached retrospectively to legacy rows whose
+summaries lack compatible telemetry. This guard prevents adapter failure from
+being mistaken for a valid empty secure-control submission; it does not create
+fresh model evidence.
+
 ## Current Interpretation
 
 The v0.0 scripted baseline is a 46-task deterministic harness sanity check. It

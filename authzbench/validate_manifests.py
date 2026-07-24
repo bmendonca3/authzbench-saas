@@ -78,6 +78,23 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
         errors.append(f"{path}: vulnerable task has no_vulnerability oracle")
     if data.get("expected_vulnerable") is True and not isinstance(data.get("expected_boundary"), dict):
         errors.append(f"{path}: vulnerable task must include expected_boundary")
+    boundary_v2_key_aliases = data.get("boundary_v2_key_aliases")
+    if boundary_v2_key_aliases is not None:
+        if data.get("expected_vulnerable") is not True:
+            errors.append(f"{path}: boundary_v2_key_aliases are only supported for vulnerable tasks")
+        elif not isinstance(boundary_v2_key_aliases, dict):
+            errors.append(f"{path}: boundary_v2_key_aliases must be an object")
+        else:
+            expected_boundary = data.get("expected_boundary") or {}
+            for key, aliases in boundary_v2_key_aliases.items():
+                if key not in expected_boundary:
+                    errors.append(f"{path}: boundary_v2_key_aliases key is not in expected_boundary: {key}")
+                if not isinstance(aliases, list) or not aliases or any(
+                    not isinstance(alias, str) or not alias.strip() for alias in aliases
+                ):
+                    errors.append(f"{path}: boundary_v2_key_aliases.{key} must be a non-empty list of strings")
+                elif len(set(aliases)) != len(aliases):
+                    errors.append(f"{path}: boundary_v2_key_aliases.{key} must not contain duplicates")
     if data.get("expected_vulnerable") is False and data["oracle"].get("claim") != "no_vulnerability":
         errors.append(f"{path}: secure-control task must use no_vulnerability oracle")
     if data.get("expected_vulnerable") is False:

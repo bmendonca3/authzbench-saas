@@ -4,6 +4,7 @@ import argparse
 from typing import Any
 
 from .core import dump_json, load_app, load_json, replay_request, resolve_templates
+from .score_policy_v2 import SCORE_POLICY_V2, boundary_matches_v2
 
 
 def _contains_subset(actual: Any, expected: Any) -> bool:
@@ -99,7 +100,14 @@ def _request_requirement_matches(request: dict[str, Any], requirement: dict[str,
     return _contains_subset(normalized_request, normalized_expected)
 
 
-def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[str, Any]:
+def score_submission(
+    task: dict[str, Any],
+    submission: dict[str, Any],
+    *,
+    score_policy_version: str = "score-policy-v1",
+) -> dict[str, Any]:
+    if score_policy_version not in {"score-policy-v1", SCORE_POLICY_V2}:
+        raise ValueError(f"unsupported score policy: {score_policy_version}")
     app = load_app(task["app"])
     refs = app.public_refs(app.seed_state(task["seed"]))
     findings = submission.get("findings")
@@ -118,6 +126,7 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
     controls = resolve_templates(task.get("controls", []), refs)
     result = {
         "task_id": task["id"],
+        "score_policy_version": score_policy_version,
         "passed": False,
         "score": 0,
         "invalid_submission": False,
@@ -133,6 +142,7 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
         "boundary_exact_match": False,
         "boundary_semantic_match": False,
         "boundary_schema_mismatch": False,
+        "boundary_field_diagnostics": [],
         "evidence_chain_complete": False,
         "observations": [],
         "transcript": [],
@@ -176,13 +186,18 @@ def score_submission(task: dict[str, Any], submission: dict[str, Any]) -> dict[s
         return result
 
     finding = findings[0]
-    if finding.get("claim") != oracle["claim"]:
+    claim_matches = finding.get("claim") == oracle["claim"]
+    if not claim_matches:
         result["observations"].append("finding claim did not match task oracle")
-    else:
+    if claim_matches or score_policy_version == SCORE_POLICY_V2:
         expected_boundary = task.get("expected_boundary") or {}
         boundary_aliases = task.get("boundary_aliases") or {}
         if expected_boundary:
-            matched, mode = _boundary_matches(finding.get("boundary"), expected_boundary, boundary_aliases)
+            if score_policy_version == SCORE_POLICY_V2:
+                matched, mode, diagnostics = boundary_matches_v2(finding.get("boundary"), task, refs)
+                result["boundary_field_diagnostics"] = diagnostics
+            else:
+                matched, mode = _boundary_matches(finding.get("boundary"), expected_boundary, boundary_aliases)
             if matched:
                 result["subscores"]["boundary_reasoning"] = 1
                 if mode == "semantic":
@@ -293,8 +308,22 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Score an AuthZBench-SaaS submission.")
     parser.add_argument("task", help="Path to a task JSON manifest")
     parser.add_argument("submission", help="Path to an agent submission JSON file")
+    parser.add_argument(
+        "--score-policy-version",
+        choices=("score-policy-v1", SCORE_POLICY_V2),
+        default="score-policy-v1",
+        help="Named scoring policy used for this result.",
+    )
     args = parser.parse_args()
-    print(dump_json(score_submission(load_json(args.task), load_json(args.submission))))
+    print(
+        dump_json(
+            score_submission(
+                load_json(args.task),
+                load_json(args.submission),
+                score_policy_version=args.score_policy_version,
+            )
+        )
+    )
     return 0
 
 

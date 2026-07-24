@@ -117,6 +117,44 @@ class ManifestValidationTests(unittest.TestCase):
             result = validate_patterns([str(path)])
         self.assertTrue(result["passed"], result)
 
+    def test_vulnerable_task_accepts_task_declared_v2_boundary_aliases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            data = _minimal_task(
+                expected_vulnerable=True,
+                oracle={
+                    "claim": "cross_tenant_task_read",
+                    "status": 200,
+                    "body_contains": {"viewer": "beta_member"},
+                },
+                expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                boundary_v2_key_aliases={"victim_tenant": ["affected_tenant"]},
+            )
+            data.pop("control_type")
+            _write_json(path, data)
+            result = validate_patterns([str(path)])
+        self.assertTrue(result["passed"], result)
+
+    def test_rejects_invalid_v2_boundary_aliases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            data = _minimal_task(
+                expected_vulnerable=True,
+                oracle={
+                    "claim": "cross_tenant_task_read",
+                    "status": 200,
+                    "body_contains": {"viewer": "beta_member"},
+                },
+                expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                boundary_v2_key_aliases={"unknown_boundary": ["affected_tenant"], "victim_tenant": ["", ""]},
+            )
+            data.pop("control_type")
+            _write_json(path, data)
+            result = validate_patterns([str(path)])
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("boundary_v2_key_aliases key is not in expected_boundary" in error for error in result["errors"]), result)
+        self.assertTrue(any("boundary_v2_key_aliases.victim_tenant must be a non-empty list" in error for error in result["errors"]), result)
+
     def test_rejects_bad_evidence_requirement_shape(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "task.json"

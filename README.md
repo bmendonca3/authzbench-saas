@@ -484,6 +484,10 @@ Current 63-task public-split evidence:
 - Kiro `claude-sonnet-4.6` live HTTP tool-agent: two public runs with 63/63
   target-request correlation in both runs
 
+The preserved Gemini 3.1 Pro public rows are diagnostic-only because the legacy
+AGY adapter could convert execution or parsing failures into empty findings. They
+are excluded from current comparison until rerun with the fail-closed adapter.
+
 v0.0 public-split evidence:
 
 - deterministic scripted harness: 46/46 public tasks

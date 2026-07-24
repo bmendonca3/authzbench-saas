@@ -40,8 +40,18 @@ def stable_json_sha256(data: Any) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def benchmark_fingerprint(task_items: list[tuple[str, dict[str, Any]]]) -> dict[str, Any]:
+def benchmark_fingerprint(
+    task_items: list[tuple[str, dict[str, Any]]],
+    *,
+    score_policy_version: str = "score-policy-v1",
+) -> dict[str, Any]:
     """Return a comparable task/scoring fingerprint without exposing task ids."""
+    scorer_contracts = {
+        "score-policy-v1": "v0-candidate-authz-evidence",
+        "score-policy-v2": "v0-candidate-authz-evidence-boundary-v2.1",
+    }
+    if score_policy_version not in scorer_contracts:
+        raise ValueError(f"unsupported score policy: {score_policy_version}")
     canonical_tasks = [
         {
             "path": path,
@@ -64,8 +74,8 @@ def benchmark_fingerprint(task_items: list[tuple[str, dict[str, Any]]]) -> dict[
         "schema_version": "benchmark-fingerprint-v1",
         "task_set_sha256": stable_json_sha256(canonical_tasks),
         "task_path_set_sha256": stable_json_sha256([item["path"] for item in canonical_tasks]),
-        "score_policy_version": "score-policy-v1",
-        "scorer_contract": "v0-candidate-authz-evidence",
+        "score_policy_version": score_policy_version,
+        "scorer_contract": scorer_contracts[score_policy_version],
         "evidence_contract_version": "evidence-requirements-v1",
         **counts,
     }
@@ -98,12 +108,19 @@ def load_app(app_name: str):
         raise ValueError(f"unknown app: {app_name}") from exc
 
 
-def build_context(task: dict[str, Any]) -> dict[str, Any]:
+def build_context(task: dict[str, Any], *, score_policy_version: str = "score-policy-v1") -> dict[str, Any]:
+    if score_policy_version not in {"score-policy-v1", "score-policy-v2"}:
+        raise ValueError(f"unsupported score policy: {score_policy_version}")
     app = load_app(task["app"])
     state = app.seed_state(task["seed"])
     refs = app.public_refs(state)
     actors = app.public_actors(state)
     api_docs = app.public_api_docs() if hasattr(app, "public_api_docs") else []
+    score_policy: dict[str, Any] = {"version": score_policy_version}
+    if score_policy_version == "score-policy-v2":
+        from .score_policy_v2 import boundary_schema_for_task
+
+        score_policy["boundary_contract"] = boundary_schema_for_task(task)
     return {
         "task_id": task["id"],
         "app": task["app"],
@@ -116,6 +133,7 @@ def build_context(task: dict[str, Any]) -> dict[str, Any]:
         "refs": refs,
         "api_docs": api_docs,
         "output_schema": task["output_schema"],
+        "score_policy": score_policy,
     }
 
 

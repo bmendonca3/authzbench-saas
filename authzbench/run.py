@@ -178,6 +178,7 @@ def run_benchmark(
     results_dir: Path,
     timeout_seconds: int,
     benchmark_version: str = "alpha-0.0.1-public-scaffold-local",
+    score_policy_version: str = "score-policy-v1",
     benchmark_commit_sha: str | None = None,
     agent: str | None = None,
     model: str | None = None,
@@ -190,13 +191,16 @@ def run_benchmark(
     task_results = []
     root = BENCHMARK_ROOT
     loaded_tasks = [(_fingerprint_path(task_path, root), task_path, load_json(task_path)) for task_path in _task_paths(task_patterns)]
-    fingerprint = benchmark_fingerprint([(fingerprint_path, task) for fingerprint_path, _task_path, task in loaded_tasks])
+    fingerprint = benchmark_fingerprint(
+        [(fingerprint_path, task) for fingerprint_path, _task_path, task in loaded_tasks],
+        score_policy_version=score_policy_version,
+    )
 
     for _fingerprint_path_text, task_path, task in loaded_tasks:
         task_dir = run_dir / task["id"]
         context_path = task_dir / "context.json"
         submission_path = task_dir / "submission.json"
-        _write_json(context_path, build_context(task))
+        _write_json(context_path, build_context(task, score_policy_version=score_policy_version))
         agent_id = agent or Path(shlex.split(agent_cmd)[0]).name
         target_log_start_offset = _target_log_offset(target_log_dir, task["app"]) if target_log_dir is not None else 0
 
@@ -234,7 +238,11 @@ def run_benchmark(
             }
         else:
             try:
-                score = score_submission(task, load_json(submission_path))
+                score = score_submission(
+                    task,
+                    load_json(submission_path),
+                    score_policy_version=score_policy_version,
+                )
             except Exception as exc:  # noqa: BLE001 - runner must preserve per-task failure evidence.
                 score = {
                     "task_id": task["id"],
@@ -250,11 +258,16 @@ def run_benchmark(
         _write_json(task_dir / "transcript.json", {"task_id": task["id"], "entries": score.get("transcript", [])})
         model_tool_plan = _load_optional_json(task_dir / "model-tool-plan.json")
         tool_probes = _load_optional_json(task_dir / "tool-probes.json")
+        model_output = _load_optional_json(task_dir / "model-output.json")
         executed_probe_count = _optional_int(tool_probes, "executed_probe_count", "probe_count")
         fallback_probe_count = _optional_int(tool_probes, "fallback_probe_count")
         submitted_finding_count = _optional_int(tool_probes, "submitted_finding_count")
         planner_returncode = _planner_returncode(model_tool_plan)
         planner_parse_error = _planner_parse_error(model_tool_plan)
+        adapter_returncode = _optional_int(model_output, "returncode")
+        adapter_parse_error = model_output.get("parse_error") if isinstance(model_output, dict) else None
+        model_label_verified = model_output.get("model_label_verified") if isinstance(model_output, dict) else None
+        adapter_failed = bool(model_output and (model_output.get("adapter_failed") or adapter_parse_error))
         target_request_count: int | None = None
         target_request_warning: str | None = None
         if target_log_dir is not None:
@@ -286,6 +299,26 @@ def run_benchmark(
                 "model_tool_plan_artifact": model_tool_plan is not None,
                 "tool_probe_artifact": tool_probes is not None,
             }
+            | (
+                {"model_output_artifact": True, "adapter_failed": adapter_failed}
+                if model_output is not None
+                else {}
+            )
+            | (
+                {"adapter_returncode": adapter_returncode}
+                if adapter_returncode is not None
+                else {}
+            )
+            | (
+                {"adapter_parse_error": adapter_parse_error}
+                if isinstance(adapter_parse_error, str) and adapter_parse_error
+                else {}
+            )
+            | (
+                {"model_label_verified": model_label_verified}
+                if isinstance(model_label_verified, bool)
+                else {}
+            )
             | (
                 {"executed_probe_count": executed_probe_count}
                 if executed_probe_count is not None
@@ -322,6 +355,13 @@ def run_benchmark(
     vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
     exploit_proven = sum(1 for item in vulnerable if item["exploit_proof"] == 1)
     boundary_reasoning_passed = sum(1 for item in vulnerable if item["boundary_reasoning"] == 1)
+    boundary_health_status = (
+        "not_applicable"
+        if not vulnerable
+        else "review_required"
+        if exploit_proven > 0 and boundary_reasoning_passed == 0
+        else "healthy"
+    )
     vulnerable_safety_passed = sum(1 for item in vulnerable if item["safety"] == 1)
     controls_failed = sum(1 for item in controls if not item["passed"])
     controls_with_findings = sum(1 for item in controls if int(item["submission_finding_count"]) > 0)
@@ -337,6 +377,9 @@ def run_benchmark(
         submitted_finding_total += int(task_result.get("submitted_finding_count", 0))
     model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
     per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
+    model_output_artifact_count = sum(1 for item in task_results if item.get("model_output_artifact"))
+    adapter_failure_count = sum(1 for item in task_results if item.get("adapter_failed"))
+    model_label_unverified_count = sum(1 for item in task_results if item.get("model_label_verified") is False)
     planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
     planner_failure_count = sum(
         1
@@ -360,6 +403,7 @@ def run_benchmark(
     summary = {
         "run_id": run_id,
         "benchmark_version": benchmark_version,
+        "score_policy_version": score_policy_version,
         "benchmark_commit_sha": benchmark_commit_sha,
         "benchmark_fingerprint": fingerprint,
         "agent_cmd": agent_cmd,
@@ -370,6 +414,12 @@ def run_benchmark(
         "timeout_seconds": timeout_seconds,
         "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
         "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
+        "model_output_artifact_count": model_output_artifact_count,
+        "adapter_failure_count": adapter_failure_count,
+        "adapter_failure_rate": round(adapter_failure_count / model_output_artifact_count, 4)
+        if model_output_artifact_count
+        else None,
+        "model_label_unverified_count": model_label_unverified_count,
         "executed_tool_probe_total": executed_tool_probe_total,
         "fallback_probe_total": fallback_probe_total,
         "scored_submission_finding_total": scored_submission_finding_total,
@@ -394,6 +444,11 @@ def run_benchmark(
         "exploit_proven_success_rate": round(exploit_proven / len(vulnerable), 4) if vulnerable else 0,
         "vulnerable_full_pass_count": vulnerable_passed,
         "boundary_reasoning_pass_rate": round(boundary_reasoning_passed / len(vulnerable), 4) if vulnerable else 0,
+        "boundary_health": {
+            "status": boundary_health_status,
+            "exploit_proven_task_count": exploit_proven,
+            "boundary_reasoning_passed_task_count": boundary_reasoning_passed,
+        },
         "vulnerable_safety_pass_rate": round(vulnerable_safety_passed / len(vulnerable), 4) if vulnerable else 0,
         "control_false_report_count": controls_with_findings,
         "control_false_report_rate": round(controls_with_findings / len(controls), 4) if controls else 0,
@@ -417,6 +472,12 @@ def main() -> int:
     parser.add_argument("--results-dir", default="results", help="Directory for run artifacts.")
     parser.add_argument("--timeout-seconds", type=int, default=60)
     parser.add_argument("--benchmark-version", default="alpha-0.0.1-public-scaffold-local")
+    parser.add_argument(
+        "--score-policy-version",
+        choices=("score-policy-v1", "score-policy-v2"),
+        default="score-policy-v1",
+        help="Named scoring policy for the run and benchmark fingerprint.",
+    )
     parser.add_argument("--benchmark-commit-sha", help="Benchmark commit SHA or release archive SHA.")
     parser.add_argument("--agent", help="Agent or harness name to record in summary.json.")
     parser.add_argument("--model", help="Model label to record in summary.json, when applicable.")
@@ -430,6 +491,7 @@ def main() -> int:
         Path(args.results_dir),
         args.timeout_seconds,
         benchmark_version=args.benchmark_version,
+        score_policy_version=args.score_policy_version,
         benchmark_commit_sha=args.benchmark_commit_sha,
         agent=args.agent,
         model=args.model,

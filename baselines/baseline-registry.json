@@ -332,8 +332,8 @@
     },
     {
       "capability_baseline": true,
-      "cohort": "current-model",
-      "evidence_status": "current",
+      "cohort": "diagnostic",
+      "evidence_status": "stale_legacy_adapter_fail_open",
       "expected_agent": "agy_baseline_agent",
       "expected_harness_type": "no-tools-model",
       "expected_model": "Gemini 3.1 Pro (High)",
@@ -344,9 +344,9 @@
       "model_family": "agy-gemini-3-1-pro",
       "model_name": "Gemini 3.1 Pro (High)",
       "model_version": "antigravity-cli-label-verified-2026-07-06",
-      "notes": "Current repeated 63-task public split no-tools Gemini 3.1 Pro (High) baseline through the Antigravity CLI adapter. Each per-task Antigravity CLI log propagated the exact model label; a small number of task-level command/JSON fallbacks remain reflected in the scored rows. This is public-split evidence only, not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
-      "requires_rerun_before_current_comparison": false,
+      "notes": "Historical diagnostic 63-task public-split Gemini 3.1 Pro (High) rows produced by the legacy Antigravity CLI adapter. That adapter converted command and JSON failures into empty findings, which can falsely pass secure controls; these rows must not support current comparison until rerun with the fail-closed adapter. This is public-split diagnostic evidence only, not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "agy-gemini-3.1-pro-high-current-public-63-run1-summary.json",
         "agy-gemini-3.1-pro-high-current-public-63-run2-summary.json"
@@ -979,6 +979,34 @@
       "requires_rerun_before_current_comparison": true,
       "run_count": 1,
       "summary_path": "kiro-live-tool-agent-sonnet-current-public-44-summary.json"
+    },
+    {
+      "capability_baseline": true,
+      "cohort": "current-model-policy-v2",
+      "evidence_status": "current_policy_v2_repeated_api_execution",
+      "expected_agent": "gemini_api_baseline_agent",
+      "expected_harness_type": "no-tools",
+      "expected_model": "gemini-2.5-flash",
+      "expected_score_policy_version": "score-policy-v2",
+      "expected_task_count": 63,
+      "id": "gemini-2-5-flash-api-policy-v2-1-current-public-63",
+      "kind": "model_baseline",
+      "leaderboard_eligible": false,
+      "model_family": "gemini-2.5-flash",
+      "model_name": "gemini-2.5-flash",
+      "model_version": "Gemini Developer API modelVersion gemini-2.5-flash",
+      "notes": "Two complete 63-task public-split Gemini Developer API executions under score-policy-v2 scorer contract v0-candidate-authz-evidence-boundary-v2.1. Both runs have matching source and benchmark fingerprints, healthy boundary canaries, 63 model-output artifacts, verified response model labels, zero adapter failures, and zero invalid submissions. Public diagnostic evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence. This row does not replace the quota-blocked Gemini 3.1 Pro rerun.",
+      "release_suitability": "current_public_split",
+      "requires_rerun_before_current_comparison": false,
+      "requires_zero_adapter_failures": true,
+      "run_artifacts": [
+        "gemini-2.5-flash-api-policy-v2.1-current-public-63-run1-summary.json",
+        "gemini-2.5-flash-api-policy-v2.1-current-public-63-run2-summary.json"
+      ],
+      "run_count": 2,
+      "run_date": "2026-07-18",
+      "scaffold_name": "gemini_api_baseline_agent",
+      "summary_path": "gemini-2.5-flash-api-policy-v2.1-current-public-63-run1-summary.json"
     }
   ],
   "public_split": {

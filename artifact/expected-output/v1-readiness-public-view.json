@@ -109,7 +109,7 @@
       "id": "paper_and_artifact_readiness",
       "passed": false,
       "unmet": [
-        "release-affecting files changed after benchmark_source_sha: artifact/README.md, artifact/docs-alignment-stale-wording-inventory.md, docs/baseline-rerun-readiness-runbook.md, docs/checkpoints/2026-06-08-v1-readiness-hardening-history.md, docs/host/kaggle-followup-todo.md, docs/reviews/2026-06-05-api-tokens-panel-summary.md, docs/reviews/2026-06-05-audit-settings-panel-summary.md, docs/reviews/2026-06-05-baseline-registry-panel-context.md, docs/reviews/2026-06-05-baseline-registry-panel-summary.md, docs/reviews/2026-06-05-bearer-replay-panel-summary.md"
+        "release-affecting files changed after benchmark_source_sha: artifact/README.md, artifact/docs-alignment-stale-wording-inventory.md, baselines/agy-gemini-3.1-pro-high-current-public-63-run1-summary.json, baselines/agy-gemini-3.1-pro-high-current-public-63-run2-summary.json, baselines/kiro-claude-haiku-4.5-current-public-63-run1-summary.json, baselines/kiro-claude-haiku-4.5-current-public-63-run2-summary.json, baselines/kiro-claude-opus-4.6-current-public-63-run1-summary.json, baselines/kiro-claude-opus-4.6-current-public-63-run2-summary.json, baselines/kiro-claude-sonnet-4.6-current-public-63-run1-summary.json, baselines/kiro-claude-sonnet-4.6-current-public-63-run2-summary.json"
       ]
     },
     {

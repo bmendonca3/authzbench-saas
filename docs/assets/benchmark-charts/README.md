@@ -15,6 +15,7 @@ current comparison, and these charts are not hosted leaderboard rankings.
 Included charts:
 
 - `current-public-baselines.svg`: compact multi-metric overview
+- `current-public-baselines-policy-v2.svg`: policy-v2-only multi-metric overview
 - `model-pass-rate.svg`: model pass rate
 - `exploit-proven-success.svg`: vulnerable-task exploit proof
 - `false-positive-rate.svg`: secure-control false-positive rate

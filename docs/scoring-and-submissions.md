@@ -42,7 +42,14 @@ To prevent rewarding agents that report everything as a vulnerability or submit 
 7. Lower execution runtime
 
 ### Boundary Matching Modes
-When an agent submits a finding on a vulnerable task, the scorer replays the exploit request and evaluates the agent's `expected_boundary` dict against the manifest's `expected_boundary` and `boundary_aliases`.
+Policy-v1 is the active contract. It replays the exploit request, then compares
+the submitted `boundary` dict with the manifest's `expected_boundary` and
+value-only `boundary_aliases`. Policy-v1 evidence must be interpreted under
+that contract. The opt-in [`score-policy-v2`](score-policy-v2-design.md)
+adds controlled key normalization and seed-resolved label/ID matching under a
+new fingerprint; it does not rewrite policy-v1 results. Use
+`--score-policy-version score-policy-v2` with the scorer or runner only for
+separately labeled v2 evaluation.
 
 The scorer returns one of three boundary-matching modes:
 
@@ -52,7 +59,9 @@ The scorer returns one of three boundary-matching modes:
 | `semantic` | Submitted boundary does not match strictly, but matches via `boundary_aliases`. | `boundary_semantic_match: true` | Counts as a boundary pass (surfaced in diagnostics). |
 | `mismatch` | Submitted boundary matches neither strictly nor semantically. | `boundary_schema_mismatch: true` | Fails the boundary check. |
 
-*Note: Leaderboard-candidate rows require `boundary_exact_match: true` for full credit. Semantic matching is a diagnostic tool.*
+*Note: Under policy-v1, both exact and semantic matches earn boundary credit;
+the distinction is diagnostic. Policy-v2 may define separate eligibility rules,
+but it will do so under its own fingerprint and documentation.*
 
 ---
 

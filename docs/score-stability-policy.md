@@ -14,6 +14,18 @@ the benchmark changes.
 | `legacy_snapshot` | Historical run kept for context, not comparable to current results. |
 | `deprecated` | Result should not be used for current comparisons. |
 
+## Versioned Scoring-Policy Revisions
+
+A scoring-policy change is a release boundary, not a silent correction. The active
+policy is named in every `benchmark_fingerprint`; an artifact is current only for
+that exact policy. The opt-in [`score-policy-v2`](score-policy-v2-design.md)
+corrects boundary-key and label/ID normalization without rewriting policy-v1
+scores. Policy-v1 summaries remain immutable historical evidence until a
+separately labeled v2 evaluation is produced.
+A re-scored v1 submission must retain its source digest and be labeled as a
+re-score, never as a fresh execution. A row with incomplete retained submissions
+must be rerun before it can become current v2 evidence.
+
 ## When Scores Become Legacy
 
 Mark prior scores as `legacy_snapshot` when any of these change:

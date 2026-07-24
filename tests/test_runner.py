@@ -66,6 +66,34 @@ class RunnerTests(unittest.TestCase):
             self.assertTrue(transcript.exists())
             self.assertIn('"name": "proof"', transcript.read_text(encoding="utf-8"))
 
+    def test_v2_run_records_distinct_fingerprint_and_context_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            summary = run_benchmark(
+                [str(ROOT / "tasks" / "project_mgmt" / "pm_bola_read_alpha_from_beta.json")],
+                "python3 scripts/scripted_baseline_agent.py",
+                Path(tmp),
+                timeout_seconds=10,
+                score_policy_version="score-policy-v2",
+            )
+            context = json.loads(
+                Path(summary["run_dir"], "pm_bola_read_alpha_from_beta", "context.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(summary["score_policy_version"], "score-policy-v2", summary)
+        self.assertEqual(summary["benchmark_fingerprint"]["score_policy_version"], "score-policy-v2", summary)
+        self.assertEqual(
+            summary["benchmark_fingerprint"]["scorer_contract"],
+            "v0-candidate-authz-evidence-boundary-v2.1",
+            summary,
+        )
+        self.assertEqual(summary["passed_count"], 1, summary)
+        self.assertEqual(summary["boundary_health"]["status"], "healthy", summary)
+        self.assertEqual(context["score_policy"]["version"], "score-policy-v2")
+        self.assertEqual(
+            context["score_policy"]["boundary_contract"]["required_fields"],
+            ["attacker_actor", "victim_tenant"],
+        )
+
     def test_secure_control_execution_failure_is_separate_from_false_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
@@ -345,6 +373,58 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(summary["per_task_tool_probe_artifact_count"], 0, summary)
         self.assertEqual(summary["executed_tool_probe_total"], 0, summary)
         self.assertEqual(summary["planner_failure_count"], 0, summary)
+
+
+class BoundaryHealthCanaryTests(unittest.TestCase):
+    def test_nonzero_exploit_proof_with_no_boundary_credit_requires_review(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            agent_path = tmp_path / "boundary_mismatch_agent.py"
+            agent_path.write_text(
+                textwrap.dedent(
+                    """
+                    import json
+                    import os
+                    from pathlib import Path
+
+                    context = json.loads(Path(os.environ["AUTHZBENCH_CONTEXT"]).read_text())
+                    refs = context["refs"]
+                    submission = {
+                        "findings": [{
+                            "claim": "cross_tenant_task_read",
+                            "boundary": {"actor": "beta_member", "target_tenant": "alpha"},
+                            "evidence": [{"request": {
+                                "actor": "beta_member",
+                                "method": "GET",
+                                "path": f"/api/projects/{refs['ALPHA_PROJECT_ID']}/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}",
+                            }}],
+                            "impact": "Cross-tenant task read.",
+                            "out_of_scope_actions": [],
+                        }]
+                    }
+                    Path(os.environ["AUTHZBENCH_SUBMISSION"]).write_text(json.dumps(submission))
+                    """
+                ),
+                encoding="utf-8",
+            )
+            summary = run_benchmark(
+                [str(ROOT / "tasks" / "project_mgmt" / "pm_bola_read_alpha_from_beta.json")],
+                f"python3 {agent_path}",
+                tmp_path / "results",
+                timeout_seconds=10,
+            )
+
+        self.assertEqual(summary["exploit_proven_task_count"], 1, summary)
+        self.assertEqual(summary["boundary_reasoning_pass_rate"], 0.0, summary)
+        self.assertEqual(
+            summary["boundary_health"],
+            {
+                "status": "review_required",
+                "exploit_proven_task_count": 1,
+                "boundary_reasoning_passed_task_count": 0,
+            },
+            summary,
+        )
 
 
 if __name__ == "__main__":

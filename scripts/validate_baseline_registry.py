@@ -50,6 +50,13 @@ REQUIRED_TOOL_AGENT_SUMMARY_FIELDS = {
     "target_request_coverage_rate",
 }
 
+ZERO_ADAPTER_FAILURE_SUMMARY_EXPECTATIONS = {
+    "model_output_artifact_count": "expected_task_count",
+    "adapter_failure_count": 0,
+    "model_label_unverified_count": 0,
+    "invalid_submission_count": 0,
+}
+
 REQUIRED_RELEASE_SNAPSHOT_FIELDS = {
     "id",
     "public_split",
@@ -74,6 +81,7 @@ VALID_SUITABILITY = {
     "current_public_stale",
     "legacy_snapshot",
 }
+VALID_SCORE_POLICIES = {"score-policy-v1", "score-policy-v2"}
 
 # Required provenance fields on every "current" entry. These were
 # introduced after the v1.0-internal release per
@@ -229,6 +237,26 @@ def _validate_summary_counts(
             )
 
 
+def _validate_zero_adapter_failure_requirement(
+    raw_entry: dict[str, Any],
+    summary: dict[str, Any],
+    entry_id: str,
+    location: str,
+    expected_task_count: int,
+    errors: list[str],
+) -> None:
+    """Validate opt-in fail-closed adapter telemetry for promotable current rows."""
+    if raw_entry.get("requires_zero_adapter_failures") is not True:
+        return
+    for field, expected in ZERO_ADAPTER_FAILURE_SUMMARY_EXPECTATIONS.items():
+        expected_value = expected_task_count if expected == "expected_task_count" else expected
+        if summary.get(field) != expected_value:
+            errors.append(
+                f"{entry_id}: {location} {field} {summary.get(field)!r} "
+                f"does not satisfy requires_zero_adapter_failures={expected_value!r}"
+            )
+
+
 def _validate_promoted_composite_provenance(
     registry_path: Path,
     raw_entry: dict[str, Any],
@@ -362,6 +390,27 @@ def _validate_summary_file(
         errors.append(f"{entry_id}: {location} must be a JSON object")
         return None
 
+    expected_policy = raw_entry.get("expected_score_policy_version", "score-policy-v1")
+    if expected_policy not in VALID_SCORE_POLICIES:
+        errors.append(f"{entry_id}: expected_score_policy_version must be a known score policy")
+    summary_policy = summary.get("score_policy_version", "score-policy-v1")
+    fingerprint = summary.get("benchmark_fingerprint")
+    fingerprint_policy = (
+        fingerprint.get("score_policy_version", "score-policy-v1")
+        if isinstance(fingerprint, dict)
+        else None
+    )
+    if summary_policy != expected_policy:
+        errors.append(
+            f"{entry_id}: {location} score_policy_version {summary_policy!r} "
+            f"does not match registry {expected_policy!r}"
+        )
+    if fingerprint_policy is not None and fingerprint_policy != expected_policy:
+        errors.append(
+            f"{entry_id}: {location} benchmark_fingerprint.score_policy_version "
+            f"{fingerprint_policy!r} does not match registry {expected_policy!r}"
+        )
+
     missing_summary = sorted(REQUIRED_SUMMARY_FIELDS - set(summary))
     if missing_summary:
         errors.append(f"{entry_id}: {location} missing fields: {', '.join(missing_summary)}")
@@ -404,6 +453,14 @@ def _validate_summary_file(
                 )
         _validate_current_fingerprint(summary, current_fingerprint, entry_id, location, errors)
 
+    _validate_zero_adapter_failure_requirement(
+        raw_entry,
+        summary,
+        entry_id,
+        location,
+        expected_task_count,
+        errors,
+    )
     return summary
 
 
@@ -599,7 +656,8 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
     errors: list[str] = []
     warnings: list[str] = []
     public_counts = _task_counts()
-    current_fingerprint = benchmark_fingerprint(_current_public_task_items())
+    current_task_items = _current_public_task_items()
+    current_fingerprint = benchmark_fingerprint(current_task_items)
     v0_requirements = registry.get("v0_requirements", {})
     min_model_families = int(v0_requirements.get("min_real_model_families", 5))
     min_runs = int(v0_requirements.get("min_runs_per_serious_baseline", 2))
@@ -651,6 +709,13 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         expected_task_count = _require_int(raw_entry.get("expected_task_count"), "expected_task_count", entry_id, errors)
         leaderboard_eligible = raw_entry.get("leaderboard_eligible")
         requires_rerun_before_current = bool(raw_entry.get("requires_rerun_before_current_comparison"))
+        requires_zero_adapter_failures = raw_entry.get("requires_zero_adapter_failures", False)
+        expected_score_policy = raw_entry.get("expected_score_policy_version", "score-policy-v1")
+        entry_current_fingerprint = (
+            benchmark_fingerprint(current_task_items, score_policy_version=expected_score_policy)
+            if expected_score_policy in VALID_SCORE_POLICIES
+            else current_fingerprint
+        )
 
         if kind not in VALID_KINDS:
             errors.append(f"{entry_id}: kind must be one of {', '.join(sorted(VALID_KINDS))}")
@@ -664,6 +729,16 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
             has_current_scripted_sanity_baseline = True
         if kind == "harness_check" and suitability == "current_public_split":
             errors.append(f"{entry_id}: harness checks must use current_public_harness_check, not current_public_split")
+        if not isinstance(requires_zero_adapter_failures, bool):
+            errors.append(f"{entry_id}: requires_zero_adapter_failures must be boolean when supplied")
+        elif requires_zero_adapter_failures and (
+            kind not in {"model_baseline", "tool_agent_baseline"}
+            or suitability not in {"current_public_split", "current_public_stale"}
+        ):
+            errors.append(
+                f"{entry_id}: requires_zero_adapter_failures is only valid for current or stale public-split "
+                "model or tool-agent baselines"
+            )
 
         summary = _validate_summary_file(
             registry_path,
@@ -672,7 +747,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
             str(raw_entry.get("summary_path")),
             expected_task_count,
             public_counts,
-            current_fingerprint,
+            entry_current_fingerprint,
             errors,
         )
         if summary is None:
@@ -777,7 +852,7 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
                     run_count,
                     expected_task_count,
                     public_counts,
-                    current_fingerprint,
+                    entry_current_fingerprint,
                     errors,
                 )
             if suitability == "current_public_split" and run_count >= min_runs and has_repeated_evidence:
