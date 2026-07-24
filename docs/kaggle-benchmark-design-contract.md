@@ -1,14 +1,16 @@
 # Kaggle Benchmark Design Contract
 
 Status: current-starter local controls and one local Model Proxy agent/verifier
-completion verified; Kaggle executor parity and review not yet completed
+completion verified; exact-commit local published-runner attempt blocked before
+agent startup; Kaggle executor parity and review not yet completed
 Evidence date: 2026-07-24
-Implementation source: AuthZBench-SaaS `main` at `2025dc0` plus the current
-uncommitted output-schema clarification; historical pilot checkpoint `7f3da26`
+Executed benchmark source: AuthZBench-SaaS `main` at `20cd189`; historical
+pilot checkpoint `7f3da26`
 
 The executed generated-task checksums and compact local results are recorded in
-`artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json`. No hosted
-Kaggle executor run, organization change, upload, publication, or launch action
+`artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json`. A local
+attempt of Kaggle's published executor image is recorded separately below. No
+Kaggle-hosted run, organization change, upload, publication, or launch action
 is claimed.
 
 ## 1. Status And Claim Boundary
@@ -29,6 +31,20 @@ matrix and a fresh six-run current-starter matrix completed with zero
 exceptions; every fresh control run contains `trial.log` and verifier CTRF. The
 model run completed its agent and verifier, but its temporary public-network
 mode prevents treating it as network-isolation or Kaggle-executor evidence.
+
+The schema clarification is integrated and remotely verified at exact commit
+`20cd189072b25dc406bd4fff03672a4ab0268648`. A local invocation of Kaggle's
+published `harbor-git-v1` image, pinned at
+`sha256:772dfa2383c07928ee020f8235323a81dee9ff519750e978f776cc0448533f32`,
+cloned the public repository and checked out that commit. Harbor 0.15 failed
+during environment preparation before mini-swe-agent started: its nested
+egress-control sidecar exited when nftables rejected `fib daddr type local`
+with `No such file or directory`. The attempt has a `RuntimeError`, zero agent
+trials, and no trajectory, submission, CTRF, score, reward, verifier result, or
+token/resource accounting. Exact-key scans found zero hits in all retained
+executor and diagnostic files. This is a precise local host/image
+compatibility blocker, not local/executor reward parity or Kaggle-hosted
+evidence.
 
 ### Current official starter comparison
 
@@ -246,7 +262,10 @@ separate Kaggle go/no-go evidence.
   observable fail-closed direct egress.
 - **KQ-005 — Network isolation:** What policies apply separately to agent,
   target, verifier, and Model Proxy traffic? Acceptance: platform evidence that
-  the declared allow/deny matrix is enforced.
+  the declared allow/deny matrix is enforced. The current local published
+  runner additionally needs a host whose nested Docker kernel exposes the
+  nftables `fib` support required by Harbor 0.15's egress sidecar, or a
+  corrected runner image with an equivalent supported policy mechanism.
 - **KQ-006 — Launch and private evaluation:** What review tier, minimum task
   count, private synchronization method, maintenance coverage, and staged
   launch gate apply? Acceptance: a written platform checklist with owners and

@@ -175,8 +175,14 @@ not an FDE assignment, platform acceptance, or launch approval.
 Current status: authentication, proxy health, and one local mini-swe-agent
 agent/verifier completion are verified. The completed run used a temporary
 all-public task copy, so it is compatibility evidence rather than isolation or
-Kaggle-executor evidence. Exact-commit executor parity remains blocked on
-current commit/push and credentialed-executor authorization.
+Kaggle-executor evidence. The corrected source is pushed at exact commit
+`20cd189`. A pinned local run of Kaggle's published executor image checked out
+that commit, but Harbor 0.15 failed before agent startup because its nested
+egress-control sidecar could not install nftables `fib` rules on the local
+Docker-in-Docker host. No trajectory, submission, verifier, CTRF, reward, or
+token evidence exists for that attempt. Exact-commit parity therefore remains
+blocked on a Kaggle-supported host/image contract; Kaggle-hosted execution is
+not claimed.
 
 ### WP4 — Scale and independently validate
 

@@ -2,9 +2,9 @@
 
 ## Source And Gates
 
-- Integrated implementation source: this repository root on `main` at
-  `2025dc00d7b7bf1a672855254abe52b14f7437fd`, plus the current preserved
-  uncommitted output-schema clarification.
+- Integrated and executed benchmark source: this repository root on `main` at
+  `20cd189072b25dc406bd4fff03672a4ab0268648`; later documentation-only
+  evidence updates do not change its task contract or digests.
 - Preserved pilot checkpoint: `7f3da26d9b0240fae2e0f324d91a10e02380a66b`
   on `feature/kaggle-harbor-pilot`, based on
   `aae81c0f5aa3e998f001b0a1d754fc3068a237ae`.
@@ -45,10 +45,13 @@
 ## External Continuation
 
 Kaggle authentication, direct Model Proxy health, and one local admitted LLM
-agent/verifier completion are now verified. After current authorization,
-commit and non-force push the coherent schema clarification and run that exact
-remote commit through Kaggle's published Harbor executor. Scale only after
-local/executor parity is explained.
+agent/verifier completion are verified. The coherent schema clarification was
+committed and pushed at `20cd189`, and Kaggle's pinned published runner checked
+out that exact commit locally. Harbor 0.15 then failed before agent startup
+because its mandatory nested egress sidecar requires nftables `fib` support
+absent from the local Docker-in-Docker host. Obtain a Kaggle-supported
+host/image contract and complete the same-digest run before scaling; this local
+runner attempt is not Kaggle-hosted evidence.
 Organization forms, invitations, private synchronization, uploads, messages,
 publication, and launch remain separately gated.
 

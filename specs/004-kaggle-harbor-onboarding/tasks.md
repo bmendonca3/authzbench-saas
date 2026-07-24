@@ -21,6 +21,9 @@
   jobs; refresh compact evidence and local claim wording.
 - [x] **T016** Run Model Proxy health and one LLM-agent control after explicit authorization.
 - [ ] **T017** Prove exact-source/digest parity on Kaggle's Harbor executor after authorization.
+  Exact commit `20cd189` was attempted through the pinned published runner;
+  Harbor failed before agent startup because its nested egress sidecar requires
+  nftables `fib` support absent from the local Docker-in-Docker host.
 - [ ] **T018** Freeze and independently review the scored cohort, contamination,
   AppSec, agent/tooling, and SaaS-provider validity gates.
 - [ ] **T019** Complete organization, maintenance backup, GTM assets, privacy,

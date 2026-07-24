@@ -29,9 +29,12 @@ Current v1.0-internal boundary:
   public pilot, fresh local NOP `0.0` and Oracle `1.0` controls, and one
   completed local mini-swe-agent secure-control run through Kaggle Model Proxy
   with passing CTRF/score and reward `1.0`. That model run used a temporary
-  all-public task network mode and is compatibility evidence only; exact-commit
-  Kaggle executor parity, verifier-isolation proof, platform acceptance, and
-  launch remain open.
+  all-public task network mode and is compatibility evidence only. The schema
+  clarification is pushed at exact commit `20cd189`; Kaggle's pinned published
+  runner checked out that commit locally but Harbor 0.15 failed before agent
+  startup because its nested egress sidecar could not install required
+  nftables `fib` rules. Exact-commit reward parity, Kaggle-hosted execution,
+  verifier-isolation proof, platform acceptance, and launch remain open.
 - The active scorer fingerprint is
   `score-policy-v2-boundary-normalization`. It removes the undeclared exact
   claim-string gate, keeps boundary credit binary, and fails adapter/runner

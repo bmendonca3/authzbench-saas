@@ -42,16 +42,25 @@
 - [ ] Same task source/digests pass Kaggle's Harbor executor.
 - [x] Local/executor parity has a precise current blocker recorded.
 
-The corrected mini-swe-agent run completed the secure-denial control through
+The corrected local mini-swe-agent run completed the secure-denial control through
 Model Proxy with a valid submission, passing CTRF and score, reward `1.0`, no
 trial exception, and inspected token data. Its final completion-marker step is
 recorded as terminalized without execution; batch and trial exception fields
 remain empty. Exact-secret scans found zero matches in the retained proxy and
 local-control files. Its temporary task copy used all-public network mode, so
 this is local compatibility evidence rather than verifier-isolation,
-Kaggle-executor, Kaggle-hosted, or platform-acceptance evidence. The Kaggle
-executor requires the exact source at a remote repository URL and commit; the
-current source is intentionally uncommitted/unpushed pending separate authority.
+Kaggle-executor, Kaggle-hosted, or platform-acceptance evidence.
+
+The schema clarification is now pushed at exact commit
+`20cd189072b25dc406bd4fff03672a4ab0268648`. A local run of Kaggle's published
+`harbor-git-v1` image pinned at
+`sha256:772dfa2383c07928ee020f8235323a81dee9ff519750e978f776cc0448533f32`
+checked out that commit but failed before agent startup. Harbor 0.15's nested
+egress-control sidecar exited because this Docker-in-Docker host could not
+install its nftables `fib daddr type local` rules. The trial has a
+`RuntimeError` and no trajectory, submission, CTRF, score, reward, token use,
+or verifier result. This precisely blocks local/executor parity and is not
+Kaggle-hosted evidence.
 
 ## Scale, Review, And Launch
 

@@ -218,6 +218,13 @@ so the headline verdict is grep-friendly in CI logs without parsing JSON.
   temporary all-public network mode makes it compatibility evidence only, not
   verifier-isolation, Kaggle-executor, Kaggle-hosted, platform-acceptance, or
   launch evidence.
+- The schema clarification is pushed at exact commit `20cd189`. A local run of
+  Kaggle's pinned published Harbor executor image checked out that commit, but
+  Harbor 0.15 failed before agent startup because its nested egress-control
+  sidecar could not install required nftables `fib` rules on the local
+  Docker-in-Docker host. The attempt produced no trajectory, submission, CTRF,
+  score, reward, token use, or verifier result and is not Kaggle-hosted
+  evidence.
 - Full 63-task/model parity, Harbor platform acceptance, and hosted Harbor
   operation: not claimed (v2 gates)
 
