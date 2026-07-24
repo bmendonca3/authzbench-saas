@@ -193,6 +193,37 @@ class ManifestValidationTests(unittest.TestCase):
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("evidence_requirements[0].request is required" in error for error in result["errors"]), result)
 
+    def test_rejects_boolean_evidence_requirement_integers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            data = _minimal_task(
+                expected_vulnerable=True,
+                oracle={
+                    "claim": "cross_tenant_task_read",
+                    "status": 200,
+                    "body_contains": {"viewer": "beta_member"},
+                },
+                expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                evidence_requirements=[
+                    {
+                        "name": "boolean_integer_fields",
+                        "index": True,
+                        "request": {"method": "GET"},
+                        "status": False,
+                    }
+                ],
+            )
+            data.pop("control_type")
+            _write_json(path, data)
+            result = validate_patterns([str(path)])
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("evidence_requirements[0].index" in error for error in result["errors"]), result
+        )
+        self.assertTrue(
+            any("evidence_requirements[0].status" in error for error in result["errors"]), result
+        )
+
     def test_private_holdout_seed_must_not_use_public_prefix(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "task.json"

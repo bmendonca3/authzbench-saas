@@ -67,7 +67,7 @@ For details on current public task classifications, counts, and per-task details
 
 ### Dynamic Oracles
 Every task has a machine-verifiable oracle. 
-* **Vulnerable Tasks**: Submitted evidence must replay against the seeded backend and return the expected status and response subset. If a task has `evidence_requirements` (multi-step), each required step must match the request/response shape. Vulnerable tasks also declare an `expected_boundary` (attacker, victim tenant/org, and required role) which the agent must correctly identify.
+* **Vulnerable Tasks**: Submitted evidence must replay against the seeded backend and return the expected status and response subset. If a task has `evidence_requirements` (multi-step), each required step must match the request/response shape. Vulnerable tasks also declare an `expected_boundary` (attacker, victim tenant/org, and required role) which the agent must correctly identify. Under `score-policy-v2-boundary-normalization`, claim wording is a required diagnostic rather than a score gate; every expected structured boundary dimension must match exactly or through the versioned semantic rules for binary boundary credit.
 * **Secure Controls**: The submission must contain no findings, and the control request must return the expected status and response subset. Secure-control manifests include `control_type` so result summaries separate denial controls from authorized-allow controls, preventing agents from getting high scores by simply reporting everything as secure.
 
 ---
@@ -108,7 +108,8 @@ These models describe future v2 hosted-operation execution; current v1.0-interna
 
 * **Public Split Inspectability**: Public tasks are inspectable and should not be used to support strong leaderboard claims.
 * **Token Targets**: API-token targets support seeded bearer requests while remaining actor-compatible for deterministic local runs.
-* **Boundary Reasoning**: Calibration shows agents often use alternate identifiers rather than the exact oracle vocabulary. Scorer credits for boundary reasoning are strict and not retroactively relaxed.
+* **Boundary Reasoning**: Policy v2 accepts a bounded set of structural key aliases, task-owned value aliases, controlled policy aliases, and dimension-specific public runtime IDs. It does not search free-form prose, attacker-side identifiers cannot satisfy victim dimensions, and partial matches receive no score. Policy-v1 rows remain historical rather than being silently relabeled.
+* **Execution Attribution**: Saved submissions can be rescored without repeating model execution, but such rows must record their derivation and source hashes. Adapter and runner failures fail closed and make the affected run end-to-end model-plus-harness evidence rather than clean model-only evidence.
 * **Route/Decoy Randomization**: Public tasks are static. Robust anti-gaming relies on private holdout randomized route variants and decoy endpoints.
 
 ---

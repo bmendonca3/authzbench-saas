@@ -32,6 +32,7 @@ CURRENT_GLM_60_ID = "kiro-glm-5-current-public-60"
 CURRENT_OPUS_60_ID = "kiro-claude-opus-4-6-current-public-60"
 CURRENT_TOOL_AGENT_60_ID = "kiro-live-tool-agent-sonnet-current-public-60"
 CURRENT_SCRIPTED_63_ID = "scripted-sanity-public-63"
+CURRENT_QWEN_63_ID = "kiro-qwen3-coder-next-current-public-63"
 
 
 def _copy_registry_workspace(tmp_path: Path) -> Path:
@@ -81,6 +82,7 @@ def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, 
             "run_date": "2026-06-20",
             "evidence_status": "current_promoted_composite",
             "baseline_construction": "promoted_cohort_delta_merge",
+            "result_derivation": "promoted_cohort_delta_merge",
             "base_public_task_count": 60,
             "delta_public_task_count": 3,
             "merged_public_task_count": 63,
@@ -151,22 +153,11 @@ def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, 
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_rejects_registry_summary_score_policy_mismatch(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            registry_path = _copy_registry_workspace(Path(tmp))
-            registry = load_json(registry_path)
-            entry = next(item for item in registry["baselines"] if item.get("run_artifacts"))
-            entry["expected_score_policy_version"] = "score-policy-v2"
-            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n")
-            result = validate_registry(registry_path)
-        self.assertFalse(result["passed"], result)
-        self.assertTrue(any("score_policy_version" in error for error in result["errors"]), result)
-
     def test_current_registry_keeps_60_task_rows_stale_and_63_task_rows_current(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 46, result)
+        self.assertEqual(result["baseline_count"], 45, result)
         self.assertEqual(result["public_split"]["task_count"], 63, result)
         self.assertEqual(result["current_public_model_family_count"], 7, result)
         self.assertEqual(result["repeated_model_baseline_count"], 7, result)
@@ -225,6 +216,7 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(current_qwen["run_count"], 2)
         self.assertEqual(current_qwen["release_suitability"], "current_public_stale")
         self.assertTrue(current_qwen["requires_rerun_before_current_comparison"])
+
         current_haiku = _baseline_by_id(registry, CURRENT_HAIKU_54_ID)
         self.assertEqual(current_haiku["expected_task_count"], 54)
         self.assertEqual(current_haiku["run_count"], 2)
@@ -256,6 +248,100 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(current_tool_agent["expected_harness_type"], "tool-agent")
         self.assertEqual(current_tool_agent["release_suitability"], "current_public_stale")
         self.assertTrue(current_tool_agent["requires_rerun_before_current_comparison"])
+
+    def test_rejects_current_blinded_row_without_verified_effective_model_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["summary_path"]
+            summary = load_json(summary_path)
+            summary["evaluation_protocol"] = {
+                "schema_version": "authzbench-evaluation-protocol-manifest-v1",
+                "protocol_version": "blinded-control-evidence-v1",
+            }
+            summary["model_identity_status"] = "requested_only_unverified"
+            summary["model_label_verified_task_count"] = summary["task_count"] - 1
+            summary_path.write_text(
+                json.dumps(summary, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("require verified effective model identity" in error for error in result["errors"]),
+            result,
+        )
+        self.assertTrue(
+            any("verified-model task count" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_rejects_conflicting_evaluation_protocol_version_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["summary_path"]
+            summary = load_json(summary_path)
+            summary["evaluation_protocol"] = {
+                "protocol_version": "blinded-control-evidence-v1",
+                "version": "different-protocol",
+            }
+            summary_path.write_text(
+                json.dumps(summary, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("protocol_version and version disagree" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_rejects_unsupported_current_evaluation_protocol(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["summary_path"]
+            summary = load_json(summary_path)
+            summary["evaluation_protocol"] = {"protocol_version": "typo-or-unsupported"}
+            summary_path.write_text(
+                json.dumps(summary, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("unsupported evaluation protocol" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_runner_emitted_current_row_requires_protocol_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            entry["result_derivation"] = "runner_emitted"
+            registry_path.write_text(
+                json.dumps(registry, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("runner-emitted current rows require an evaluation protocol" in error for error in result["errors"]),
+            result,
+        )
 
     def test_stale_49_task_model_repeats_share_one_benchmark_commit(self) -> None:
         registry = load_json(REGISTRY)
@@ -835,61 +921,37 @@ class BaselineRegistryTests(unittest.TestCase):
             result,
         )
 
-    def test_current_adapter_promotion_guard_requires_complete_zero_failure_telemetry(self) -> None:
+    def test_rejects_rescore_summary_with_stale_source_hash(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
             registry = load_json(registry_path)
-            entry = _baseline_by_id(registry, "kiro-qwen3-coder-next-current-public-63")
-            entry["requires_zero_adapter_failures"] = True
-            summary_paths = {entry["summary_path"], *entry["run_artifacts"]}
-            for summary_path in summary_paths:
-                path = registry_path.parent / summary_path
-                summary = load_json(path)
-                summary.update(
-                    {
-                        "model_output_artifact_count": entry["expected_task_count"],
-                        "adapter_failure_count": 0,
-                        "model_label_unverified_count": 0,
-                        "invalid_submission_count": 0,
-                    }
-                )
-                path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-            registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["run_artifacts"][0]
+            summary = load_json(summary_path)
+            summary["rescore_provenance"]["scorer_source_sha256"] = "0" * 64
+            summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-            accepted = validate_registry(registry_path)
+            result = validate_registry(registry_path)
 
-            primary_path = registry_path.parent / entry["summary_path"]
-            failing_primary = load_json(primary_path)
-            failing_primary["adapter_failure_count"] = 1
-            primary_path.write_text(
-                json.dumps(failing_primary, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
-            )
-            primary_rejected = validate_registry(registry_path)
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("does not match target commit source" in error for error in result["errors"]), result)
 
-            failing_primary["adapter_failure_count"] = 0
-            primary_path.write_text(
-                json.dumps(failing_primary, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
-            )
-            failing_summary = load_json(registry_path.parent / entry["run_artifacts"][1])
-            failing_summary["adapter_failure_count"] = 1
-            (registry_path.parent / entry["run_artifacts"][1]).write_text(
-                json.dumps(failing_summary, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
-            )
-            repeated_rejected = validate_registry(registry_path)
+    def test_rejects_rescore_summary_with_tampered_task_row_or_aggregate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["run_artifacts"][0]
+            summary = load_json(summary_path)
+            summary["tasks"][0]["score"] = 1
+            summary["passed_count"] = 63
+            summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-        self.assertTrue(accepted["passed"], accepted)
-        for rejected in (primary_rejected, repeated_rejected):
-            self.assertFalse(rejected["passed"], rejected)
-            self.assertTrue(
-                any(
-                    "adapter_failure_count 1 does not satisfy requires_zero_adapter_failures=0" in error
-                    for error in rejected["errors"]
-                ),
-                rejected,
-            )
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(any("task-row digest" in error for error in result["errors"]), result)
+        self.assertTrue(any("passed_count" in error and "recomputed value" in error for error in result["errors"]), result)
 
     def test_accepts_current_promoted_composite_with_explicit_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

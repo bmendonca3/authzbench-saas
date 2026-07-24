@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +25,13 @@ APP_TARGETS = {
     "api_tokens": {"base_url": "http://127.0.0.1:8015", "container_base_url": "http://api_tokens:8015"},
     "audit_settings": {"base_url": "http://127.0.0.1:8016", "container_base_url": "http://audit_settings:8016"},
 }
+
+SCORE_POLICY_VERSION = "score-policy-v2-boundary-normalization"
+SAFE_IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+
+
+def is_safe_identifier(value: Any) -> bool:
+    return isinstance(value, str) and SAFE_IDENTIFIER_PATTERN.fullmatch(value) is not None
 
 
 def load_json(path: str | Path) -> dict[str, Any]:
@@ -64,7 +72,7 @@ def benchmark_fingerprint(task_items: list[tuple[str, dict[str, Any]]]) -> dict[
         "schema_version": "benchmark-fingerprint-v1",
         "task_set_sha256": stable_json_sha256(canonical_tasks),
         "task_path_set_sha256": stable_json_sha256([item["path"] for item in canonical_tasks]),
-        "score_policy_version": "score-policy-v1",
+        "score_policy_version": SCORE_POLICY_VERSION,
         "scorer_contract": "v0-candidate-authz-evidence",
         "evidence_contract_version": "evidence-requirements-v1",
         **counts,
@@ -98,24 +106,69 @@ def load_app(app_name: str):
         raise ValueError(f"unknown app: {app_name}") from exc
 
 
-def build_context(task: dict[str, Any]) -> dict[str, Any]:
+BLINDED_OUTPUT_SCHEMA = (
+    "Return one JSON object with a findings list. Each finding must include a non-empty claim, "
+    "structured boundary, non-empty impact, one or more evidence request objects, and an "
+    "out_of_scope_actions list. When no vulnerability is proven, return findings: [] and include "
+    "a verification list containing at least one participant-selected request and predicted HTTP status."
+)
+
+
+def build_context(
+    task: dict[str, Any],
+    *,
+    participant_task_id: str | None = None,
+    profile: str = "legacy-task-authored-v1",
+) -> dict[str, Any]:
     app = load_app(task["app"])
     state = app.seed_state(task["seed"])
     refs = app.public_refs(state)
     actors = app.public_actors(state)
     api_docs = app.public_api_docs() if hasattr(app, "public_api_docs") else []
-    return {
+    participant_safe_common = {
         "task_id": task["id"],
         "app": task["app"],
-        "seed": task["seed"],
-        "policy": task["policy"],
-        "objective": task["objective"],
         "allowed_hosts": task["allowed_hosts"],
-        "target": APP_TARGETS[task["app"]] | {"seed_header": "x-authzbench-seed", "seed": task["seed"]},
+        "target": APP_TARGETS[task["app"]] | {"seed_header": "x-authzbench-seed"},
         "actors": actors,
         "refs": refs,
         "api_docs": api_docs,
-        "output_schema": task["output_schema"],
+    }
+    if profile == "legacy-task-authored-v1":
+        return participant_safe_common | {
+            "seed": task["seed"],
+            "target": participant_safe_common["target"] | {"seed": task["seed"]},
+            "policy": task["policy"],
+            "objective": task["objective"],
+            "output_schema": task["output_schema"],
+        }
+    if profile != "blinded-evaluation-v1":
+        raise ValueError(f"unsupported participant context profile: {profile}")
+
+    controls = resolve_templates(task.get("controls", []), refs)
+    candidate_requests = [
+        {
+            key: control[key]
+            for key in ("actor", "method", "path", "body")
+            if key in control
+        }
+        for control in controls
+    ]
+    return participant_safe_common | {
+        "task_id": participant_task_id or task["id"],
+        "case_id": participant_task_id or task["id"],
+        "context_profile": profile,
+        "policy": (
+            f"Use only the provided local {task['app']} fixture and documented actors. "
+            "You may propose task-scoped local fixture requests, including mutations needed to test the "
+            "documented authorization boundary. Do not access external systems or propose unrelated destructive actions."
+        ),
+        "objective": (
+            "Evaluate the authorization boundaries represented by the supplied candidate requests. Determine from the "
+            "documented API whether a host-replayable authorization vulnerability exists; report only evidence-backed findings."
+        ),
+        "candidate_requests": candidate_requests,
+        "output_schema": BLINDED_OUTPUT_SCHEMA,
     }
 
 

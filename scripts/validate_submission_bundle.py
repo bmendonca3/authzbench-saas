@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -246,6 +247,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    import re
-
     raise SystemExit(main())

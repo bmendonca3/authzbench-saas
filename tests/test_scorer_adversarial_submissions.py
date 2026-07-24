@@ -37,7 +37,7 @@ import unittest
 from pathlib import Path
 
 from authzbench.core import build_context, load_json
-from authzbench.score import score_submission
+from authzbench.score import _boundary_value_match, score_submission
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -64,6 +64,7 @@ def _vuln_finding(**overrides):
             "victim_tenant": "alpha",
         },
         "impact": "Beta member can read Alpha task data.",
+        "out_of_scope_actions": [],
     }
     finding.update(overrides)
     return {"findings": [finding]}
@@ -125,6 +126,21 @@ class VulnerableTaskAdversarialScoringTests(unittest.TestCase):
             ),
         )
         self.assertFalse(result["passed"], result)
+
+    def test_shotgun_boundary_lists_do_not_earn_semantic_credit(self) -> None:
+        result = score_submission(
+            VULN_TASK,
+            _vuln_finding(
+                boundary={
+                    "actor": ["alpha_owner", "beta_member"],
+                    "target_tenant": ["alpha", "beta", "helio"],
+                }
+            ),
+        )
+
+        self.assertFalse(result["passed"], result)
+        self.assertFalse(result["boundary_semantic_match"], result)
+        self.assertEqual(result["boundary_field_match_rate"], 0, result)
 
     def test_wrong_http_method_does_not_pass(self) -> None:
         result = score_submission(
@@ -254,6 +270,33 @@ class SecureControlAdversarialScoringTests(unittest.TestCase):
 
 
 class BoundaryAliasTests(unittest.TestCase):
+    def test_compound_list_requires_exact_duplicate_free_expansion(self) -> None:
+        self.assertEqual(
+            _boundary_value_match(
+                ["admin", "auditor"],
+                "admin_or_auditor",
+                [],
+                [],
+            ),
+            "compound-value",
+        )
+        self.assertIsNone(
+            _boundary_value_match(
+                ["admin", "auditor", "owner"],
+                "admin_or_auditor",
+                [],
+                [],
+            )
+        )
+        self.assertIsNone(
+            _boundary_value_match(
+                ["admin", "admin", "auditor"],
+                "admin_or_auditor",
+                [],
+                [],
+            )
+        )
+
     def test_alias_form_of_actor_promotes_to_semantic_match(self) -> None:
         """The boundary alias path is fully demonstrated on a v1.1-prep
         task that carries a real synonym list. This test reaches into
@@ -296,6 +339,7 @@ class BoundaryAliasTests(unittest.TestCase):
                         "victim_workspace": "apex workspace",
                     },
                     "impact": "synonym phrasing boundary",
+                    "out_of_scope_actions": [],
                 }
             ]
         }

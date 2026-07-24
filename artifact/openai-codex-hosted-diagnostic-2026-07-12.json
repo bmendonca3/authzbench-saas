@@ -1,0 +1,126 @@
+{
+  "schema_version": "authzbench-codex-hosted-diagnostic-v1",
+  "date": "2026-07-12",
+  "execution_surface": "authenticated_codex_cli",
+  "source_binding": {
+    "benchmark_commit_sha": "c0e0f9d2f22877af1a526103628202347e4b764d",
+    "tracked_worktree_dirty": false,
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "codex_cli_version": "codex-cli 0.144.0-alpha.4",
+    "matrix_sha256": "8298e614a9aa4cd0f7f7c775292cebf4607e24bbfafdde8e775f3b2404afda25",
+    "protocol_manifest_sha256": "9409bbcdf9ada985aa5fb94d43aded66502b3af3e333185f1a4083342dbe37c4",
+    "protocol_source_set_sha256": "38bb96ee799eeda29906249f1e087d79f83a2d33903013423185b666eb50accd"
+  },
+  "admission": {
+    "phase_status": "completed",
+    "declared_configuration_count": 27,
+    "attempted_configuration_count": 27,
+    "admitted_configuration_count": 24,
+    "excluded_configuration_count": 3,
+    "global_blocker": null,
+    "adapter_failure_count": 3,
+    "infrastructure_failure_count": 3,
+    "invalid_submission_count": 3,
+    "tool_attempt_count": 0,
+    "report_sha256": "633c095aef23222e1e61e161477a1daf2e6ed18a00a55620b8bfb38848caacf6",
+    "excluded_configurations": [
+      {"id": "gpt-5-4-medium", "reason": "selected_model_at_capacity_before_inference"},
+      {"id": "gpt-5-4-high", "reason": "selected_model_at_capacity_before_inference"},
+      {"id": "gpt-5-4-xhigh", "reason": "selected_model_at_capacity_before_inference"}
+    ]
+  },
+  "full_execution": {
+    "phase_status": "incomplete",
+    "requested_configuration_count": 24,
+    "attempted_configuration_count": 24,
+    "completed_configuration_count": 1,
+    "incomplete_configuration_count": 23,
+    "evaluator_task_artifact_count": 1512,
+    "inference_completed_task_count": 88,
+    "adapter_failure_count": 1424,
+    "infrastructure_failure_count": 1424,
+    "invalid_submission_count": 1424,
+    "tool_attempt_count": 0,
+    "current_credit_blocker_failure_count": 1424,
+    "top_level_credit_failure_event_count": 2848,
+    "report_sha256": "2cf02db8416395faad45d88ae0841cc2724a40502dee3ee82831ec1615d24ceb",
+    "partial_configuration": {
+      "id": "gpt-5-4-mini-medium",
+      "inference_completed_task_count": 25,
+      "infrastructure_failure_count": 38,
+      "comparison_eligible": false
+    },
+    "zero_inference_configuration_ids": [
+      "gpt-5-4-mini-high",
+      "gpt-5-4-mini-xhigh",
+      "gpt-5-6-luna-low",
+      "gpt-5-6-luna-medium",
+      "gpt-5-6-luna-high",
+      "gpt-5-6-luna-xhigh",
+      "gpt-5-6-luna-max",
+      "gpt-5-4-low",
+      "gpt-5-5-low",
+      "gpt-5-5-medium",
+      "gpt-5-5-high",
+      "gpt-5-5-xhigh",
+      "gpt-5-6-terra-low",
+      "gpt-5-6-terra-medium",
+      "gpt-5-6-terra-high",
+      "gpt-5-6-terra-xhigh",
+      "gpt-5-6-terra-max",
+      "gpt-5-6-sol-low",
+      "gpt-5-6-sol-medium",
+      "gpt-5-6-sol-high",
+      "gpt-5-6-sol-xhigh",
+      "gpt-5-6-sol-max"
+    ]
+  },
+  "completed_diagnostic_rows": [
+    {
+      "id": "gpt-5-4-mini-low",
+      "model": "gpt-5.4-mini",
+      "reasoning_effort": "low",
+      "summary_sha256": "820c96d8c0d3777993c861806b3f46c252a785bc7c2435748db24d0917dfd969",
+      "task_count": 63,
+      "task_completion_count": 63,
+      "unique_task_id_count": 63,
+      "unique_prompt_hash_count": 63,
+      "passed_count": 22,
+      "mean_score": 0.3984,
+      "vulnerable_task_count": 27,
+      "exploit_proven_task_count": 4,
+      "vulnerable_full_pass_count": 0,
+      "control_task_count": 36,
+      "secure_control_pass_rate": 0.6111,
+      "control_verification_passed_count": 23,
+      "control_false_report_count": 2,
+      "authorization_balanced_accuracy": 0.3055,
+      "authz_discrimination_index": -0.0556,
+      "adapter_failure_count": 0,
+      "infrastructure_failure_count": 0,
+      "invalid_submission_count": 0,
+      "tool_attempt_telemetry_status": "complete",
+      "tool_attempt_count": 0,
+      "model_identity_status": "requested_only_unverified",
+      "diagnostic_row_complete": true,
+      "registry_eligible": false
+    }
+  ],
+  "runtime_context": {
+    "prompt_hash_scope": "host_supplied_user_prompt_only",
+    "profile_skill_loading_status": "not_disabled_by_current_codex_cli_surface",
+    "profile_skill_catalog_source_bound": false
+  },
+  "comparison": {
+    "complete_row_count": 1,
+    "cross_configuration_comparison_eligible": false,
+    "ranking_eligible": false,
+    "registry_eligible": false
+  },
+  "current_blocker": {
+    "code": "codex_workspace_out_of_credits",
+    "classification_method": "exact_top_level_failure_message_allowlist",
+    "retry_policy": "do_not_retry_until_the_exact_workspace_credit_sentinel_is_absent"
+  },
+  "claim_boundary": "This public-safe aggregate proves complete clean-source admission decisions for 27 declared configurations and one complete 63-task public diagnostic row. Three configurations were excluded on direct capacity failures, and 23 admitted full rows are incomplete after workspace credits were exhausted. Partial and infrastructure-failed rows are not model-quality evidence. The single completed row uses requested-only model identity, a public split, one seed, and non-source-bound profile skill context; it is not cross-configuration ranking, registry, leaderboard, private-holdout, API, platform-hosted evaluation, or statistically stable evidence. Raw prompts, responses, event streams, stderr, and task artifacts remain ignored local evidence."
+}

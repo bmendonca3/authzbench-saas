@@ -220,7 +220,7 @@ or local work that the maintainer controls.
 
 - [x] 63 public tasks. Evidence: `tasks/*/*.json`; `artifact/expected-output/v1-readiness-public-view.json` shows `public_task_count=63`.
 - [x] 48 private holdout tasks by protected evidence. Evidence: `tasks_private/holdout/`; `artifact/v1-task-scale-roadmap.json` shows `current_validated_private_holdout_task_count=48`.
-- [x] Deterministic scorer. Evidence: `authzbench/score.py`; `tests/test_scorer_adversarial_submissions.py` (19/19).
+- [x] Deterministic scorer. Evidence: `authzbench/score.py`; adversarial and submission-contract suites under `tests/test_scorer*.py`.
 - [x] Public validation. Evidence: `python3 scripts/validate_public.py --include-scripted-baseline`; CI step in `.github/workflows/validate.yml`.
 - [x] Private artifact exclusion. Evidence: `scripts/redact_protected_private.py`; `docs/private-holdout-lifecycle.md`.
 - [x] Claim boundary docs. Evidence: `docs/claims-and-evidence.md`; `docs/benchmark-spec.md`; `scripts/check_claim_boundary.py`.
@@ -228,7 +228,7 @@ or local work that the maintainer controls.
 - [x] v2 roadmap. Evidence: `docs/claims-and-evidence.md#5-deferred-v2-validation-tracks`.
 - [x] Ambiguous gate names cleaned up. Evidence: `local_or_containerized_submission_smoke`; `hosted_leaderboard_operation_claimed=false`; `has_current_public_scripted_sanity_baseline` and `has_current_public_model_or_tool_agent_baseline` split.
 - [x] Current 63-task scripted sanity baseline. Evidence: `baselines/scripted-baseline-public-63-summary.json`; `python3 scripts/validate_baseline_registry.py` exits 0 with `has_current_public_scripted_sanity_baseline=true`.
-- [x] Current 63-task public model and tool-agent capability baselines. Evidence: `baselines/kiro-*-current-public-63-run{1,2}-summary.json` plus `baselines/agy-gemini-3.1-pro-high-current-public-63-run{1,2}-summary.json`; the prior 60-task rows are retained as `current_public_stale`; `python3 scripts/validate_baseline_registry.py` exits 0 with `v0_baseline_ready=true`, `current_public_model_family_count=7`, and `has_current_public_tool_agent_baseline=true`. These are public-split baselines only, not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.
+- [x] Current 63-task public model and tool-agent baselines. Evidence: `baselines/kiro-*-current-public-63-run{1,2}-summary.json` plus `baselines/agy-gemini-3.1-pro-high-current-public-63-run{1,2}-summary.json`; the prior 60-task rows are retained as `current_public_stale`; `python3 scripts/validate_baseline_registry.py` exits 0 with `v0_baseline_ready=true`, `current_public_model_family_count=7`, and `has_current_public_tool_agent_baseline=true`. The fourteen current summaries are offline policy-v2 rescores of saved full-63-task submissions, not repeated model execution under v2; adapter and runner failures fail closed. These are public-split baselines only, not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.
 - [x] Task taxonomy generated. Evidence: `docs/task-taxonomy.md`; `artifact/task-taxonomy.json`.
 - [x] Oracle audit generated. Evidence: `docs/task-oracle-audit.md`; `artifact/task-oracle-audit.json`.
 - [x] Adversarial scorer tests added. Evidence: `tests/test_scorer_adversarial_submissions.py` (19/19).
@@ -244,7 +244,8 @@ or local work that the maintainer controls.
 - [x] Local row eligibility tiers. Evidence: `docs/scoring-and-submissions.md`.
 - [x] Clean-room reproduction command. Evidence: `python3 scripts/reproduce_public_artifact.py`; `Dockerfile`; `.env.example`; `docs/container-digests.md`.
 - [x] Public artifact index. Evidence: `artifact/INDEX.md`; `docs/artifact-index.md`.
-- [ ] Current per-task Harbor parity, if Harbor is part of the claim. Evidence: `artifact/harbor-parity-experiment.json` (per_task_pairing contract, currently `evidence_status=blocked`); historical aggregate-means run preserved at `artifact/historical/harbor-parity-experiment-aggregate-means.json`. The per_task_pairing map will be populated when a real Harbor run completes.
+- [x] Scoped local per-task Harbor parity. Evidence: `artifact/harbor-parity-experiment.json` records six-of-six matching public empty-findings rewards under `per_task_pairing`; `scripts/validate_packaged_harbor.py` verifies the installed wheel/CLI path. This does not prove full 63-task/model parity or platform acceptance.
+- [ ] Full 63-task and representative model/agent Harbor parity, if included in a future stronger claim. Evidence: not collected; remains a v2/platform-review track.
 
 ### Externally validated benchmark
 
@@ -273,11 +274,9 @@ The v1.1-prep cohort has been promoted into `tasks/` and demonstrates the
 
 The promoted cohort is covered by the public manifest/scorer validators and by
 the 63-task scripted sanity baseline. The former 60-task live public baseline
-summaries remain stale; regenerating public model/tool capability baselines is
-the remaining follow-on for current public comparison evidence. That refresh can
-be a full 63-task rerun or an explicitly labeled promoted-composite baseline
-built from the immutable 60-task public evidence plus fresh reruns of exactly
-the three promoted public tasks.
+summaries remain stale. Fourteen saved full-63-task executions now have current
+policy-v2 offline rescores with explicit derivation and fail-closed provenance;
+the models were not re-executed under v2.
 
 ## v1.1 promotion checklist
 
@@ -287,10 +286,10 @@ The v1.1-prep cohort promotion status:
   appropriate `tasks/<app>/` directory.
 - [x] Update `docs/task-taxonomy.md` and `artifact/task-taxonomy.json`
   with the new public count.
-- [ ] Refresh the public 63-task live baselines (six families x two
-  runs) and refresh `baselines/kiro-*-current-public-63-run{1,2}-summary.json`,
-  either as full reruns or as `promoted_cohort_delta_merge` composites with
-  explicit base/delta provenance and `not_full_rerun=true`.
+- [x] Refresh current public 63-task model/tool summaries under score policy
+  v2. Evidence: fourteen offline rescores of saved full-split submissions,
+  including five Kiro no-tools families, one Antigravity Gemini family, and one
+  live Kiro tool-agent family, all with explicit derivation and source hashes.
 - [x] Update `artifact/expected-output/v1-readiness-public-view.json`
   with `public_task_count=63`.
 - [x] Update `artifact/v1-task-scale-roadmap.json` to reflect the new

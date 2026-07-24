@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from authzbench.core import benchmark_fingerprint, build_context, dump_json, load_json, runner_integrity_envelope
+from authzbench.run import summarize_tool_probe_telemetry
 from authzbench.score import score_submission
 
 
@@ -72,7 +73,7 @@ def _optional_int(data: dict[str, Any] | None, *keys: str) -> int | None:
         return None
     for key in keys:
         value = data.get(key)
-        if isinstance(value, int):
+        if isinstance(value, int) and not isinstance(value, bool):
             return value
     return None
 
@@ -294,14 +295,11 @@ def _metric_summary(
     task_count = len(task_results)
     vulnerable_count = len(vulnerable)
     control_count = len(controls)
-    executed_tool_probe_total = sum(int(item.get("executed_probe_count", 0)) for item in task_results)
-    fallback_probe_total = sum(int(item.get("fallback_probe_count", 0)) for item in task_results)
     scored_submission_finding_total = sum(
         int(item.get("submission_finding_count", 0)) for item in task_results
     )
-    submitted_finding_total = sum(int(item.get("submitted_finding_count", 0)) for item in task_results)
     model_tool_plan_artifact_count = sum(1 for item in task_results if item.get("model_tool_plan_artifact"))
-    per_task_tool_probe_artifact_count = sum(1 for item in task_results if item.get("tool_probe_artifact"))
+    tool_telemetry = summarize_tool_probe_telemetry(task_results)
     planner_parse_error_count = sum(1 for item in task_results if item.get("planner_parse_error"))
     planner_failure_count = sum(
         1
@@ -326,10 +324,8 @@ def _metric_summary(
         "control_false_report_rate": round(controls_with_findings / control_count, 4) if control_count else None,
         "control_task_count": control_count,
         "denial_control_task_count": len(denial_controls),
-        "executed_tool_probe_total": executed_tool_probe_total,
         "exploit_proven_success_rate": round(exploit_proven / vulnerable_count, 4) if vulnerable_count else None,
         "exploit_proven_task_count": exploit_proven,
-        "fallback_probe_total": fallback_probe_total,
         "false_positive_rate": round(controls_with_findings / control_count, 4) if control_count else None,
         "harness_type": harness_type,
         "invalid_submission_count": invalid_submissions,
@@ -338,7 +334,6 @@ def _metric_summary(
         "model": model,
         "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
         "passed_count": sum(1 for item in task_results if item["passed"]),
-        "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
         "planner_failure_count": planner_failure_count,
         "planner_parse_error_count": planner_parse_error_count,
         "protected_execution": {
@@ -363,7 +358,6 @@ def _metric_summary(
         "run_id": run_id,
         "scored_submission_finding_total": scored_submission_finding_total,
         "split": "private-holdout",
-        "submitted_finding_total": submitted_finding_total,
         "target_request_coverage_rate": None,
         "task_count": task_count,
         "tasks": task_results,
@@ -372,7 +366,7 @@ def _metric_summary(
         "v0_passed_count": v0_passed_count,
         "vulnerable_full_pass_count": vulnerable_full_passed,
         "vulnerable_task_count": vulnerable_count,
-    }
+    } | tool_telemetry
 
 
 def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
@@ -404,6 +398,11 @@ def redacted_summary(summary: dict[str, Any]) -> dict[str, Any]:
         "model": summary.get("model"),
         "model_tool_plan_artifact_count": summary.get("model_tool_plan_artifact_count"),
         "per_task_tool_probe_artifact_count": summary.get("per_task_tool_probe_artifact_count"),
+        "tool_probe_telemetry_complete_task_count": summary.get(
+            "tool_probe_telemetry_complete_task_count"
+        ),
+        "tool_probe_telemetry_coverage_rate": summary.get("tool_probe_telemetry_coverage_rate"),
+        "tool_probe_telemetry_status": summary.get("tool_probe_telemetry_status"),
         "planner_failure_count": summary.get("planner_failure_count"),
         "planner_parse_error_count": summary.get("planner_parse_error_count"),
         "private_holdout_task_count": summary.get("task_count"),

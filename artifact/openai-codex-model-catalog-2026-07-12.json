@@ -1,0 +1,126 @@
+{
+  "schema_version": "authzbench-codex-model-catalog-v1",
+  "source": {
+    "surface": "authenticated_codex_cli_model_cache",
+    "client_version": "0.144.0",
+    "fetched_at": "2026-07-13T02:19:35.287403Z",
+    "raw_catalog_sha256": "216ccd0753cee24e4f593f55a3f3260e6ac37e899dc3a8e18f90822b448851cc",
+    "raw_model_count": 7
+  },
+  "models": [
+    {
+      "slug": "gpt-5.6-sol",
+      "display_name": "GPT-5.6-Sol",
+      "visibility": "list",
+      "supported_in_api": true,
+      "input_modalities": ["text", "image"],
+      "multi_agent_version": "v2",
+      "reasoning_efforts": [
+        {"effort": "low", "automatic_delegation": false},
+        {"effort": "medium", "automatic_delegation": false},
+        {"effort": "high", "automatic_delegation": false},
+        {"effort": "xhigh", "automatic_delegation": false},
+        {"effort": "max", "automatic_delegation": false},
+        {"effort": "ultra", "automatic_delegation": true}
+      ],
+      "included_in_benchmark": true
+    },
+    {
+      "slug": "gpt-5.6-terra",
+      "display_name": "GPT-5.6-Terra",
+      "visibility": "list",
+      "supported_in_api": true,
+      "input_modalities": ["text", "image"],
+      "multi_agent_version": "v2",
+      "reasoning_efforts": [
+        {"effort": "low", "automatic_delegation": false},
+        {"effort": "medium", "automatic_delegation": false},
+        {"effort": "high", "automatic_delegation": false},
+        {"effort": "xhigh", "automatic_delegation": false},
+        {"effort": "max", "automatic_delegation": false},
+        {"effort": "ultra", "automatic_delegation": true}
+      ],
+      "included_in_benchmark": true
+    },
+    {
+      "slug": "gpt-5.6-luna",
+      "display_name": "GPT-5.6-Luna",
+      "visibility": "list",
+      "supported_in_api": true,
+      "input_modalities": ["text", "image"],
+      "multi_agent_version": "v1",
+      "reasoning_efforts": [
+        {"effort": "low", "automatic_delegation": false},
+        {"effort": "medium", "automatic_delegation": false},
+        {"effort": "high", "automatic_delegation": false},
+        {"effort": "xhigh", "automatic_delegation": false},
+        {"effort": "max", "automatic_delegation": false}
+      ],
+      "included_in_benchmark": true
+    },
+    {
+      "slug": "gpt-5.5",
+      "display_name": "GPT-5.5",
+      "visibility": "list",
+      "supported_in_api": true,
+      "input_modalities": ["text", "image"],
+      "multi_agent_version": null,
+      "reasoning_efforts": [
+        {"effort": "low", "automatic_delegation": false},
+        {"effort": "medium", "automatic_delegation": false},
+        {"effort": "high", "automatic_delegation": false},
+        {"effort": "xhigh", "automatic_delegation": false}
+      ],
+      "included_in_benchmark": true
+    },
+    {
+      "slug": "gpt-5.4",
+      "display_name": "GPT-5.4",
+      "visibility": "list",
+      "supported_in_api": true,
+      "input_modalities": ["text", "image"],
+      "multi_agent_version": null,
+      "reasoning_efforts": [
+        {"effort": "low", "automatic_delegation": false},
+        {"effort": "medium", "automatic_delegation": false},
+        {"effort": "high", "automatic_delegation": false},
+        {"effort": "xhigh", "automatic_delegation": false}
+      ],
+      "included_in_benchmark": true
+    },
+    {
+      "slug": "gpt-5.4-mini",
+      "display_name": "GPT-5.4-Mini",
+      "visibility": "list",
+      "supported_in_api": true,
+      "input_modalities": ["text", "image"],
+      "multi_agent_version": null,
+      "reasoning_efforts": [
+        {"effort": "low", "automatic_delegation": false},
+        {"effort": "medium", "automatic_delegation": false},
+        {"effort": "high", "automatic_delegation": false},
+        {"effort": "xhigh", "automatic_delegation": false}
+      ],
+      "included_in_benchmark": true
+    },
+    {
+      "slug": "codex-auto-review",
+      "display_name": "Codex Auto Review",
+      "visibility": "hide",
+      "supported_in_api": true,
+      "input_modalities": ["text", "image"],
+      "multi_agent_version": null,
+      "reasoning_efforts": [
+        {"effort": "low", "automatic_delegation": false},
+        {"effort": "medium", "automatic_delegation": false},
+        {"effort": "high", "automatic_delegation": false},
+        {"effort": "xhigh", "automatic_delegation": false}
+      ],
+      "included_in_benchmark": false,
+      "exclusion_reason": "hidden review-only model; not part of the visible general text-model surface"
+    }
+  ],
+  "selected_visible_model_count": 6,
+  "selected_non_delegating_configuration_count": 27,
+  "claim_boundary": "This public-safe normalized snapshot preserves only fields needed to derive the visible non-delegating benchmark matrix. It omits raw model instructions and is not proof of model execution, availability for another account, API-key access, or model quality."
+}

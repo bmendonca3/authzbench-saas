@@ -25,6 +25,8 @@ from scripts.validate_baseline_registry import validate_registry
 from scripts.validate_harbor_adapter_blockers import validate_harbor_adapter_blockers
 from scripts.validate_harbor_adapter_templates import validate_harbor_adapter_templates
 from scripts.validate_harbor_integration import validate_harbor_integration
+from scripts.validate_harbor_local_evidence import validate_harbor_local_evidence
+from scripts.validate_harbor_parity_experiment import validate_parity_experiment
 from scripts.validate_holdout_pack import validate_holdout_pack
 from scripts.validate_leaderboard_submission import _submission_paths, validate_submission
 
@@ -46,6 +48,7 @@ REQUIRED_REVIEW_PACKET_ARTIFACTS = (
     "docs/baseline-credibility.md",
     "docs/baseline-variance-analysis.md",
     "docs/boundary-reasoning-calibration-study.md",
+    "docs/score-policy-v2-boundary-normalization.md",
     "docs/v1-community-submission-governance.md",
     "docs/authzbench-saas-v1-prep-technical-report.md",
     "docs/reviews/external-review-intake.md",
@@ -69,6 +72,9 @@ HARBOR_INTEGRATION_RUNBOOK_PATH = "docs/harbor-integration-runbook.md"
 HARBOR_INTEGRATION_VALIDATOR_PATH = "scripts/validate_harbor_integration.py"
 HARBOR_LOCAL_EVIDENCE_PATH = "artifact/harbor-local-execution-smoke.json"
 HARBOR_LOCAL_PREFLIGHT_PATH = "scripts/check_harbor_local_execution.py"
+HARBOR_PARITY_EVIDENCE_PATH = "artifact/harbor-parity-experiment.json"
+HARBOR_PARITY_VALIDATOR_PATH = "scripts/validate_harbor_parity_experiment.py"
+HARBOR_PACKAGED_VALIDATOR_PATH = "scripts/validate_packaged_harbor.py"
 PRIVATE_OPERATION_BLOCKER_PATH = "artifact/private-holdout-operation-blocker.json"
 PRIVATE_OPERATION_RUNBOOK_PATH = "artifact/private-holdout-operation-runbook.json"
 ACTIVE_HOLDOUT_PUBLIC_SUMMARY_PATH = "artifact/private-holdout-active-public-summary.json"
@@ -2464,6 +2470,14 @@ def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str,
     if not templates["passed"]:
         unmet.extend(f"harbor adapter template artifacts: {error}" for error in templates["errors"])
 
+    local_evidence = validate_harbor_local_evidence(ROOT / HARBOR_LOCAL_EVIDENCE_PATH)
+    if not local_evidence["passed"]:
+        unmet.extend(f"harbor local execution evidence: {error}" for error in local_evidence["errors"])
+
+    parity = validate_parity_experiment(ROOT / HARBOR_PARITY_EVIDENCE_PATH)
+    if not parity["passed"]:
+        unmet.extend(f"harbor parity evidence: {error}" for error in parity["errors"])
+
     preflight = check_harbor_local_execution(discover_harbor_cli=not public_view)
     if preflight.get("generated_skeleton_validated") is not True:
         unmet.append("Harbor local preflight did not validate a generated public skeleton")
@@ -2482,6 +2496,10 @@ def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str,
         HARBOR_INTEGRATION_RUNBOOK_PATH,
         HARBOR_INTEGRATION_VALIDATOR_PATH,
         HARBOR_LOCAL_PREFLIGHT_PATH,
+        HARBOR_LOCAL_EVIDENCE_PATH,
+        HARBOR_PARITY_EVIDENCE_PATH,
+        HARBOR_PARITY_VALIDATOR_PATH,
+        HARBOR_PACKAGED_VALIDATOR_PATH,
     ):
         if not (ROOT / path).exists():
             unmet.append(f"missing Harbor repo-side artifact: {path}")
@@ -2490,7 +2508,11 @@ def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str,
         "blocked_until": preflight.get("blocked_until", []),
         "harbor_cli_found": preflight.get("harbor_cli_found"),
         "harbor_execution_verified": preflight.get("harbor_execution_verified"),
+        "local_execution_smoke_valid": local_evidence.get("passed"),
+        "packaged_validation_wired": (ROOT / HARBOR_PACKAGED_VALIDATOR_PATH).is_file(),
         "passed": not unmet,
+        "scoped_parity_task_count": parity.get("task_count"),
+        "scoped_parity_verified": parity.get("parity_verified"),
         "ready_for_local_harbor_run": preflight.get("ready_for_local_harbor_run"),
         "skeleton_validated": preflight.get("generated_skeleton_validated"),
         "unmet": unmet,
@@ -2630,9 +2652,17 @@ def validate_v1_readiness(
             HARBOR_ADAPTER_BLOCKERS_VALIDATOR_PATH,
             HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
             HARBOR_LOCAL_PREFLIGHT_PATH,
+            HARBOR_LOCAL_EVIDENCE_PATH,
+            HARBOR_PARITY_EVIDENCE_PATH,
+            HARBOR_PARITY_VALIDATOR_PATH,
+            HARBOR_PACKAGED_VALIDATOR_PATH,
             f"harbor_cli_found={harbor_repo_side['harbor_cli_found']}",
             f"generated_skeleton_validated={harbor_repo_side['skeleton_validated']}",
             f"harbor_execution_verified={harbor_repo_side['harbor_execution_verified']}",
+            f"local_execution_smoke_valid={harbor_repo_side['local_execution_smoke_valid']}",
+            f"scoped_parity_verified={harbor_repo_side['scoped_parity_verified']}",
+            f"scoped_parity_task_count={harbor_repo_side['scoped_parity_task_count']}",
+            f"packaged_validation_wired={harbor_repo_side['packaged_validation_wired']}",
             f"ready_for_local_harbor_run={harbor_repo_side['ready_for_local_harbor_run']}",
             f"blocked_until={harbor_repo_side['blocked_until']}",
         ],

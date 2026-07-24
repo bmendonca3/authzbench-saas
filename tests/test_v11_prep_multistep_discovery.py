@@ -44,6 +44,7 @@ def _build_valid_submission(task: dict, refs: dict) -> dict:
                 "evidence": steps,
                 "boundary": task["expected_boundary"],
                 "impact": "v1.1-prep multi-step discovery exploit",
+                "out_of_scope_actions": [],
             }
         ]
     }
@@ -123,6 +124,7 @@ class V11PrepCohortTests(unittest.TestCase):
                         ],
                         "boundary": task["expected_boundary"],
                         "impact": "wrong actor exploit attempt",
+                        "out_of_scope_actions": [],
                     }
                 ]
             }
@@ -208,6 +210,7 @@ class V11PrepBoundaryAliasTests(unittest.TestCase):
                     "evidence": _build_valid_submission(task, refs)["findings"][0]["evidence"],
                     "boundary": boundary,
                     "impact": "synonym phrasing boundary",
+                    "out_of_scope_actions": [],
                 }
             ]
         }

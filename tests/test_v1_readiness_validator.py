@@ -175,6 +175,22 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["harbor_repo_side_target_specified"]["evidence"],
         )
         self.assertIn(
+            "local_execution_smoke_valid=True",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "scoped_parity_verified=True",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "scoped_parity_task_count=6",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "packaged_validation_wired=True",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
             "ready_for_local_harbor_run=False",
             gates["harbor_repo_side_target_specified"]["evidence"],
         )

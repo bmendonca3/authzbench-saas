@@ -89,12 +89,19 @@ python3 scripts/run_harbor_local_smoke.py
 python3 scripts/validate_harbor_local_evidence.py
 ```
 
-The checked-in smoke summary proves only local task/agent/verifier
-execution for the generated public skeleton and records
-`parity_verified: false` until a public-safe adapter can produce valid
-submissions across vulnerable and secure-control tasks and a multi-task
-`parity_experiment.json` is computed from matching Harbor and native run
-artifacts.
+The checked-in one-task smoke summary proves only local task/agent/verifier
+execution and deliberately retains `parity_verified: false`. The separate
+six-task parity artifact records current matching native/Harbor rewards:
+
+```bash
+python3 scripts/validate_harbor_parity_experiment.py
+python3 scripts/validate_packaged_harbor.py
+```
+
+The first command verifies the six-of-six `per_task_pairing` artifact. The
+second builds and installs the wheel outside the source tree, invokes the
+packaged CLI, builds one task, and exercises the packaged scorer bridge. These
+checks do not claim full 63-task/model parity or platform acceptance.
 
 ## Generated Charts And Tables
 

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 from scripts.analyze_baseline_variance import (
     _agreement_rate,
@@ -11,10 +14,62 @@ from scripts.analyze_baseline_variance import (
     _is_stale_pending_rerun,
     _per_task_verdicts,
     analyze_registry,
+    main,
 )
 
 
 class BaselineVarianceAnalysisTests(unittest.TestCase):
+    def test_main_accepts_repo_relative_output_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            baselines = root / "baselines"
+            baselines.mkdir()
+            (baselines / "baseline-registry.json").write_text(
+                '{"baselines": []}', encoding="utf-8"
+            )
+            argv = [
+                "analyze_baseline_variance.py",
+                "--root",
+                str(root),
+                "--json-output",
+                "artifact/report.json",
+                "--markdown-output",
+                "docs/report.md",
+            ]
+
+            with mock.patch("sys.argv", argv):
+                self.assertEqual(main(), 0)
+
+            self.assertTrue((root / "artifact" / "report.json").is_file())
+            self.assertTrue((root / "docs" / "report.md").is_file())
+
+    def test_main_accepts_absolute_output_paths_outside_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_root = Path(tmpdir)
+            root = temp_root / "repo"
+            baselines = root / "baselines"
+            baselines.mkdir(parents=True)
+            (baselines / "baseline-registry.json").write_text(
+                '{"baselines": []}', encoding="utf-8"
+            )
+            json_output = temp_root / "outside-report.json"
+            markdown_output = temp_root / "outside-report.md"
+            argv = [
+                "analyze_baseline_variance.py",
+                "--root",
+                str(root),
+                "--json-output",
+                str(json_output),
+                "--markdown-output",
+                str(markdown_output),
+            ]
+
+            with mock.patch("sys.argv", argv):
+                self.assertEqual(main(), 0)
+
+            self.assertTrue(json_output.is_file())
+            self.assertTrue(markdown_output.is_file())
+
     def test_per_task_verdicts_reads_passed_field(self) -> None:
         summary = {
             "tasks": [

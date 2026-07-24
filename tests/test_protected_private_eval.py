@@ -119,7 +119,8 @@ class ProtectedPrivateEvalTests(unittest.TestCase):
         self.assertEqual(summary["task_count"], 1, summary)
         self.assertEqual(summary["passed_count"], 1, summary)
         self.assertEqual(summary["scored_submission_finding_total"], 0, summary)
-        self.assertEqual(summary["submitted_finding_total"], 0, summary)
+        self.assertIsNone(summary["submitted_finding_total"], summary)
+        self.assertEqual(summary["tool_probe_telemetry_status"], "unobserved", summary)
         self.assertEqual(summary["benchmark_fingerprint"]["task_count"], 1, summary)
         self.assertEqual(summary["benchmark_fingerprint"]["schema_version"], "benchmark-fingerprint-v1", summary)
         self.assertFalse(summary["protected_execution"]["private_manifests_readable_in_agent_workspace"], summary)
@@ -270,7 +271,8 @@ class ProtectedPrivateEvalTests(unittest.TestCase):
         self.assertEqual(summary["task_count"], 1, summary)
         self.assertEqual(summary["model_tool_plan_artifact_count"], 0, summary)
         self.assertEqual(summary["per_task_tool_probe_artifact_count"], 0, summary)
-        self.assertEqual(summary["executed_tool_probe_total"], 0, summary)
+        self.assertIsNone(summary["executed_tool_probe_total"], summary)
+        self.assertEqual(summary["tool_probe_telemetry_status"], "unobserved", summary)
         self.assertFalse(summary["tasks"][0]["model_tool_plan_artifact"], summary["tasks"][0])
         self.assertFalse(summary["tasks"][0]["tool_probe_artifact"], summary["tasks"][0])
 
@@ -297,6 +299,7 @@ class ProtectedPrivateEvalTests(unittest.TestCase):
                         json.dumps(
                             {
                                 "executed_probe_count": 2,
+                                "fallback_probe_count": 0,
                                 "submitted_finding_count": 2,
                             }
                         )
@@ -322,6 +325,7 @@ class ProtectedPrivateEvalTests(unittest.TestCase):
 
         self.assertEqual(summary["scored_submission_finding_total"], 1, summary)
         self.assertEqual(summary["submitted_finding_total"], 2, summary)
+        self.assertEqual(summary["tool_probe_telemetry_status"], "complete", summary)
         self.assertEqual(summary["control_false_report_count"], 1, summary)
         self.assertEqual(summary["tasks"][0]["submission_finding_count"], 1, summary)
         self.assertEqual(summary["tasks"][0]["submitted_finding_count"], 2, summary)

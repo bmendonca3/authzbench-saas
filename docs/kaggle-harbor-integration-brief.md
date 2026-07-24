@@ -95,6 +95,26 @@ These items cannot be completed without Kaggle/Harbor platform decisions:
    reviews are ready to start. See
    [`docs/reviews/external-review-packet.md`](reviews/external-review-packet.md).
 
+## Onboarding path to confirm
+
+The June 25, 2026 Kaggle email requested an organization account and benchmark
+share through a published setup document, followed by a Harbor-compatible
+port. The maintainer reported on June 26 that the document denied access, and
+no later reply was found in the full thread as of July 10.
+
+Current public Kaggle tooling also documents a `kaggle b` task workflow that
+produces task and run files for leaderboard construction. Before creating or
+sharing external resources, Kaggle should confirm which path applies here:
+
+1. the organization/share workflow from the email;
+2. the public `kaggle b init`, task push, run, and download workflow; or
+3. a host-managed Docker/Harbor onboarding path that combines both.
+
+This is an operational clarification request, not evidence of acceptance. The
+repo-side package remains ready for technical review while organization
+creation, platform upload, credentials, and hosted execution remain external
+actions.
+
 ## Explicit Non-Claims
 
 This brief does not claim:

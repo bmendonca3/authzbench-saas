@@ -83,7 +83,7 @@ def run_scorer_bridge(
             "invalid_submission": True,
             "authzbench": {
                 "task_id": task.get("id"),
-                "errors": [f"scorer raised {type(exc).__name__}: {exc}"],
+                "errors": [f"scorer raised {type(exc).__name__}"],
             },
         }
 
@@ -91,7 +91,9 @@ def run_scorer_bridge(
     expected_vulnerable = bool(task.get("expected_vulnerable"))
     findings = submission.get("findings", [])
     false_positive = bool(not expected_vulnerable and findings)
-    exploit_proof_valid = bool(expected_vulnerable and score.get("passed"))
+    exploit_proof_valid = bool(
+        expected_vulnerable and score.get("subscores", {}).get("exploit_proof") == 1
+    )
     boundary_pass = bool(score.get("subscores", {}).get("boundary_reasoning", 0) > 0)
     control_pass = score.get("control_replay_passed")
 
@@ -100,6 +102,7 @@ def run_scorer_bridge(
         "reward": reward,
         "score": reward,
         "passed": bool(score.get("passed")),
+        "invalid_submission": bool(score.get("invalid_submission")),
         "authzbench": {
             "task_id": task.get("id"),
             "expected_vulnerable": expected_vulnerable,

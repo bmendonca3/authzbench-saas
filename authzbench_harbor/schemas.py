@@ -34,8 +34,6 @@ DEFAULT_REWARD_TOLERANCE = 1e-5
 # Required per-task match rate for parity_verified=true evidence.
 REQUIRED_MATCH_RATE = 1.0
 
-SUBMISSION_FINDING_REQUIRED_KEYS = {"task_id", "route", "method", "evidence", "boundary", "expected_status"}
-
 PRIVATE_PATTERNS = [
     "tasks_private/holdout",
     "tasks_private",

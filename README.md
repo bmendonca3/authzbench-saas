@@ -45,15 +45,15 @@ AuthZBench-SaaS rewards proof and penalizes unsupported claims.
 - Public tasks: 63 (27 vulnerable, 36 secure controls; 21 denial, 15 authorized-allow)
 - Maintainer-private holdout tasks: 48, summarized only
 - Total public + private task scale: 111
-- Harbor adapter: repo-side local adapter path implemented (parity methodology versioned, public-safe)
+- Harbor adapter: packaged local CLI validated from an isolated wheel install; six-task local execution and six-of-six per-task empty-findings reward parity recorded
 - External review, SaaS-provider validation, hosted leaderboard operation, Harbor/Kaggle/platform acceptance, and third-party submissions: v2/external gates
 
 The public-view readiness fixture at
 `artifact/expected-output/v1-readiness-public-view.json` is a
 public-view readiness fixture match checked with `--allow-incomplete
 --public-view --expected-output`. The current fixture reports
-`v1_ready: false` with 1 unmet gate under honest post-cleanup evidence;
-this is the internal/public-view scope only and does not assert external
+the current internal gate state and any unmet gates; fixture agreement is the
+internal/public-view scope only and does not assert external
 review, SaaS-provider validation, hosted leaderboard readiness, or platform
 acceptance. See [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
 
@@ -194,9 +194,15 @@ so the headline verdict is grep-friendly in CI logs without parsing JSON.
   evidence) and `aggregate_means` (historical only, with
   `evidence_status: historical_backcompat`)
 - Local smoke evidence: tracked at `artifact/harbor-adapter-smoke.json`
+- Scoped parity evidence: six public API-token tasks, six-of-six per-task native
+  reward matches using the documented empty-findings baseline in
+  `artifact/harbor-parity-experiment.json`
+- Distribution smoke: `python3 scripts/validate_packaged_harbor.py` builds the
+  wheel, installs it outside the source tree, invokes the packaged CLI, and
+  builds a one-task dataset
 - Local execution preflight: `python3 scripts/check_harbor_local_execution.py`
-- Harbor SDK integration, Harbor platform acceptance, passing Harbor
-  execution: not claimed (v2 gates)
+- Full 63-task/model parity, Harbor platform acceptance, and hosted Harbor
+  operation: not claimed (v2 gates)
 
 Full runbook: [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md).
 
@@ -264,8 +270,9 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
 - current 63-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
 - repeated current 63-task no-tools public baselines across Qwen, Claude Haiku
-  4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6; public-split evidence
-  only
+  4.5, Claude Sonnet 4.6, GLM-5, Claude Opus 4.6, and Gemini 3.1 Pro (High);
+  these are offline policy-v2 rescores of saved full-split submissions, not
+  repeated model execution under policy v2
 - repeated current 63-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
   63/63 target-request correlation and public-safe plan/probe artifacts in both
   runs; public-split evidence only
@@ -281,9 +288,10 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
   fingerprints, and comparability keys
 - public-safe benchmark charts, task-quality matrix, benchmark spec, release
   gates, privacy checks, and fresh-clone validation
-- task-quality gate contract, Harbor adapter contract, Harbor skeleton builder,
+- task-quality gate contract, Harbor adapter contract, packaged skeleton builder,
   Harbor readiness blockers, and Harbor integration runbook; these preserve
-  public-safe target shapes and explicitly do not claim Harbor execution
+  public-safe target shapes and separate scoped local execution/parity from
+  full-dataset, hosted, or platform-acceptance claims
 - v1 governance, run-bundle, private-rotation, hosted-submission, external
   review, paper-readiness, and release-candidate runbooks/templates; these are
   specifications and validator contracts, not hosted-leaderboard evidence
@@ -322,7 +330,7 @@ Unsupported claims:
 
 - hosted leaderboard readiness
 - v1/community-benchmark maturity
-- v1 rotating active/shadow private holdout readiness
+- externally audited or hosted verification of private-holdout rotation
 - production vulnerability discovery
 - private model rankings from public-split scores
 - broad cyber capability measurement
@@ -412,8 +420,18 @@ Git.
 
 ## Evaluate an Agent
 
-`python3 -m authzbench.run` gives an agent a rendered task context and expects a
-structured JSON submission.
+For new public diagnostics, use `python3 -m authzbench.evaluate`. It applies the
+`blinded-control-evidence-v1` protocol: opaque case ids, neutral participant
+wording, a per-task working directory, participant verification evidence on
+secure controls, source/prompt/CLI provenance, calibrated metrics, and completed
+run exits that are separate from model accuracy.
+
+Provide every adapter source file with repeated `--agent-source` flags so the
+protocol manifest hashes the adapter alongside the evaluator and replay sources.
+
+`python3 -m authzbench.run` remains the historical score-policy-v2 runner used by
+the tracked offline rescores. Keeping that path stable preserves their
+provenance; new-protocol results are not directly comparable to those rows.
 
 The runner provides:
 
@@ -425,9 +443,11 @@ The runner provides:
 Example:
 
 ```bash
-python3 -m authzbench.run \
+ROOT="$(pwd)"
+python3 -m authzbench.evaluate \
   --task 'tasks/*/*.json' \
-  --agent-cmd 'python3 my_agent.py --context {context} --out {submission}' \
+  --agent-cmd "python3 $ROOT/my_agent.py --context {context} --out {submission}" \
+  --agent-source "$ROOT/my_agent.py" \
   --results-dir results/my-agent \
   --timeout-seconds 30 \
   --benchmark-commit-sha "$(git rev-parse HEAD)" \
@@ -435,6 +455,74 @@ python3 -m authzbench.run \
   --model my-model \
   --harness-type custom
 ```
+
+The absolute agent path matters because the blinded protocol starts the agent
+inside its per-task artifact directory. This working-directory isolation is not
+an operating-system sandbox; containerize filesystem-capable untrusted agents.
+See [`docs/benchmark-quality-plan.md`](docs/benchmark-quality-plan.md) for the
+threat model, measured gaps, Kiro command, and phased improvement plan.
+
+### Authenticated Codex/OpenAI matrix
+
+`scripts/codex_baseline_agent.py` provides a fail-closed Codex CLI adapter for
+the blinded protocol. It runs from a fresh temporary directory, disables the
+available shell, unified-exec, browser, app, plugin, computer-use, image,
+workspace, and delegation features, requests a strict structured response, and
+records the raw Codex JSONL event stream separately from normalized metadata.
+Unknown events, incomplete terminal state, model-label mismatch, or any tool
+attempt reject the task.
+
+`prompt_sha256` covers the host-supplied user prompt only. In Codex CLI
+0.144.0-alpha.4, `--ignore-user-config` and `--ignore-rules` do not disable
+profile skill loading, and the exposed feature list has no skill-loading
+switch. The adapter records that limitation on every row. These runs remain
+diagnostic and are not eligible for current registry promotion while the hidden
+runtime profile context is neither disabled nor source-bound.
+
+The frozen 27-configuration surface is in
+`artifact/openai-codex-model-effort-matrix-2026-07-12.json`. The historic
+pre-inference blocker evidence is in
+`artifact/openai-codex-credit-blocker-2026-07-12.json`. The later clean-source
+admission and attempted full-phase aggregate is in
+`artifact/openai-codex-hosted-diagnostic-2026-07-12.json`: 24 of 27
+configurations were admitted, three `gpt-5.4` efforts were excluded on direct
+capacity failures, one admitted configuration completed 63/63 tasks, and 23
+full rows are incomplete after workspace credits were exhausted. Only the
+complete row is model-quality evidence, and one requested-only public row is
+not a cross-configuration comparison or ranking.
+The matrix is derived from the public-safe normalized catalog in
+`artifact/openai-codex-model-catalog-2026-07-12.json`; validation binds its
+digest and configuration set.
+
+The requirement, plan, task, checklist, and requirement-to-evidence contracts
+for this matrix are in
+`specs/001-openai-model-effort-matrix/`. They follow the GitHub Spec Kit
+brownfield artifact structure; the repository was not initialized with the
+Spec Kit CLI.
+
+Run admission smokes serially from a clean checkout:
+
+```bash
+python3 scripts/run_codex_model_matrix.py \
+  --phase smoke \
+  --run-label run1
+```
+
+After every configuration is admitted, use the generated admission report for
+the 63-task phase:
+
+```bash
+python3 scripts/run_codex_model_matrix.py \
+  --phase full \
+  --run-label run1 \
+  --admission-report results/codex-openai-matrix/codex-matrix-smoke-run1.json
+```
+
+Matrix execution stops on a workspace-wide credit blocker instead of spending
+requests across all configurations. Effective model identity is reported as
+verified only when the Codex event stream exposes one unambiguous matching
+label; requested-only rows remain diagnostic and cannot enter the current
+blinded registry.
 
 After a run, inspect:
 
@@ -454,19 +542,25 @@ For vulnerable tasks, a full pass requires replayable exploit proof, correct
 authorization-boundary reasoning, a successful control replay, and safe behavior.
 For secure controls, a full pass requires `findings: []`.
 
+The current fingerprint uses `score-policy-v2-boundary-normalization`. Exact
+claim wording is diagnostic rather than a score gate; complete structured
+boundary matches can use bounded, versioned semantic rules, while partial
+matches receive no score. Agent and adapter failures fail closed.
+
 Release-facing metrics emphasize:
 
 - `exploit_proven_success_rate`
 - `vulnerable_full_pass_count`
 - `false_positive_rate`
 - `boundary_reasoning_pass_rate`
+- `boundary_field_match_mean` (diagnostic only; no partial credit)
 - `control_execution_pass_rate`
 - `authorized_allow_pass_rate`
 - `target_request_coverage_rate` for live HTTP runs
 
 The older `mean_score` field remains for compatibility, but it is not the main
 release-ranking metric. See [`docs/scoring-and-submissions.md#1-score-policy`](docs/scoring-and-submissions.md#1-score-policy) and
-[`docs/scoring-and-submissions.md#2-result-and-submission-schema`](docs/scoring-and-submissions.md#2-result-and-submission-schema).
+[`docs/scoring-and-submissions.md#2-result-and-submission-contract`](docs/scoring-and-submissions.md#2-result-and-submission-contract).
 
 ## Current Baselines
 
@@ -481,12 +575,16 @@ Current 63-task public-split evidence:
 - Kiro `claude-sonnet-4.6`: two no-tools public runs
 - Kiro `glm-5`: two no-tools public runs
 - Kiro `claude-opus-4.6`: two no-tools public runs
+- Antigravity `Gemini 3.1 Pro (High)`: two no-tools public runs
 - Kiro `claude-sonnet-4.6` live HTTP tool-agent: two public runs with 63/63
   target-request correlation in both runs
 
-The preserved Gemini 3.1 Pro public rows are diagnostic-only because the legacy
-AGY adapter could convert execution or parsing failures into empty findings. They
-are excluded from current comparison until rerun with the fail-closed adapter.
+All 14 current model/tool-agent summaries are offline policy-v2 rescores of
+saved full-63-task submissions; model execution was not repeated. Qwen records
+21 and 15 adapter failures, Gemini records 4 and 2, and one GLM run preserves
+two schema-invalid findings while the other preserves one runner timeout.
+These failures are invalid zero-score rows. Runs containing them are
+end-to-end model-plus-harness evidence rather than clean model-only capability.
 
 v0.0 public-split evidence:
 
@@ -516,17 +614,19 @@ Important interpretation:
 - The previous 60-task split had repeated no-tools model-family evidence and a
   repeated live HTTP tool-agent family tracked in the baseline registry. With
   the v1.1 promotion to a 63-task split, those rows are marked
-  current_public_stale. Full 63-task Kiro no-tools and live HTTP tool-agent
-  reruns are now registered as current public-split evidence. These are
-  public-split diagnostics only; private holdouts, hosted operation, external
-  review, and platform acceptance remain separate v2 gates.
+  current_public_stale. Saved full-63-task no-tools and live HTTP tool-agent
+  executions now have registered policy-v2 offline rescores with explicit
+  provenance. These are public-split diagnostics only; private holdouts,
+  hosted operation, external review, and platform acceptance remain separate
+  v2 gates.
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
-  vocabulary required for full vulnerable-task credit. Later stale 54-task and
-  stale 60-task public runs preserve the same distinction between exploit proof
-  and boundary-credit interpretation; current 63-task public capability reruns
-  are still pending.
+  vocabulary required by policy v1. A broader 14-run audit found that exact
+  claim text also gated boundary evaluation; policy v2 removes that undeclared
+  coupling, retains strict complete-field matching, and records partial matches
+  only as diagnostics. See
+  [`docs/score-policy-v2-boundary-normalization.md`](docs/score-policy-v2-boundary-normalization.md).
 - Stale 44-task baselines are retained for historical context only.
 
 See [`docs/status.md`](docs/status.md) and
@@ -542,6 +642,8 @@ Generated public-safe charts live under
 - [Exploit-proven success](docs/assets/benchmark-charts/exploit-proven-success.svg)
 - [False-positive rate](docs/assets/benchmark-charts/false-positive-rate.svg)
 - [Boundary reasoning](docs/assets/benchmark-charts/boundary-reasoning.svg)
+- [Boundary field coverage](docs/assets/benchmark-charts/boundary-field-coverage.svg)
+- [Invalid submission rate](docs/assets/benchmark-charts/invalid-submission-rate.svg)
 - [Task mix](docs/assets/benchmark-charts/task-mix.svg)
 - [Evidence readiness](docs/assets/benchmark-charts/evidence-readiness.svg)
 
@@ -650,6 +752,7 @@ See [`ROADMAP.md`](ROADMAP.md).
 - [`docs/authzbench-saas-v0.0-evidence-map.md`](docs/authzbench-saas-v0.0-evidence-map.md): claim-to-evidence map
 - [`docs/score-stability-policy.md`](docs/score-stability-policy.md): score/version policy
 - [`docs/boundary-reasoning-calibration-study.md`](docs/boundary-reasoning-calibration-study.md): current boundary calibration
+- [`docs/score-policy-v2-boundary-normalization.md`](docs/score-policy-v2-boundary-normalization.md): policy-v2 rationale, bounded matching rules, and rescore disposition
 - [`docs/v1-community-submission-governance.md`](docs/v1-community-submission-governance.md): future submission governance
 - [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md): Harbor adapter target and non-evidence boundary
 - [`docs/task-quality-rubric.md`](docs/task-quality-rubric.md): task-quality review rubric

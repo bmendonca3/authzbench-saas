@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -10,7 +13,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import benchmark_fingerprint, dump_json, load_json
+from authzbench.core import benchmark_fingerprint, dump_json, load_json, stable_json_sha256
+from authzbench.run import summarize_task_results
 from authzbench.validate_manifests import validate_patterns
 
 
@@ -83,6 +87,94 @@ VALID_SUITABILITY = {
 }
 VALID_SCORE_POLICIES = {"score-policy-v1", "score-policy-v2"}
 
+RESCORE_SCHEMA_VERSION = "public-run-rescore-v1"
+RESCORE_DERIVATION = "offline_rescore_from_saved_public_submissions"
+VALID_CURRENT_RESULT_DERIVATIONS = {
+    "runner_emitted",
+    RESCORE_DERIVATION,
+    "promoted_cohort_delta_merge",
+}
+RESCORE_HASH_FIELDS = {
+    "source_summary_sha256",
+    "source_submission_set_sha256",
+    "source_score_set_sha256",
+    "source_model_output_set_sha256",
+    "rescored_score_set_sha256",
+    "rescored_task_rows_sha256",
+    "runner_source_sha256",
+    "scorer_source_sha256",
+    "rescore_tool_sha256",
+}
+TOOL_TELEMETRY_COVERAGE_FIELDS = {
+    "tool_probe_telemetry_complete_task_count",
+    "tool_probe_telemetry_coverage_rate",
+    "tool_probe_telemetry_status",
+}
+TOOL_TELEMETRY_TOTAL_FIELDS = {
+    "executed_tool_probe_total",
+    "fallback_probe_total",
+    "submitted_finding_total",
+}
+VALID_ADAPTER_FAILURE_TYPES = {
+    "adapter_metadata_failure",
+    "command_failure",
+    "model_label_failure",
+    "output_parse_failure",
+}
+SUPPORTED_CURRENT_EVALUATION_PROTOCOLS = {"blinded-control-evidence-v1"}
+
+
+def _evaluation_protocol_version(summary: dict[str, Any]) -> tuple[str | None, str | None]:
+    """Read the runner's canonical protocol field with bounded legacy compatibility."""
+    protocol = summary.get("evaluation_protocol")
+    if protocol is None:
+        return None, None
+    if not isinstance(protocol, dict):
+        return None, "evaluation_protocol must be an object when supplied"
+    canonical = protocol.get("protocol_version")
+    legacy = protocol.get("version")
+    for field, value in (("protocol_version", canonical), ("version", legacy)):
+        if value is not None and (not isinstance(value, str) or not value.strip()):
+            return None, f"evaluation_protocol.{field} must be a non-empty string when supplied"
+    if canonical is not None and legacy is not None and canonical != legacy:
+        return None, "evaluation_protocol protocol_version and version disagree"
+    return canonical or legacy, None
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+_TARGET_SOURCE_HASH_CACHE: dict[str, dict[str, str | None]] = {}
+
+
+def _target_source_hashes(target_commit: str) -> dict[str, str | None]:
+    cached = _TARGET_SOURCE_HASH_CACHE.get(target_commit)
+    if cached is not None:
+        return cached
+    source_paths = {
+        "scorer_source_sha256": "authzbench/score.py",
+        "runner_source_sha256": "authzbench/run.py",
+        "rescore_tool_sha256": "scripts/rescore_public_run.py",
+    }
+    hashes: dict[str, str | None] = {}
+    for field, relative_path in source_paths.items():
+        completed = subprocess.run(
+            ["git", "show", f"{target_commit}:{relative_path}"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+        hashes[field] = (
+            hashlib.sha256(completed.stdout).hexdigest() if completed.returncode == 0 else None
+        )
+    _TARGET_SOURCE_HASH_CACHE[target_commit] = hashes
+    return hashes
+
 # Required provenance fields on every "current" entry. These were
 # introduced after the v1.0-internal release per
 # docs/goal-external-validation-coverage.md objective 1, and are
@@ -131,6 +223,121 @@ HARNESS_CHECK_REQUIRED_PROVENANCE_FIELDS = {
     "run_date",
     "evidence_status",
 }
+
+
+def _validate_rescore_provenance(
+    summary: dict[str, Any],
+    raw_entry: dict[str, Any],
+    entry_id: str,
+    location: str,
+    current_fingerprint: dict[str, Any],
+    errors: list[str],
+) -> None:
+    provenance = summary.get("rescore_provenance")
+    if not isinstance(provenance, dict):
+        errors.append(f"{entry_id}: {location} missing rescore_provenance")
+        return
+    expected_values = {
+        "schema_version": RESCORE_SCHEMA_VERSION,
+        "derivation": RESCORE_DERIVATION,
+        "source_score_policy_version": "score-policy-v1",
+        "target_score_policy_version": current_fingerprint["score_policy_version"],
+        "adapter_failure_policy": "fail_closed_from_model_output_and_agent_returncode",
+        "claim_exact_match_scored": False,
+        "partial_boundary_credit_scored": False,
+        "model_execution_repeated": False,
+    }
+    for field, expected in expected_values.items():
+        if provenance.get(field) != expected:
+            errors.append(
+                f"{entry_id}: {location} rescore_provenance.{field} "
+                f"{provenance.get(field)!r} does not match {expected!r}"
+            )
+    if provenance.get("source_run_id") != summary.get("run_id"):
+        errors.append(f"{entry_id}: {location} rescore source_run_id must match summary run_id")
+    target_commit = provenance.get("target_benchmark_commit_sha")
+    if target_commit != summary.get("benchmark_commit_sha") or not re.fullmatch(
+        r"[0-9a-f]{40}", str(target_commit or "")
+    ):
+        errors.append(
+            f"{entry_id}: {location} rescore target benchmark commit must be a 40-character SHA matching the summary"
+        )
+    for field in sorted(RESCORE_HASH_FIELDS):
+        if not re.fullmatch(r"[0-9a-f]{64}", str(provenance.get(field, ""))):
+            errors.append(f"{entry_id}: {location} rescore_provenance.{field} must be a SHA-256 digest")
+    if isinstance(target_commit, str) and re.fullmatch(r"[0-9a-f]{40}", target_commit):
+        for field, expected in _target_source_hashes(target_commit).items():
+            if expected is None:
+                errors.append(
+                    f"{entry_id}: {location} cannot read rescore source at target benchmark commit"
+                )
+            elif provenance.get(field) != expected:
+                errors.append(
+                    f"{entry_id}: {location} rescore_provenance.{field} does not match target commit source"
+                )
+
+    tasks = summary.get("tasks")
+    if not isinstance(tasks, list):
+        errors.append(f"{entry_id}: {location} tasks must be a list for fail-closed validation")
+        return
+    adapter_rows = [row for row in tasks if isinstance(row, dict) and row.get("adapter_failure_type")]
+    infrastructure_rows = [row for row in tasks if isinstance(row, dict) and row.get("infrastructure_failure")]
+    runner_failure_rows = [row for row in tasks if isinstance(row, dict) and row.get("runner_agent_failure")]
+    if provenance.get("rescored_task_rows_sha256") != stable_json_sha256(tasks):
+        errors.append(f"{entry_id}: {location} rescored task-row digest does not match tasks")
+    for row in adapter_rows:
+        failure_type = row.get("adapter_failure_type")
+        task_id = row.get("task_id", "<unknown>")
+        if failure_type not in VALID_ADAPTER_FAILURE_TYPES:
+            errors.append(f"{entry_id}: {location} {task_id} has invalid adapter_failure_type {failure_type!r}")
+        if row.get("score") != 0 or row.get("passed") is not False or row.get("invalid_submission") is not True:
+            errors.append(f"{entry_id}: {location} {task_id} adapter failure must fail closed")
+        expected_infrastructure = failure_type != "output_parse_failure"
+        if row.get("infrastructure_failure") is not expected_infrastructure:
+            errors.append(
+                f"{entry_id}: {location} {task_id} infrastructure_failure must be "
+                f"{expected_infrastructure} for {failure_type}"
+            )
+    count_expectations = {
+        "adapter_failure_count": len(adapter_rows),
+        "adapter_output_parse_failure_count": sum(
+            1 for row in adapter_rows if row.get("adapter_failure_type") == "output_parse_failure"
+        ),
+        "adapter_metadata_failure_count": sum(
+            1 for row in adapter_rows if row.get("adapter_failure_type") == "adapter_metadata_failure"
+        ),
+        "infrastructure_failure_count": len(infrastructure_rows),
+        "runner_agent_failure_count": len(runner_failure_rows),
+    }
+    for field, expected in count_expectations.items():
+        if summary.get(field) != expected:
+            errors.append(
+                f"{entry_id}: {location} {field} {summary.get(field)!r} does not match task rows {expected}"
+            )
+
+    try:
+        recomputed = summarize_task_results(tasks)
+    except (KeyError, TypeError, ValueError) as exc:
+        errors.append(
+            f"{entry_id}: {location} cannot recompute rescore aggregates: {type(exc).__name__}"
+        )
+        return
+    for field, expected in recomputed.items():
+        if field == "tasks":
+            continue
+        if field in TOOL_TELEMETRY_COVERAGE_FIELDS and field not in summary:
+            continue
+        if (
+            field in TOOL_TELEMETRY_TOTAL_FIELDS
+            and "tool_probe_telemetry_status" not in summary
+            and recomputed["tool_probe_telemetry_status"] != "complete"
+        ):
+            continue
+        if summary.get(field) != expected:
+            errors.append(
+                f"{entry_id}: {location} {field} {summary.get(field)!r} "
+                f"does not match recomputed value {expected!r}"
+            )
 
 
 def _current_public_task_items() -> list[tuple[str, dict[str, Any]]]:
@@ -452,6 +659,52 @@ def _validate_summary_file(
                     f"{summary[count_field]!r} does not match {public_counts[count_field]}"
                 )
         _validate_current_fingerprint(summary, current_fingerprint, entry_id, location, errors)
+        if raw_entry.get("kind") in {"model_baseline", "tool_agent_baseline"}:
+            protocol_version, protocol_error = _evaluation_protocol_version(summary)
+            if protocol_error is not None:
+                errors.append(f"{entry_id}: {location} {protocol_error}")
+            if (
+                protocol_version is not None
+                and protocol_version not in SUPPORTED_CURRENT_EVALUATION_PROTOCOLS
+            ):
+                errors.append(
+                    f"{entry_id}: {location} unsupported evaluation protocol {protocol_version!r}"
+                )
+            if raw_entry.get("result_derivation") == "runner_emitted" and protocol_version is None:
+                errors.append(
+                    f"{entry_id}: {location} runner-emitted current rows require an evaluation protocol"
+                )
+            if (
+                protocol_version == "blinded-control-evidence-v1"
+                and summary.get("model_identity_status") != "verified"
+            ):
+                errors.append(
+                    f"{entry_id}: {location} blinded protocol rows require verified effective "
+                    "model identity for current registry use"
+                )
+            if (
+                protocol_version == "blinded-control-evidence-v1"
+                and summary.get("model_label_verified_task_count") != summary.get("task_count")
+            ):
+                errors.append(
+                    f"{entry_id}: {location} blinded protocol verified-model task count must "
+                    "equal task_count for current registry use"
+                )
+            result_derivation = raw_entry.get("result_derivation")
+            if result_derivation not in VALID_CURRENT_RESULT_DERIVATIONS:
+                errors.append(
+                    f"{entry_id}: current model/tool entry result_derivation must be one of "
+                    f"{', '.join(sorted(VALID_CURRENT_RESULT_DERIVATIONS))}"
+                )
+            elif result_derivation == RESCORE_DERIVATION:
+                _validate_rescore_provenance(
+                    summary,
+                    raw_entry,
+                    entry_id,
+                    location,
+                    current_fingerprint,
+                    errors,
+                )
 
     _validate_zero_adapter_failure_requirement(
         raw_entry,

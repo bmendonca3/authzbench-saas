@@ -9,6 +9,12 @@ from pathlib import Path
 from typing import Any
 
 
+def _subprocess_text(value: str | bytes | None) -> str:
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value or ""
+
+
 def _extract_json(text: str) -> dict[str, Any]:
     stripped = text.strip()
     if stripped.startswith("{"):
@@ -54,30 +60,6 @@ def _effective_model_label(log_text: str) -> str | None:
     return labels[-1] if labels else None
 
 
-def _metadata(
-    *,
-    model: str,
-    log_path: Path,
-    returncode: int | None,
-    stdout: str,
-    stderr: str,
-    effective_label: str | None,
-    error: str | None = None,
-) -> dict[str, Any]:
-    metadata = {
-        "model": model,
-        "command": "agy --new-project --model <model> --log-file <log> --print-timeout <seconds>s --print <prompt>",
-        "returncode": returncode,
-        "stdout": stdout,
-        "stderr": stderr,
-        "log_file": log_path.name,
-        "effective_model_label": effective_label,
-        "model_label_verified": effective_label == model,
-        "adapter_failed": error is not None,
-    }
-    return metadata | ({"parse_error": error} if error is not None else {})
-
-
 def run_agy(
     context: dict[str, Any],
     model: str,
@@ -105,85 +87,62 @@ def run_agy(
             check=False,
         )
     except subprocess.TimeoutExpired as exc:
-        return None, _metadata(
-            model=model,
-            log_path=log_path,
-            returncode=None,
-            stdout=str(exc.stdout or ""),
-            stderr=str(exc.stderr or ""),
-            effective_label=None,
-            error="agy command timed out",
-        )
-    except OSError as exc:
-        return None, _metadata(
-            model=model,
-            log_path=log_path,
-            returncode=None,
-            stdout="",
-            stderr=str(exc),
-            effective_label=None,
-            error="agy command could not start",
-        )
-
+        return None, {
+            "model": model,
+            "command": "agy --new-project --model <model> --log-file <log> --print-timeout <seconds>s --print <prompt>",
+            "returncode": None,
+            "stdout": _subprocess_text(exc.stdout),
+            "stderr": _subprocess_text(exc.stderr),
+            "log_file": log_path.name,
+            "effective_model_label": None,
+            "model_label_verified": False,
+            "parse_error": "agy command timed out",
+        }
     log_text = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
     effective_label = _effective_model_label(log_text)
+    metadata = {
+        "model": model,
+        "command": "agy --new-project --model <model> --log-file <log> --print-timeout <seconds>s --print <prompt>",
+        "returncode": completed.returncode,
+        "stdout": completed.stdout,
+        "stderr": completed.stderr,
+        "log_file": log_path.name,
+        "effective_model_label": effective_label,
+        "model_label_verified": effective_label == model,
+    }
     if completed.returncode != 0:
-        return None, _metadata(
-            model=model,
-            log_path=log_path,
-            returncode=completed.returncode,
-            stdout=completed.stdout,
-            stderr=completed.stderr,
-            effective_label=effective_label,
-            error="agy command failed",
-        )
+        return None, metadata | {"parse_error": "agy command failed"}
     if effective_label != model:
-        return None, _metadata(
-            model=model,
-            log_path=log_path,
-            returncode=completed.returncode,
-            stdout=completed.stdout,
-            stderr=completed.stderr,
-            effective_label=effective_label,
-            error="agy model label was not verified",
-        )
+        return None, metadata | {"parse_error": "agy model label was not verified"}
     try:
         submission = _extract_json(completed.stdout)
-    except ValueError as exc:
-        return None, _metadata(
-            model=model,
-            log_path=log_path,
-            returncode=completed.returncode,
-            stdout=completed.stdout,
-            stderr=completed.stderr,
-            effective_label=effective_label,
-            error=str(exc),
-        )
-    if not isinstance(submission.get("findings"), list):
-        return None, _metadata(
-            model=model,
-            log_path=log_path,
-            returncode=completed.returncode,
-            stdout=completed.stdout,
-            stderr=completed.stderr,
-            effective_label=effective_label,
-            error="model output findings must be a list",
-        )
-    return submission, _metadata(
-        model=model,
-        log_path=log_path,
-        returncode=completed.returncode,
-        stdout=completed.stdout,
-        stderr=completed.stderr,
-        effective_label=effective_label,
-    )
+    except Exception as exc:  # noqa: BLE001 - preserve parse failure in metadata.
+        return None, metadata | {"parse_error": str(exc)}
+    if "findings" not in submission:
+        return None, metadata | {"parse_error": "missing findings key"}
+    return submission, metadata
 
 
-def main(argv: list[str] | None = None) -> int:
+def _write_adapter_result(
+    submission_path: Path,
+    submission: dict[str, Any] | None,
+    metadata: dict[str, Any],
+) -> int:
+    submission_path.parent.mkdir(parents=True, exist_ok=True)
+    metadata_path = submission_path.parent / "model-output.json"
+    metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if submission is None:
+        submission_path.unlink(missing_ok=True)
+        return 2
+    submission_path.write_text(json.dumps(submission, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return 0
+
+
+def main() -> int:
     parser = argparse.ArgumentParser(description="Antigravity agy no-tools baseline adapter for AuthZBench-SaaS.")
     parser.add_argument("--model", default=os.environ.get("AUTHZBENCH_AGY_MODEL", "Gemini 3.5 Flash (High)"))
     parser.add_argument("--timeout-seconds", type=int, default=120)
-    args = parser.parse_args(argv)
+    args = parser.parse_args()
 
     context_path = Path(os.environ["AUTHZBENCH_CONTEXT"])
     submission_path = Path(os.environ["AUTHZBENCH_SUBMISSION"])
@@ -191,12 +150,7 @@ def main(argv: list[str] | None = None) -> int:
     submission_path.parent.mkdir(parents=True, exist_ok=True)
     log_path = submission_path.parent / "antigravity-cli.log"
     submission, metadata = run_agy(context, args.model, args.timeout_seconds, log_path)
-    (submission_path.parent / "model-output.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    if submission is None:
-        submission_path.unlink(missing_ok=True)
-        return 1
-    submission_path.write_text(json.dumps(submission, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    return 0
+    return _write_adapter_result(submission_path, submission, metadata)
 
 
 if __name__ == "__main__":

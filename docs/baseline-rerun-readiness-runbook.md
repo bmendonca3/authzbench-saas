@@ -2,11 +2,17 @@
 
 > **See also:** [`docs/baseline-credibility.md`](baseline-credibility.md) for stale-baseline labeling and [`docs/claims-and-evidence.md`](claims-and-evidence.md) for the canonical claim ledger.
 
-This runbook documents the exact commands, prerequisites, and post-run steps for rerunning model and tool-agent baselines at the current 63-task public split. It is ready to execute when Kiro CLI access is restored.
+This runbook documents the exact commands, prerequisites, and post-run steps
+for fresh model and tool-agent re-execution at the current 63-task public split.
+It remains useful when a fresh prompt/adapter/environment run is required.
 
 ## Why This Exists
 
-All model and tool-agent baselines are stale at 60/54/49/46/44/15 tasks. The current public split is 63 tasks. The scripted sanity baseline at 63 tasks is current and validates harness/scorer wiring, but it is not model or tool-agent capability evidence. Rerunning the baselines at 63 tasks restores current capability evidence and allows the `--require-current-public` strict path to pass without `--allow-stale-pending-rerun`.
+Older model and tool-agent baselines at 60/54/49/46/44/15 tasks are stale. The
+current public split is 63 tasks. Fourteen saved full-63-task executions now
+have current offline policy-v2 rescores with explicit provenance, so the
+registry's strict current-public path passes. Those rows are not fresh model
+executions under v2; use this runbook when that stronger evidence is needed.
 
 ## Prerequisites
 
@@ -48,6 +54,31 @@ All model and tool-agent baselines are stale at 60/54/49/46/44/15 tasks. The cur
 
 Expected operational budget is 756 Kiro chat invocations plus local Docker runtime. Monetary cost depends on the active Kiro plan/provider billing and must be checked in Kiro before execution.
 
+### New blinded-protocol diagnostic
+
+Before repeating the legacy matrix, run one complete public diagnostic through
+the blinded protocol documented in
+[`benchmark-quality-plan.md`](benchmark-quality-plan.md). It uses opaque case
+ids, neutral context, participant control evidence, and stronger provenance.
+Because it is a different evaluation protocol, do not mix its numbers with the
+historical policy-v2 context rows.
+
+```bash
+ROOT="$(pwd)"
+PYTHON="python3.11"
+MODEL="claude-sonnet-5"  # verify with: kiro chat --list-models
+
+"$PYTHON" -m authzbench.evaluate \
+  --task 'tasks/*/*.json' \
+  --agent-cmd "$PYTHON $ROOT/scripts/kiro_baseline_agent.py --model $MODEL --effort high --timeout-seconds 120" \
+  --agent-source "$ROOT/scripts/kiro_baseline_agent.py" \
+  --results-dir "results/kiro-$MODEL-blinded-public-63" \
+  --timeout-seconds 150 \
+  --agent kiro_baseline_agent \
+  --model "$MODEL" \
+  --harness-type no-tools-model
+```
+
 ## Commands
 
 ### 1. Scripted sanity baseline (no Kiro needed)
@@ -77,7 +108,7 @@ for MODEL in claude-sonnet-4.6 claude-haiku-4.5 claude-opus-4.6 glm-5 qwen3-code
       --benchmark-commit-sha "$BENCHMARK_COMMIT_SHA" \
       --agent kiro_baseline_agent \
       --model "$MODEL" \
-      --harness-type no-tools
+      --harness-type no-tools-model
   done
 done
 ```
@@ -93,7 +124,7 @@ for RUN in 1 2; do
     --task 'tasks/*/*.json' \
     --agent-cmd 'python3 scripts/kiro_live_tool_agent.py --model claude-sonnet-4.6 --timeout-seconds 45 --max-probes 6' \
     --results-dir "results/kiro-live-tool-agent-sonnet-current-public-63-run${RUN}" \
-    --timeout-seconds 75 \
+    --timeout-seconds 120 \
     --benchmark-commit-sha "$BENCHMARK_COMMIT_SHA" \
     --agent kiro_live_tool_agent \
     --model claude-sonnet-4.6 \
@@ -104,12 +135,38 @@ done
 
 ## Post-Run Steps
 
-1. **Copy run summaries into `baselines/`:**
+1. **Freeze and validate each complete nested run directory after all wrapper
+   logs and retained evidence have been written:**
    ```bash
-   cp results/kiro-*-current-public-63-run*/summary.json baselines/
-   ```
+   RUN_ROOT="results/<result-family>/<run-id>"
+   test -f "$RUN_ROOT/summary.json"
 
-2. **Update `baselines/baseline-registry.json`** from stale 60-task rows to new 63-task rows. For each model family:
+   python3 scripts/build_run_bundle_manifest.py "$RUN_ROOT" \
+     --require summary.json \
+     --require-glob '*/agent.json' \
+     --require-glob '*/score.json' \
+     --require-glob '*/submission.json' \
+     --require-glob '*/transcript.json'
+   python3 scripts/validate_run_bundle_manifest.py "$RUN_ROOT"
+   ```
+   For tool-agent evidence, also require `*/target-requests.jsonl` when that
+   artifact is part of the declared run contract. Do not add logs or other files
+   after the manifest is created; the validator will correctly report them as
+   unexpected. This checksum establishes local content consistency only. It is
+   not a signature, model-identity proof, custody attestation, or eligibility
+   decision. Private-run manifests can expose private identifiers through their
+   filenames and must remain private unless separately reviewed.
+
+2. **Locate the nested run summaries and copy each to an explicit,
+   collision-free registry filename:**
+   ```bash
+   find results -path '*current-public-63-run*/*/summary.json' -print
+   ```
+   Review each printed summary first, then copy it to the exact `summary_path`
+   named by the intended registry entry. Do not bulk-copy generic
+   `summary.json` filenames because they collide.
+
+3. **Update `baselines/baseline-registry.json`** from stale 60-task rows to new 63-task rows. For each model family:
    - Set `expected_task_count: 63`
    - Set `requires_rerun_before_current_comparison: false`
    - Set `evidence_status: "current"`
@@ -117,7 +174,7 @@ done
    - Update `summary_path` and `run_artifacts` to the new 63-task files
    - Set `run_date` to the current date
 
-3. **Validate the updated registry:**
+4. **Validate the updated registry:**
    ```bash
    python3 scripts/validate_baseline_registry.py
    python3 scripts/analyze_baseline_variance.py --require-current-public
@@ -126,20 +183,20 @@ done
    python3 scripts/validate_host_presentation.py
    ```
 
-4. **The strict `--require-current-public` path should now pass without `--allow-stale-pending-rerun`.** If it does not, the registry update is incomplete.
+5. **The strict `--require-current-public` path should now pass without `--allow-stale-pending-rerun`.** If it does not, the registry update is incomplete.
 
-5. **Regenerate the stale-wording inventory** (the new 63-task rows will change the hit counts):
+6. **Regenerate the stale-wording inventory** (the new 63-task rows will change the hit counts):
    ```bash
    python3 scripts/generate_docs_alignment_inventory.py
    ```
 
-6. **Update `artifact/expected-output/v1-readiness-public-view.json`** if the readiness fixture gates change:
+7. **Update `artifact/expected-output/v1-readiness-public-view.json`** if the readiness fixture gates change:
    ```bash
    python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view \
      > artifact/expected-output/v1-readiness-public-view.json
    ```
 
-7. **Commit, push, open PR, wait for CI, merge.**
+8. **Commit, push, open PR, wait for CI, merge.**
 
 ## Rollback
 

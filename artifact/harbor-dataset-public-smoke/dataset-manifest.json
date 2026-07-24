@@ -59,5 +59,6 @@
       "oracle_solution_mode": "secure-control-empty-findings",
       "source_task_path": "tasks/api_tokens/tok_secure_export_scope_control.json"
     }
-  ]
+  ],
+  "verifier_source_set_sha256": "6196fb8151a4372ee9e5d35cf7ee32cbe4450387f14d25294befc0efa43711c7"
 }

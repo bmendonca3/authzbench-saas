@@ -1,0 +1,105 @@
+{
+  "schema_version": "authzbench-public-multimodel-diagnostic-v1",
+  "status": "public_diagnostic_not_registry_evidence",
+  "date": "2026-07-12",
+  "benchmark_commit_sha": "6e34c0e8a766ab63cd3435d1327b0b414290982c",
+  "tracked_worktree_dirty": true,
+  "protocol_version": "blinded-control-evidence-v1",
+  "protocol_manifest_sha256": "2359b92f96568c6469f2ee627dc00ef076cb5db37e116ab76ed7f1dd9e489608",
+  "source_set_sha256": "db602fb211dc0b576d842fb59391c7e13297afed283720d9a3b47af8fafe74bb",
+  "task_count": 63,
+  "vulnerable_task_count": 27,
+  "control_task_count": 36,
+  "harness_type": "no-tools-model",
+  "requested_effort": "high",
+  "kiro_cli_version": "kiro-cli 2.12.1",
+  "model_identity_status": "requested_cli_labels_only_unverified",
+  "model_label_verified": false,
+  "raw_run_bundles_tracked": false,
+  "protocol_manifest_scope": "pre-explicit-agent-and-replay-source-binding",
+  "provenance_limitations": [
+    "The recorded source set predates required --agent-source provenance and explicit replay-app source hashing.",
+    "The aggregate is preserved as preliminary diagnostic evidence and is not an exact-source reproduction baseline.",
+    "Kiro recorded explicit requested model options but did not expose independently observed effective backend model labels."
+  ],
+  "valid_comparable_rows": [
+    {
+      "model": "claude-opus-4.8",
+      "passed_count": 38,
+      "mean_score": 0.6333,
+      "exploit_proven_task_count": 3,
+      "vulnerable_full_pass_count": 2,
+      "secure_control_passed_count": 36,
+      "control_false_report_count": 0,
+      "authorization_balanced_accuracy": 0.5371,
+      "authz_discrimination_index": 0.0741
+    },
+    {
+      "model": "claude-sonnet-4.6",
+      "passed_count": 36,
+      "mean_score": 0.6357,
+      "exploit_proven_task_count": 6,
+      "vulnerable_full_pass_count": 1,
+      "secure_control_passed_count": 35,
+      "control_false_report_count": 1,
+      "authorization_balanced_accuracy": 0.5046,
+      "authz_discrimination_index": 0.0092
+    },
+    {
+      "model": "claude-sonnet-5",
+      "passed_count": 33,
+      "mean_score": 0.6032,
+      "exploit_proven_task_count": 6,
+      "vulnerable_full_pass_count": 0,
+      "secure_control_passed_count": 33,
+      "control_false_report_count": 3,
+      "authorization_balanced_accuracy": 0.4583,
+      "authz_discrimination_index": -0.0833
+    },
+    {
+      "model": "claude-haiku-4.5",
+      "passed_count": 33,
+      "mean_score": 0.5643,
+      "exploit_proven_task_count": 3,
+      "vulnerable_full_pass_count": 0,
+      "secure_control_passed_count": 33,
+      "control_false_report_count": 2,
+      "authorization_balanced_accuracy": 0.4583,
+      "authz_discrimination_index": -0.0556
+    }
+  ],
+  "structurally_excluded_rows": [
+    {
+      "model": "glm-5",
+      "scope": "full_63_task_run",
+      "adapter_output_parse_failure_count": 21,
+      "invalid_submission_count": 21,
+      "reason": "ANSI reset sequences were interleaved within otherwise recognizable pretty JSON"
+    },
+    {
+      "model": "qwen3-coder-next",
+      "scope": "one_task_admission_smoke",
+      "adapter_output_parse_failure_count": 1,
+      "reason": "ANSI reset sequences were interleaved within otherwise recognizable pretty JSON"
+    },
+    {
+      "model": "deepseek-3.2",
+      "scope": "one_task_admission_smoke",
+      "adapter_output_parse_failure_count": 1,
+      "reason": "ANSI reset sequences were interleaved within otherwise recognizable pretty JSON"
+    }
+  ],
+  "integrity_checks": {
+    "all_valid_rows_completed_63_tasks": true,
+    "all_valid_protocol_hashes_identical": true,
+    "all_valid_source_sets_identical": true,
+    "all_valid_rows_have_opaque_participant_paths": true,
+    "all_valid_rows_have_zero_canonical_id_leaks_in_participant_contexts_or_paths": true,
+    "all_valid_rows_have_no_tool_probe_telemetry": true,
+    "all_valid_rows_have_zero_adapter_failures": true,
+    "all_valid_rows_have_zero_infrastructure_failures": true,
+    "all_valid_rows_have_zero_invalid_submissions": true,
+    "all_valid_rows_have_zero_strict_json_only_outputs": true
+  },
+  "claim_boundary": "Single-run public diagnostics from a dirty worktree before explicit adapter/replay-source binding. Model names are requested CLI labels only and were not independently verified as effective backend labels. Tool-probe telemetry was not captured, so no tool-attempt claim is made. These rows are not exact-source reproduction, registry, leaderboard, private-holdout, hosted, cross-family, or statistically stable model-ranking evidence."
+}

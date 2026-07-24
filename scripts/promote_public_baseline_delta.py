@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from authzbench.core import benchmark_fingerprint, dump_json, load_json
+from authzbench.run import summarize_tool_probe_telemetry
 
 
 EXTRA_COUNT_FIELDS = (
@@ -23,8 +24,10 @@ EXTRA_COUNT_FIELDS = (
 COMPATIBILITY_FIELDS = (
     "agent",
     "benchmark_version",
+    "evaluation_protocol",
     "harness_type",
     "model",
+    "model_identity_status",
 )
 
 FINGERPRINT_CONTRACT_FIELDS = (
@@ -73,6 +76,31 @@ def _git_head() -> str | None:
     if completed.returncode != 0:
         return None
     return completed.stdout.strip()
+
+
+def _require_clean_worktree() -> None:
+    completed = subprocess.run(
+        ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+        cwd=ROOT,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if completed.returncode != 0:
+        raise ValueError("unable to verify that the promoted baseline worktree is clean")
+    if completed.stdout.strip():
+        raise ValueError("baseline promotion requires a clean worktree at the benchmark commit")
+
+
+def _verified_benchmark_commit_sha(benchmark_commit_sha: str | None) -> str:
+    observed_commit_sha = _git_head()
+    if not observed_commit_sha:
+        raise ValueError("unable to resolve Git HEAD for promoted baseline provenance")
+    if benchmark_commit_sha is not None and benchmark_commit_sha != observed_commit_sha:
+        raise ValueError("benchmark_commit_sha must exactly match the observed Git HEAD")
+    _require_clean_worktree()
+    return observed_commit_sha
 
 
 def _require_unique_task_ids(task_ids: list[str], label: str) -> None:
@@ -177,7 +205,7 @@ def _metric_summary(tasks: list[dict[str, Any]]) -> dict[str, Any]:
     authorized_allow_passed = sum(1 for item in authorized_allow_controls if item["passed"])
     invalid_submissions = sum(1 for item in tasks if item["invalid_submission"])
     model_tool_plan_artifact_count = sum(1 for item in tasks if item.get("model_tool_plan_artifact"))
-    per_task_tool_probe_artifact_count = sum(1 for item in tasks if item.get("tool_probe_artifact"))
+    tool_telemetry = summarize_tool_probe_telemetry(tasks)
     planner_parse_error_count = sum(1 for item in tasks if item.get("planner_parse_error"))
     planner_failure_count = sum(
         1
@@ -200,11 +228,7 @@ def _metric_summary(tasks: list[dict[str, Any]]) -> dict[str, Any]:
     target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
     return {
         "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
-        "per_task_tool_probe_artifact_count": per_task_tool_probe_artifact_count,
-        "executed_tool_probe_total": sum(int(item.get("executed_probe_count", 0)) for item in tasks),
-        "fallback_probe_total": sum(int(item.get("fallback_probe_count", 0)) for item in tasks),
         "scored_submission_finding_total": sum(int(item.get("submission_finding_count", 0)) for item in tasks),
-        "submitted_finding_total": sum(int(item.get("submitted_finding_count", 0)) for item in tasks),
         "planner_failure_count": planner_failure_count,
         "planner_parse_error_count": planner_parse_error_count,
         "task_count": len(tasks),
@@ -227,11 +251,12 @@ def _metric_summary(tasks: list[dict[str, Any]]) -> dict[str, Any]:
         "control_false_report_count": controls_with_findings,
         "control_false_report_rate": _rate(controls_with_findings, len(controls)),
         "control_execution_pass_rate": _rate(control_replay_passed, len(controls)),
-        "false_positive_rate": _rate(controls_failed, len(controls)),
+        "false_positive_rate": _rate(controls_with_findings, len(controls)),
+        "control_failure_rate": _rate(controls_failed, len(controls)),
         "authorized_allow_pass_rate": _rate(authorized_allow_passed, len(authorized_allow_controls)),
         "target_request_correlated_task_count": target_log_correlated if target_log_tasks else None,
         "target_request_coverage_rate": _rate(target_log_correlated, len(target_log_tasks)) if target_log_tasks else None,
-    }
+    } | tool_telemetry
 
 
 def promote(
@@ -246,6 +271,7 @@ def promote(
     expected_base_task_count: int,
     expected_delta_task_ids: set[str],
 ) -> dict[str, Any]:
+    resolved_benchmark_commit_sha = _verified_benchmark_commit_sha(benchmark_commit_sha)
     base = load_json(base_summary_path)
     delta = load_json(delta_summary_path)
     tasks = _merge_tasks(
@@ -261,7 +287,9 @@ def promote(
             "agent",
             "agent_cmd",
             "benchmark_version",
+            "evaluation_protocol",
             "model",
+            "model_identity_status",
             "harness_type",
             "target_log_dir",
             "timeout_seconds",
@@ -270,7 +298,7 @@ def promote(
     summary.update(
         {
             "run_id": run_id,
-            "benchmark_commit_sha": benchmark_commit_sha or delta.get("benchmark_commit_sha") or base.get("benchmark_commit_sha"),
+            "benchmark_commit_sha": resolved_benchmark_commit_sha,
             "benchmark_fingerprint": benchmark_fingerprint(_current_task_items()),
             "interpretation": interpretation,
             "promotion_annotation": promotion_annotation,
@@ -291,7 +319,7 @@ def promote(
                 "delta_run_id": delta.get("run_id"),
                 "base_benchmark_commit_sha": base.get("benchmark_commit_sha"),
                 "delta_benchmark_commit_sha": delta.get("benchmark_commit_sha"),
-                "merged_benchmark_commit_sha": benchmark_commit_sha or delta.get("benchmark_commit_sha") or base.get("benchmark_commit_sha"),
+                "merged_benchmark_commit_sha": resolved_benchmark_commit_sha,
             },
         }
     )
@@ -299,6 +327,20 @@ def promote(
         summary["diagnostic_semantics"] = delta.get("diagnostic_semantics", base.get("diagnostic_semantics"))
     for field in EXTRA_COUNT_FIELDS:
         summary[field] = int(base.get(field, 0) or 0) + int(delta.get(field, 0) or 0)
+    if "model_label_verified_task_count" in base or "model_label_verified_task_count" in delta:
+        summary["model_label_verified_task_count"] = int(
+            base.get("model_label_verified_task_count", 0) or 0
+        ) + int(delta.get("model_label_verified_task_count", 0) or 0)
+    if "model_identity_status_counts" in base or "model_identity_status_counts" in delta:
+        merged_status_counts: dict[str, int] = {}
+        for source in (base, delta):
+            raw_counts = source.get("model_identity_status_counts")
+            if not isinstance(raw_counts, dict):
+                continue
+            for status, count in raw_counts.items():
+                if isinstance(status, str) and isinstance(count, int) and not isinstance(count, bool):
+                    merged_status_counts[status] = merged_status_counts.get(status, 0) + count
+        summary["model_identity_status_counts"] = dict(sorted(merged_status_counts.items()))
     if "model_output_failures" in base or "model_output_failures" in delta:
         summary["model_output_failures"] = [
             *(base.get("model_output_failures") if isinstance(base.get("model_output_failures"), list) else []),
@@ -335,7 +377,7 @@ def main() -> int:
         run_id=args.run_id,
         interpretation=args.interpretation,
         promotion_annotation=args.promotion_annotation,
-        benchmark_commit_sha=args.benchmark_commit_sha or _git_head(),
+        benchmark_commit_sha=args.benchmark_commit_sha,
         expected_base_task_count=args.base_task_count,
         expected_delta_task_ids=set(args.delta_task_id),
     )

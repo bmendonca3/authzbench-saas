@@ -205,6 +205,7 @@ def validate_parity_experiment(
         "parity_verified": data.get("parity_verified"),
         "evidence_status": data.get("evidence_status"),
         "parity_methodology": data.get("parity_methodology"),
+        "task_count": data.get("task_count"),
         "errors": errors,
         "warnings": warnings,
     }

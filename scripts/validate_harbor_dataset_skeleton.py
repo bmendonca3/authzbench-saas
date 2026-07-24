@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -49,6 +50,23 @@ PRIVATE_MARKERS = (
     "credential:",
     "oracle:",
 )
+
+
+def _verifier_source_set_sha256(root: Path) -> str:
+    entries = []
+    source_paths = [root / "authzbench" / "core.py", root / "authzbench" / "score.py"]
+    source_paths.extend(sorted((root / "apps").rglob("*.py")))
+    for path in source_paths:
+        if "__pycache__" in path.parts:
+            continue
+        entries.append(
+            {
+                "path": path.relative_to(root).as_posix(),
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+        )
+    payload = json.dumps(entries, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -167,6 +185,13 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         errors.append("private_task_count must be 0")
     if manifest.get("harness_lane") not in {"no_tools", "live_http_tool_agent"}:
         errors.append("harness_lane must be no_tools or live_http_tool_agent")
+    recorded_source_hash = manifest.get("verifier_source_set_sha256")
+    current_source_hash = _verifier_source_set_sha256(ROOT)
+    if recorded_source_hash != current_source_hash:
+        errors.append(
+            "verifier_source_set_sha256 must match the current scorer/core/app source set; "
+            "rebuild the generated dataset"
+        )
     dataset_toml_path = _safe_relative(dataset_dir, manifest.get("dataset_toml"))
     if dataset_toml_path is None:
         errors.append("dataset_toml must be a safe relative path")
@@ -294,6 +319,16 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         for name, path in required_files.items():
             if not path.is_file():
                 errors.append(f"{rel_task_dir}: missing {name}")
+        if recorded_source_hash:
+            try:
+                copied_source_hash = _verifier_source_set_sha256(task_dir / "tests")
+            except OSError as exc:
+                errors.append(f"{rel_task_dir}: unable to hash copied verifier source: {exc.filename}")
+            else:
+                if copied_source_hash != recorded_source_hash:
+                    errors.append(
+                        f"{rel_task_dir}: copied verifier source tree does not match dataset-manifest provenance"
+                    )
 
         if required_files["instruction.md"].is_file():
             instruction = required_files["instruction.md"].read_text(encoding="utf-8")

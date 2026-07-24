@@ -32,6 +32,38 @@ here.
 - `task-quality-gate-contract.json`: public-safe acceptance contract for task
   quality gates enforced during public validation. It is not external review
   evidence and cannot satisfy strict v1.0-internal public-view readiness by itself.
+- `kiro-multimodel-blinded-public-diagnostic-2026-07-12.json`: public-safe
+  aggregate from the first blinded host-replayed multi-model diagnostic. Raw
+  run bundles remain ignored. The runs predate required adapter/replay-source
+  binding, use requested-only model labels without independently verified
+  effective backend labels, and are not exact-source reproduction, registry, leaderboard,
+  private-holdout, hosted, cross-family, or statistically stable ranking evidence.
+- `openai-codex-model-effort-matrix-2026-07-12.json`: frozen public-safe
+  authenticated Codex model/effort catalog and admission contract for 27
+  non-delegating configurations. It records the current workspace-credit
+  blocker and is not proof of completed model inference or model-quality,
+  API, registry, leaderboard, private-holdout, hosted, or ranking evidence.
+- `openai-codex-model-catalog-2026-07-12.json`: public-safe normalized source
+  catalog for the matrix. It preserves visible/hidden status, reasoning effort,
+  automatic-delegation, client, fetch, and raw-digest metadata while omitting
+  raw model instructions. Its derivation is validated against all 27 matrix
+  configurations.
+- `openai-codex-credit-blocker-2026-07-12.json`: public-safe evidence from the
+  one real authenticated Codex preflight that failed before model inference.
+  It binds the requested configuration, CLI, source/protocol state, lifecycle,
+  return codes, tool telemetry, and raw-content hashes without publishing the
+  raw trace. The source was dirty, so it is blocker evidence only and is not a
+  comparable benchmark row. It also records that the prompt hash excludes
+  hidden runtime profile context and that profile skill-loader activity was
+  observed without an exposed disable switch.
+- `openai-codex-hosted-diagnostic-2026-07-12.json`: public-safe aggregate from
+  the clean-source 27-configuration admission and attempted full phase. It
+  records 24 admissions, three capacity exclusions, one complete 63-task
+  `gpt-5.4-mini`/low diagnostic row, and 23 incomplete full rows after workspace
+  credits were exhausted. Raw result bundles remain ignored. The single
+  complete requested-only row is not cross-configuration, registry,
+  leaderboard, private-holdout, API, platform-hosted evaluation, or stable
+  ranking evidence.
 - `private-holdout-rotation-metadata.template.json`: public-safe template for
   maintainer-only private-pack rotation metadata. It is not private holdout
   evidence and cannot satisfy strict v1.0-internal public-view readiness.

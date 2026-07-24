@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from authzbench.core import load_json
-from scripts.promote_public_baseline_delta import ROOT, promote
+from scripts.promote_public_baseline_delta import (
+    ROOT,
+    _git_head,
+    _metric_summary,
+    _require_clean_worktree,
+    promote,
+)
 
 
 PROMOTED_TASK_IDS = {
@@ -25,7 +33,59 @@ def _write_summary(path: Path, template: dict, tasks: list[dict], *, run_id: str
 
 
 class PromotePublicBaselineDeltaTests(unittest.TestCase):
-    def test_promotes_exact_delta_into_current_public_composite(self) -> None:
+    def test_composite_separates_false_reports_from_control_failures(self) -> None:
+        def control(*, passed: bool, finding_count: int) -> dict:
+            return {
+                "expected_vulnerable": False,
+                "control_type": "denial",
+                "passed": passed,
+                "exploit_proof": 0,
+                "boundary_reasoning": 1,
+                "safety": 1,
+                "submission_finding_count": finding_count,
+                "control_replay_passed": passed,
+                "invalid_submission": not passed,
+                "model_tool_plan_artifact": False,
+                "tool_probe_artifact": False,
+                "score": 1 if passed else 0,
+            }
+
+        metrics = _metric_summary(
+            [
+                control(passed=False, finding_count=0),
+                control(passed=False, finding_count=1),
+                control(passed=True, finding_count=0),
+            ]
+        )
+
+        self.assertEqual(metrics["control_false_report_count"], 1)
+        self.assertEqual(metrics["false_positive_rate"], 0.3333)
+        self.assertEqual(metrics["control_failure_rate"], 0.6667)
+
+    def test_promoted_summary_commit_label_must_match_head(self) -> None:
+        with self.assertRaisesRegex(ValueError, "exactly match"):
+            promote(
+                ROOT / "baselines" / "scripted-baseline-public-63-summary.json",
+                ROOT / "baselines" / "scripted-baseline-public-63-summary.json",
+                output_path=ROOT / "unused.json",
+                run_id="unused",
+                interpretation="unused",
+                promotion_annotation="unused",
+                benchmark_commit_sha="0" * 40,
+                expected_base_task_count=0,
+                expected_delta_task_ids=set(),
+            )
+
+    def test_promoted_summary_requires_clean_worktree(self) -> None:
+        with patch(
+            "scripts.promote_public_baseline_delta.subprocess.run",
+            return_value=subprocess.CompletedProcess([], 0, stdout=" M tasks/billing/example.json\n", stderr=""),
+        ):
+            with self.assertRaisesRegex(ValueError, "clean worktree"):
+                _require_clean_worktree()
+
+    @patch("scripts.promote_public_baseline_delta._require_clean_worktree")
+    def test_promotes_exact_delta_into_current_public_composite(self, _clean: object) -> None:
         template = load_json(ROOT / "baselines" / "scripted-baseline-public-63-summary.json")
         base_tasks = [task for task in template["tasks"] if task["task_id"] not in PROMOTED_TASK_IDS]
         delta_tasks = [task for task in template["tasks"] if task["task_id"] in PROMOTED_TASK_IDS]
@@ -39,6 +99,13 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
             output_path = tmp_path / "merged-63.json"
             _write_summary(base_path, template, base_tasks, run_id="base-60")
             _write_summary(delta_path, template, delta_tasks, run_id="delta-3")
+            for path, count in ((base_path, 60), (delta_path, 3)):
+                source = load_json(path)
+                source["evaluation_protocol"] = {"version": "blinded-control-evidence-v1"}
+                source["model_identity_status"] = "requested_only_unverified"
+                source["model_label_verified_task_count"] = 0
+                source["model_identity_status_counts"] = {"requested_only_unverified": count}
+                path.write_text(json.dumps(source, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
             summary = promote(
                 base_path,
@@ -47,7 +114,7 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
                 run_id="merged-63",
                 interpretation="synthetic promoted-composite test",
                 promotion_annotation="test composite; not a full rerun",
-                benchmark_commit_sha="0" * 40,
+                benchmark_commit_sha=_git_head(),
                 expected_base_task_count=60,
                 expected_delta_task_ids=PROMOTED_TASK_IDS,
             )
@@ -60,11 +127,22 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
         self.assertEqual(summary["merged_public_task_count"], 63)
         self.assertEqual(set(summary["delta_task_ids"]), PROMOTED_TASK_IDS)
         self.assertEqual(
+            summary["evaluation_protocol"],
+            {"version": "blinded-control-evidence-v1"},
+        )
+        self.assertEqual(summary["model_identity_status"], "requested_only_unverified")
+        self.assertEqual(summary["model_label_verified_task_count"], 0)
+        self.assertEqual(
+            summary["model_identity_status_counts"],
+            {"requested_only_unverified": 63},
+        )
+        self.assertEqual(
             [task["task_id"] for task in summary["tasks"]],
             [task["id"] for _, task in sorted((path.relative_to(ROOT).as_posix(), load_json(path)) for path in (ROOT / "tasks").glob("*/*.json"))],
         )
 
-    def test_rejects_delta_that_is_not_exact_promoted_task_set(self) -> None:
+    @patch("scripts.promote_public_baseline_delta._require_clean_worktree")
+    def test_rejects_delta_that_is_not_exact_promoted_task_set(self, _clean: object) -> None:
         template = load_json(ROOT / "baselines" / "scripted-baseline-public-63-summary.json")
         base_tasks = [task for task in template["tasks"] if task["task_id"] not in PROMOTED_TASK_IDS]
         bad_delta_tasks = [task for task in template["tasks"] if task["task_id"] in PROMOTED_TASK_IDS][:2]
@@ -85,7 +163,7 @@ class PromotePublicBaselineDeltaTests(unittest.TestCase):
                     run_id="merged-63",
                     interpretation="synthetic promoted-composite test",
                     promotion_annotation="test composite; not a full rerun",
-                    benchmark_commit_sha="0" * 40,
+                    benchmark_commit_sha=_git_head(),
                     expected_base_task_count=60,
                     expected_delta_task_ids=PROMOTED_TASK_IDS,
                 )

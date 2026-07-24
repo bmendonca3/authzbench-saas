@@ -86,7 +86,7 @@ context, prefer the definition here over a local paraphrase.
 - **Eligibility tier**: the bucket a leaderboard-candidate row sits in
   (`sanity`, `public-diagnostic`, `private-candidate`,
   `private-eligible`, `external-verified`). See
-  [`docs/scoring-and-submissions.md`](scoring-and-submissions.md#2-result-and-submission-schema).
+  [`docs/scoring-and-submissions.md`](scoring-and-submissions.md#2-result-and-submission-contract).
 - **Comparability key**: the deterministic key derived from
   `harness_type`, `tool_access`, `max_steps`, `timeout_seconds`,
   `max_http_requests`, `retry_policy`, `temperature`, and the

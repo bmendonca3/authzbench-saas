@@ -1,0 +1,301 @@
+{
+  "$defs": {
+    "controlVerification": {
+      "additionalProperties": false,
+      "properties": {
+        "expected": {
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "maximum": 599,
+              "minimum": 100,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "type": "object"
+        },
+        "request": {
+          "$ref": "#/$defs/replayRequest"
+        }
+      },
+      "required": [
+        "request",
+        "expected"
+      ],
+      "type": "object"
+    },
+    "evidenceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "request": {
+          "$ref": "#/$defs/replayRequest"
+        }
+      },
+      "required": [
+        "request"
+      ],
+      "type": "object"
+    },
+    "participantSubmission": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "not": {
+            "required": [
+              "verification"
+            ]
+          },
+          "properties": {
+            "findings": {
+              "items": {
+                "$ref": "#/$defs/vulnerableFinding"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "findings"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "findings": {
+              "maxItems": 0,
+              "type": "array"
+            },
+            "verification": {
+              "items": {
+                "$ref": "#/$defs/controlVerification"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "findings",
+            "verification"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "replayRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "actor": {
+          "minLength": 1,
+          "pattern": ".*\\S.*",
+          "type": "string"
+        },
+        "body": {
+          "type": "object"
+        },
+        "headers": {
+          "additionalProperties": {
+            "pattern": "^[\\t\\x20-\\x7E]*$",
+            "type": "string"
+          },
+          "propertyNames": {
+            "pattern": "^[!#$%&'*+.^_`|~0-9A-Za-z-]+$"
+          },
+          "type": "object"
+        },
+        "method": {
+          "pattern": "^[A-Z]+$",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "pattern": "^/[\\x20-\\x7E]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "actor",
+        "method",
+        "path"
+      ],
+      "type": "object"
+    },
+    "runSummaryContractIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "canary_suite_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "evidence_contract_version": {
+          "const": "evidence-requirements-v2-draft"
+        },
+        "isolation_profile": {
+          "const": "unactivated-draft"
+        },
+        "participant_submission_schema": {
+          "const": "participant-submission-v2-draft"
+        },
+        "protocol_version": {
+          "const": "blinded-control-evidence-v2-draft"
+        },
+        "protocol_source_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "schema_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "score_policy_version": {
+          "minLength": 1,
+          "pattern": ".*\\S.*",
+          "type": "string"
+        },
+        "task_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "participant_submission_schema",
+        "evidence_contract_version",
+        "score_policy_version",
+        "schema_bundle_sha256",
+        "task_set_sha256",
+        "protocol_source_set_sha256",
+        "isolation_profile",
+        "canary_suite_sha256"
+      ],
+      "type": "object"
+    },
+    "taskEvidenceRequirement": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "status"
+          ]
+        },
+        {
+          "required": [
+            "body_contains"
+          ]
+        }
+      ],
+      "properties": {
+        "body_contains": {
+          "$ref": "#/$defs/meaningfulJsonMatch"
+        },
+        "index": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "name": {
+          "minLength": 1,
+          "pattern": ".*\\S.*",
+          "type": "string"
+        },
+        "request": {
+          "$ref": "#/$defs/replayRequest"
+        },
+        "status": {
+          "maximum": 599,
+          "minimum": 100,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "index",
+        "request"
+      ],
+      "type": "object"
+    },
+    "vulnerableFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "boundary": {
+          "additionalProperties": {
+            "minLength": 1,
+            "pattern": ".*\\S.*",
+            "type": "string"
+          },
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": ".*\\S.*"
+          },
+          "type": "object"
+        },
+        "claim": {
+          "minLength": 1,
+          "pattern": ".*\\S.*",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/evidenceItem"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "impact": {
+          "minLength": 1,
+          "pattern": ".*\\S.*",
+          "type": "string"
+        },
+        "out_of_scope_actions": {
+          "items": {
+            "minLength": 1,
+            "pattern": ".*\\S.*",
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "claim",
+        "evidence",
+        "boundary",
+        "impact",
+        "out_of_scope_actions"
+      ],
+      "type": "object"
+    },
+    "meaningfulJsonMatch": {
+      "anyOf": [
+        {
+          "minProperties": 1,
+          "type": "object"
+        },
+        {
+          "minItems": 1,
+          "type": "array"
+        },
+        {
+          "pattern": ".*\\S.*",
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  },
+  "$id": "urn:authzbench:schemas:blinded-control-evidence-v2",
+  "$ref": "#/$defs/participantSubmission",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Draft, non-promotable contract bundle for the future AuthZBench-SaaS blinded-control-evidence-v2 protocol.",
+  "title": "AuthZBench-SaaS Blinded Control Evidence V2",
+  "x-authzbench-status": "draft-non-promotable",
+  "x-authzbench-version": "blinded-control-evidence-v2-draft"
+}
