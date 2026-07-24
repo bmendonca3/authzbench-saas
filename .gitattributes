@@ -1,0 +1,5 @@
+# The generated Harbor pilot vendors exact verifier source bytes so its recorded
+# provenance matches the code used by the local NOP/Oracle evidence. Some source
+# files intentionally retain an extra terminal newline; do not flag that
+# byte-preserving generated copy as a whitespace error.
+artifact/harbor-kaggle-public-pilot/tasks/** whitespace=-blank-at-eof

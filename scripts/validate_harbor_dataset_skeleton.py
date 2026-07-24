@@ -34,7 +34,13 @@ PUBLIC_ROUTE_FRAGMENT_PREFIXES = (
     "/settings/",
     "/tickets/",
 )
-ALLOWED_ABSOLUTE_PATHS = {"/logs/artifacts", "/logs/verifier", "/usr/bin/env"}
+ALLOWED_ABSOLUTE_PATHS = {
+    "/bin/bash",
+    "/bin/sh",
+    "/logs/artifacts",
+    "/logs/verifier",
+    "/usr/bin/env",
+}
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
 DISALLOWED_TEXT = (
     "calendar." + "google.com",
@@ -179,8 +185,10 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
     if manifest.get("harbor_execution_verified") is not False:
         errors.append("harbor_execution_verified must be false")
     oracle_solution_mode = manifest.get("oracle_solution_mode", "none")
-    if oracle_solution_mode not in {"none", "secure-control-empty-findings"}:
-        errors.append("oracle_solution_mode must be none or secure-control-empty-findings")
+    if oracle_solution_mode not in {"none", "secure-control-empty-findings", "public-pilot-reference"}:
+        errors.append(
+            "oracle_solution_mode must be none, secure-control-empty-findings, or public-pilot-reference"
+        )
     if manifest.get("private_task_count") != 0:
         errors.append("private_task_count must be 0")
     if manifest.get("harness_lane") not in {"no_tools", "live_http_tool_agent"}:
@@ -407,6 +415,15 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                     errors.append(f"{rel_task_dir}: agent.network_mode must be {expected_agent_network}")
                 if environment.get("network_mode") != "no-network":
                     errors.append(f"{rel_task_dir}: environment.network_mode must be no-network")
+                if task_oracle_solution_mode == "public-pilot-reference":
+                    if authzbench.get("pilot_contract") != "public-three-behavior-v1":
+                        errors.append(f"{rel_task_dir}: pilot_contract must be public-three-behavior-v1")
+                    if authzbench.get("pilot_behavior") != task.get("pilot_behavior"):
+                        errors.append(f"{rel_task_dir}: pilot_behavior must match manifest entry")
+                    if authzbench.get("expected_nop_reward") != 0.0:
+                        errors.append(f"{rel_task_dir}: expected_nop_reward must be 0.0")
+                    if authzbench.get("expected_oracle_reward") != 1.0:
+                        errors.append(f"{rel_task_dir}: expected_oracle_reward must be 1.0")
 
         if required_files["environment/Dockerfile"].is_file():
             dockerfile = required_files["environment/Dockerfile"].read_text(encoding="utf-8")
@@ -448,6 +465,17 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                 else:
                     if "/logs/artifacts/submission.json" not in solution or '{"findings":[]}' not in solution:
                         errors.append(f"{rel_task_dir}: secure-control oracle solution must write findings: [] submission")
+            elif task_oracle_solution_mode == "public-pilot-reference":
+                if "/logs/artifacts/submission.json" not in solution:
+                    errors.append(f"{rel_task_dir}: public pilot Oracle must write submission.json")
+                if "deterministic public-pilot Oracle submission" not in solution:
+                    errors.append(f"{rel_task_dir}: public pilot Oracle boundary is missing")
+                if "exit 64" in solution:
+                    errors.append(f"{rel_task_dir}: public pilot Oracle must not be a placeholder")
+                if task.get("expected_nop_reward") != 0.0:
+                    errors.append(f"{rel_task_dir}: public pilot expected_nop_reward must be 0.0")
+                if task.get("expected_oracle_reward") != 1.0:
+                    errors.append(f"{rel_task_dir}: public pilot expected_oracle_reward must be 1.0")
             else:
                 errors.append(f"{rel_task_dir}: unsupported oracle solution mode")
             errors.extend(_public_safety_errors(solution, label=f"{rel_task_dir}/solution/solve.sh"))
@@ -457,16 +485,23 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
             invokes_score_cli = "python3 -m authzbench.score" in script
             invokes_score_api = (
                 "from authzbench.score import score_submission" in script
-                and "score_submission(task, submission)" in script
+                and "score_submission(task, submission" in script
             )
             if not (invokes_score_cli or invokes_score_api):
                 errors.append(f"{rel_task_dir}: tests/test.sh must invoke authzbench.score")
+            if (
+                task_oracle_solution_mode == "public-pilot-reference"
+                and "require_control_verification=True" not in script
+            ):
+                errors.append(f"{rel_task_dir}: public pilot verifier must require control verification")
             if "missing agent submission" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must handle missing agent submissions explicitly")
             if "/tests/task_manifest.json" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must use the verifier task manifest copy")
             if "/logs/artifacts/score.json" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must write score artifact")
+            if "/logs/verifier/score.json" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must persist Harbor verifier score artifact")
             if "/logs/artifacts/reward.json" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must write reward.json artifact")
             if "/logs/artifacts/reward.txt" not in script:
@@ -487,8 +522,14 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                 errors.append(str(exc))
                 continue
             errors.extend(_public_safety_errors(data, label=f"{rel_task_dir}/{json_name}"))
-            if json_name == "environment/context.json" and data.get("task_id") != task_id:
-                errors.append(f"{rel_task_dir}: context task_id must match manifest entry")
+            if json_name == "environment/context.json":
+                if task_oracle_solution_mode == "public-pilot-reference":
+                    if not str(data.get("task_id", "")).startswith("case-") or data.get("task_id") == task_id:
+                        errors.append(f"{rel_task_dir}: public pilot context must use an opaque case id")
+                    if data.get("context_profile") != "blinded-evaluation-v1":
+                        errors.append(f"{rel_task_dir}: public pilot context must use blinded-evaluation-v1")
+                elif data.get("task_id") != task_id:
+                    errors.append(f"{rel_task_dir}: context task_id must match manifest entry")
             if json_name == "verifier/task_manifest.json" and data.get("id") != task_id:
                 errors.append(f"{rel_task_dir}: verifier task_manifest id must match manifest entry")
             if json_name == "verifier/task_manifest.json" and data.get("split") == "private_holdout":

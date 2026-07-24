@@ -117,7 +117,7 @@
       "id": "paper_and_artifact_readiness",
       "passed": false,
       "unmet": [
-        "release-affecting files changed after benchmark_source_sha: artifact/README.md, artifact/docs-alignment-stale-wording-inventory.md, artifact/kiro-multimodel-blinded-public-diagnostic-2026-07-12.json, artifact/openai-codex-credit-blocker-2026-07-12.json, artifact/openai-codex-hosted-diagnostic-2026-07-12.json, artifact/openai-codex-model-catalog-2026-07-12.json, artifact/openai-codex-model-effort-matrix-2026-07-12.json, authzbench/core.py, authzbench/evaluate.py, authzbench/run.py"
+        "release-affecting files changed after benchmark_source_sha: artifact/README.md, artifact/docs-alignment-stale-wording-inventory.md, artifact/kiro-multimodel-blinded-public-diagnostic-2026-07-12.json, artifact/openai-codex-credit-blocker-2026-07-12.json, artifact/openai-codex-hosted-diagnostic-2026-07-12.json, artifact/openai-codex-model-catalog-2026-07-12.json, artifact/openai-codex-model-effort-matrix-2026-07-12.json, artifact/run-bundle.md, authzbench/core.py, authzbench/evaluate.py"
       ]
     },
     {

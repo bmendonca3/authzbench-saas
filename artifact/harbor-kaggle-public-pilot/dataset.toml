@@ -1,0 +1,16 @@
+# Public-safe Harbor dataset registration skeleton.
+# This file is not Harbor publish evidence, not Harbor execution evidence,
+# and not v1 readiness evidence.
+name = "authzbench-saas-public-skeleton"
+version = "public-skeleton"
+description = "Public-safe AuthZBench-SaaS Harbor-compatible skeleton dataset."
+tasks = ["tasks/tok_cross_tenant_secret_read", "tasks/tok_export_token_reads_export_control", "tasks/tok_secure_export_scope_control"]
+
+[metadata.authzbench]
+skeleton_schema_version = "harbor-dataset-skeleton-v1"
+evidence_status = "generated_public_skeleton"
+harness_lane = "no_tools"
+private_task_count = 0
+harbor_execution_verified = false
+harbor_publish_verified = false
+claim_boundary = "Generated public dataset skeleton only; not Harbor publish evidence, not Harbor execution evidence, and not v1 readiness."

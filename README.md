@@ -201,10 +201,20 @@ so the headline verdict is grep-friendly in CI logs without parsing JSON.
   wheel, installs it outside the source tree, invokes the packaged CLI, and
   builds a one-task dataset
 - Local execution preflight: `python3 scripts/check_harbor_local_execution.py`
+- Three-task public pilot: local Harbor 0.13.2 NOP/Oracle execution is tracked
+  in `artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json`; all 12
+  repeated cells completed with NOP `0.0` and Oracle `1.0`
+- Google/Kaggle's July 22 onboarding update and official starter repository
+  confirm the task-directory and local NOP/Oracle workflow. The tracked root
+  `dataset.toml` remains an internal, non-publishable skeleton; an official
+  digest-backed dataset manifest must be created through the current Harbor
+  registration workflow before publication.
 - Full 63-task/model parity, Harbor platform acceptance, and hosted Harbor
   operation: not claimed (v2 gates)
 
 Full runbook: [`docs/harbor-integration-runbook.md`](docs/harbor-integration-runbook.md).
+Pilot design and remaining platform questions:
+[`docs/kaggle-benchmark-design-contract.md`](docs/kaggle-benchmark-design-contract.md).
 
 ## Repository Map
 

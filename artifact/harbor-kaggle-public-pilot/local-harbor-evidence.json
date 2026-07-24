@@ -1,0 +1,57 @@
+{
+  "schema_version": "authzbench-harbor-local-evidence-v1",
+  "generated_at": "2026-07-23T23:29:59-07:00",
+  "claim_boundary": "Local Harbor 0.13.2 NOP/Oracle evidence only; not Kaggle-hosted execution, Model Proxy evidence, platform acceptance, independent review, or launch evidence.",
+  "runtime": {
+    "harbor_version": "0.13.2",
+    "environment": "docker",
+    "n_concurrent": 1,
+    "max_retries": 0,
+    "repeats_per_agent": 2,
+    "raw_jobs_retained_outside_repository": true,
+    "verifier_source_set_sha256": "3d7900d4d4c2d0f828a024c511537c64150e2bf52c96eb5c734868704aa99571"
+  },
+  "artifact_contract": {
+    "reward_json_inspected": true,
+    "reward_text_inspected": true,
+    "score_json_inspected": true,
+    "result_json_inspected": true,
+    "oracle_submission_inspected": true,
+    "agent_artifact_note": "NOP emits no agent artifact; deterministic Oracle emits oracle.txt rather than trajectory.json. No model trajectory is claimed."
+  },
+  "summary": {
+    "total_cells": 12,
+    "completed_cells": 12,
+    "errored_cells": 0,
+    "retries": 0
+  },
+  "tasks": [
+    {
+      "task_id": "tok_cross_tenant_secret_read",
+      "pilot_behavior": "vulnerable",
+      "task_checksum": "eb9864136d9d3f320935faa5fc155dfbb38a232d5e492682d8cb698ec6999b72",
+      "nop_rewards": [0.0, 0.0],
+      "oracle_rewards": [1.0, 1.0],
+      "nop_scores": [0.0, 0.0],
+      "oracle_scores": [1.0, 1.0]
+    },
+    {
+      "task_id": "tok_secure_export_scope_control",
+      "pilot_behavior": "secure_denial",
+      "task_checksum": "c4d89f91cd331a371d4f6aeab29e55fbd66ee1c28eac5705e03e46fc33c54122",
+      "nop_rewards": [0.0, 0.0],
+      "oracle_rewards": [1.0, 1.0],
+      "nop_scores": [0.0, 0.0],
+      "oracle_scores": [1.0, 1.0]
+    },
+    {
+      "task_id": "tok_export_token_reads_export_control",
+      "pilot_behavior": "authorized_allow",
+      "task_checksum": "148ce2232d6b6739ceb42a4f49a4bcdd8adaaee2506b22c52402b7ed2f892c92",
+      "nop_rewards": [0.0, 0.0],
+      "oracle_rewards": [1.0, 1.0],
+      "nop_scores": [0.0, 0.0],
+      "oracle_scores": [1.0, 1.0]
+    }
+  ]
+}

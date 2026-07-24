@@ -1,0 +1,49 @@
+{
+  "adapter_version": "0.1.0",
+  "claim_boundary": "This generated dataset skeleton is not Harbor execution evidence, not Harbor acceptance, and not v1 readiness.",
+  "dataset_toml": "dataset.toml",
+  "evidence_status": "generated_public_skeleton",
+  "harbor_execution_verified": false,
+  "harness_lane": "no_tools",
+  "oracle_solution_mode": "public-pilot-reference",
+  "private_task_count": 0,
+  "reference_run_config": "run_authzbench_saas.yaml",
+  "schema_version": "harbor-dataset-skeleton-v1",
+  "task_count": 3,
+  "tasks": [
+    {
+      "app": "api_tokens",
+      "expected_nop_reward": 0.0,
+      "expected_oracle_reward": 1.0,
+      "expected_vulnerable": true,
+      "harbor_task_dir": "tasks/tok_cross_tenant_secret_read",
+      "id": "tok_cross_tenant_secret_read",
+      "oracle_solution_mode": "public-pilot-reference",
+      "pilot_behavior": "vulnerable",
+      "source_task_path": "tasks/api_tokens/tok_cross_tenant_secret_read.json"
+    },
+    {
+      "app": "api_tokens",
+      "expected_nop_reward": 0.0,
+      "expected_oracle_reward": 1.0,
+      "expected_vulnerable": false,
+      "harbor_task_dir": "tasks/tok_export_token_reads_export_control",
+      "id": "tok_export_token_reads_export_control",
+      "oracle_solution_mode": "public-pilot-reference",
+      "pilot_behavior": "authorized_allow",
+      "source_task_path": "tasks/api_tokens/tok_export_token_reads_export_control.json"
+    },
+    {
+      "app": "api_tokens",
+      "expected_nop_reward": 0.0,
+      "expected_oracle_reward": 1.0,
+      "expected_vulnerable": false,
+      "harbor_task_dir": "tasks/tok_secure_export_scope_control",
+      "id": "tok_secure_export_scope_control",
+      "oracle_solution_mode": "public-pilot-reference",
+      "pilot_behavior": "secure_denial",
+      "source_task_path": "tasks/api_tokens/tok_secure_export_scope_control.json"
+    }
+  ],
+  "verifier_source_set_sha256": "3d7900d4d4c2d0f828a024c511537c64150e2bf52c96eb5c734868704aa99571"
+}
