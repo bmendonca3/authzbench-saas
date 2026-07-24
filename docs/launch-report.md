@@ -344,11 +344,11 @@ exploits.
 Baseline credibility is now tracked by
 [`baseline-registry.json`](../baselines/baseline-registry.json) and validated by
 `python3 scripts/validate_baseline_registry.py`. The registry currently passes
-consistency checks, reports `v0_baseline_ready: false` for the live 60-task
-public baseline bar until model/tool-agent rows are rerun, and reports
-`v0_release_snapshot_ready: true` for the frozen v0.0 46-task release snapshot. That is a public-split baseline
-credibility claim, not a current v1, hosted-leaderboard, or community-scale
-benchmark claim.
+consistency checks, reports `v0_baseline_ready: true` for the live 63-task
+public baseline bar, and reports `v0_release_snapshot_ready: true` for the
+frozen v0.0 46-task release snapshot. That is a public-split baseline
+credibility claim, not hosted-leaderboard or community-scale benchmark
+operation.
 
 Leaderboard submission shape is now validated by
 `python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json'`

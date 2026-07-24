@@ -151,32 +151,25 @@ def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, 
 
 
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_keeps_60_task_rows_stale_after_63_task_expansion(self) -> None:
+    def test_current_registry_keeps_60_task_rows_stale_and_63_task_rows_current(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["baseline_count"], 38, result)
+        self.assertEqual(result["baseline_count"], 45, result)
         self.assertEqual(result["public_split"]["task_count"], 63, result)
-        self.assertEqual(result["current_public_model_family_count"], 0, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
-        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
+        self.assertEqual(result["current_public_model_family_count"], 7, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 7, result)
+        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
         self.assertTrue(result["has_current_public_scripted_sanity_baseline"], result)
-        self.assertFalse(result["has_current_public_model_or_tool_agent_baseline"], result)
-        self.assertFalse(result["v0_baseline_ready"], result)
+        self.assertTrue(result["has_current_public_model_or_tool_agent_baseline"], result)
+        self.assertTrue(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
         self.assertEqual(len(result["release_snapshots"]), 1, result)
         self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertEqual(
-            result["unmet_v0_requirements"],
-            [
-                "current public model families: 0 of 5",
-                "repeated model baselines: 0 of 5",
-                "missing current public tool-agent baseline",
-            ],
-        )
+        self.assertEqual(result["unmet_v0_requirements"], [])
 
         registry = load_json(REGISTRY)
         current_scripted_63 = _baseline_by_id(registry, CURRENT_SCRIPTED_63_ID)
@@ -839,8 +832,8 @@ class BaselineRegistryTests(unittest.TestCase):
             result = validate_registry(registry_path)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["current_public_model_family_count"], 1, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
+        self.assertEqual(result["current_public_model_family_count"], 7, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 8, result)
 
     def test_rejects_current_promoted_composite_without_explicit_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -144,7 +144,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertEqual(result["gate_count"], 10)
         self.assertTrue(gates["stable_v1_prep_public_evidence"]["passed"])
         self.assertIn(
-            "current_public_model_family_count=0",
+            "current_public_model_family_count=7",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
@@ -152,7 +152,11 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
-            "has_current_public_model_or_tool_agent_baseline=False",
+            "has_current_public_model_or_tool_agent_baseline=True",
+            gates["stable_v1_prep_public_evidence"]["evidence"],
+        )
+        self.assertIn(
+            "current_public_model_or_tool_agent_baseline_status=current_63_task_refreshes_present",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])

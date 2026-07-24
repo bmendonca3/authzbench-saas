@@ -2572,6 +2572,11 @@ def validate_v1_readiness(
         stable_unmet.append("baseline registry validation has errors")
     if registry_result.get("has_current_public_scripted_sanity_baseline") is not True:
         stable_unmet.append("missing current public scripted sanity baseline")
+    current_baseline_status = (
+        "current_63_task_refreshes_present"
+        if registry_result.get("has_current_public_model_or_tool_agent_baseline")
+        else "stale_pending_63_task_refreshes"
+    )
     _add_gate(
         gates,
         "stable_v1_prep_public_evidence",
@@ -2585,7 +2590,7 @@ def validate_v1_readiness(
             f"has_current_public_scripted_sanity_baseline={registry_result.get('has_current_public_scripted_sanity_baseline')}",
             f"has_current_public_model_or_tool_agent_baseline={registry_result.get('has_current_public_model_or_tool_agent_baseline')}",
             "current_public_model_or_tool_agent_baseline_required=false",
-            "current_public_model_or_tool_agent_baseline_status=stale_pending_63_task_refreshes",
+            f"current_public_model_or_tool_agent_baseline_status={current_baseline_status}",
         ],
         stable_unmet,
     )

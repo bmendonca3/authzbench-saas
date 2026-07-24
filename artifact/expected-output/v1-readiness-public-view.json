@@ -5,13 +5,13 @@
       "evidence": [
         "public_task_count=63",
         "vulnerable_task_count=27",
-        "current_public_model_family_count=0",
+        "current_public_model_family_count=7",
         "current_public_scripted_sanity_baseline_present=True",
-        "current_public_model_or_tool_agent_baseline_present=False",
+        "current_public_model_or_tool_agent_baseline_present=True",
         "has_current_public_scripted_sanity_baseline=True",
-        "has_current_public_model_or_tool_agent_baseline=False",
+        "has_current_public_model_or_tool_agent_baseline=True",
         "current_public_model_or_tool_agent_baseline_required=false",
-        "current_public_model_or_tool_agent_baseline_status=stale_pending_63_task_refreshes"
+        "current_public_model_or_tool_agent_baseline_status=current_63_task_refreshes_present"
       ],
       "id": "stable_v1_prep_public_evidence",
       "passed": true,

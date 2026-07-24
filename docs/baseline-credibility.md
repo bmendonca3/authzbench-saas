@@ -2,7 +2,12 @@
 
 AuthZBench-SaaS should not treat every run artifact as a leaderboard result.
 Baseline files need to say what they prove, what they do not prove, and whether
-they are current enough for the v1.0-internal label. Stale baselines are not current 63-task capability evidence and are a roadmap gap for stronger current comparisons, not a blocker to the v1.0-internal label. Leaderboard-candidate rows are inside the repo evidence model, not hosted leaderboard operation, not platform acceptance, and not third-party submissions.
+they are current enough for the v1.0-internal label. The registry now contains
+current 63-task public-split Kiro no-tools and live HTTP tool-agent capability
+rows; older 60-task, 54-task, 49-task, 46-task, and 44-task rows remain stale
+or historical audit evidence. Leaderboard-candidate rows are inside the repo
+evidence model, not hosted leaderboard operation, not platform acceptance, and
+not third-party submissions.
 
 ## Registry
 
@@ -44,15 +49,12 @@ as current-comparable evidence.
 
 ## v0 Baseline Bar
 
-The baseline sub-gate currently reports `v0_baseline_ready: false` for the live
-63-task public split and `v0_release_snapshot_ready: true` for the frozen v0.0
-46-task release snapshot. The 54-task Qwen, Claude Haiku 4.5, Claude Sonnet 4.6,
-GLM-5, and Claude Opus 4.6 no-tools families are stale, and the 54-task
-`claude-sonnet-4.6` live HTTP tool-agent family is stale until rerun.
-The preceding 49-task split has five repeated
-no-tools model-family baselines plus one repeated live HTTP tool-agent family,
-but every one of those rows is stale for current 63-task comparison. The old
-46-task evidence remains auditable as frozen v0.0 release evidence.
+The baseline sub-gate currently has five repeated 63-task no-tools Kiro
+model-family baselines plus one repeated 63-task live HTTP Kiro
+`claude-sonnet-4.6` tool-agent family on the live public split. The frozen v0.0
+46-task release snapshot remains auditable release evidence. The 60-task,
+54-task, and 49-task Kiro rows are stale for current 63-task comparison, and
+the old 46-task evidence remains frozen v0.0 release evidence.
 
 The v0 baseline bar is:
 
@@ -251,12 +253,10 @@ The registry uses `requires_rerun_before_current_comparison` to mark stale rows.
 That field means the row cannot support live 63-task comparison. It does not
 mean the frozen v0.0 release snapshot itself needs to be rerun.
 
-The current public scripted sanity milestone is restored for the 63-task
-fingerprint, but current public model/tool-agent capability coverage is not
-restored yet. The repeated 60-task no-tools and live HTTP tool-agent rows are
-stale until full 63-task reruns or promoted-composite refreshes complete.
-Public baselines must be paired with protected private-holdout operation before
-leaderboard claims.
+The current public scripted sanity milestone, repeated no-tools Kiro
+model-family coverage, and repeated live HTTP Kiro tool-agent coverage are all
+restored for the 63-task fingerprint. Public baselines must still be paired with
+protected private-holdout operation before leaderboard claims.
 
 ## Reviewer validation and interpretation
 
@@ -273,7 +273,8 @@ public task suite, baseline registry, task quality gate, claim-boundary
 check, and the public-view readiness fixture match.
 
 Current scripted sanity is deterministic harness verification only. It is
-not model capability evidence, not leaderboard evidence, not private-holdout evidence, and not external validation. Older 60-task,
-54-task, 49-task, 46-task, and 44-task rows are stale or historical
-release-snapshot evidence only; they do not count toward current 63-task
-model-family coverage or repeated-baseline coverage.
+not model capability evidence, not leaderboard evidence, not private-holdout
+evidence, and not external validation. The current 63-task Kiro no-tools and
+live HTTP tool-agent rows are public-split capability evidence only; older
+60-task, 54-task, 49-task, 46-task, and 44-task rows are stale or historical
+release-snapshot evidence only.

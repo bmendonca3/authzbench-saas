@@ -83,6 +83,7 @@ def baseline_rows(registry: dict[str, Any]) -> list[dict[str, Any]]:
             "claude-opus-4.6": "Claude Opus 4.6",
             "claude-haiku-4.5": "Claude Haiku 4.5",
             "deepseek-3.2": "DeepSeek 3.2",
+            "Gemini 3.1 Pro (High)": "Gemini 3.1 Pro",
             "glm-5": "GLM-5",
             "qwen3-coder-next": "Qwen3 Coder Next",
         }.get(model, model)

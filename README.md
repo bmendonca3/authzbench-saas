@@ -263,14 +263,12 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
 
 - current 63-task scripted sanity baseline proving the expanded public split,
   scorer, and scripted oracle path agree
-- repeated 60-task no-tools public baselines across Qwen, Claude Haiku 4.5,
-  Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6, now marked stale for the
-  63-task split pending full reruns or promoted-composite refreshes;
-  public-split evidence only
-- repeated 60-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
-  target-request correlation and public-safe plan/probe artifacts, now marked
-  stale for the 63-task split pending a full rerun or promoted-composite
-  refresh; public-split evidence only
+- repeated current 63-task no-tools public baselines across Qwen, Claude Haiku
+  4.5, Claude Sonnet 4.6, GLM-5, and Claude Opus 4.6; public-split evidence
+  only
+- repeated current 63-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
+  63/63 target-request correlation and public-safe plan/probe artifacts in both
+  runs; public-split evidence only
 - frozen v0.0 46-task public baseline summaries plus historical 49-task and
   stale 54-task rows retained for context only; stale rows are not current
   comparison evidence
@@ -475,6 +473,17 @@ release-ranking metric. See [`docs/scoring-and-submissions.md#1-score-policy`](d
 The baseline registry lives at
 [`baselines/baseline-registry.json`](baselines/baseline-registry.json).
 
+Current 63-task public-split evidence:
+
+- deterministic scripted harness: 63/63 public tasks
+- Kiro `qwen3-coder-next`: two no-tools public runs
+- Kiro `claude-haiku-4.5`: two no-tools public runs
+- Kiro `claude-sonnet-4.6`: two no-tools public runs
+- Kiro `glm-5`: two no-tools public runs
+- Kiro `claude-opus-4.6`: two no-tools public runs
+- Kiro `claude-sonnet-4.6` live HTTP tool-agent: two public runs with 63/63
+  target-request correlation in both runs
+
 v0.0 public-split evidence:
 
 - deterministic scripted harness: 46/46 public tasks
@@ -503,10 +512,10 @@ Important interpretation:
 - The previous 60-task split had repeated no-tools model-family evidence and a
   repeated live HTTP tool-agent family tracked in the baseline registry. With
   the v1.1 promotion to a 63-task split, those rows are marked
-  current_public_stale pending reruns; only the scripted sanity baseline has
-  been re-stamped at 63. These are public-split diagnostics only; private
-  holdouts, hosted operation, external review, and platform acceptance remain
-  separate v2 gates.
+  current_public_stale. Full 63-task Kiro no-tools and live HTTP tool-agent
+  reruns are now registered as current public-split evidence. These are
+  public-split diagnostics only; private holdouts, hosted operation, external
+  review, and platform acceptance remain separate v2 gates.
 - The boundary-calibration study covers the historical 49-task public
   tool-agent pair and shows that public tool-agent runs often prove vulnerable
   backend behavior while failing to submit the exact oracle-compatible boundary
