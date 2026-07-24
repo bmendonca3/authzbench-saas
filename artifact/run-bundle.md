@@ -25,6 +25,49 @@ A reviewable run bundle should include:
 - a short note declaring whether the run is a harness check, no-tools model
   baseline, tool-agent baseline, or private-holdout submission candidate.
 
+## Freeze The Complete Retained Directory
+
+After the evaluator and any outer wrapper have finished writing files, create a
+content manifest for the exact retained run directory. If a wrapper log is part
+of the claimed evidence, place it inside that directory before this step. Files
+kept elsewhere are outside the manifest's coverage.
+
+```bash
+RUN_ROOT="results/<result-family>/<run-id>"
+
+python3 scripts/build_run_bundle_manifest.py "$RUN_ROOT" \
+  --require summary.json \
+  --require-glob '*/agent.json' \
+  --require-glob '*/score.json' \
+  --require-glob '*/submission.json' \
+  --require-glob '*/transcript.json'
+
+python3 scripts/validate_run_bundle_manifest.py "$RUN_ROOT"
+```
+
+The fixed `run-bundle-manifest.json` records every regular file in the run
+directory except itself as a sorted relative path, byte size, and SHA-256. The
+builder refuses to overwrite an existing manifest. Validation fails if a file
+changes, disappears, appears later, or is replaced by a symlink or another
+non-regular path. Build again only in a new clean run directory; do not edit or
+replace a frozen manifest in place.
+
+The exact-path and glob checks are evidence-presence guards, not task-count or
+schema validators. A glob proves that at least one matching file exists. Keep
+using the runner, submission, registry, and leaderboard validators for expected
+cardinality, schema, scoring, comparability, and eligibility decisions.
+
+The bundle digest is a deterministic local content-consistency checksum. It is
+not a signature, timestamp, custody attestation, model-identity proof, platform
+acceptance, or promotion approval. A party that can change both the files and
+manifest can recompute it. Independent custody requires a separately authorized
+signing, timestamping, or publication system.
+
+The manifest contains no raw file bodies or absolute local paths, but relative
+filenames can still expose task or private-pack identifiers. Keep private-run
+manifests private unless their filenames and surrounding metadata have passed a
+separate disclosure review.
+
 ## Fingerprint Verification
 
 The runner-emitted `benchmark_fingerprint` binds the task set, task paths,
@@ -85,17 +128,18 @@ metadata, not private execution internals.
 
 ## Maintainer Review Flow
 
-1. Validate the run bundle schema and source summaries.
-2. Check benchmark fingerprint and comparability key.
-3. Confirm split, task count, harness type, model label, and commit SHA.
-4. Confirm repeated-run provenance and primary-run selection.
-5. Check false-positive, exploit-proof, boundary-reasoning, invalid-submission,
+1. Validate `run-bundle-manifest.json` against the complete retained directory.
+2. Validate the run bundle schema and source summaries.
+3. Check benchmark fingerprint and comparability key.
+4. Confirm split, task count, harness type, model label, and commit SHA.
+5. Confirm repeated-run provenance and primary-run selection.
+6. Check false-positive, exploit-proof, boundary-reasoning, invalid-submission,
    and target-request coverage metrics.
    Treat `scored_submission_finding_total` as scorer-derived and
    `submitted_finding_total` as optional adapter telemetry; they are not
    interchangeable.
-6. Confirm private-path protections for any private-holdout candidate.
-7. Record the decision as non-eligible evidence, needs rerun, parked, or
+7. Confirm private-path protections for any private-holdout candidate.
+8. Record the decision as non-eligible evidence, needs rerun, parked, or
    eligible candidate.
 
 Any change to task count, task bodies, score policy, evidence contract, or

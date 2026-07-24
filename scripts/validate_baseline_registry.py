@@ -113,6 +113,24 @@ VALID_ADAPTER_FAILURE_TYPES = {
     "model_label_failure",
     "output_parse_failure",
 }
+SUPPORTED_CURRENT_EVALUATION_PROTOCOLS = {"blinded-control-evidence-v1"}
+
+
+def _evaluation_protocol_version(summary: dict[str, Any]) -> tuple[str | None, str | None]:
+    """Read the runner's canonical protocol field with bounded legacy compatibility."""
+    protocol = summary.get("evaluation_protocol")
+    if protocol is None:
+        return None, None
+    if not isinstance(protocol, dict):
+        return None, "evaluation_protocol must be an object when supplied"
+    canonical = protocol.get("protocol_version")
+    legacy = protocol.get("version")
+    for field, value in (("protocol_version", canonical), ("version", legacy)):
+        if value is not None and (not isinstance(value, str) or not value.strip()):
+            return None, f"evaluation_protocol.{field} must be a non-empty string when supplied"
+    if canonical is not None and legacy is not None and canonical != legacy:
+        return None, "evaluation_protocol protocol_version and version disagree"
+    return canonical or legacy, None
 
 
 def _file_sha256(path: Path) -> str:
@@ -593,10 +611,22 @@ def _validate_summary_file(
                 )
         _validate_current_fingerprint(summary, current_fingerprint, entry_id, location, errors)
         if raw_entry.get("kind") in {"model_baseline", "tool_agent_baseline"}:
-            evaluation_protocol = summary.get("evaluation_protocol")
+            protocol_version, protocol_error = _evaluation_protocol_version(summary)
+            if protocol_error is not None:
+                errors.append(f"{entry_id}: {location} {protocol_error}")
             if (
-                isinstance(evaluation_protocol, dict)
-                and evaluation_protocol.get("version") == "blinded-control-evidence-v1"
+                protocol_version is not None
+                and protocol_version not in SUPPORTED_CURRENT_EVALUATION_PROTOCOLS
+            ):
+                errors.append(
+                    f"{entry_id}: {location} unsupported evaluation protocol {protocol_version!r}"
+                )
+            if raw_entry.get("result_derivation") == "runner_emitted" and protocol_version is None:
+                errors.append(
+                    f"{entry_id}: {location} runner-emitted current rows require an evaluation protocol"
+                )
+            if (
+                protocol_version == "blinded-control-evidence-v1"
                 and summary.get("model_identity_status") != "verified"
             ):
                 errors.append(
@@ -604,8 +634,7 @@ def _validate_summary_file(
                     "model identity for current registry use"
                 )
             if (
-                isinstance(evaluation_protocol, dict)
-                and evaluation_protocol.get("version") == "blinded-control-evidence-v1"
+                protocol_version == "blinded-control-evidence-v1"
                 and summary.get("model_label_verified_task_count") != summary.get("task_count")
             ):
                 errors.append(

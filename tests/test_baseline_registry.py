@@ -256,7 +256,10 @@ class BaselineRegistryTests(unittest.TestCase):
             entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
             summary_path = registry_path.parent / entry["summary_path"]
             summary = load_json(summary_path)
-            summary["evaluation_protocol"] = {"version": "blinded-control-evidence-v1"}
+            summary["evaluation_protocol"] = {
+                "schema_version": "authzbench-evaluation-protocol-manifest-v1",
+                "protocol_version": "blinded-control-evidence-v1",
+            }
             summary["model_identity_status"] = "requested_only_unverified"
             summary["model_label_verified_task_count"] = summary["task_count"] - 1
             summary_path.write_text(
@@ -273,6 +276,70 @@ class BaselineRegistryTests(unittest.TestCase):
         )
         self.assertTrue(
             any("verified-model task count" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_rejects_conflicting_evaluation_protocol_version_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["summary_path"]
+            summary = load_json(summary_path)
+            summary["evaluation_protocol"] = {
+                "protocol_version": "blinded-control-evidence-v1",
+                "version": "different-protocol",
+            }
+            summary_path.write_text(
+                json.dumps(summary, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("protocol_version and version disagree" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_rejects_unsupported_current_evaluation_protocol(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            summary_path = registry_path.parent / entry["summary_path"]
+            summary = load_json(summary_path)
+            summary["evaluation_protocol"] = {"protocol_version": "typo-or-unsupported"}
+            summary_path.write_text(
+                json.dumps(summary, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("unsupported evaluation protocol" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_runner_emitted_current_row_requires_protocol_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry = load_json(registry_path)
+            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            entry["result_derivation"] = "runner_emitted"
+            registry_path.write_text(
+                json.dumps(registry, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("runner-emitted current rows require an evaluation protocol" in error for error in result["errors"]),
             result,
         )
 

@@ -21,6 +21,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.validate_submission_bundle import validate_bundle
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "validate_submission_bundle.py"
@@ -130,6 +132,20 @@ class SubmissionBundleValidatorTests(unittest.TestCase):
         result = _run_validator(bundle)
         self.assertEqual(result.returncode, 1)
         self.assertIn("secret_pattern_present", result.stderr)
+
+    def test_imported_validator_checks_secret_patterns(self) -> None:
+        bundle = _write_bundle(
+            Path(self._tmp),
+            "no-tools-model",
+            with_target_requests=False,
+            with_secret=True,
+        )
+        result = validate_bundle(bundle)
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "secret_pattern_present",
+            {finding["code"] for finding in result["findings"]},
+        )
 
     def test_run_id_mismatch_between_files_fails(self) -> None:
         bundle = _write_bundle(Path(self._tmp), "no-tools-model", with_target_requests=False, with_secret=False)

@@ -135,7 +135,29 @@ done
 
 ## Post-Run Steps
 
-1. **Locate the nested run summaries and copy each to an explicit,
+1. **Freeze and validate each complete nested run directory after all wrapper
+   logs and retained evidence have been written:**
+   ```bash
+   RUN_ROOT="results/<result-family>/<run-id>"
+   test -f "$RUN_ROOT/summary.json"
+
+   python3 scripts/build_run_bundle_manifest.py "$RUN_ROOT" \
+     --require summary.json \
+     --require-glob '*/agent.json' \
+     --require-glob '*/score.json' \
+     --require-glob '*/submission.json' \
+     --require-glob '*/transcript.json'
+   python3 scripts/validate_run_bundle_manifest.py "$RUN_ROOT"
+   ```
+   For tool-agent evidence, also require `*/target-requests.jsonl` when that
+   artifact is part of the declared run contract. Do not add logs or other files
+   after the manifest is created; the validator will correctly report them as
+   unexpected. This checksum establishes local content consistency only. It is
+   not a signature, model-identity proof, custody attestation, or eligibility
+   decision. Private-run manifests can expose private identifiers through their
+   filenames and must remain private unless separately reviewed.
+
+2. **Locate the nested run summaries and copy each to an explicit,
    collision-free registry filename:**
    ```bash
    find results -path '*current-public-63-run*/*/summary.json' -print
@@ -144,7 +166,7 @@ done
    named by the intended registry entry. Do not bulk-copy generic
    `summary.json` filenames because they collide.
 
-2. **Update `baselines/baseline-registry.json`** from stale 60-task rows to new 63-task rows. For each model family:
+3. **Update `baselines/baseline-registry.json`** from stale 60-task rows to new 63-task rows. For each model family:
    - Set `expected_task_count: 63`
    - Set `requires_rerun_before_current_comparison: false`
    - Set `evidence_status: "current"`
@@ -152,7 +174,7 @@ done
    - Update `summary_path` and `run_artifacts` to the new 63-task files
    - Set `run_date` to the current date
 
-3. **Validate the updated registry:**
+4. **Validate the updated registry:**
    ```bash
    python3 scripts/validate_baseline_registry.py
    python3 scripts/analyze_baseline_variance.py --require-current-public
@@ -161,20 +183,20 @@ done
    python3 scripts/validate_host_presentation.py
    ```
 
-4. **The strict `--require-current-public` path should now pass without `--allow-stale-pending-rerun`.** If it does not, the registry update is incomplete.
+5. **The strict `--require-current-public` path should now pass without `--allow-stale-pending-rerun`.** If it does not, the registry update is incomplete.
 
-5. **Regenerate the stale-wording inventory** (the new 63-task rows will change the hit counts):
+6. **Regenerate the stale-wording inventory** (the new 63-task rows will change the hit counts):
    ```bash
    python3 scripts/generate_docs_alignment_inventory.py
    ```
 
-6. **Update `artifact/expected-output/v1-readiness-public-view.json`** if the readiness fixture gates change:
+7. **Update `artifact/expected-output/v1-readiness-public-view.json`** if the readiness fixture gates change:
    ```bash
    python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view \
      > artifact/expected-output/v1-readiness-public-view.json
    ```
 
-7. **Commit, push, open PR, wait for CI, merge.**
+8. **Commit, push, open PR, wait for CI, merge.**
 
 ## Rollback
 
