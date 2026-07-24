@@ -1,16 +1,24 @@
 # Public-safe Harbor dataset registration skeleton.
-# This file is not Harbor publish evidence, not Harbor execution evidence,
-# and not v1 readiness evidence.
-name = "authzbench-saas-public-skeleton"
-version = "public-skeleton"
-description = "Public-safe AuthZBench-SaaS Harbor-compatible skeleton dataset."
-tasks = ["tasks/tok_cross_tenant_secret_read", "tasks/tok_export_token_reads_export_control", "tasks/tok_secure_export_scope_control"]
+# This current-format manifest is not Harbor publish evidence, not Kaggle
+# execution evidence, and not v1 readiness evidence.
+# Regenerate after any task-tree change so each content digest stays pinned.
 
-[metadata.authzbench]
-skeleton_schema_version = "harbor-dataset-skeleton-v1"
-evidence_status = "generated_public_skeleton"
-harness_lane = "no_tools"
-private_task_count = 0
-harbor_execution_verified = false
-harbor_publish_verified = false
-claim_boundary = "Generated public dataset skeleton only; not Harbor publish evidence, not Harbor execution evidence, and not v1 readiness."
+[dataset]
+name = "bmendonca3/authzbench-saas-public-pilot"
+description = "Public-safe AuthZBench-SaaS Harbor pilot dataset."
+keywords = ["authorization", "agents", "saas", "security"]
+
+[[dataset.authors]]
+name = "bmendonca3"
+
+[[tasks]]
+name = "authzbench-saas/tok_cross_tenant_secret_read"
+digest = "sha256:4c42211064ac6fea08ef32bd014e4b4da46437e6e47a8b29fd98619994b2dc35"
+
+[[tasks]]
+name = "authzbench-saas/tok_export_token_reads_export_control"
+digest = "sha256:3c6c4555a25318b8f4e0d2666e631330972ff6b4a4f2dd51a99808589cab0f0c"
+
+[[tasks]]
+name = "authzbench-saas/tok_secure_export_scope_control"
+digest = "sha256:af7f69f367a7eb97be1bf511d9afc1442ca9e669248eb37af1f8f7ac80d23fce"

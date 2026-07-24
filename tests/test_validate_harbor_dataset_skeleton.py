@@ -4,7 +4,9 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
+from scripts import validate_harbor_dataset_skeleton as validator_module
 from scripts.build_harbor_dataset_skeleton import build_harbor_dataset_skeleton
 from scripts.validate_harbor_dataset_skeleton import validate_harbor_dataset_skeleton
 
@@ -23,6 +25,19 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["task_count"], 1)
         self.assertEqual(result["harness_lane"], "no_tools")
+
+    def test_accepts_generated_manifest_with_python_310_toml_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+
+            with patch.object(validator_module, "tomllib", None):
+                result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertTrue(result["passed"], result)
 
     def test_accepts_generated_live_http_skeleton(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -180,19 +195,14 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
             (dataset_dir / "dataset.toml").write_text(
                 "\n".join(
                     [
-                        'name = "authzbench-saas-public-skeleton"',
-                        'version = "public-skeleton"',
-                        'description = "Public-safe AuthZBench-SaaS Harbor-compatible skeleton dataset."',
-                        "tasks = []",
+                        "# not Harbor publish evidence; not Kaggle execution evidence",
+                        "[dataset]",
+                        'name = "bmendonca3/authzbench-saas-public-pilot"',
+                        'description = "Public-safe AuthZBench-SaaS Harbor pilot dataset."',
+                        'keywords = ["authorization"]',
                         "",
-                        "[metadata.authzbench]",
-                        'skeleton_schema_version = "harbor-dataset-skeleton-v1"',
-                        'evidence_status = "generated_public_skeleton"',
-                        'harness_lane = "no_tools"',
-                        "private_task_count = 0",
-                        "harbor_execution_verified = false",
-                        "harbor_publish_verified = false",
-                        'claim_boundary = "Generated public dataset skeleton only; not Harbor publish evidence, not Harbor execution evidence, and not v1 readiness."',
+                        "[[dataset.authors]]",
+                        'name = "bmendonca3"',
                     ]
                 ),
                 encoding="utf-8",
@@ -210,19 +220,25 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
                 ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
                 dataset_dir,
             )
+            manifest_path = dataset_dir / "dataset-manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["harbor_execution_verified"] = True
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
             (dataset_dir / "dataset.toml").write_text(
                 "\n".join(
                     [
-                        'name = "authzbench-saas-public-skeleton"',
-                        'version = "public-skeleton"',
-                        'tasks = ["tasks/other"]',
+                        "# not Harbor publish evidence; not Kaggle execution evidence",
+                        "[dataset]",
+                        'name = "bmendonca3/authzbench-saas-public-pilot"',
+                        'description = "Public-safe AuthZBench-SaaS Harbor pilot dataset."',
+                        'keywords = ["authorization"]',
                         "",
-                        "[metadata.authzbench]",
-                        f'skeleton_schema_version = "harbor-dataset-skeleton-v1"',
-                        'evidence_status = "generated_public_skeleton"',
-                        "private_task_count = 0",
-                        "harbor_execution_verified = true",
-                        "harbor_publish_verified = true",
+                        "[[dataset.authors]]",
+                        'name = "bmendonca3"',
+                        "",
+                        "[[tasks]]",
+                        'name = "authzbench-saas/other"',
+                        'digest = "sha256:deadbeef"',
                     ]
                 ),
                 encoding="utf-8",
@@ -231,9 +247,8 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
             result = validate_harbor_dataset_skeleton(dataset_dir)
 
         self.assertFalse(result["passed"], result)
-        self.assertTrue(any("tasks must match dataset-manifest" in error for error in result["errors"]), result)
+        self.assertTrue(any("[[tasks]] names and digests must match" in error for error in result["errors"]), result)
         self.assertTrue(any("harbor_execution_verified must be false" in error for error in result["errors"]), result)
-        self.assertTrue(any("harbor_publish_verified must be false" in error for error in result["errors"]), result)
 
     def test_rejects_missing_harbor_shape_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

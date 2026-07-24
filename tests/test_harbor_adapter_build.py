@@ -34,6 +34,13 @@ class TestHarborAdapterBuildDataset(unittest.TestCase):
             self.assertTrue((output_dir / "dataset-manifest.json").is_file())
             self.assertEqual(manifest["task_count"], 3)
             self.assertEqual(manifest["private_task_count"], 0)
+            dataset_toml = (output_dir / "dataset.toml").read_text(encoding="utf-8")
+            self.assertIn(
+                'name = "bmendonca3/authzbench-saas-public-pilot"',
+                dataset_toml,
+            )
+            self.assertEqual(dataset_toml.count("[[tasks]]"), 3)
+            self.assertEqual(dataset_toml.count('digest = "sha256:'), 3)
 
     def test_build_dataset_preserves_task_ids(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

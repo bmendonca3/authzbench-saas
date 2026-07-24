@@ -1,8 +1,8 @@
 # Kaggle Benchmark Design Contract
 
-Status: local implementation and NOP/Oracle pilot verified; official starter
-compared; Kaggle review not yet requested
-Evidence date: 2026-07-23
+Status: current-starter local implementation and NOP/Oracle pilot verified;
+Kaggle review not yet requested
+Evidence date: 2026-07-24
 Implementation source: merged AuthzBench-SaaS main candidate; preserved pilot
 checkpoint `7f3da26`
 
@@ -23,8 +23,9 @@ Observable check: every status artifact names the evidence layer as one of
 `local`, `kaggle-executor`, `platform-accepted`, `independently-validated`, or
 `launched`; only `local` may be set by this work.
 
-Local status is verified for the three-task NOP/Oracle pilot only: 12 of 12
-sequential cells completed with zero exceptions and zero retries.
+Local status is verified for the three-task NOP/Oracle pilot only: the prior
+12-cell repeat matrix and a fresh six-run current-starter matrix completed with
+zero exceptions. Every fresh run contains `trial.log` and verifier CTRF.
 
 ### Current official starter comparison
 
@@ -35,13 +36,12 @@ Its current workflow confirms the pilot's task-directory surfaces
 local NOP/Oracle expectations, `jobs/` result inspection, and Model Proxy
 boundary.
 
-The starter's publish manifest now uses `[dataset]`, `[[dataset.authors]]`, and
-digest-backed `[[tasks]]` entries. The tracked pilot `dataset.toml` predates that
-registration shape and remains an internal local skeleton, not a publish-ready
-manifest. A real task digest must come from the supported Harbor
-registration/publish workflow; this repository does not invent one. This
-format gap does not invalidate the task-path NOP/Oracle evidence, but it remains
-an explicit publication gate.
+The starter's manifest uses `[dataset]`, `[[dataset.authors]]`, and
+digest-backed `[[tasks]]` entries. The tracked pilot now uses that shape, and
+all three pinned content digests match an independent Harbor 0.13.2 `harbor
+add` result for the exact generated task trees. The manifest remains a local
+registration artifact, not publish or Kaggle-executor evidence; `harbor
+publish` was not run.
 
 ## 2. Capability And Construct Boundary
 
@@ -137,10 +137,11 @@ required boundary field, passes controls, and stays in scope. Superficial prose,
 forged response bodies, wrong actors, wrong boundaries, malformed requests, and
 unreplayable evidence fail closed.
 
-The verifier executes in a separate no-network environment, writes structured
-score and reward artifacts, and must emit the exact Kaggle-required result
-format once KQ-001 is answered. The agent cannot inspect or mutate the task
-manifest, oracle, scorer, or verifier environment.
+The verifier executes in a separate no-network environment and writes
+structured score, reward, and `/logs/verifier/ctrf.json` artifacts. The local
+CTRF contract passes current-starter runs; exact hosted parser acceptance
+remains part of KQ-001. The agent cannot inspect or mutate the task manifest,
+oracle, scorer, or verifier environment.
 
 Observable check: repeated NOP and Oracle executions are identical; adversarial
 submissions fail; valid replay-equivalent submissions pass; the agent image and
@@ -156,7 +157,19 @@ Reference solutions and verifiers are deterministic and make no model calls.
 
 Observable check: a model-agent smoke has proxy request telemetry, no direct
 provider connection, redacted logs, and a fail-closed negative test for proxy
-bypass. This check is external and remains `not-run` locally.
+bypass.
+
+Current evidence is partial. Kaggle OAuth, phone/identity verification,
+short-lived credential minting, and a direct proxy HTTP 200 response of `ok`
+are verified. Harbor then routed mini-swe-agent through the proxy for 22 model
+steps, but the original `no_tools` prompt timed out before submission and
+scored `0.0`. The generated instruction now explicitly forbids network probing
+and filesystem scans and requires immediate submission; the corrected exact
+dataset retains NOP `0.0` and Oracle `1.0` for all three tasks. A corrected
+proxy rerun is pending DNS recovery. Because local Harbor 0.13.2 Docker cannot
+enforce hostname allowlists or dynamic phase network switching, that temporary
+all-public compatibility run is not evidence for direct-provider denial or
+offline-verifier enforcement.
 
 ## 9. Pilot Acceptance
 
@@ -173,10 +186,11 @@ For each of the three public pilot tasks:
 Existing skeleton generation and secure-control empty-findings smoke evidence
 remain historical local adapter evidence and do not satisfy this gate.
 
-Local acceptance evidence: all three tasks completed two sequential NOP runs at
-`0.0` and two sequential Oracle runs at `1.0`, with persisted score/reward and
-result artifacts. Deterministic NOP emits no agent artifact; deterministic
-Oracle emits `oracle.txt`, so no model trajectory is claimed.
+Local acceptance evidence: all three tasks retain two sequential NOP runs at
+`0.0` and two sequential Oracle runs at `1.0`. A fresh current-starter pass
+also completed one NOP and one Oracle per task with six `trial.log` files, six
+CTRF reports, and inspected score/reward artifacts. Deterministic controls do
+not establish a model trajectory or Model Proxy run.
 
 ## 10. Operations And Launch Proposal
 
@@ -197,9 +211,9 @@ separate Kaggle go/no-go evidence.
 
 ## 11. Questions For Kaggle
 
-- **KQ-001 — Verifier result format:** Which starter-template fields and
-  verifier artifacts are mandatory, including CTRF and separate verifier
-  container support? Acceptance: a generated pilot passes Kaggle's official
+- **KQ-001 — Hosted verifier acceptance:** Does Kaggle's executor require any
+  CTRF fields or separate-verifier behavior beyond the current starter
+  contract? Acceptance: the exact digest-bound pilot passes Kaggle's official
   parser without compatibility shims.
 - **KQ-002 — Service topology:** Are Docker Compose or multiple target services
   supported if a later live-tool track is admitted? Acceptance: one documented

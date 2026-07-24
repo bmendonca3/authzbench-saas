@@ -8,8 +8,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10 compatibility
+    tomllib = None
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from authzbench_harbor.dataset_builder import harbor_task_content_digest
+
+
 SCHEMA_VERSION = "harbor-dataset-skeleton-v1"
 ALLOWED_ABSOLUTE_PREFIXES = (
     "/api/",
@@ -84,20 +93,51 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _load_toml(path: Path) -> dict[str, Any]:
+    if tomllib is not None:
+        with path.open("rb") as handle:
+            data = tomllib.load(handle)
+        if not isinstance(data, dict):
+            raise ValueError(f"{path}: expected TOML object")
+        return data
+
+    # The project supports Python 3.10, where tomllib is unavailable. This
+    # fallback deliberately parses the builder's constrained TOML surface:
+    # tables, arrays of tables, JSON-compatible scalars, and arrays.
     root: dict[str, Any] = {}
     current: dict[str, Any] = root
-    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+    for line_number, raw_line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(),
+        start=1,
+    ):
         line = raw_line.split("#", 1)[0].strip()
         if not line:
+            continue
+        if line.startswith("[[") and line.endswith("]]"):
+            parts = line[2:-2].split(".")
+            parent = root
+            for part in parts[:-1]:
+                child = parent.setdefault(part, {})
+                if not isinstance(child, dict):
+                    raise ValueError(
+                        f"{path}:{line_number}: array table conflicts with scalar value"
+                    )
+                parent = child
+            entries = parent.setdefault(parts[-1], [])
+            if not isinstance(entries, list):
+                raise ValueError(
+                    f"{path}:{line_number}: array table conflicts with scalar value"
+                )
+            current = {}
+            entries.append(current)
             continue
         if line.startswith("[") and line.endswith("]"):
             current = root
             for part in line[1:-1].split("."):
-                if not part:
-                    raise ValueError(f"{path}:{line_number}: empty TOML table component")
                 child = current.setdefault(part, {})
                 if not isinstance(child, dict):
-                    raise ValueError(f"{path}:{line_number}: table conflicts with scalar value")
+                    raise ValueError(
+                        f"{path}:{line_number}: table conflicts with scalar value"
+                    )
                 current = child
             continue
         if "=" not in line:
@@ -105,15 +145,13 @@ def _load_toml(path: Path) -> dict[str, Any]:
         key, value = (part.strip() for part in line.split("=", 1))
         if not key:
             raise ValueError(f"{path}:{line_number}: empty TOML key")
-        if value in {"true", "false"}:
-            current[key] = value == "true"
-        elif value.startswith('"') and value.endswith('"'):
+        try:
             current[key] = json.loads(value)
-        else:
-            try:
-                current[key] = json.loads(value)
-            except json.JSONDecodeError:
-                current[key] = value
+        except json.JSONDecodeError:
+            # Inline TOML tables (for example authors = [{ name = "..." }])
+            # are not interpreted by this compatibility parser, and the
+            # validator does not depend on their internal fields.
+            current[key] = value
     return root
 
 
@@ -209,13 +247,13 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         dataset_toml_rel = dataset_toml_path.relative_to(dataset_dir).as_posix()
         dataset_toml = dataset_toml_path.read_text(encoding="utf-8")
         for snippet in (
-            'name = "authzbench-saas-public-skeleton"',
-            'version = "public-skeleton"',
-            'evidence_status = "generated_public_skeleton"',
-            "harbor_execution_verified = false",
-            "harbor_publish_verified = false",
+            "[dataset]",
+            'name = "bmendonca3/authzbench-saas-public-pilot"',
+            "[[dataset.authors]]",
+            "[[tasks]]",
+            'name = "bmendonca3"',
             "not Harbor publish evidence",
-            "not Harbor execution evidence",
+            "not Kaggle",
         ):
             if snippet not in dataset_toml:
                 errors.append(f"{dataset_toml_rel} missing {snippet}")
@@ -225,29 +263,37 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         except Exception as exc:
             errors.append(str(exc))
         else:
-            authzbench = dataset_config.get("metadata", {}).get("authzbench")
-            if dataset_config.get("name") != "authzbench-saas-public-skeleton":
-                errors.append(f"{dataset_toml_rel}: name must be authzbench-saas-public-skeleton")
-            if dataset_config.get("version") != "public-skeleton":
-                errors.append(f"{dataset_toml_rel}: version must be public-skeleton")
+            dataset_table = dataset_config.get("dataset")
+            if not isinstance(dataset_table, dict):
+                errors.append(f"{dataset_toml_rel}: [dataset] table is required")
+                dataset_table = {}
+            if dataset_table.get("name") != "bmendonca3/authzbench-saas-public-pilot":
+                errors.append(
+                    f"{dataset_toml_rel}: dataset.name must be "
+                    "bmendonca3/authzbench-saas-public-pilot"
+                )
+            authors = dataset_table.get("authors")
+            if authors != [{"name": "bmendonca3"}]:
+                errors.append(f"{dataset_toml_rel}: dataset.authors must contain bmendonca3")
             task_refs = dataset_config.get("tasks")
-            if not isinstance(task_refs, list):
-                errors.append(f"{dataset_toml_rel}: tasks must be a list")
+            if not isinstance(task_refs, list) or not all(
+                isinstance(item, dict) for item in task_refs
+            ):
+                errors.append(f"{dataset_toml_rel}: [[tasks]] entries are required")
                 task_refs = []
-            manifest_task_refs = [task.get("harbor_task_dir") for task in manifest.get("tasks", []) if isinstance(task, dict)]
+            manifest_task_refs = [
+                {
+                    "name": task.get("harbor_task_name"),
+                    "digest": task.get("harbor_content_digest"),
+                }
+                for task in manifest.get("tasks", [])
+                if isinstance(task, dict)
+            ]
             if task_refs != manifest_task_refs:
-                errors.append(f"{dataset_toml_rel}: tasks must match dataset-manifest harbor_task_dir order")
-            if not isinstance(authzbench, dict):
-                errors.append(f"{dataset_toml_rel}: [metadata.authzbench] table is required")
-                authzbench = {}
-            if authzbench.get("skeleton_schema_version") != SCHEMA_VERSION:
-                errors.append(f"{dataset_toml_rel}: metadata.authzbench.skeleton_schema_version must be {SCHEMA_VERSION}")
-            if authzbench.get("private_task_count") != 0:
-                errors.append(f"{dataset_toml_rel}: metadata.authzbench.private_task_count must be 0")
-            if authzbench.get("harbor_execution_verified") is not False:
-                errors.append(f"{dataset_toml_rel}: metadata.authzbench.harbor_execution_verified must be false")
-            if authzbench.get("harbor_publish_verified") is not False:
-                errors.append(f"{dataset_toml_rel}: metadata.authzbench.harbor_publish_verified must be false")
+                errors.append(
+                    f"{dataset_toml_rel}: [[tasks]] names and digests must match "
+                    "dataset-manifest order"
+                )
     run_config_path = _safe_relative(dataset_dir, manifest.get("reference_run_config"))
     if run_config_path is None:
         errors.append("reference_run_config must be a safe relative path")
@@ -305,6 +351,15 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         if not task_dir.is_dir():
             errors.append(f"{rel_task_dir}: task directory is missing")
             continue
+        expected_digest = harbor_task_content_digest(task_dir)
+        if task.get("harbor_content_digest") != expected_digest:
+            errors.append(
+                f"{rel_task_dir}: harbor_content_digest must match the current task tree"
+            )
+        if task.get("harbor_task_name") != f"authzbench-saas/{task_dir.name}":
+            errors.append(
+                f"{rel_task_dir}: harbor_task_name must match task.toml package name"
+            )
 
         required_files = {
             "instruction.md": task_dir / "instruction.md",
@@ -362,6 +417,7 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                 "[metadata.authzbench.verifier]",
                 'test_script = "tests/test.sh"',
                 'scorer_contract = "v0-candidate-authz-evidence"',
+                'harbor_ctrf_path = "/logs/verifier/ctrf.json"',
             )
             for snippet in required_snippets:
                 if snippet not in task_toml:
@@ -510,6 +566,14 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
                 errors.append(f"{rel_task_dir}: tests/test.sh must write Harbor verifier reward.json")
             if "/logs/verifier/reward.txt" not in script:
                 errors.append(f"{rel_task_dir}: tests/test.sh must write Harbor verifier reward.txt")
+            if "/logs/verifier/ctrf.json" not in script:
+                errors.append(f"{rel_task_dir}: tests/test.sh must write Harbor verifier ctrf.json")
+            if (
+                "'results': {" not in script
+                or "'summary': {" not in script
+                or "'tests': [" not in script
+            ):
+                errors.append(f"{rel_task_dir}: tests/test.sh must emit a structured CTRF report")
             errors.extend(_public_safety_errors(script, label=f"{rel_task_dir}/tests/test.sh"))
 
         for json_name in ("environment/context.json", "verifier/task_manifest.json", "tests/task_manifest.json"):

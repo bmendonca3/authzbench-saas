@@ -15,7 +15,7 @@ harness_lane = "no_tools"
 private_execution = false
 harbor_execution_verified = false
 claim_boundary = "Generated public dataset skeleton only; not Harbor execution evidence or v1 readiness."
-required_artifacts = ["/logs/artifacts/submission.json", "/logs/artifacts/score.json", "/logs/artifacts/reward.json", "/logs/artifacts/reward.txt"]
+required_artifacts = ["/logs/artifacts/submission.json", "/logs/artifacts/score.json", "/logs/artifacts/reward.json", "/logs/artifacts/reward.txt", "/logs/verifier/ctrf.json"]
 service_notes = ["no_tools lane uses rendered context only", "live_http_tool_agent lane requires target services and request correlation", "verifier/scorer owns replay and oracle access"]
 
 pilot_contract = "public-three-behavior-v1"
@@ -46,5 +46,6 @@ submission_path = "/logs/artifacts/submission.json"
 score_output_path = "/logs/artifacts/score.json"
 harbor_reward_json_path = "/logs/verifier/reward.json"
 harbor_reward_text_path = "/logs/verifier/reward.txt"
+harbor_ctrf_path = "/logs/verifier/ctrf.json"
 public_reward_json_path = "/logs/artifacts/reward.json"
 public_reward_text_path = "/logs/artifacts/reward.txt"

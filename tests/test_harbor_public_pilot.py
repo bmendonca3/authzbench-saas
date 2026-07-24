@@ -120,6 +120,8 @@ class HarborPublicPilotTests(unittest.TestCase):
                 self.assertIn('exec /bin/sh "$@"', environment_dockerfile)
                 self.assertIn('exec /bin/sh "$@"', verifier_dockerfile)
                 self.assertIn("/logs/verifier/score.json", verifier_script)
+                self.assertIn("/logs/verifier/ctrf.json", verifier_script)
+                self.assertIn("'results': {", verifier_script)
 
     def test_pilot_mode_rejects_non_admitted_task(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

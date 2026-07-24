@@ -116,6 +116,36 @@ def _toml_list(values: list[str]) -> str:
     return "[" + ", ".join(_toml_string(value) for value in values) + "]"
 
 
+def harbor_task_content_digest(task_dir: Path) -> str:
+    """Return the Harbor 0.13.x content digest for a local task tree."""
+    task_dir = task_dir.resolve()
+    files: list[Path] = []
+    for name in ("task.toml", "instruction.md", "README.md"):
+        path = task_dir / name
+        if path.is_file():
+            files.append(path)
+    for name in ("environment", "tests", "solution", "steps"):
+        directory = task_dir / name
+        if directory.is_dir():
+            files.extend(path for path in directory.rglob("*") if path.is_file())
+
+    def ignored(path: Path) -> bool:
+        relative = path.relative_to(task_dir)
+        return (
+            "__pycache__" in relative.parts
+            or path.suffix == ".pyc"
+            or path.name == ".DS_Store"
+            or path.name.endswith((".swp", ".swo", "~"))
+        )
+
+    outer = hashlib.sha256()
+    for path in sorted((path for path in files if not ignored(path)), key=lambda item: item.relative_to(task_dir).as_posix()):
+        relative = path.relative_to(task_dir).as_posix()
+        file_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        outer.update(f"{relative}\0{file_hash}\n".encode("utf-8"))
+    return f"sha256:{outer.hexdigest()}"
+
+
 def _reference_run_config(tasks: list[dict[str, Any]], output_dir: Path) -> str:
     task_paths = [str(task["harbor_task_dir"]) for task in tasks]
     task_lines = [f"  - path: {_toml_string(path)}" for path in task_paths]
@@ -152,28 +182,31 @@ def _reference_run_config(tasks: list[dict[str, Any]], output_dir: Path) -> str:
 
 
 def _dataset_toml(tasks: list[dict[str, Any]], *, harness_lane: str) -> str:
-    task_dirs = [str(task["harbor_task_dir"]) for task in tasks]
-    return "\n".join(
-        [
-            "# Public-safe Harbor dataset registration skeleton.",
-            "# This file is not Harbor publish evidence, not Harbor execution evidence,",
-            "# and not v1 readiness evidence.",
-            'name = "authzbench-saas-public-skeleton"',
-            'version = "public-skeleton"',
-            'description = "Public-safe AuthZBench-SaaS Harbor-compatible skeleton dataset."',
-            f"tasks = {_toml_list(task_dirs)}",
-            "",
-            "[metadata.authzbench]",
-            f"skeleton_schema_version = {_toml_string(SCHEMA_VERSION)}",
-            'evidence_status = "generated_public_skeleton"',
-            f"harness_lane = {_toml_string(harness_lane)}",
-            "private_task_count = 0",
-            "harbor_execution_verified = false",
-            "harbor_publish_verified = false",
-            'claim_boundary = "Generated public dataset skeleton only; not Harbor publish evidence, not Harbor execution evidence, and not v1 readiness."',
-            "",
-        ]
-    )
+    lines = [
+        "# Public-safe Harbor dataset registration skeleton.",
+        "# This current-format manifest is not Harbor publish evidence, not Kaggle",
+        "# execution evidence, and not v1 readiness evidence.",
+        "# Regenerate after any task-tree change so each content digest stays pinned.",
+        "",
+        "[dataset]",
+        'name = "bmendonca3/authzbench-saas-public-pilot"',
+        'description = "Public-safe AuthZBench-SaaS Harbor pilot dataset."',
+        'keywords = ["authorization", "agents", "saas", "security"]',
+        "",
+        "[[dataset.authors]]",
+        'name = "bmendonca3"',
+    ]
+    for task in tasks:
+        lines.extend(
+            [
+                "",
+                "[[tasks]]",
+                f"name = {_toml_string(str(task['harbor_task_name']))}",
+                f"digest = {_toml_string(str(task['harbor_content_digest']))}",
+            ]
+        )
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _environment_dockerfile() -> str:
@@ -276,7 +309,13 @@ def _solution_script(task: dict[str, Any], *, oracle_solution_mode: str) -> str:
     raise ValueError(f"unsupported oracle solution mode: {oracle_solution_mode}")
 
 
-def _instruction(task: dict[str, Any], context_relpath: str, *, oracle_solution_mode: str) -> str:
+def _instruction(
+    task: dict[str, Any],
+    context_relpath: str,
+    *,
+    harness_lane: str,
+    oracle_solution_mode: str,
+) -> str:
     if oracle_solution_mode == "public-pilot-reference":
         control_rule = (
             "Report exactly one replayable finding only when the supplied context proves an "
@@ -290,6 +329,17 @@ def _instruction(task: dict[str, Any], context_relpath: str, *, oracle_solution_
             if task.get("expected_vulnerable") is False
             else "This is a vulnerable-task candidate. Submit exactly one replayable finding only if backend evidence proves it."
         )
+    lane_rules = (
+        [
+            "This is a `no_tools` task. Do not make network requests, probe services, inspect "
+            "unrelated paths, or scan the filesystem.",
+            f"Read only `{context_relpath}` and write the submission immediately. Do not wait "
+            "for a server or for the verifier.",
+            "",
+        ]
+        if harness_lane == "no_tools"
+        else []
+    )
     return "\n".join(
         [
             "# AuthZBench-SaaS Harbor Task",
@@ -298,6 +348,7 @@ def _instruction(task: dict[str, Any], context_relpath: str, *, oracle_solution_
             "",
             f"- `{context_relpath}`",
             "",
+            *lane_rules,
             "Write the agent submission to:",
             "",
             "- `/logs/artifacts/submission.json`",
@@ -349,7 +400,7 @@ def _task_toml(
         "private_execution = false",
         "harbor_execution_verified = false",
         f"claim_boundary = {_toml_string('Generated public dataset skeleton only; not Harbor execution evidence or v1 readiness.')}",
-        f"required_artifacts = {_toml_list(['/logs/artifacts/submission.json', '/logs/artifacts/score.json', '/logs/artifacts/reward.json', '/logs/artifacts/reward.txt'])}",
+        f"required_artifacts = {_toml_list(['/logs/artifacts/submission.json', '/logs/artifacts/score.json', '/logs/artifacts/reward.json', '/logs/artifacts/reward.txt', '/logs/verifier/ctrf.json'])}",
         f"service_notes = {_toml_list(service_notes)}",
         "",
         "[verifier]",
@@ -375,6 +426,7 @@ def _task_toml(
         'score_output_path = "/logs/artifacts/score.json"',
         'harbor_reward_json_path = "/logs/verifier/reward.json"',
         'harbor_reward_text_path = "/logs/verifier/reward.txt"',
+        'harbor_ctrf_path = "/logs/verifier/ctrf.json"',
         'public_reward_json_path = "/logs/artifacts/reward.json"',
         'public_reward_text_path = "/logs/artifacts/reward.txt"',
         "",
@@ -477,7 +529,12 @@ def build_harbor_dataset_skeleton(
             ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
         )
         (task_dir / "instruction.md").write_text(
-            _instruction(task, "environment/context.json", oracle_solution_mode=oracle_solution_mode),
+            _instruction(
+                task,
+                "environment/context.json",
+                harness_lane=harness_lane,
+                oracle_solution_mode=oracle_solution_mode,
+            ),
             encoding="utf-8",
         )
         (task_dir / "task.toml").write_text(
@@ -521,6 +578,14 @@ def build_harbor_dataset_skeleton(
                 "    path.write_text(json.dumps(reward, sort_keys=True) + '\\n')",
                 "for path in (Path('/logs/artifacts/reward.txt'), Path('/logs/verifier/reward.txt')):",
                 "    path.write_text('0.0\\n')",
+                "ctrf = {",
+                "    'results': {",
+                "        'tool': {'name': 'authzbench-saas', 'version': 'score-policy-v2'},",
+                "        'summary': {'tests': 1, 'passed': 0, 'failed': 1, 'skipped': 0, 'pending': 0, 'other': 0, 'start': 0, 'stop': 0},",
+                "        'tests': [{'name': 'authorization-verifier::' + str(task.get('id')), 'status': 'failed', 'duration': 0, 'start': 0, 'stop': 0, 'retries': 0, 'file_path': 'tests/test.sh'}],",
+                "    }",
+                "}",
+                "Path('/logs/verifier/ctrf.json').write_text(json.dumps(ctrf, sort_keys=True) + '\\n')",
                 "PY",
                 "  exit 0",
                 "fi",
@@ -548,6 +613,16 @@ def build_harbor_dataset_skeleton(
                 "Path('/logs/artifacts/reward.txt').write_text(f'{reward}\\n')",
                 "Path('/logs/verifier/reward.json').write_text(json.dumps({'reward': reward}) + '\\n')",
                 "Path('/logs/verifier/reward.txt').write_text(f'{reward}\\n')",
+                "passed = bool(score.get('passed')) and reward == 1.0",
+                "status = 'passed' if passed else 'failed'",
+                "ctrf = {",
+                "    'results': {",
+                "        'tool': {'name': 'authzbench-saas', 'version': 'score-policy-v2'},",
+                "        'summary': {'tests': 1, 'passed': int(passed), 'failed': int(not passed), 'skipped': 0, 'pending': 0, 'other': 0, 'start': 0, 'stop': 0},",
+                "        'tests': [{'name': 'authorization-verifier::' + str(task.get('id')), 'status': status, 'duration': 0, 'start': 0, 'stop': 0, 'retries': 0, 'file_path': 'tests/test.sh'}],",
+                "    }",
+                "}",
+                "Path('/logs/verifier/ctrf.json').write_text(json.dumps(ctrf, sort_keys=True) + '\\n')",
                 "raise SystemExit(0)",
                 "PY",
                 "",
@@ -561,6 +636,8 @@ def build_harbor_dataset_skeleton(
             "app": task["app"],
             "expected_vulnerable": bool(task.get("expected_vulnerable")),
             "harbor_task_dir": task_dir.relative_to(output_dir).as_posix(),
+            "harbor_task_name": f"authzbench-saas/{safe_task_name}",
+            "harbor_content_digest": harbor_task_content_digest(task_dir),
             "oracle_solution_mode": oracle_solution_mode,
             "source_task_path": _relative_to_root(task_path),
         }

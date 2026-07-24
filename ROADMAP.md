@@ -55,7 +55,7 @@ Evidence already in place:
 - source-backed repeated private no-tools and tool-agent leaderboard-candidate
   rows with runner-emitted fingerprint provenance
 - public-safe charts and task-quality matrix
-- release evidence registry
+- frozen-v0.0 [`release evidence registry`](docs/release-evidence.json)
 - privacy checks, fresh-clone validation path, Docker smoke, and CI
 - public-safe task-quality gate contract
 - repo-side Harbor adapter package, CLI, scorer bridge, local smoke, parity
@@ -157,13 +157,13 @@ items only and are not in scope for a roadmap-only round.
 
 - [x] One canonical docs navigation map reachable from README and ROADMAP
       (`docs/index.md`) so a reviewer has a single entry point.
-- [ ] Evidence pointers from ROADMAP and README resolve to the canonical claim
+- [x] Evidence pointers from ROADMAP and README resolve to the canonical claim
       ledger and the release-evidence registry without dead links.
 - [x] Reviewer walkthrough (`docs/reviewer-walkthrough.md`) matches the current
       63-task public split and 111 total public/private task scale.
 - [x] Host review package and validation commands
       (`docs/validation-commands.md`) match the current validator set.
-- [ ] Public-safe charts and task-quality matrix reflect the current public
+- [x] Public-safe charts and task-quality matrix reflect the current public
       split, not a stale snapshot.
 - [x] Harbor integration runbook (`docs/harbor-integration-runbook.md`) wording
       stays local-maintainer-only and does not claim Harbor platform acceptance

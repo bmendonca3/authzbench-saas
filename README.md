@@ -153,6 +153,8 @@ path, parity methodology versioning, public-view readiness fixture match
 in tracked artifacts, v2 external gates tracked explicitly.
 
 Full claim ledger: [`docs/claims-and-evidence.md`](docs/claims-and-evidence.md).
+Frozen-v0.0 release evidence registry:
+[`docs/release-evidence.json`](docs/release-evidence.json).
 v1 release note: [`docs/releases/v1.0-internal.md`](docs/releases/v1.0-internal.md).
 
 ## Release Evidence Validation
@@ -202,13 +204,14 @@ so the headline verdict is grep-friendly in CI logs without parsing JSON.
   builds a one-task dataset
 - Local execution preflight: `python3 scripts/check_harbor_local_execution.py`
 - Three-task public pilot: local Harbor 0.13.2 NOP/Oracle execution is tracked
-  in `artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json`; all 12
-  repeated cells completed with NOP `0.0` and Oracle `1.0`
+  in `artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json`; the
+  prior 12-cell repeat matrix and a fresh six-run current-starter matrix
+  completed with NOP `0.0` and Oracle `1.0`
 - Google/Kaggle's July 22 onboarding update and official starter repository
-  confirm the task-directory and local NOP/Oracle workflow. The tracked root
-  `dataset.toml` remains an internal, non-publishable skeleton; an official
-  digest-backed dataset manifest must be created through the current Harbor
-  registration workflow before publication.
+  confirm the task-directory, local NOP/Oracle, CTRF, and digest-backed dataset
+  workflow. The tracked `dataset.toml` now matches that local starter contract,
+  and its three digests match Harbor 0.13.2 `harbor add`. This is still an
+  internal, non-published pilot; `harbor publish` was not run.
 - Full 63-task/model parity, Harbor platform acceptance, and hosted Harbor
   operation: not claimed (v2 gates)
 
