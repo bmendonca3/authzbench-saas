@@ -10,7 +10,10 @@ from scripts.generate_benchmark_charts import ROOT, baseline_rows
 class BenchmarkChartTests(unittest.TestCase):
     def test_stale_54_tool_agent_chart_row_preserves_target_request_coverage(self) -> None:
         registry = load_json(ROOT / "baselines" / "baseline-registry.json")
-        rows = {row["id"]: row for row in baseline_rows(registry)}
+        rows = {
+            row["id"]: row
+            for row in baseline_rows(registry, score_policy_version="score-policy-v1")
+        }
 
         tool_row = rows["kiro-live-tool-agent-sonnet-current-public-54"]
 
@@ -20,19 +23,22 @@ class BenchmarkChartTests(unittest.TestCase):
         self.assertEqual(tool_row["release_suitability"], "current_public_stale")
         self.assertTrue(tool_row["requires_rerun_before_current_comparison"])
 
-    def test_legacy_gemini_chart_row_is_stale_and_rerun_required(self) -> None:
+    def test_canonical_gemini_chart_row_is_current_rescore_evidence(self) -> None:
         registry = load_json(ROOT / "baselines" / "baseline-registry.json")
         rows = {row["id"]: row for row in baseline_rows(registry)}
 
         gemini_row = rows["agy-gemini-3-1-pro-high-current-public-63"]
 
         self.assertEqual(gemini_row["label"], "Gemini 3.1 Pro")
-        self.assertEqual(gemini_row["release_suitability"], "current_public_stale")
-        self.assertTrue(gemini_row["requires_rerun_before_current_comparison"])
+        self.assertEqual(gemini_row["release_suitability"], "current_public_split")
+        self.assertFalse(gemini_row["requires_rerun_before_current_comparison"])
 
     def test_stale_tool_agent_chart_row_preserves_target_request_coverage(self) -> None:
         registry = load_json(ROOT / "baselines" / "baseline-registry.json")
-        rows = {row["id"]: row for row in baseline_rows(registry)}
+        rows = {
+            row["id"]: row
+            for row in baseline_rows(registry, score_policy_version="score-policy-v1")
+        }
 
         tool_row = rows["kiro-live-tool-agent-sonnet-current-public-49"]
 
@@ -49,9 +55,15 @@ class BenchmarkChartTests(unittest.TestCase):
 
     def test_chart_rows_are_filtered_to_one_score_policy(self) -> None:
         registry = load_json(ROOT / "baselines" / "baseline-registry.json")
-        rows = baseline_rows(registry, score_policy_version="score-policy-v1")
+        rows = baseline_rows(
+            registry,
+            score_policy_version="score-policy-v2-boundary-normalization",
+        )
         self.assertTrue(rows)
-        self.assertEqual({row["score_policy_version"] for row in rows}, {"score-policy-v1"})
+        self.assertEqual(
+            {row["score_policy_version"] for row in rows},
+            {"score-policy-v2-boundary-normalization"},
+        )
 
         v2_rows = baseline_rows(registry, score_policy_version="score-policy-v2")
         self.assertEqual(len(v2_rows), 1)

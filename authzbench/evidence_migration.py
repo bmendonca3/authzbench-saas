@@ -5,11 +5,12 @@ import json
 from pathlib import Path
 from typing import Any
 
+from authzbench.core import SCORE_POLICY_VERSION
 from authzbench.score import score_submission
 
 
 MIGRATION_SCHEMA_VERSION = "authzbench-rescore-artifact-v1"
-MIGRATION_TOOL_VERSION = "score-policy-v2-migration-v1"
+MIGRATION_TOOL_VERSION = "canonical-score-policy-migration-v2"
 
 
 def sha256_file(path: Path) -> str:
@@ -58,12 +59,12 @@ def build_rescore_artifact(
     if task.get("id") != submission.get("task_id"):
         raise ValueError("task and submission task_id do not match")
 
-    score = score_submission(task, submission, score_policy_version="score-policy-v2")
+    score = score_submission(task, submission)
     return {
         "schema_version": MIGRATION_SCHEMA_VERSION,
         "status": "rescored_from_policy_v1",
         "source_policy_version": "score-policy-v1",
-        "target_policy_version": "score-policy-v2",
+        "target_policy_version": SCORE_POLICY_VERSION,
         "tool_version": MIGRATION_TOOL_VERSION,
         "task_id": task["id"],
         "source": {
@@ -82,7 +83,7 @@ def validate_rescore_artifact(artifact: dict[str, Any]) -> list[str]:
         "schema_version": MIGRATION_SCHEMA_VERSION,
         "status": "rescored_from_policy_v1",
         "source_policy_version": "score-policy-v1",
-        "target_policy_version": "score-policy-v2",
+        "target_policy_version": SCORE_POLICY_VERSION,
         "tool_version": MIGRATION_TOOL_VERSION,
     }
     for field, value in expected.items():
@@ -104,8 +105,8 @@ def validate_rescore_artifact(artifact: dict[str, Any]) -> list[str]:
     if not isinstance(score, dict):
         errors.append("score must be an object")
     else:
-        if score.get("score_policy_version") != "score-policy-v2":
-            errors.append("score.score_policy_version must be 'score-policy-v2'")
+        if score.get("score_policy_version") != SCORE_POLICY_VERSION:
+            errors.append(f"score.score_policy_version must be {SCORE_POLICY_VERSION!r}")
         if score.get("task_id") != artifact.get("task_id"):
             errors.append("score.task_id must match task_id")
     return errors

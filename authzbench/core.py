@@ -51,12 +51,13 @@ def stable_json_sha256(data: Any) -> str:
 def benchmark_fingerprint(
     task_items: list[tuple[str, dict[str, Any]]],
     *,
-    score_policy_version: str = "score-policy-v1",
+    score_policy_version: str = SCORE_POLICY_VERSION,
 ) -> dict[str, Any]:
     """Return a comparable task/scoring fingerprint without exposing task ids."""
     scorer_contracts = {
         "score-policy-v1": "v0-candidate-authz-evidence",
         "score-policy-v2": "v0-candidate-authz-evidence-boundary-v2.1",
+        SCORE_POLICY_VERSION: "v0-candidate-authz-evidence",
     }
     if score_policy_version not in scorer_contracts:
         raise ValueError(f"unsupported score policy: {score_policy_version}")
@@ -82,8 +83,8 @@ def benchmark_fingerprint(
         "schema_version": "benchmark-fingerprint-v1",
         "task_set_sha256": stable_json_sha256(canonical_tasks),
         "task_path_set_sha256": stable_json_sha256([item["path"] for item in canonical_tasks]),
-        "score_policy_version": SCORE_POLICY_VERSION,
-        "scorer_contract": "v0-candidate-authz-evidence",
+        "score_policy_version": score_policy_version,
+        "scorer_contract": scorer_contracts[score_policy_version],
         "evidence_contract_version": "evidence-requirements-v1",
         **counts,
     }

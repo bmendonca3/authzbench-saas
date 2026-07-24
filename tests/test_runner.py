@@ -92,33 +92,32 @@ class RunnerTests(unittest.TestCase):
             self.assertTrue(transcript.exists())
             self.assertIn('"name": "proof"', transcript.read_text(encoding="utf-8"))
 
-    def test_v2_run_records_distinct_fingerprint_and_context_contract(self) -> None:
+    def test_canonical_run_records_hardening_fingerprint_without_scorer_oracle_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             summary = run_benchmark(
                 [str(ROOT / "tasks" / "project_mgmt" / "pm_bola_read_alpha_from_beta.json")],
                 "python3 scripts/scripted_baseline_agent.py",
                 Path(tmp),
                 timeout_seconds=10,
-                score_policy_version="score-policy-v2",
             )
             context = json.loads(
                 Path(summary["run_dir"], "pm_bola_read_alpha_from_beta", "context.json").read_text(encoding="utf-8")
             )
 
-        self.assertEqual(summary["score_policy_version"], "score-policy-v2", summary)
-        self.assertEqual(summary["benchmark_fingerprint"]["score_policy_version"], "score-policy-v2", summary)
+        self.assertEqual(summary["score_policy_version"], "score-policy-v2-boundary-normalization", summary)
+        self.assertEqual(
+            summary["benchmark_fingerprint"]["score_policy_version"],
+            "score-policy-v2-boundary-normalization",
+            summary,
+        )
         self.assertEqual(
             summary["benchmark_fingerprint"]["scorer_contract"],
-            "v0-candidate-authz-evidence-boundary-v2.1",
+            "v0-candidate-authz-evidence",
             summary,
         )
         self.assertEqual(summary["passed_count"], 1, summary)
         self.assertEqual(summary["boundary_health"]["status"], "healthy", summary)
-        self.assertEqual(context["score_policy"]["version"], "score-policy-v2")
-        self.assertEqual(
-            context["score_policy"]["boundary_contract"]["required_fields"],
-            ["attacker_actor", "victim_tenant"],
-        )
+        self.assertNotIn("score_policy", context)
 
     def test_secure_control_execution_failure_is_separate_from_false_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -693,7 +692,7 @@ class BoundaryHealthCanaryTests(unittest.TestCase):
                     submission = {
                         "findings": [{
                             "claim": "cross_tenant_task_read",
-                            "boundary": {"actor": "beta_member", "target_tenant": "alpha"},
+                            "boundary": {"actor": "beta_member", "attacker_tenant": "alpha"},
                             "evidence": [{"request": {
                                 "actor": "beta_member",
                                 "method": "GET",

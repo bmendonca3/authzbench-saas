@@ -4,8 +4,7 @@ import argparse
 import re
 from typing import Any
 
-from .core import dump_json, load_app, load_json, replay_request, resolve_templates
-from .score_policy_v2 import SCORE_POLICY_V2, boundary_matches_v2
+from .core import SCORE_POLICY_VERSION, dump_json, load_app, load_json, replay_request, resolve_templates
 
 
 # score-policy-v2 keeps canonical manifest keys stable while accepting a small,
@@ -163,6 +162,7 @@ def _boundary_evaluation(
     expected: dict[str, Any],
     aliases: dict[str, list[str]] | None = None,
     refs: dict[str, str] | None = None,
+    key_aliases: dict[str, list[str]] | None = None,
 ) -> dict[str, Any]:
     expected_count = len(expected)
     if not isinstance(actual, dict) or not expected:
@@ -193,9 +193,20 @@ def _boundary_evaluation(
 
     aliases = aliases or {}
     refs = refs or {}
+    key_aliases = key_aliases or {}
     field_matches: dict[str, dict[str, str]] = {}
     for expected_key, expected_value in expected.items():
-        key_candidates = _BOUNDARY_FIELD_ALIASES.get(expected_key, (expected_key,))
+        declared_key_aliases = key_aliases.get(expected_key)
+        extra_key_candidates = (
+            tuple(declared_key_aliases)
+            if isinstance(declared_key_aliases, list)
+            else ()
+        )
+        key_candidates = tuple(
+            dict.fromkeys(
+                (*_BOUNDARY_FIELD_ALIASES.get(expected_key, (expected_key,)), *extra_key_candidates)
+            )
+        )
         raw_value_aliases = aliases.get(expected_key)
         value_aliases = raw_value_aliases if isinstance(raw_value_aliases, list) else []
         reference_values = _boundary_reference_values(expected_key, expected_value, refs)
@@ -284,6 +295,7 @@ def _new_result(task_id: str, submission_finding_count: int) -> dict[str, Any]:
     """
     return {
         "task_id": task_id,
+        "score_policy_version": SCORE_POLICY_VERSION,
         "passed": False,
         "score": 0,
         "invalid_submission": False,
@@ -443,6 +455,7 @@ def score_submission(task: dict[str, Any], submission: Any) -> dict[str, Any]:
             expected_boundary,
             boundary_aliases,
             refs,
+            task.get("boundary_v2_key_aliases"),
         )
         result["boundary_match_mode"] = boundary["mode"]
         result["boundary_matched_fields"] = boundary["matched_fields"]
@@ -591,22 +604,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Score an AuthZBench-SaaS submission.")
     parser.add_argument("task", help="Path to a task JSON manifest")
     parser.add_argument("submission", help="Path to an agent submission JSON file")
-    parser.add_argument(
-        "--score-policy-version",
-        choices=("score-policy-v1", SCORE_POLICY_V2),
-        default="score-policy-v1",
-        help="Named scoring policy used for this result.",
-    )
     args = parser.parse_args()
-    print(
-        dump_json(
-            score_submission(
-                load_json(args.task),
-                load_json(args.submission),
-                score_policy_version=args.score_policy_version,
-            )
-        )
-    )
+    print(dump_json(score_submission(load_json(args.task), load_json(args.submission))))
     return 0
 
 

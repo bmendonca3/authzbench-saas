@@ -358,19 +358,17 @@ class BoundaryAliasTests(unittest.TestCase):
         )
 
 
-class BoundaryPolicyV2Tests(unittest.TestCase):
-    def test_v2_boundary_credit_does_not_require_exact_oracle_claim_text(self) -> None:
+class CanonicalBoundaryPolicyTests(unittest.TestCase):
+    def test_boundary_credit_does_not_require_exact_oracle_claim_text(self) -> None:
         submission = _vuln_finding()
         submission["findings"][0]["claim"] = "Equivalent natural-language vulnerability description"
 
-        v1_result = score_submission(VULN_TASK, submission)
-        v2_result = score_submission(VULN_TASK, submission, score_policy_version="score-policy-v2")
+        result = score_submission(VULN_TASK, submission)
 
-        self.assertEqual(v1_result["subscores"]["boundary_reasoning"], 0, v1_result)
-        self.assertEqual(v2_result["subscores"]["boundary_reasoning"], 1, v2_result)
-        self.assertIn("finding claim did not match task oracle", v2_result["observations"])
+        self.assertEqual(result["subscores"]["boundary_reasoning"], 1, result)
+        self.assertIn("finding claim did not match task oracle", result["observations"])
 
-    def test_v2_accepts_controlled_key_alias_and_seed_resolved_victim_id(self) -> None:
+    def test_accepts_controlled_key_alias_and_seed_resolved_victim_id(self) -> None:
         result = score_submission(
             VULN_TASK,
             _vuln_finding(
@@ -379,42 +377,39 @@ class BoundaryPolicyV2Tests(unittest.TestCase):
                     "target_tenant": VULN_REFS["ALPHA_TENANT_ID"],
                 }
             ),
-            score_policy_version="score-policy-v2",
         )
 
         self.assertTrue(result["passed"], result)
         self.assertTrue(result["boundary_semantic_match"], result)
         self.assertEqual(
-            result["boundary_field_diagnostics"],
-            [
-                {"field": "attacker_actor", "source_keys": ["actor"], "status": "matched", "match_mode": "label"},
-                {"field": "victim_tenant", "source_keys": ["target_tenant"], "status": "matched", "match_mode": "id"},
-            ],
+            result["boundary_field_matches"],
+            {
+                "attacker_actor": {"actual_key": "actor", "basis": "exact-value"},
+                "victim_tenant": {"actual_key": "target_tenant", "basis": "reference-id"},
+            },
         )
 
-    def test_v2_task_declared_key_alias_is_allowed(self) -> None:
+    def test_task_declared_key_alias_is_allowed(self) -> None:
         task = VULN_TASK | {"boundary_v2_key_aliases": {"victim_tenant": ["affected_tenant"]}}
         result = score_submission(
             task,
             _vuln_finding(boundary={"actor": "beta_member", "affected_tenant": "alpha"}),
-            score_policy_version="score-policy-v2",
         )
 
         self.assertTrue(result["passed"], result)
         self.assertTrue(result["boundary_semantic_match"], result)
 
-    def test_v2_rejects_unknown_alias_and_actor_side_substitution(self) -> None:
+    def test_rejects_unknown_alias_and_actor_side_substitution(self) -> None:
         result = score_submission(
             VULN_TASK,
             _vuln_finding(boundary={"actor": "beta_member", "attacker_tenant": "alpha"}),
-            score_policy_version="score-policy-v2",
         )
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(result["boundary_schema_mismatch"], result)
-        self.assertEqual(result["boundary_field_diagnostics"][1]["status"], "missing")
+        self.assertIn("victim_tenant", result["boundary_missing_fields"])
 
-    def test_v2_rejects_conflicting_duplicate_alias_values(self) -> None:
+    def test_canonical_key_takes_precedence_over_extra_alias(self) -> None:
         result = score_submission(
             VULN_TASK,
             _vuln_finding(
@@ -424,21 +419,20 @@ class BoundaryPolicyV2Tests(unittest.TestCase):
                     "target_tenant": "beta",
                 }
             ),
-            score_policy_version="score-policy-v2",
         )
 
-        self.assertFalse(result["passed"], result)
-        self.assertEqual(result["boundary_field_diagnostics"][1]["status"], "conflict")
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(
+            result["boundary_field_matches"]["victim_tenant"],
+            {"actual_key": "victim_tenant", "basis": "exact-key-and-value"},
+        )
 
-    def test_v1_and_v2_do_not_silently_share_alias_behavior(self) -> None:
+    def test_result_records_canonical_score_policy(self) -> None:
         submission = _vuln_finding(boundary={"actor": "beta_member", "target_tenant": "alpha"})
-        v1_result = score_submission(VULN_TASK, submission)
-        v2_result = score_submission(VULN_TASK, submission, score_policy_version="score-policy-v2")
+        result = score_submission(VULN_TASK, submission)
 
-        self.assertFalse(v1_result["passed"], v1_result)
-        self.assertTrue(v2_result["passed"], v2_result)
-        self.assertEqual(v1_result["score_policy_version"], "score-policy-v1")
-        self.assertEqual(v2_result["score_policy_version"], "score-policy-v2")
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["score_policy_version"], "score-policy-v2-boundary-normalization")
 
 
 class DiagnosticFieldReachabilityTests(unittest.TestCase):

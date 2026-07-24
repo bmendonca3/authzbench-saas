@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .core import benchmark_fingerprint, build_context, dump_json, is_safe_identifier, load_json
+from .core import SCORE_POLICY_VERSION, benchmark_fingerprint, build_context, dump_json, is_safe_identifier, load_json
 from .score import score_submission
 
 
@@ -272,6 +272,13 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
     vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
     exploit_proven = sum(1 for item in vulnerable if item["exploit_proof"] == 1)
     boundary_reasoning_passed = sum(1 for item in vulnerable if item["boundary_reasoning"] == 1)
+    boundary_health_status = (
+        "not_applicable"
+        if not vulnerable
+        else "review_required"
+        if exploit_proven > 0 and boundary_reasoning_passed == 0
+        else "healthy"
+    )
     boundary_exact_match_count = sum(1 for item in vulnerable if item.get("boundary_exact_match"))
     boundary_semantic_match_count = sum(1 for item in vulnerable if item.get("boundary_semantic_match"))
     boundary_partial_match_count = sum(1 for item in vulnerable if item.get("boundary_partial_match"))
@@ -358,6 +365,11 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
         "boundary_reasoning_pass_rate": (
             round(boundary_reasoning_passed / len(vulnerable), 4) if vulnerable else 0
         ),
+        "boundary_health": {
+            "status": boundary_health_status,
+            "exploit_proven_task_count": exploit_proven,
+            "boundary_reasoning_passed_task_count": boundary_reasoning_passed,
+        },
         "boundary_exact_match_count": boundary_exact_match_count,
         "boundary_semantic_match_count": boundary_semantic_match_count,
         "boundary_partial_match_count": boundary_partial_match_count,
@@ -393,7 +405,7 @@ def run_benchmark(
     results_dir: Path,
     timeout_seconds: int,
     benchmark_version: str = "alpha-0.0.1-public-scaffold-local",
-    score_policy_version: str = "score-policy-v1",
+    score_policy_version: str = SCORE_POLICY_VERSION,
     benchmark_commit_sha: str | None = None,
     agent: str | None = None,
     model: str | None = None,
@@ -401,6 +413,11 @@ def run_benchmark(
     target_log_dir: Path | None = None,
     run_id: str | None = None,
 ) -> dict[str, Any]:
+    if score_policy_version != SCORE_POLICY_VERSION:
+        raise ValueError(
+            f"unsupported execution score policy {score_policy_version!r}; "
+            f"the canonical scorer is {SCORE_POLICY_VERSION!r}"
+        )
     run_id = run_id or _utc_run_id()
     if not is_safe_identifier(run_id):
         raise ValueError("run_id must be a safe single path component")
@@ -417,13 +434,16 @@ def run_benchmark(
         if task["id"] in seen_task_ids:
             raise ValueError(f"duplicate task id in benchmark run: {task['id']}")
         seen_task_ids.add(task["id"])
-    fingerprint = benchmark_fingerprint([(fingerprint_path, task) for fingerprint_path, _task_path, task in loaded_tasks])
+    fingerprint = benchmark_fingerprint(
+        [(fingerprint_path, task) for fingerprint_path, _task_path, task in loaded_tasks],
+        score_policy_version=score_policy_version,
+    )
 
     for _fingerprint_path_text, task_path, task in loaded_tasks:
         task_dir = run_dir / task["id"]
         context_path = task_dir / "context.json"
         submission_path = task_dir / "submission.json"
-        _write_json(context_path, build_context(task, score_policy_version=score_policy_version))
+        _write_json(context_path, build_context(task))
         agent_id = agent or Path(shlex.split(agent_cmd)[0]).name
         target_log_start_offset = _target_log_offset(target_log_dir, task["app"]) if target_log_dir is not None else 0
 
@@ -464,11 +484,7 @@ def run_benchmark(
             score = _invalid_runner_score(task, "agent did not write submission file")
         else:
             try:
-                score = score_submission(
-                    task,
-                    load_json(submission_path),
-                    score_policy_version=score_policy_version,
-                )
+                score = score_submission(task, load_json(submission_path))
             except Exception as exc:  # noqa: BLE001 - runner must preserve per-task failure evidence.
                 score = _invalid_runner_score(
                     task,
@@ -610,9 +626,9 @@ def main() -> int:
     parser.add_argument("--benchmark-version", default="alpha-0.0.1-public-scaffold-local")
     parser.add_argument(
         "--score-policy-version",
-        choices=("score-policy-v1", "score-policy-v2"),
-        default="score-policy-v1",
-        help="Named scoring policy for the run and benchmark fingerprint.",
+        choices=(SCORE_POLICY_VERSION,),
+        default=SCORE_POLICY_VERSION,
+        help="Canonical scoring policy for the run and benchmark fingerprint.",
     )
     parser.add_argument("--benchmark-commit-sha", help="Benchmark commit SHA or release archive SHA.")
     parser.add_argument("--agent", help="Agent or harness name to record in summary.json.")

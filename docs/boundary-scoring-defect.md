@@ -1,10 +1,14 @@
 # Boundary-Reasoning Scoring Defect — Findings, Impact, and Fix
 
-Status: **resolved in the opt-in score-policy-v2.1 implementation**. The defect
-still describes historical policy-v1 behavior in `authzbench/score.py`
-(`_boundary_matches`) and policy-v1 baseline interpretation. The corrective
-contract is [`score-policy-v2-design.md`](score-policy-v2-design.md):
-policy-v1 artifacts remain immutable historical evidence and are not silently
+Status: **resolved in the active
+`score-policy-v2-boundary-normalization` contract**. The defect below describes
+historical policy-v1 behavior and policy-v1 baseline interpretation. The
+earlier opt-in score-policy-v2.1 experiment is retained as stale historical
+evidence and requires a canonical-policy rerun before current comparison. The
+corrective contracts are
+[`score-policy-v2-design.md`](score-policy-v2-design.md) and
+[`score-policy-v2-boundary-normalization.md`](score-policy-v2-boundary-normalization.md):
+historical artifacts remain immutable evidence and are not silently
 reinterpreted.
 
 ---

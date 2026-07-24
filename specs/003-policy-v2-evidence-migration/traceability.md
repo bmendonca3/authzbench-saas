@@ -1,5 +1,11 @@
 # Requirement Traceability
 
+> Historical completion record: this table captures the opt-in
+> score-policy-v2.1 experiment as it was verified. Its Gemini result bundles
+> remain preserved, but the registry now classifies that evidence as stale and
+> requires a rerun under the canonical
+> `score-policy-v2-boundary-normalization` contract before current comparison.
+
 | Requirement | Implementation boundary | Evidence | Status |
 | --- | --- | --- | --- |
 | FR-001 | `authzbench/evidence_migration.py`, `scripts/rescore_policy_v1_submission.py` | focused migration tests | verified |

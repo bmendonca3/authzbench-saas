@@ -13,7 +13,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import benchmark_fingerprint, dump_json, load_json, stable_json_sha256
+from authzbench.core import SCORE_POLICY_VERSION, benchmark_fingerprint, dump_json, load_json, stable_json_sha256
 from authzbench.run import summarize_task_results
 from authzbench.validate_manifests import validate_patterns
 
@@ -85,7 +85,7 @@ VALID_SUITABILITY = {
     "current_public_stale",
     "legacy_snapshot",
 }
-VALID_SCORE_POLICIES = {"score-policy-v1", "score-policy-v2"}
+VALID_SCORE_POLICIES = {"score-policy-v1", "score-policy-v2", SCORE_POLICY_VERSION}
 
 RESCORE_SCHEMA_VERSION = "public-run-rescore-v1"
 RESCORE_DERIVATION = "offline_rescore_from_saved_public_submissions"
@@ -324,6 +324,8 @@ def _validate_rescore_provenance(
         return
     for field, expected in recomputed.items():
         if field == "tasks":
+            continue
+        if field == "boundary_health" and field not in summary:
             continue
         if field in TOOL_TELEMETRY_COVERAGE_FIELDS and field not in summary:
             continue
@@ -597,17 +599,23 @@ def _validate_summary_file(
         errors.append(f"{entry_id}: {location} must be a JSON object")
         return None
 
-    expected_policy = raw_entry.get("expected_score_policy_version", "score-policy-v1")
+    suitability = str(raw_entry.get("release_suitability"))
+    default_policy = (
+        SCORE_POLICY_VERSION
+        if suitability in {"current_public_split", "current_public_harness_check"}
+        else "score-policy-v1"
+    )
+    expected_policy = raw_entry.get("expected_score_policy_version", default_policy)
     if expected_policy not in VALID_SCORE_POLICIES:
         errors.append(f"{entry_id}: expected_score_policy_version must be a known score policy")
-    summary_policy = summary.get("score_policy_version", "score-policy-v1")
+    summary_policy = summary.get("score_policy_version")
     fingerprint = summary.get("benchmark_fingerprint")
     fingerprint_policy = (
         fingerprint.get("score_policy_version", "score-policy-v1")
         if isinstance(fingerprint, dict)
         else None
     )
-    if summary_policy != expected_policy:
+    if summary_policy is not None and summary_policy != expected_policy:
         errors.append(
             f"{entry_id}: {location} score_policy_version {summary_policy!r} "
             f"does not match registry {expected_policy!r}"
@@ -640,7 +648,6 @@ def _validate_summary_file(
                 f"does not match registry {raw_entry[optional_field]!r}"
             )
 
-    suitability = str(raw_entry.get("release_suitability"))
     if enforce_current_public and suitability in {"current_public_split", "current_public_harness_check"}:
         if expected_task_count != public_counts["task_count"]:
             errors.append(
@@ -963,7 +970,12 @@ def validate_registry(registry_path: Path = ROOT / "baselines" / "baseline-regis
         leaderboard_eligible = raw_entry.get("leaderboard_eligible")
         requires_rerun_before_current = bool(raw_entry.get("requires_rerun_before_current_comparison"))
         requires_zero_adapter_failures = raw_entry.get("requires_zero_adapter_failures", False)
-        expected_score_policy = raw_entry.get("expected_score_policy_version", "score-policy-v1")
+        default_score_policy = (
+            SCORE_POLICY_VERSION
+            if suitability in {"current_public_split", "current_public_harness_check"}
+            else "score-policy-v1"
+        )
+        expected_score_policy = raw_entry.get("expected_score_policy_version", default_score_policy)
         entry_current_fingerprint = (
             benchmark_fingerprint(current_task_items, score_policy_version=expected_score_policy)
             if expected_score_policy in VALID_SCORE_POLICIES

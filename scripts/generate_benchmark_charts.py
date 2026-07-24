@@ -81,7 +81,7 @@ def _artifact_policy(artifact: dict[str, Any]) -> str:
 def baseline_rows(
     registry: dict[str, Any],
     *,
-    score_policy_version: str = "score-policy-v1",
+    score_policy_version: str = "score-policy-v2-boundary-normalization",
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for entry in registry["baselines"]:

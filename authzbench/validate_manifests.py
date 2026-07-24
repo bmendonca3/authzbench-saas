@@ -231,6 +231,27 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
                     errors.append(
                         f"{path}: boundary_aliases.{key} must be a non-empty list of strings"
                     )
+        boundary_v2_key_aliases = data.get("boundary_v2_key_aliases")
+        if boundary_v2_key_aliases is not None:
+            if not isinstance(boundary_v2_key_aliases, dict):
+                errors.append(f"{path}: boundary_v2_key_aliases must be an object")
+            else:
+                for key, aliases in boundary_v2_key_aliases.items():
+                    if key not in expected_boundary:
+                        errors.append(
+                            f"{path}: boundary_v2_key_aliases key is not in expected_boundary: {key}"
+                        )
+                    if not isinstance(aliases, list) or not aliases or any(
+                        not _is_non_empty_string(alias) for alias in aliases
+                    ):
+                        errors.append(
+                            f"{path}: boundary_v2_key_aliases.{key} "
+                            "must be a non-empty list of strings"
+                        )
+                    elif len(set(aliases)) != len(aliases):
+                        errors.append(
+                            f"{path}: boundary_v2_key_aliases.{key} must not contain duplicates"
+                        )
     if data["expected_vulnerable"] is False and oracle.get("claim") != "no_vulnerability":
         errors.append(f"{path}: secure-control task must use no_vulnerability oracle")
     if data["expected_vulnerable"] is False:

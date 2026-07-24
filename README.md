@@ -271,8 +271,9 @@ If you are a benchmark host or platform reviewer, please start with [`docs/host/
   scorer, and scripted oracle path agree
 - repeated current 63-task no-tools public baselines across Qwen, Claude Haiku
   4.5, Claude Sonnet 4.6, GLM-5, Claude Opus 4.6, and Gemini 3.1 Pro (High);
-  these are offline policy-v2 rescores of saved full-split submissions, not
-  repeated model execution under policy v2
+  these are offline canonical boundary-normalization rescores of saved
+  full-split submissions, not repeated model execution under the current
+  scoring policy
 - repeated current 63-task Claude Sonnet 4.6 live HTTP tool-agent baseline with
   63/63 target-request correlation and public-safe plan/probe artifacts in both
   runs; public-split evidence only
@@ -429,9 +430,10 @@ run exits that are separate from model accuracy.
 Provide every adapter source file with repeated `--agent-source` flags so the
 protocol manifest hashes the adapter alongside the evaluator and replay sources.
 
-`python3 -m authzbench.run` remains the historical score-policy-v2 runner used by
-the tracked offline rescores. Keeping that path stable preserves their
-provenance; new-protocol results are not directly comparable to those rows.
+`python3 -m authzbench.run` is the deterministic runner for the canonical
+`score-policy-v2-boundary-normalization` contract used by the current tracked
+offline rescores. New `blinded-control-evidence-v1` protocol results are not
+directly comparable to those rows.
 
 The runner provides:
 
@@ -579,12 +581,13 @@ Current 63-task public-split evidence:
 - Kiro `claude-sonnet-4.6` live HTTP tool-agent: two public runs with 63/63
   target-request correlation in both runs
 
-All 14 current model/tool-agent summaries are offline policy-v2 rescores of
-saved full-63-task submissions; model execution was not repeated. Qwen records
-21 and 15 adapter failures, Gemini records 4 and 2, and one GLM run preserves
-two schema-invalid findings while the other preserves one runner timeout.
-These failures are invalid zero-score rows. Runs containing them are
-end-to-end model-plus-harness evidence rather than clean model-only capability.
+All 14 current model/tool-agent summaries are offline
+`score-policy-v2-boundary-normalization` rescores of saved full-63-task
+submissions; model execution was not repeated. Qwen records 21 and 15 adapter
+failures, Gemini records 4 and 2, and one GLM run preserves two schema-invalid
+findings while the other preserves one runner timeout. These failures are
+invalid zero-score rows. Runs containing them are end-to-end
+model-plus-harness evidence rather than clean model-only capability.
 
 v0.0 public-split evidence:
 
