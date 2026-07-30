@@ -128,7 +128,7 @@
       "passed": false,
       "unmet": [
         "live upstream review and infrastructure gates must pass",
-        "release-affecting files changed after benchmark_source_sha: .gitattributes, artifact/README.md, artifact/docs-alignment-stale-wording-inventory.md, artifact/harbor-kaggle-public-pilot/dataset-manifest.json, artifact/harbor-kaggle-public-pilot/dataset.toml, artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json, artifact/harbor-kaggle-public-pilot/run_authzbench_saas.yaml, artifact/harbor-kaggle-public-pilot/tasks/tok_cross_tenant_secret_read/environment/Dockerfile, artifact/harbor-kaggle-public-pilot/tasks/tok_cross_tenant_secret_read/environment/context.json, artifact/harbor-kaggle-public-pilot/tasks/tok_cross_tenant_secret_read/instruction.md"
+        "release-affecting files changed after benchmark_source_sha: .cline/hooks/PreToolUse.py, .cline/qwen-runtime-pin.json, .gitattributes, AGENTS.md, apps/api_tokens/app.py, apps/audit_settings/app.py, apps/billing/app.py, apps/file_sharing/app.py, apps/project_mgmt/app.py, apps/request_logging.py"
       ]
     },
     {
