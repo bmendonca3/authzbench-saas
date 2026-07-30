@@ -50,6 +50,10 @@ def build_summary() -> dict[str, Any]:
             "artifact_schema_version": "scripted-harness-summary-v1",
             "artifact_date": ARTIFACT_DATE,
             "artifact_generated_by": "scripts/generate_scripted_baseline_summary.py",
+            # The runner truthfully stamps the observed HEAD SHA whenever every
+            # executable benchmark source matches HEAD; this development artifact
+            # deliberately keeps the claim null even on an exact-commit-clean tree.
+            "benchmark_commit_sha": None,
             "benchmark_source_state": "development-uncommitted-not-release-frozen",
             "source_claim_scope": (
                 "The benchmark fingerprint binds the current source tree and public "

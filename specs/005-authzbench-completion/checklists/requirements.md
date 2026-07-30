@@ -39,4 +39,4 @@
 
 The external boxes are deliberately expected to remain open during local-only
 work. Their existence prevents a locally excellent candidate from being
-misrepresented as externally validated or launched.
+misrepresented as approved by external reviewers or launched.
