@@ -3,7 +3,7 @@
 Do not ask a question. Edit the two named files now, run the checks, and
 report. Do not delegate.
 
-Repository: `/Users/brianmendonca/Documents/authzbench-saas`
+Repository: `<canonical-checkout>`
 
 Edit only:
 

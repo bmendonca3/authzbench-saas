@@ -13,7 +13,7 @@ actors or a deliberate source freeze. The result must be technically sound,
 reproducible, fail closed, and explicit about what has and has not been
 validated.
 
-The canonical source is `/Users/brianmendonca/Documents/authzbench-saas` on
+The canonical source is `<canonical-checkout>` on
 `main`. The starting Git commit for this tranche is
 `acb6434c4bb25cce53a1a9f4eb31c869986743ca`; accepted work remains uncommitted
 until the user separately authorizes a commit. The benchmark task contract used

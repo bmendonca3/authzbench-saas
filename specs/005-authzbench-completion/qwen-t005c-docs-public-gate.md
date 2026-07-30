@@ -4,7 +4,7 @@ You are the implementation executor. Codex is the DAD/orchestrator.
 
 Repository:
 
-`/Users/brianmendonca/Documents/authzbench-saas`
+`<canonical-checkout>`
 
 Use `apply_patch` for edits.
 

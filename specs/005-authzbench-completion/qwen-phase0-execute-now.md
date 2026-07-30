@@ -4,7 +4,7 @@ Do not ask a question and do not return another analysis-only response. The
 parent/DAD has already made the decision and explicitly authorizes these three
 local edits. Use the file-edit tool now, then run the checks and report.
 
-Repository: `/Users/brianmendonca/Documents/authzbench-saas`
+Repository: `<canonical-checkout>`
 Branch/HEAD: `main` at
 `acb6434c4bb25cce53a1a9f4eb31c869986743ca`
 

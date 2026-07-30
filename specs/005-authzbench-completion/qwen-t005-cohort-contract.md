@@ -6,7 +6,7 @@ the parent/DAD and final verifier; do not delegate.
 
 ## Target
 
-- Repository: `/Users/brianmendonca/Documents/authzbench-saas`
+- Repository: `<canonical-checkout>`
 - Branch/HEAD: `main` at
   `acb6434c4bb25cce53a1a9f4eb31c869986743ca`
 - Existing accepted tracked edits are limited to `ROADMAP.md`,

@@ -6,7 +6,7 @@ checks, inspect the diff, and report. Do not delegate.
 ## Current Partial State
 
 The canonical repository is
-`/Users/brianmendonca/Documents/authzbench-saas`, branch `main`, HEAD
+`<canonical-checkout>`, branch `main`, HEAD
 `acb6434c4bb25cce53a1a9f4eb31c869986743ca`.
 
 The prior T005 attempt created:

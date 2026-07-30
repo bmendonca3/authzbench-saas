@@ -14,5 +14,5 @@
 | FR-011 | Sandbox allows named workspace/bridge and denies outside content/write/second listener | final live `sandbox_checks` | verified |
 | FR-012 | Exact runtime and control hashes are retained | final live `summary.json` | verified |
 | SC-002 | Allowed and rejected fake-Cline runs behave deterministically | 20 focused tests | verified |
-| SC-003 | Live accepted smoke uses exact provider/model and exact admitted output hash | `/Users/brianmendonca/.local/state/qwen-cline-harness/20260729T170003Z-qwen38-harness-smoke-dgutab3b/summary.json` | verified |
-| SC-005 | Focused and strongest repository gates pass | 20 focused tests; `/Users/brianmendonca/.local/state/rtk-brian/raw/1785344663807_evidence.log` | verified |
+| SC-003 | Live accepted smoke uses exact provider/model and exact admitted output hash | `<local-harness-state>/20260729T170003Z-qwen38-harness-smoke-dgutab3b/summary.json` | verified |
+| SC-005 | Focused and strongest repository gates pass | 20 focused tests; `<local-gate-evidence-logs>/1785344663807_evidence.log` | verified |

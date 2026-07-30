@@ -5,14 +5,14 @@ independently verify the live behavior.
 
 Working directory:
 
-`/Users/brianmendonca/.codex/bin`
+`<local-codex-bin>`
 
 ## Exact edit scope
 
 Edit only:
 
-- `/Users/brianmendonca/.codex/bin/qwen-subagent-mcp.py`
-- `/Users/brianmendonca/.codex/bin/test-qwen-subagent-mcp.py`
+- `<local-codex-bin>/qwen-subagent-mcp.py`
+- `<local-codex-bin>/test-qwen-subagent-mcp.py`
 
 You may set the user-executable bit on `test-qwen-subagent-mcp.py`. Do not edit
 the Responses bridge, Codex config, credentials, repository files, or state
@@ -61,7 +61,7 @@ artifacts. Do not access secrets.
 
 3. Make packet execution testable without live credentials.
    - Let `execute_packet_main` use `QWEN_SUBAGENT_CODEX` when set, with the
-     current `/Users/brianmendonca/.local/bin/codex` as the default.
+     current `<local-codex-bin>/codex` as the default.
    - Preserve production behavior when the variable is unset.
 
 4. Add a deterministic end-to-end SIGINT regression.

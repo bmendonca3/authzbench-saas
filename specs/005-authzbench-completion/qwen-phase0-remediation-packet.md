@@ -39,7 +39,7 @@ evidence refresh remains required work.
 
 ## Target And Baseline
 
-- Repository: `/Users/brianmendonca/Documents/authzbench-saas`
+- Repository: `<canonical-checkout>`
 - Branch: `main`
 - Required HEAD and `origin/main`:
   `acb6434c4bb25cce53a1a9f4eb31c869986743ca`

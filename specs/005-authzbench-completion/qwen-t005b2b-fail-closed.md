@@ -3,7 +3,7 @@
 You are the implementation executor. Codex is the DAD/orchestrator and will
 independently inspect every diff and rerun all checks. Work only in:
 
-`/Users/brianmendonca/Documents/authzbench-saas`
+`<canonical-checkout>`
 
 ## Exact edit scope
 

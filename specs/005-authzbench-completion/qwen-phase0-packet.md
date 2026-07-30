@@ -15,7 +15,7 @@ missing external evidence into a pass.
 
 ## Target And Baseline
 
-- Repository: `/Users/brianmendonca/Documents/authzbench-saas`
+- Repository: `<canonical-checkout>`
 - Branch: `main`
 - Required starting HEAD:
   `acb6434c4bb25cce53a1a9f4eb31c869986743ca`
@@ -24,8 +24,8 @@ missing external evidence into a pass.
   `specs/005-authzbench-completion/` orchestration packet. Preserve it and do
   not edit it.
 - Linked worktrees are out of scope and must not be touched:
-  `/Users/brianmendonca/Documents/authzbench-saas-hardening` and
-  `/Users/brianmendonca/Documents/authzbench-saas-kaggle-harbor`.
+  `<local-hardening-worktree>` and
+  `<local-kaggle-harbor-worktree>`.
 
 Stop without editing if the branch, HEAD, or starting tracked-file status does
 not match this packet.

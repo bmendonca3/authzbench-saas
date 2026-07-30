@@ -3,7 +3,7 @@
 Do not ask a question. Make these exact mechanical edits now, run the two
 checks, inspect the three-file diff, and report. Do not delegate.
 
-Repository: `/Users/brianmendonca/Documents/authzbench-saas`
+Repository: `<canonical-checkout>`
 
 Edit only:
 

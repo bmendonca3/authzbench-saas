@@ -4,7 +4,7 @@ You are the implementation executor. Codex is the DAD/orchestrator.
 
 Repository:
 
-`/Users/brianmendonca/Documents/authzbench-saas`
+`<canonical-checkout>`
 
 The previous lane already updated the contract and most validator logic before
 its live stream was canceled. Preserve that accepted work.

@@ -3,7 +3,7 @@
 Do not ask a question. Make these exact validator/test edits now, run the
 checks, inspect the diff, and report. Do not delegate.
 
-Repository: `/Users/brianmendonca/Documents/authzbench-saas`
+Repository: `<canonical-checkout>`
 
 Edit only:
 
