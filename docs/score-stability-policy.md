@@ -16,15 +16,20 @@ the benchmark changes.
 
 ## Versioned Scoring-Policy Revisions
 
-A scoring-policy change is a release boundary, not a silent correction. The active
-policy is named in every `benchmark_fingerprint`; an artifact is current only for
-that exact policy. The opt-in [`score-policy-v2`](score-policy-v2-design.md)
-corrects boundary-key and label/ID normalization without rewriting policy-v1
-scores. Policy-v1 summaries remain immutable historical evidence until a
-separately labeled v2 evaluation is produced.
-A re-scored v1 submission must retain its source digest and be labeled as a
-re-score, never as a fresh execution. A row with incomplete retained submissions
-must be rerun before it can become current v2 evidence.
+A scoring-policy change is a release boundary, not a silent correction. The
+active policy is named in every `benchmark_fingerprint`; an artifact is current
+only for that exact policy. The active
+[`score-policy-v3`](score-policy-v3-evidence-chain-observed-safety.md) requires
+the exact deny-then-bypass chain and makes observed mutation safety a
+zero-weight promotion gate. Policy v2 corrected boundary normalization and its
+offline rescores remain immutable historical evidence; policy-v1 evidence is
+historical as well.
+
+An offline rescore must retain its source digests and be labeled as a rescore,
+never as fresh execution. The preserved policy-v2 submissions do not contain
+the policy-v3 evidence chain or observed-safety evidence, so they cannot become
+current v3 evidence through another offline rescore; fresh execution is
+required.
 
 ## When Scores Become Legacy
 
@@ -100,11 +105,13 @@ current scorer/rescore sources, bind the derived task rows, recompute all
 aggregates, and preserve adapter/runner failures fail closed. Call this an
 offline rescore of saved submissions, not a fresh model rerun.
 
-The transition from `score-policy-v1` to
-`score-policy-v2-boundary-normalization` is intentionally comparability
-breaking. V1 claim-exact scores remain historical; v2 independently evaluates
-complete structured boundary matches and enforces the documented vulnerable
-finding schema.
+The transitions from policy v1 to
+`score-policy-v2-boundary-normalization`, and from policy v2 to
+`score-policy-v3-evidence-chain-observed-safety`, are intentionally
+comparability-breaking. Policy v2 independently evaluates complete structured
+boundary matches. Policy v3 retains that rule, requires the entire ordered
+authorization evidence chain, and separates the core 50/30/20 score from the
+observed-safety promotion gate.
 
 ## Leaderboard Compatibility
 

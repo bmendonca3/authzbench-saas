@@ -1,0 +1,449 @@
+{
+  "schema_version": "scored-cohort-contract-v1",
+  "status": "candidate_pending_independent_review",
+  "evidence_date": "2026-07-29",
+  "public_claim_boundary": "This pending development contract publishes public calibration cluster assignments and aggregate private holdout counts only. The current manifest and source digests bind uncommitted local development state, not a release-frozen commit. It does not publish private task IDs, seeds, routes, oracle details, bodies, or paths. Public tasks and the three-task pilot are calibration/development material and are not scored leaderboard tasks.",
+  "source_bindings": {
+    "audited_baseline_commit": "acb6434c4bb25cce53a1a9f4eb31c869986743ca",
+    "audited_baseline_scope": "historical-private-summary-source-only",
+    "source_state": "development-uncommitted-not-release-frozen",
+    "public_manifest_count": 63,
+    "public_manifest_set_sha256": "b8324849e983b2a130eaa3d203e0a8f33654c4622340d04c9bdf2fdabbe92c0e",
+    "public_benchmark_source_set_sha256": "77148c7d146e7714111f9ba5fed8c9d5d6461d516cecf459442f897a24d75ea8",
+    "public_safe_private_summary_count": 48,
+    "active_scoring_policy_id": "score-policy-v3-evidence-chain-observed-safety",
+    "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass",
+    "public_manifest_paths": [
+      "tasks/api_tokens/tok_cross_tenant_secret_read.json",
+      "tasks/api_tokens/tok_export_scope_bypass.json",
+      "tasks/api_tokens/tok_export_token_reads_export_control.json",
+      "tasks/api_tokens/tok_read_scope_updates_secret.json",
+      "tasks/api_tokens/tok_secure_cross_tenant_secret_control.json",
+      "tasks/api_tokens/tok_secure_export_scope_control.json",
+      "tasks/api_tokens/tok_secure_same_tenant_secret_control.json",
+      "tasks/api_tokens/tok_secure_write_scope_control.json",
+      "tasks/api_tokens/tok_vault_alias_cross_tenant_secret_read.json",
+      "tasks/api_tokens/tok_write_token_rotates_secret_control.json",
+      "tasks/audit_settings/aud_admin_updates_security_settings_control.json",
+      "tasks/audit_settings/aud_auditor_downloads_export_control.json",
+      "tasks/audit_settings/aud_auditor_reads_own_audit_control.json",
+      "tasks/audit_settings/aud_bfla_member_disables_sso.json",
+      "tasks/audit_settings/aud_bfla_member_downloads_audit_export.json",
+      "tasks/audit_settings/aud_bola_nimbus_reads_quasar_audit_log.json",
+      "tasks/audit_settings/aud_event_alias_cross_org_log_read.json",
+      "tasks/audit_settings/aud_member_export_preview_denial_control.json",
+      "tasks/audit_settings/aud_secure_cross_org_audit_control.json",
+      "tasks/billing/bill_account_entitlements_alias_plan_change.json",
+      "tasks/billing/bill_admin_entitlement_access_control.json",
+      "tasks/billing/bill_admin_export_denies_member_control.json",
+      "tasks/billing/bill_admin_plan_access_control.json",
+      "tasks/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
+      "tasks/billing/bill_bfla_member_enables_export_entitlement.json",
+      "tasks/billing/bill_bfla_member_plan_change.json",
+      "tasks/billing/bill_bfla_member_reads_plan_settings.json",
+      "tasks/billing/bill_bfla_peer_member_plan_change.json",
+      "tasks/billing/bill_cross_org_invoice_control.json",
+      "tasks/billing/bill_cross_org_plan_write_control.json",
+      "tasks/billing/bill_same_org_invoice_read_control.json",
+      "tasks/billing/bill_secure_member_entitlement_control.json",
+      "tasks/billing/bill_secure_member_plan_control.json",
+      "tasks/file_sharing/fs_active_share_link_control.json",
+      "tasks/file_sharing/fs_bfla_viewer_creates_public_link.json",
+      "tasks/file_sharing/fs_bola_northstar_reads_apex_file.json",
+      "tasks/file_sharing/fs_same_workspace_file_read_control.json",
+      "tasks/file_sharing/fs_secure_cross_workspace_file_control.json",
+      "tasks/file_sharing/fs_secure_expired_share_link_control.json",
+      "tasks/file_sharing/fs_secure_viewer_share_control.json",
+      "tasks/file_sharing/fs_stale_expired_share_link_access.json",
+      "tasks/file_sharing/fs_team_membership_cross_workspace_discovery.json",
+      "tasks/project_mgmt/pm_bola_owner_reads_beta_task.json",
+      "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json",
+      "tasks/project_mgmt/pm_bola_read_beta_from_alpha.json",
+      "tasks/project_mgmt/pm_cross_tenant_write_control.json",
+      "tasks/project_mgmt/pm_multistep_beta_update_then_alpha_alias_read.json",
+      "tasks/project_mgmt/pm_multistep_owner_update_control.json",
+      "tasks/project_mgmt/pm_same_tenant_read_control.json",
+      "tasks/project_mgmt/pm_secure_cross_tenant_read_control.json",
+      "tasks/project_mgmt/pm_viewer_write_control.json",
+      "tasks/support/sup_admin_reassignment_control.json",
+      "tasks/support/sup_agent_status_only_update_control.json",
+      "tasks/support/sup_bfla_viewer_closes_ticket.json",
+      "tasks/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
+      "tasks/support/sup_bola_acme_reads_orbit_ticket.json",
+      "tasks/support/sup_cross_org_assignment_control.json",
+      "tasks/support/sup_invite_agent_creates_admin_invite.json",
+      "tasks/support/sup_multistep_agent_status_then_admin_reassignment.json",
+      "tasks/support/sup_secure_agent_assignment_control.json",
+      "tasks/support/sup_secure_agent_invite_control.json",
+      "tasks/support/sup_secure_cross_org_ticket_control.json",
+      "tasks/support/sup_secure_viewer_status_control.json"
+    ],
+    "public_safe_summary_paths": [
+      "artifact/private-holdout-active-public-summary.json",
+      "artifact/private-holdout-shadow-public-summary.json",
+      "artifact/v1-task-scale-roadmap.json",
+      "artifact/private-holdout-operation-blocker.json"
+    ]
+  },
+  "public_calibration_inventory": {
+    "cluster_count": 17,
+    "clusters": {
+      "api-token-authorized-operations": {
+        "task_ids": [
+          "tok_export_token_reads_export_control",
+          "tok_write_token_rotates_secret_control"
+        ],
+        "task_count": 2,
+        "apps": [
+          "api_tokens"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "authorized_allow": 2
+        }
+      },
+      "api-token-cross-tenant-secret-access": {
+        "task_ids": [
+          "tok_cross_tenant_secret_read",
+          "tok_secure_cross_tenant_secret_control",
+          "tok_secure_same_tenant_secret_control",
+          "tok_vault_alias_cross_tenant_secret_read"
+        ],
+        "task_count": 4,
+        "apps": [
+          "api_tokens"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "authorized_allow": 1,
+          "denial": 1,
+          "vulnerable": 2
+        }
+      },
+      "api-token-scope-enforcement": {
+        "task_ids": [
+          "tok_export_scope_bypass",
+          "tok_read_scope_updates_secret",
+          "tok_secure_export_scope_control",
+          "tok_secure_write_scope_control"
+        ],
+        "task_count": 4,
+        "apps": [
+          "api_tokens"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 2,
+          "vulnerable": 2
+        }
+      },
+      "audit-authorized-operations": {
+        "task_ids": [
+          "aud_admin_updates_security_settings_control",
+          "aud_auditor_downloads_export_control",
+          "aud_auditor_reads_own_audit_control"
+        ],
+        "task_count": 3,
+        "apps": [
+          "audit_settings"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "authorized_allow": 3
+        }
+      },
+      "audit-bfla-privilege-escalation": {
+        "task_ids": [
+          "aud_bfla_member_disables_sso",
+          "aud_bfla_member_downloads_audit_export",
+          "aud_member_export_preview_denial_control"
+        ],
+        "task_count": 3,
+        "apps": [
+          "audit_settings"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 1,
+          "vulnerable": 2
+        }
+      },
+      "audit-cross-org-log-access": {
+        "task_ids": [
+          "aud_bola_nimbus_reads_quasar_audit_log",
+          "aud_event_alias_cross_org_log_read",
+          "aud_secure_cross_org_audit_control"
+        ],
+        "task_count": 3,
+        "apps": [
+          "audit_settings"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 1,
+          "vulnerable": 2
+        }
+      },
+      "billing-authorized-operations": {
+        "task_ids": [
+          "bill_admin_entitlement_access_control",
+          "bill_admin_plan_access_control",
+          "bill_same_org_invoice_read_control"
+        ],
+        "task_count": 3,
+        "apps": [
+          "billing"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "authorized_allow": 3
+        }
+      },
+      "billing-cross-org-access": {
+        "task_ids": [
+          "bill_cross_org_invoice_control",
+          "bill_cross_org_plan_write_control"
+        ],
+        "task_count": 2,
+        "apps": [
+          "billing"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 2
+        }
+      },
+      "billing-member-privilege-escalation": {
+        "task_ids": [
+          "bill_account_entitlements_alias_plan_change",
+          "bill_admin_export_denies_member_control",
+          "bill_bfla_member_disables_export_entitlement_discovery",
+          "bill_bfla_member_enables_export_entitlement",
+          "bill_bfla_member_plan_change",
+          "bill_bfla_member_reads_plan_settings",
+          "bill_bfla_peer_member_plan_change",
+          "bill_secure_member_entitlement_control",
+          "bill_secure_member_plan_control"
+        ],
+        "task_count": 9,
+        "apps": [
+          "billing"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 3,
+          "vulnerable": 6
+        }
+      },
+      "file-sharing-authorized-operations": {
+        "task_ids": [
+          "fs_active_share_link_control",
+          "fs_same_workspace_file_read_control"
+        ],
+        "task_count": 2,
+        "apps": [
+          "file_sharing"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "authorized_allow": 2
+        }
+      },
+      "file-sharing-cross-workspace-access": {
+        "task_ids": [
+          "fs_bola_northstar_reads_apex_file",
+          "fs_secure_cross_workspace_file_control",
+          "fs_team_membership_cross_workspace_discovery"
+        ],
+        "task_count": 3,
+        "apps": [
+          "file_sharing"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 1,
+          "vulnerable": 2
+        }
+      },
+      "file-sharing-share-link-access": {
+        "task_ids": [
+          "fs_bfla_viewer_creates_public_link",
+          "fs_secure_expired_share_link_control",
+          "fs_secure_viewer_share_control",
+          "fs_stale_expired_share_link_access"
+        ],
+        "task_count": 4,
+        "apps": [
+          "file_sharing"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 2,
+          "vulnerable": 2
+        }
+      },
+      "project-mgmt-authorized-operations": {
+        "task_ids": [
+          "pm_multistep_owner_update_control",
+          "pm_same_tenant_read_control"
+        ],
+        "task_count": 2,
+        "apps": [
+          "project_mgmt"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "authorized_allow": 2
+        }
+      },
+      "project-mgmt-cross-tenant-access": {
+        "task_ids": [
+          "pm_bola_owner_reads_beta_task",
+          "pm_bola_read_alpha_from_beta",
+          "pm_bola_read_beta_from_alpha",
+          "pm_cross_tenant_write_control",
+          "pm_multistep_beta_update_then_alpha_alias_read",
+          "pm_secure_cross_tenant_read_control",
+          "pm_viewer_write_control"
+        ],
+        "task_count": 7,
+        "apps": [
+          "project_mgmt"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 3,
+          "vulnerable": 4
+        }
+      },
+      "support-authorized-operations": {
+        "task_ids": [
+          "sup_admin_reassignment_control",
+          "sup_agent_status_only_update_control"
+        ],
+        "task_count": 2,
+        "apps": [
+          "support"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "authorized_allow": 2
+        }
+      },
+      "support-bfla-ticket-escalation": {
+        "task_ids": [
+          "sup_bfla_viewer_closes_ticket",
+          "sup_bfla_viewer_updates_assigned_ticket_status_discovery",
+          "sup_invite_agent_creates_admin_invite",
+          "sup_multistep_agent_status_then_admin_reassignment",
+          "sup_secure_agent_assignment_control",
+          "sup_secure_agent_invite_control",
+          "sup_secure_viewer_status_control"
+        ],
+        "task_count": 7,
+        "apps": [
+          "support"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 3,
+          "vulnerable": 4
+        }
+      },
+      "support-cross-org-ticket-access": {
+        "task_ids": [
+          "sup_bola_acme_reads_orbit_ticket",
+          "sup_cross_org_assignment_control",
+          "sup_secure_cross_org_ticket_control"
+        ],
+        "task_count": 3,
+        "apps": [
+          "support"
+        ],
+        "app_count": 1,
+        "behavior_counts": {
+          "denial": 2,
+          "vulnerable": 1
+        }
+      }
+    }
+  },
+  "private_scored_cohort_candidate": {
+    "private_cluster_assignment_status": "pending_maintainer_private_work",
+    "cluster_disjointness_verified": false,
+    "admitted_scored_task_count": 0,
+    "launch_ready": false,
+    "aggregate_private_summary_counts": {
+      "active_private_holdout_count": 24,
+      "shadow_private_holdout_count": 24,
+      "total_private_holdout_count": 48,
+      "public_structure_overlap_count": 0,
+      "total_vulnerable_count": 24,
+      "total_control_count": 24,
+      "total_denial_control_count": 12,
+      "total_authorized_allow_control_count": 12
+    },
+    "notes": "The aggregate public_structure_overlap_count=0 does not prove semantic cluster-disjointness. Private cluster assignment, minimum discriminating cohort, and cluster-disjoint proof remain pending maintainer-private work and independent methodology review."
+  },
+  "cluster_disjoint_rules": {
+    "no_cross_cluster_split": "No semantic cluster may cross calibration and scored cohorts without explicit contamination review.",
+    "alias_and_variant_grouping": "Aliases, route variants, seeds, decoys, and multistep variants of the same authorization scenario keep the same cluster ID.",
+    "overlap_quarantine": "Suspected overlap quarantines the scored cluster until review.",
+    "version_isolation": "Scores from incompatible pack/cluster versions are not merged."
+  },
+  "negative_control_requirements": {
+    "required_behaviors": [
+      "vulnerable",
+      "denial",
+      "authorized_allow"
+    ],
+    "aggregate_observed_private_summary_counts": {
+      "active_vulnerable_count": 12,
+      "active_denial_control_count": 6,
+      "active_authorized_allow_control_count": 6,
+      "shadow_vulnerable_count": 12,
+      "shadow_denial_control_count": 6,
+      "shadow_authorized_allow_control_count": 6
+    },
+    "per_cluster_private_coverage_status": "pending_maintainer_private_work"
+  },
+  "seed_and_variant_handling": {
+    "rotation_policy": "Seeds and variants must be rotated to prevent memorization and contamination.",
+    "retirement_and_invalidation": "Compromised seeds or variants must be retired or invalidated.",
+    "rerun_requirements": "Reruns are required after seed/variant rotation or contamination events.",
+    "incident_reporting": "Public-safe incident reporting is required for contamination events."
+  },
+  "minimum_discriminating_cohort": {
+    "minimum_task_count": null,
+    "minimum_cluster_count": null,
+    "status": "pending-review",
+    "required_analysis": [
+      "discriminability_and_statistical_power",
+      "uncertainty_or_bootstrap_intervals",
+      "false_positive_sensitivity",
+      "per_cluster_balance",
+      "ranking_stability"
+    ],
+    "notes": "Numeric minimums are null. The old v0 shape minimum is not reused as the scored-cohort minimum. Required analysis must be completed by independent methodology review."
+  },
+  "independent_methodology_review_gate": {
+    "status": "pending",
+    "decision": null,
+    "reviewer_evidence": null,
+    "review_questions": [
+      "Are cluster IDs stable semantic names and not seeds or task IDs?",
+      "Is cluster-disjointness verified between calibration and scored cohorts?",
+      "Are numeric minimums justified by discriminability and power analysis?",
+      "Are negative-control requirements sufficient for vulnerable, denial, and authorized-allow behavior?",
+      "Are seed/variant rotation and contamination handling adequate?"
+    ],
+    "acceptance_criteria": [
+      "All public calibration clusters are correctly assigned and documented.",
+      "Private cluster assignment is completed and verified.",
+      "Minimum discriminating cohort is justified with statistical analysis.",
+      "Cluster-disjointness is proven between calibration and scored cohorts.",
+      "Independent reviewer signs off on methodology and launch readiness."
+    ],
+    "launch_ready": false
+  }
+}

@@ -15,6 +15,13 @@
           "request": {
             "actor": "beta_member",
             "method": "GET",
+            "path": "/api/secure/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}"
+          }
+        },
+        {
+          "request": {
+            "actor": "beta_member",
+            "method": "GET",
             "path": "/api/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}"
           }
         }

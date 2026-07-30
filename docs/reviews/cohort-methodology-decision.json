@@ -1,0 +1,35 @@
+{
+  "schema_version": "cohort-methodology-decision-v1",
+  "status": "pending",
+  "public_claim_boundary": "This is a public-safe pending methodology decision. It does not expose private task details, prove public/private cluster disjointness, establish a numeric minimum, admit a scored cohort, or make the benchmark launch-ready.",
+  "source_bindings": {
+    "cohort_contract_path": "artifact/scored-cohort-contract.v1.json",
+    "cohort_contract_sha256": "fbc4a36ecfebe8807cf6e5f57420366c3f6326315f2ebe898b0538a313094b3f",
+    "public_manifest_set_sha256": "b8324849e983b2a130eaa3d203e0a8f33654c4622340d04c9bdf2fdabbe92c0e",
+    "private_summary_paths": [
+      "artifact/private-holdout-active-public-summary.json",
+      "artifact/private-holdout-shadow-public-summary.json"
+    ],
+    "private_summary_refresh_status": "required"
+  },
+  "reviewer_role_scope": null,
+  "review_date": null,
+  "reviewed_commit_sha": null,
+  "private_cohort": {
+    "observed_private_task_count": 48,
+    "cluster_assignment_status": "pending",
+    "cluster_disjointness_status": "pending",
+    "minimum_analysis": {
+      "status": "pending",
+      "analysis_artifact": null,
+      "minimum_scored_task_count": null,
+      "minimum_semantic_cluster_count": null
+    }
+  },
+  "methodology_decision": null,
+  "cohort_admitted": false,
+  "admitted_scored_task_count": 0,
+  "launch_ready": false,
+  "blocker": "Private semantic-cluster assignment, source-bound overlap summaries, disjointness evidence, numeric minimum analysis, and an independent methodology decision do not yet exist.",
+  "next_action": "In the controlled private environment, refresh both public-safe summaries against the exact public manifest digest, complete aggregate-only cluster and disjointness analysis, publish a public-safe numeric minimum analysis, and obtain independent final review on one frozen commit."
+}

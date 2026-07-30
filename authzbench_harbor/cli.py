@@ -107,7 +107,11 @@ def main(argv: list[str] | None = None) -> int:
         "--harness-lane",
         choices=["no_tools", "live_http_tool_agent"],
         default="no_tools",
-        help="Harbor harness lane (default: no_tools)",
+        help=(
+            "Harbor harness lane. Only no_tools is implemented; "
+            "live_http_tool_agent is accepted as an explicit planned_unsupported "
+            "value and fails closed."
+        ),
     )
     build_parser.add_argument("--benchmark-source-sha", default=None, help="Git SHA of benchmark source commit")
     build_parser.add_argument("--private-pack", action="store_true", help="Note that private pack is in use (does not publish private content)")

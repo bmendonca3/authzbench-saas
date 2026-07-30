@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +17,11 @@ except ModuleNotFoundError:  # Python 3.10 compatibility
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench_harbor.dataset_builder import harbor_task_content_digest
+from authzbench_harbor.dataset_builder import (
+    build_harbor_dataset_skeleton,
+    harbor_task_content_digest,
+)
+from authzbench.core import load_json as load_strict_json
 
 
 SCHEMA_VERSION = "harbor-dataset-skeleton-v1"
@@ -85,8 +90,7 @@ def _verifier_source_set_sha256(root: Path) -> str:
 
 
 def _load_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    data = load_strict_json(path)
     if not isinstance(data, dict):
         raise ValueError(f"{path}: expected JSON object")
     return data
@@ -199,6 +203,159 @@ def _public_safety_errors(value: Any, *, label: str, allowed_absolute_prefixes: 
             allowed_prefixes = ALLOWED_ABSOLUTE_PREFIXES + PUBLIC_ROUTE_FRAGMENT_PREFIXES + allowed_absolute_prefixes
             if match not in ALLOWED_ABSOLUTE_PATHS and not any(match.startswith(prefix) for prefix in allowed_prefixes):
                 errors.append(f"{label}: local absolute path is not allowed: {match}")
+    return errors
+
+
+def _canonical_public_task_path(value: Any) -> Path | None:
+    if not isinstance(value, str) or not value:
+        return None
+    declared = Path(value)
+    if declared.is_absolute():
+        return None
+
+    public_tasks_root = (ROOT / "tasks").resolve()
+    candidate = (ROOT / declared).resolve()
+    try:
+        candidate.relative_to(public_tasks_root)
+    except ValueError:
+        return None
+    if (
+        not candidate.is_file()
+        or candidate.suffix != ".json"
+        or candidate.relative_to(ROOT.resolve()).as_posix() != value
+    ):
+        return None
+    return candidate
+
+
+def _canonical_dataset_errors(
+    dataset_dir: Path,
+    manifest: dict[str, Any],
+    tasks: list[Any],
+) -> list[str]:
+    """Bind generated task trees and digests to canonical public task sources."""
+    errors: list[str] = []
+    canonical_paths: list[Path] = []
+    seen_task_ids: set[str] = set()
+    seen_source_paths: set[Path] = set()
+
+    for index, task in enumerate(tasks, start=1):
+        if not isinstance(task, dict):
+            continue
+        task_id = task.get("id")
+        if not isinstance(task_id, str) or not task_id:
+            errors.append(f"tasks[{index}].id must be a non-empty string")
+        elif task_id in seen_task_ids:
+            errors.append(f"duplicate task id: {task_id}")
+        else:
+            seen_task_ids.add(task_id)
+
+        canonical_path = _canonical_public_task_path(task.get("source_task_path"))
+        if canonical_path is None:
+            errors.append(
+                f"tasks[{index}].source_task_path must resolve under the "
+                "canonical public tasks directory"
+            )
+            continue
+        if canonical_path in seen_source_paths:
+            errors.append(
+                f"duplicate canonical public source_task_path: "
+                f"{task.get('source_task_path')}"
+            )
+            continue
+        seen_source_paths.add(canonical_path)
+        canonical_paths.append(canonical_path)
+
+        try:
+            canonical_task = _load_json(canonical_path)
+        except Exception:
+            errors.append(
+                f"tasks[{index}].source_task_path is not a valid canonical public task"
+            )
+            continue
+        if canonical_task.get("split") == "private_holdout":
+            errors.append(
+                f"tasks[{index}].source_task_path must reference a public task"
+            )
+        if canonical_task.get("id") != task_id:
+            errors.append(
+                f"tasks[{index}].id does not match its canonical public task source"
+            )
+        if canonical_task.get("app") != task.get("app"):
+            errors.append(
+                f"tasks[{index}].app does not match its canonical public task source"
+            )
+
+        task_dir = _safe_relative(dataset_dir, task.get("harbor_task_dir"))
+        if task_dir is None:
+            continue
+        for copied_name in (
+            "verifier/task_manifest.json",
+            "tests/task_manifest.json",
+        ):
+            copied_path = task_dir / copied_name
+            if not copied_path.is_file():
+                continue
+            try:
+                copied_task = _load_json(copied_path)
+            except Exception:
+                continue
+            if copied_task != canonical_task:
+                errors.append(
+                    f"{task.get('harbor_task_dir')}/{copied_name} does not "
+                    "match its canonical public task source"
+                )
+
+    if errors or len(canonical_paths) != len(tasks) or not canonical_paths:
+        return errors
+
+    harness_lane = manifest.get("harness_lane")
+    oracle_solution_mode = manifest.get("oracle_solution_mode", "none")
+    if (
+        harness_lane not in {"no_tools", "live_http_tool_agent"}
+        or oracle_solution_mode
+        not in {"none", "secure-control-empty-findings", "public-pilot-reference"}
+    ):
+        return errors
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="authzbench-harbor-canonical-") as tmp:
+            rebuilt_dir = Path(tmp) / "dataset"
+            rebuilt_manifest = build_harbor_dataset_skeleton(
+                [str(path) for path in canonical_paths],
+                rebuilt_dir,
+                harness_lane=harness_lane,
+                oracle_solution_mode=oracle_solution_mode,
+            )
+            for field, expected_value in rebuilt_manifest.items():
+                if field == "tasks":
+                    continue
+                if manifest.get(field) != expected_value:
+                    errors.append(
+                        f"dataset-manifest.json field {field!r} does not match "
+                        "a deterministic rebuild from canonical public task sources"
+                    )
+            if tasks != rebuilt_manifest.get("tasks"):
+                errors.append(
+                    "dataset task rows/digests do not match a deterministic "
+                    "rebuild from canonical public task sources"
+                )
+            for name in ("dataset.toml", "run_authzbench_saas.yaml"):
+                current_path = dataset_dir / name
+                rebuilt_path = rebuilt_dir / name
+                if (
+                    current_path.is_file()
+                    and current_path.read_bytes() != rebuilt_path.read_bytes()
+                ):
+                    errors.append(
+                        f"{name} does not match a deterministic rebuild from "
+                        "canonical public task sources"
+                    )
+    except Exception as exc:
+        errors.append(
+            "unable to deterministically rebuild from canonical public task "
+            f"sources ({type(exc).__name__})"
+        )
     return errors
 
 
@@ -330,6 +487,7 @@ def validate_harbor_dataset_skeleton(dataset_dir: Path) -> dict[str, Any]:
         errors.append("tasks must contain at least one public task")
     if manifest.get("task_count") != len(tasks):
         errors.append("task_count must match tasks length")
+    errors.extend(_canonical_dataset_errors(dataset_dir, manifest, tasks))
 
     seen_task_dirs: set[str] = set()
     for index, task in enumerate(tasks, start=1):

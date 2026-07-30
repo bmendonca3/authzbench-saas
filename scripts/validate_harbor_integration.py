@@ -14,6 +14,11 @@ except ModuleNotFoundError:  # direct execution as python3 scripts/validate_harb
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from authzbench.core import load_json as load_strict_json
+
+
 CONTRACT_PATH = ROOT / "artifact" / "harbor-adapter-contract.json"
 RUNBOOK_PATH = ROOT / "docs" / "harbor-integration-runbook.md"
 BLOCKERS_PATH = ROOT / "artifact" / "harbor-adapter-readiness-blockers.json"
@@ -68,6 +73,14 @@ REQUIRED_PACKAGE_LAYOUT = {
     "artifact/harbor-dataset-public-smoke/run_authzbench_saas.yaml",
 }
 REQUIRED_ADAPTER_CLI_FLAGS = {"--output-dir", "--limit", "--overwrite", "--task-ids"}
+REQUIRED_FALSE_EXTERNAL_CLAIMS = {
+    "external_review_complete",
+    "harbor_acceptance_claimed",
+    "hosted_execution_verified",
+    "hosted_public_leaderboard_claimed",
+    "platform_acceptance_claimed",
+    "saas_provider_validation_complete",
+}
 DISALLOWED_TEXT = (
     "accepted",
     "endorsed",
@@ -87,8 +100,7 @@ ALLOWED_ABSOLUTE_PREFIXES = ("/logs/artifacts/",)
 
 
 def _load_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    data = load_strict_json(path)
     if not isinstance(data, dict):
         raise ValueError(f"{path}: expected JSON object")
     return data
@@ -145,6 +157,9 @@ def validate_harbor_integration(
         errors.append(f"schema_version must be {SCHEMA_VERSION}")
     if data.get("evidence_status") != "implementation_target":
         errors.append("evidence_status must be implementation_target")
+    for field in sorted(REQUIRED_FALSE_EXTERNAL_CLAIMS):
+        if data.get(field) is not False:
+            errors.append(f"{field} must be explicitly false")
     boundary = data.get("public_claim_boundary")
     if not _nonempty_string(boundary) or "not" not in str(boundary).lower():
         errors.append("public_claim_boundary must state the contract is not execution/readiness evidence")
@@ -207,16 +222,36 @@ def validate_harbor_integration(
         if not isinstance(lane, dict):
             errors.append("lanes entries must be objects")
             continue
-        if lane.get("required") is not True:
-            errors.append(f"{lane.get('name')}: required must be true")
+        lane_name = lane.get("name")
+        if lane_name == "no_tools":
+            if lane.get("required") is not True:
+                errors.append("no_tools: required must be true")
+            if lane.get("status") != "implemented_local":
+                errors.append("no_tools: status must be implemented_local")
+        elif lane_name == "live_http_tool_agent":
+            if lane.get("required") is not False:
+                errors.append("live_http_tool_agent: required must be false")
+            if lane.get("status") != "planned_unsupported":
+                errors.append(
+                    "live_http_tool_agent: status must be planned_unsupported"
+                )
+            blockers = lane.get("blocked_until")
+            if not isinstance(blockers, list) or len(blockers) < 3:
+                errors.append(
+                    "live_http_tool_agent: blocked_until must list implementation blockers"
+                )
+        else:
+            errors.append(f"unknown lane: {lane_name}")
         for field in ("agent_input", "agent_output", "scoring_rule"):
             if not _nonempty_string(lane.get(field)):
-                errors.append(f"{lane.get('name')}: {field} is required")
+                errors.append(f"{lane_name}: {field} is required")
     lane_text = json.dumps(lanes, sort_keys=True)
     if "findings: []" not in lane_text:
         errors.append("lanes must preserve secure-control findings: [] rule")
     if "target-request coverage" not in lane_text:
         errors.append("live HTTP lane must require target-request coverage")
+    if "planned_unsupported" not in lane_text:
+        errors.append("live HTTP lane must be explicitly planned_unsupported")
 
     artifact_mapping = data.get("artifact_mapping")
     if not isinstance(artifact_mapping, list) or len(artifact_mapping) < 5:

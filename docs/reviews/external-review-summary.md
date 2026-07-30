@@ -6,9 +6,12 @@ v1 does not claim external review, hosted public leaderboard readiness,
 SaaS-provider validation, or platform acceptance.
 Those are tracked as v2 gates in `docs/claims-and-evidence.md`.
 
-Status: intake tracker for v2 external review preparation. Reviewer packet is
-ready, but independent external review is externally blocked until real human
-lane reviewers return intake results. This is not a v1 prerequisite.
+Status: intake tracker for v2 external review preparation. The public-safe
+handoff candidate was refreshed from base commit
+`acb6434c4bb25cce53a1a9f4eb31c869986743ca` with evidence through
+2026-07-28, but it has not been sent and no review commit has been frozen.
+Independent external review is blocked until real human lane reviewers return
+intake results. This is not a v1 prerequisite.
 
 No independent external review is claimed yet. This file tracks planned review
 lanes, reviewer questions, requested evidence, and acceptance criteria without
@@ -30,6 +33,15 @@ it cannot honestly mark review complete without independent AppSec,
 benchmark/evals, and AI-agent/tooling reviewers returning findings or explicit
 no-finding dispositions.
 
+The review candidate covers 63 public tasks across 6 apps: 27 vulnerable tasks
+and 36 secure controls (21 denial and 15 authorized-allow). Public-safe private
+summary metadata covers 48 holdout tasks (24 vulnerable and 24 controls);
+private task bodies and raw private evidence remain excluded. The draft scored
+cohort maps the public set into 17 semantic clusters, but private cluster
+assignment and disjointness, minimum discriminating task and cluster counts,
+methodology approval, cohort admission, and launch eligibility remain
+unresolved.
+
 This is an external blocker, not a missing public-repo checklist item. The
 public repo has the packet, intake form, response template, pending structured
 summary, and validator checks. This v2 tracker updates only when independent reviewers
@@ -40,9 +52,9 @@ return real review evidence and maintainers copy public-safe summaries into
 
 | Lane | Reviewer status | Requested evidence | Acceptance criteria | Next action |
 | --- | --- | --- | --- | --- |
-| Application security | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, `docs/task-quality-matrix.md`, representative public tasks, scorer controls, `docs/claims-and-evidence.md` | Reviewer can identify whether BOLA/BFLA, role, token-scope, sharing, and admin-action tasks are realistic enough for a benchmark paper; false-positive controls are meaningful; unsafe or ambiguous tasks are flagged. | Recruit reviewer for task realism, authorization-boundary quality, and control quality. |
-| Benchmark/evals methodology | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, technical reports, paper scaffold, `baselines/baseline-registry.json`, `docs/baseline-variance-analysis.md`, validation commands | Reviewer can judge whether task split, scoring semantics, repeated-run evidence, and claim boundary support the paper's stated claims without implying private leaderboard readiness. | Recruit reviewer for split design, scoring validity, variance framing, and release claim limits. |
-| AI-agent/tooling | Packet ready; reviewer not yet completed | `docs/reviews/external-review-packet.md`, public baseline summaries, live HTTP tool-agent summaries, runner/scorer docs, `docs/scoring-and-submissions.md`, `docs/boundary-reasoning-calibration-study.md` | Reviewer can assess whether harness types, tool access, target-request correlation, and comparability keys are described well enough for agent-to-agent comparison. | Recruit reviewer for harness assumptions, tool access, and agent comparability. |
+| Application security | Handoff candidate refreshed; reviewer not yet engaged | `docs/reviews/external-review-packet.md`, `docs/task-quality-matrix.md`, representative public tasks, scorer controls, `docs/claims-and-evidence.md` | Reviewer can identify whether BOLA/BFLA, role, token-scope, sharing, and admin-action tasks are realistic enough for a benchmark paper; false-positive controls are meaningful; unsafe or ambiguous tasks are flagged. | Freeze the review commit, then recruit a reviewer for task realism, authorization-boundary quality, and control quality. |
+| Benchmark/evals methodology | Handoff candidate refreshed; reviewer not yet engaged | `docs/reviews/external-review-packet.md`, `docs/kaggle-benchmark-design-contract.md`, `artifact/scored-cohort-contract.v1.json`, technical reports, paper scaffold, `baselines/baseline-registry.json`, `docs/baseline-variance-analysis.md`, validation commands | Reviewer can judge whether task split, cluster-disjoint cohort design, minimum-count methodology, scoring semantics, repeated-run evidence, and claim boundary support the paper's stated claims without implying private leaderboard readiness. | Freeze the review commit, then recruit a reviewer for split design, cohort methodology, scoring validity, variance framing, and release claim limits. |
+| AI-agent/tooling | Handoff candidate refreshed; reviewer not yet engaged | `docs/reviews/external-review-packet.md`, public baseline summaries, live HTTP tool-agent summaries, runner/scorer docs, `docs/scoring-and-submissions.md`, `docs/boundary-reasoning-calibration-study.md` | Reviewer can assess whether harness types, tool access, target-request correlation, and comparability keys are described well enough for agent-to-agent comparison. | Freeze the review commit, then recruit a reviewer for harness assumptions, tool access, and agent comparability. |
 
 ## Reviewer Questions
 
@@ -65,8 +77,14 @@ return real review evidence and maintainers copy public-safe summaries into
   and target-request coverage separated clearly enough?
 - Are two-run ranges framed as descriptive evidence rather than statistical
   certainty?
-- Are stale 44-task, frozen 46-task, historical 49-task, and stale 54-task and current 60-task
-  evidence clearly separated?
+- Are stale 44-task, frozen 46-task, historical 49-task, stale 54-task and
+  60-task, and current 63-task evidence clearly separated?
+- Is it clear that the current 63-task model/tool rows are offline policy-v2
+  rescores of saved full-split submissions, not fresh repeated model execution
+  under policy v2?
+- Does the draft 17-cluster contract define defensible semantic clusters and
+  cluster-disjoint split rules, and what analysis should determine the minimum
+  discriminating task and cluster counts?
 - Does the validation packet give enough public reproducibility without leaking
   private holdout internals?
 

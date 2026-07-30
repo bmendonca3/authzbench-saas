@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from authzbench.core import EVIDENCE_CONTRACT_VERSION
 from authzbench.validate_manifests import validate_patterns
 
 
@@ -87,17 +88,18 @@ class ManifestValidationTests(unittest.TestCase):
                     "body_contains": {"viewer": "beta_member"},
                 },
                 expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
+                evidence_contract_version=EVIDENCE_CONTRACT_VERSION,
                 evidence_requirements=[
                     {
-                        "name": "same_tenant_context_read",
+                        "name": "cross_tenant_read_denied",
                         "index": 0,
                         "request": {
                             "actor": "beta_member",
                             "method": "GET",
-                            "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}",
+                            "path": "/api/secure/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
                         },
-                        "status": 200,
-                        "body_contains": {"task": {"id": "{BETA_PRIVATE_TASK_ID}"}},
+                        "status": 403,
+                        "body_contains": {"error": "forbidden"},
                     },
                     {
                         "name": "cross_tenant_alias_read",
@@ -129,6 +131,31 @@ class ManifestValidationTests(unittest.TestCase):
                 },
                 expected_boundary={"attacker_actor": "beta_member", "victim_tenant": "alpha"},
                 boundary_v2_key_aliases={"victim_tenant": ["affected_tenant"]},
+                evidence_contract_version=EVIDENCE_CONTRACT_VERSION,
+                evidence_requirements=[
+                    {
+                        "name": "cross_tenant_read_denied",
+                        "index": 0,
+                        "request": {
+                            "actor": "beta_member",
+                            "method": "GET",
+                            "path": "/api/secure/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+                        },
+                        "status": 403,
+                        "body_contains": {"error": "forbidden"},
+                    },
+                    {
+                        "name": "cross_tenant_task_read",
+                        "index": 1,
+                        "request": {
+                            "actor": "beta_member",
+                            "method": "GET",
+                            "path": "/api/projects/{ALPHA_PROJECT_ID}/tasks/{ALPHA_PRIVATE_TASK_ID}",
+                        },
+                        "status": 200,
+                        "body_contains": {"viewer": "beta_member"},
+                    },
+                ],
             )
             data.pop("control_type")
             _write_json(path, data)

@@ -148,22 +148,20 @@ def _per_task_verdicts(summary: dict[str, Any]) -> dict[str, bool]:
 
 
 def _is_stale_pending_rerun(entry: dict[str, Any]) -> bool:
-    """Return True if a model/tool-agent entry is honestly stale pending 63-task rerun."""
+    """Return True if a capability row is honestly non-current and needs rerun."""
     if entry.get("kind") not in ("model_baseline", "tool_agent_baseline"):
+        return False
+    if entry.get("release_suitability") not in {
+        "current_public_stale",
+        "legacy_snapshot",
+    }:
         return False
     if not entry.get("requires_rerun_before_current_comparison"):
         return False
     if entry.get("leaderboard_eligible"):
         return False
-    evidence_status = entry.get("evidence_status")
-    if evidence_status is not None and evidence_status not in (
-        "stale_after_v1_1_public_split",
-        "stale",
-        "legacy_snapshot",
-    ):
-        return False
     task_count = entry.get("expected_task_count", 0)
-    if not isinstance(task_count, int) or task_count >= 63:
+    if not isinstance(task_count, int) or task_count <= 0:
         return False
     return True
 
@@ -306,16 +304,16 @@ def analyze_registry(
             has_sanity_63 = _has_current_63_scripted_sanity(registry)
             all_stale = _all_capability_rows_stale_pending(registry)
             if has_sanity_63 and all_stale:
-                capability_baseline_status = "stale_pending_63_task_rerun"
+                capability_baseline_status = "stale_pending_current_policy_rerun"
                 capability_baseline_disclosure = (
-                    "No current 63-task model/tool-agent capability baselines exist. "
-                    "Prior 60/54/49/46/44/15-task model/tool-agent rows are stale "
-                    "(requires_rerun_before_current_comparison=true, "
-                    "leaderboard_eligible=false, expected_task_count<63) and are not "
-                    "current 63-task capability evidence. A current 63-task scripted "
-                    "sanity row exists and validates harness/scorer wiring. Rerun "
-                    "model/tool-agent baselines at 63 tasks to restore current "
-                    "capability evidence."
+                    "No current score-policy-v3 model/tool-agent capability baselines "
+                    "exist. Every tracked model/tool-agent row is historical or stale "
+                    "(requires_rerun_before_current_comparison=true and "
+                    "leaderboard_eligible=false), including the prior 63-task "
+                    "score-policy-v2 rows. A current 63-task score-policy-v3 scripted "
+                    "sanity row validates manifest/scorer/runner wiring but is not a "
+                    "model result. Fresh exact-source model/tool-agent runs are required "
+                    "to restore current capability evidence."
                 )
             else:
                 if not has_sanity_63:
@@ -451,11 +449,11 @@ def main() -> int:
         "--allow-stale-pending-rerun",
         action="store_true",
         help=(
-            "With --require-current-public, pass when no current 63-task "
+            "With --require-current-public, pass when no current-policy "
             "model/tool-agent cohorts exist but a current 63-task scripted sanity "
             "row exists and all model/tool-agent rows are honestly stale pending "
             "rerun. Does not weaken the claim boundary; adds an explicit "
-            "stale_pending_63_task_rerun disclosure to the report."
+            "stale_pending_current_policy_rerun disclosure to the report."
         ),
     )
     parser.add_argument("--root", default=".")

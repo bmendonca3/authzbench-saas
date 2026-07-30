@@ -6,7 +6,7 @@
       "denial_control_task_count": 3,
       "task_count": 10,
       "vulnerable_task_count": 4,
-      "workflow_evidence_task_count": 1
+      "workflow_evidence_task_count": 4
     },
     "audit_settings": {
       "authorized_allow_control_task_count": 3,
@@ -14,7 +14,7 @@
       "denial_control_task_count": 2,
       "task_count": 9,
       "vulnerable_task_count": 4,
-      "workflow_evidence_task_count": 1
+      "workflow_evidence_task_count": 4
     },
     "billing": {
       "authorized_allow_control_task_count": 3,
@@ -22,7 +22,7 @@
       "denial_control_task_count": 5,
       "task_count": 14,
       "vulnerable_task_count": 6,
-      "workflow_evidence_task_count": 2
+      "workflow_evidence_task_count": 6
     },
     "file_sharing": {
       "authorized_allow_control_task_count": 2,
@@ -30,7 +30,7 @@
       "denial_control_task_count": 3,
       "task_count": 9,
       "vulnerable_task_count": 4,
-      "workflow_evidence_task_count": 1
+      "workflow_evidence_task_count": 4
     },
     "project_mgmt": {
       "authorized_allow_control_task_count": 2,
@@ -38,7 +38,7 @@
       "denial_control_task_count": 3,
       "task_count": 9,
       "vulnerable_task_count": 4,
-      "workflow_evidence_task_count": 1
+      "workflow_evidence_task_count": 4
     },
     "support": {
       "authorized_allow_control_task_count": 2,
@@ -46,7 +46,7 @@
       "denial_control_task_count": 5,
       "task_count": 12,
       "vulnerable_task_count": 5,
-      "workflow_evidence_task_count": 2
+      "workflow_evidence_task_count": 5
     }
   },
   "schema_version": "task-quality-matrix-schema-1",
@@ -63,8 +63,8 @@
     "task_count": 63,
     "tasks_with_quality_flags": [],
     "vulnerable_task_count": 27,
-    "vulnerable_workflow_evidence_task_count": 8,
-    "workflow_evidence_task_count": 8
+    "vulnerable_workflow_evidence_task_count": 27,
+    "workflow_evidence_task_count": 27
   },
   "tasks": [
     {
@@ -75,8 +75,27 @@
       "control_status_check_count": 2,
       "control_success_check_count": 1,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_scope",
@@ -98,7 +117,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -110,8 +129,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_scope"
@@ -132,7 +170,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -175,8 +213,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_scope"
@@ -197,7 +254,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -336,15 +393,24 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
           "method": "GET",
           "request_body_required": false,
           "request_path_template_present": true,
           "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 1,
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_boundary",
@@ -502,8 +568,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role",
@@ -525,7 +610,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -537,8 +622,27 @@
       "control_status_check_count": 2,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role",
@@ -560,7 +664,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -572,8 +676,27 @@
       "control_status_check_count": 2,
       "control_success_check_count": 1,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_boundary",
@@ -595,7 +718,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -610,15 +733,24 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
           "method": "GET",
           "request_body_required": false,
           "request_path_template_present": true,
           "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 1,
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_boundary",
@@ -717,15 +849,24 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
           "method": "PATCH",
           "request_body_required": true,
           "request_path_template_present": true,
           "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 1,
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "org",
@@ -856,7 +997,7 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
           "method": "PATCH",
           "request_body_required": true,
@@ -871,9 +1012,18 @@
           "request_body_required": true,
           "request_path_template_present": true,
           "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 2,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 2,
+      "evidence_requirements_count": 3,
       "expected_boundary_keys": [
         "attacker_actor",
         "entitlement",
@@ -909,8 +1059,27 @@
       "control_status_check_count": 3,
       "control_success_check_count": 1,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 0,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "entitlement",
@@ -933,7 +1102,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -945,8 +1114,27 @@
       "control_status_check_count": 2,
       "control_success_check_count": 1,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role"
@@ -967,7 +1155,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -979,8 +1167,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role"
@@ -1001,7 +1208,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1013,8 +1220,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role"
@@ -1035,7 +1261,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1233,8 +1459,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "POST",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "POST",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role"
@@ -1255,7 +1500,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1267,8 +1512,27 @@
       "control_status_check_count": 2,
       "control_success_check_count": 1,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "victim_workspace"
@@ -1289,7 +1553,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1425,8 +1689,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_link_state"
@@ -1447,7 +1730,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1462,7 +1745,7 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
           "method": "GET",
           "request_body_required": false,
@@ -1477,9 +1760,18 @@
           "request_body_required": false,
           "request_path_template_present": true,
           "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 2,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 2,
+      "evidence_requirements_count": 3,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_membership",
@@ -1513,8 +1805,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "victim_tenant"
@@ -1535,7 +1846,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1547,8 +1858,27 @@
       "control_status_check_count": 3,
       "control_success_check_count": 1,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "victim_tenant"
@@ -1569,7 +1899,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1581,8 +1911,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "victim_tenant"
@@ -1603,7 +1952,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1649,8 +1998,17 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
           "method": "PATCH",
           "request_body_required": true,
           "request_path_template_present": true,
@@ -1659,14 +2017,14 @@
         {
           "actor_present": true,
           "body_check_present": true,
-          "index": 1,
+          "index": 2,
           "method": "GET",
           "request_body_required": false,
           "request_path_template_present": true,
           "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 2,
+      "evidence_requirements_count": 3,
       "expected_boundary_keys": [
         "attacker_actor",
         "victim_tenant"
@@ -1885,8 +2243,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role"
@@ -1907,7 +2284,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -1922,8 +2299,17 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
           "method": "GET",
           "request_body_required": false,
           "request_path_template_present": true,
@@ -1932,14 +2318,14 @@
         {
           "actor_present": true,
           "body_check_present": true,
-          "index": 1,
+          "index": 2,
           "method": "PATCH",
           "request_body_required": true,
           "request_path_template_present": true,
           "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 2,
+      "evidence_requirements_count": 3,
       "expected_boundary_keys": [
         "attacker_actor",
         "org",
@@ -1973,8 +2359,27 @@
       "control_status_check_count": 2,
       "control_success_check_count": 1,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "GET",
+          "request_body_required": false,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "victim_org"
@@ -1995,7 +2400,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -2038,8 +2443,27 @@
       "control_status_check_count": 1,
       "control_success_check_count": 0,
       "control_type": null,
-      "evidence_requirement_steps": [],
-      "evidence_requirements_count": 0,
+      "evidence_requirement_steps": [
+        {
+          "actor_present": true,
+          "body_check_present": false,
+          "index": 0,
+          "method": "POST",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 1,
+          "method": "POST",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
+        }
+      ],
+      "evidence_requirements_count": 2,
       "expected_boundary_keys": [
         "attacker_actor",
         "required_role"
@@ -2060,7 +2484,7 @@
         "vulnerable_boundary_requirement_satisfied": true,
         "workflow_evidence_ready": true
       },
-      "replay_proof_status": "direct_oracle_and_controls",
+      "replay_proof_status": "multi_step_evidence_requirements",
       "scorer_oracle_present": true,
       "split": "public"
     },
@@ -2075,7 +2499,7 @@
       "evidence_requirement_steps": [
         {
           "actor_present": true,
-          "body_check_present": true,
+          "body_check_present": false,
           "index": 0,
           "method": "PATCH",
           "request_body_required": true,
@@ -2090,9 +2514,18 @@
           "request_body_required": true,
           "request_path_template_present": true,
           "status_check_present": true
+        },
+        {
+          "actor_present": true,
+          "body_check_present": true,
+          "index": 2,
+          "method": "PATCH",
+          "request_body_required": true,
+          "request_path_template_present": true,
+          "status_check_present": true
         }
       ],
-      "evidence_requirements_count": 2,
+      "evidence_requirements_count": 3,
       "expected_boundary_keys": [
         "attacker_actor",
         "org",

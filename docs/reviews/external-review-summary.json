@@ -29,15 +29,19 @@
         "docs/reviews/external-review-packet.md",
         "docs/benchmark-spec.md",
         "docs/scoring-and-submissions.md",
+        "docs/kaggle-benchmark-design-contract.md",
         "docs/baseline-credibility.md",
         "docs/baseline-variance-analysis.md",
+        "artifact/scored-cohort-contract.v1.json",
         "baselines/baseline-registry.json"
       ],
       "requested_questions": [
         "Does the evidence support the stated claim boundary?",
         "Are public-split diagnostics separated from private-holdout leaderboard claims?",
         "Are repeated-run ranges presented as descriptive evidence rather than statistical certainty?",
-        "Are stale 44-task, frozen 46-task, historical 49-task, and stale 54-task and current 60-task baselines separated clearly?"
+        "Are stale 44-task, frozen 46-task, historical 49-task, stale 54-task and 60-task, and current 63-task evidence separated clearly?",
+        "Is it explicit that the current 63-task model and tool rows are offline policy-v2 rescores of saved full-split submissions rather than fresh repeated model execution under policy v2?",
+        "Does the draft 17-cluster contract define defensible semantic clusters and cluster-disjoint split rules, and what analysis should determine the minimum discriminating task and cluster counts?"
       ],
       "blocker": "Needs an independent benchmark/evals reviewer to return findings or an explicit no-finding disposition.",
       "next_action": "Recruit an evals reviewer for split design, scoring validity, variance framing, and release claim limits."

@@ -2,34 +2,46 @@ from __future__ import annotations
 
 import copy
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from authzbench.core import load_json, runner_integrity_envelope
+from scripts.migrate_legacy_leaderboard_status import migrate
 from scripts.validate_leaderboard_submission import (
     ROOT,
-    _load_rotation_metadata,
+    ELIGIBILITY_POLICY_VERSION,
+    LEADERBOARD_SCHEMA_VERSION,
+    _load_public_private_pack_metadata,
+    _validate_private_pack_role,
     comparability_key,
     validate_submission,
 )
 
 
 def _active_private_pack_fingerprint() -> str:
-    """Return the role=active private pack fingerprint from the
-    rotation metadata. The leaderboard submission validator
-    (objective-5) requires every leaderboard-eligible
-    private-holdout or combined submission to point at this
-    fingerprint.
-    """
-    for fingerprint, pack in _load_rotation_metadata().items():
+    """Return the public blocker artifact's role=active fingerprint."""
+    for fingerprint, pack in _load_public_private_pack_metadata().items():
         if pack.get("role") == "active":
             return fingerprint
-    raise RuntimeError("no active private pack in rotation-metadata.json")
+    raise RuntimeError("public blocker metadata has no active private pack")
+
+
+def _active_private_pack_metadata() -> tuple[str, dict]:
+    fingerprint = _active_private_pack_fingerprint()
+    return fingerprint, _load_public_private_pack_metadata()[fingerprint]
 
 
 EXAMPLE = ROOT / "examples" / "leaderboard" / "scripted-sanity-public.leaderboard.json"
 RELEASE_CANDIDATE = ROOT / "leaderboard_submissions" / "2026-06-05" / "haiku-private-holdout.leaderboard.json"
+SYNTHETIC_COMMIT_SHA = "a" * 40
+SYNTHETIC_SOURCE_FINGERPRINT = {
+    "source_path_set_sha256": "b" * 64,
+    "source_set_sha256": "c" * 64,
+}
 
 
 def _write_submission(tmp_path: Path, data: dict) -> Path:
@@ -39,24 +51,64 @@ def _write_submission(tmp_path: Path, data: dict) -> Path:
 
 
 class LeaderboardSubmissionTests(unittest.TestCase):
-    def setUp(self) -> None:
-        # Skip when the gitignored private-rotation-metadata file is
-        # missing. The 4 (a5e5b01-era) tests that follow assert on
-        # gate state derived from the active private pack and the
-        # repeated private leaderboard rows; in public-CI checkouts
-        # the file is intentionally absent and the assertions would
-        # otherwise error or fail on environment-specific unmet
-        # items. Local runs (where the file is present) are
-        # unaffected. See round 2 amendment in
-        # docs/release-evidence-tracking.md for the matching
-        # validator fix.
-        from pathlib import Path
-        rotation_metadata = Path("tasks_private") / "holdout" / "rotation-metadata.json"
-        if not rotation_metadata.is_file():
-            self.skipTest(
-                "tasks_private/holdout/rotation-metadata.json not present; "
-                "this test depends on the gitignored private holdout rotation metadata"
-            )
+    def test_all_legacy_rows_and_sources_are_explicitly_stale(self) -> None:
+        result = migrate(ROOT)
+
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["changed_paths"], [])
+        self.assertEqual(result["legacy_row_count"], 12)
+        self.assertEqual(result["legacy_source_count"], 35)
+
+    def test_active_private_pack_binding_requires_exact_identity_and_counts(self) -> None:
+        fingerprint, pack = _active_private_pack_metadata()
+        shadow_fingerprint = next(
+            value
+            for value, metadata in _load_public_private_pack_metadata().items()
+            if metadata.get("role") == "shadow"
+        )
+        base = {
+            "split": "private-holdout",
+            "leaderboard_eligible": True,
+            "private_pack_id": pack["id"],
+            "private_pack_version": pack["version"],
+            "private_pack_fingerprint_sha256": fingerprint,
+            "private_pack_loaded_fingerprint_sha256": fingerprint,
+            "private_pack_fingerprint_provenance": "runner-computed-loaded-manifests",
+            "task_count": 24,
+            "vulnerable_task_count": 12,
+            "control_task_count": 12,
+            "denial_control_task_count": 6,
+            "authorized_allow_control_task_count": 6,
+        }
+        cases = {
+            "task_count_23": {"task_count": 23},
+            "task_count_25": {"task_count": 25},
+            "wrong_pack_id": {"private_pack_id": "other-pack"},
+            "wrong_pack_version": {"private_pack_version": "other-version"},
+            "self_declared_fingerprint": {
+                "private_pack_loaded_fingerprint_sha256": "f" * 64
+            },
+            "missing_provenance": {"private_pack_fingerprint_provenance": None},
+            "missing_denial_controls": {"denial_control_task_count": 0},
+            "shadow_pack": {
+                "private_pack_fingerprint_sha256": shadow_fingerprint,
+                "private_pack_loaded_fingerprint_sha256": shadow_fingerprint,
+            },
+        }
+        for name, changes in cases.items():
+            with self.subTest(name=name):
+                row = {**base, **changes}
+                errors: list[str] = []
+                warnings: list[str] = []
+                _validate_private_pack_role(row, errors, warnings)
+                self.assertTrue(errors, row)
+
+        errors = []
+        warnings = []
+        _validate_private_pack_role(base, errors, warnings)
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+
     def test_public_scripted_example_is_valid_but_not_eligible(self) -> None:
         result = validate_submission(EXAMPLE, require_source_summary=True)
 
@@ -82,6 +134,172 @@ class LeaderboardSubmissionTests(unittest.TestCase):
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("missing required fields" in error for error in result["errors"]), result)
+
+    def test_invalid_top_level_json_returns_structured_row_failure(self) -> None:
+        cases = {
+            "duplicate-key": ('{"agent":"one","agent":"two"}', "DuplicateJsonKeyError"),
+            "nan": ('{"mean_score":NaN}', "NonFiniteJsonNumberError"),
+            "infinity": ('{"mean_score":Infinity}', "NonFiniteJsonNumberError"),
+            "syntax": ('{"mean_score":', "JSONDecodeError"),
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            for name, (payload, error_type) in cases.items():
+                with self.subTest(name=name):
+                    path = tmp_path / f"{name}.json"
+                    path.write_text(payload, encoding="utf-8")
+
+                    result = validate_submission(path)
+
+                    self.assertEqual(result["path"], str(path), result)
+                    self.assertFalse(result["passed"], result)
+                    self.assertFalse(result["leaderboard_eligible"], result)
+                    self.assertEqual(result["warnings"], [], result)
+                    self.assertTrue(
+                        any(
+                            "submission could not be loaded as strict JSON" in error
+                            and error_type in error
+                            for error in result["errors"]
+                        ),
+                        result,
+                    )
+
+    def test_top_level_load_error_and_non_object_are_structured_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            missing_path = tmp_path / "missing.json"
+            missing_result = validate_submission(missing_path)
+            list_path = tmp_path / "list.json"
+            list_path.write_text("[]\n", encoding="utf-8")
+            list_result = validate_submission(list_path)
+
+        self.assertFalse(missing_result["passed"], missing_result)
+        self.assertFalse(missing_result["leaderboard_eligible"], missing_result)
+        self.assertTrue(
+            any("FileNotFoundError" in error for error in missing_result["errors"]),
+            missing_result,
+        )
+        self.assertFalse(list_result["passed"], list_result)
+        self.assertFalse(list_result["leaderboard_eligible"], list_result)
+        self.assertEqual(list_result["errors"], ["submission must contain a JSON object"])
+
+    def test_invalid_source_summary_json_returns_structured_row_failure(self) -> None:
+        cases = {
+            "duplicate-key": ('{"run_id":"one","run_id":"two"}', "DuplicateJsonKeyError"),
+            "nan": ('{"mean_score":NaN}', "NonFiniteJsonNumberError"),
+            "infinity": ('{"mean_score":-Infinity}', "NonFiniteJsonNumberError"),
+            "syntax": ('{"run_id":', "JSONDecodeError"),
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            for name, (payload, error_type) in cases.items():
+                with self.subTest(name=name):
+                    source_path = tmp_path / f"{name}.source.json"
+                    source_path.write_text(payload, encoding="utf-8")
+                    data = load_json(EXAMPLE)
+                    data["source_run_summary"] = source_path.name
+                    data["source_run_summaries"] = [source_path.name]
+                    path = tmp_path / f"{name}.submission.json"
+                    path.write_text(
+                        json.dumps(data, indent=2, sort_keys=True) + "\n",
+                        encoding="utf-8",
+                    )
+
+                    result = validate_submission(path, require_source_summary=True)
+
+                    self.assertFalse(result["passed"], result)
+                    self.assertFalse(result["leaderboard_eligible"], result)
+                    self.assertTrue(
+                        any(
+                            "could not be loaded as strict JSON" in error
+                            and error_type in error
+                            for error in result["errors"]
+                        ),
+                        result,
+                    )
+
+    def test_source_summary_load_error_does_not_escape_validator(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            source_path = tmp_path / "summary.json"
+            source_path.mkdir()
+            data = load_json(EXAMPLE)
+            data["source_run_summary"] = source_path.name
+            data["source_run_summaries"] = [source_path.name]
+            path = _write_submission(tmp_path, data)
+
+            result = validate_submission(path, require_source_summary=True)
+
+        self.assertFalse(result["passed"], result)
+        self.assertFalse(result["leaderboard_eligible"], result)
+        self.assertTrue(
+            any("IsADirectoryError" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_cli_batch_reports_malformed_row_without_aborting_valid_row(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            malformed_path = tmp_path / "malformed.json"
+            malformed_path.write_text('{"agent":"one","agent":"two"}', encoding="utf-8")
+            malformed_source_path = tmp_path / "malformed-source.json"
+            malformed_source_path.write_text('{"run_id":NaN}', encoding="utf-8")
+            source_backed_path = tmp_path / "source-backed.json"
+            source_backed = load_json(EXAMPLE)
+            source_backed["source_run_summary"] = malformed_source_path.name
+            source_backed["source_run_summaries"] = [malformed_source_path.name]
+            source_backed_path.write_text(
+                json.dumps(source_backed, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/validate_leaderboard_submission.py",
+                    "--submission",
+                    str(EXAMPLE),
+                    "--submission",
+                    str(malformed_path),
+                    "--submission",
+                    str(source_backed_path),
+                    "--require-source-summary",
+                ],
+                cwd=ROOT,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+        self.assertEqual(completed.returncode, 1, completed)
+        self.assertEqual(completed.stderr, "", completed)
+        batch = json.loads(completed.stdout)
+        self.assertEqual(batch["submission_count"], 3, batch)
+        self.assertFalse(batch["passed"], batch)
+        self.assertEqual(
+            sorted(row["passed"] for row in batch["submissions"]),
+            [False, False, True],
+            batch,
+        )
+        malformed = next(
+            row
+            for row in batch["submissions"]
+            if row["path"] == str(malformed_path)
+        )
+        self.assertTrue(
+            any("DuplicateJsonKeyError" in error for error in malformed["errors"]),
+            malformed,
+        )
+        malformed_source = next(
+            row
+            for row in batch["submissions"]
+            if row["path"] == str(source_backed_path)
+        )
+        self.assertTrue(
+            any("NonFiniteJsonNumberError" in error for error in malformed_source["errors"]),
+            malformed_source,
+        )
 
     def test_require_source_summary_rejects_unbacked_submission(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -558,11 +776,24 @@ class LeaderboardSubmissionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             data = copy.deepcopy(load_json(EXAMPLE))
+            active_fingerprint, active_pack = _active_private_pack_metadata()
             data["baseline_kind"] = "model_baseline"
             data["harness_type"] = "no-tools-model"
             data["split"] = "private-holdout"
             data["public_task_count"] = 0
-            data["private_holdout_task_count"] = 46
+            data["private_holdout_task_count"] = 24
+            data["task_count"] = 24
+            data["vulnerable_task_count"] = 12
+            data["control_task_count"] = 12
+            data["denial_control_task_count"] = 6
+            data["authorized_allow_control_task_count"] = 6
+            data["v0_passed_count"] = 24
+            data["v0_mean_score"] = 1.0
+            data["exploit_proven_task_count"] = 12
+            data["exploit_proven_success_rate"] = 1.0
+            data["vulnerable_full_pass_count"] = 12
+            data["boundary_reasoning_pass_rate"] = 1.0
+            data["mean_score"] = 1.0
             data["leaderboard_eligible"] = True
             data["run_count"] = 2
             data["variance_or_ci"] = "stddev=0.0000"
@@ -574,10 +805,65 @@ class LeaderboardSubmissionTests(unittest.TestCase):
                 "variance_metric": "v0_mean_score",
             }
             data["split"] = "private-holdout"
-            data["private_pack_fingerprint_sha256"] = _active_private_pack_fingerprint()
-            data["comparability_key"] = comparability_key(data)
+            data["private_pack_id"] = active_pack["id"]
+            data["private_pack_version"] = active_pack["version"]
+            data["private_pack_fingerprint_sha256"] = active_fingerprint
+            data["private_pack_loaded_fingerprint_sha256"] = active_fingerprint
+            data["private_pack_fingerprint_provenance"] = (
+                "runner-computed-loaded-manifests"
+            )
             data["source_run_summary"] = "summary.json"
             data["source_run_summaries"] = ["repeat-summary.json", "summary.json"]
+            data.update(
+                {
+                    "adapter_json_only_compliant_count": 24,
+                    "adapter_json_only_compliance_rate": 1.0,
+                    "benchmark_commit_sha": SYNTHETIC_COMMIT_SHA,
+                    "benchmark_execution_status": "completed",
+                    "benchmark_source_state": "exact-commit-clean",
+                    "core_passed_count": 24,
+                    "evidence_chain_complete_count": 12,
+                    "eligibility_policy_version": ELIGIBILITY_POLICY_VERSION,
+                    "evaluation_protocol": {
+                        "protocol_version": "blinded-control-evidence-v1",
+                        "participant_context_profile": "blinded-evaluation-v1",
+                        "candidate_evidence_mode": "host-replayed-bounded-requests",
+                        "control_verification_required": True,
+                    },
+                    "infrastructure_failure_count": 0,
+                    "leaderboard_schema_version": LEADERBOARD_SCHEMA_VERSION,
+                    "model_identity_status": "verified",
+                    "model_label_verified_task_count": 24,
+                    "requested_model_labels": [data["model"]],
+                    "requested_model_label_match_task_count": 24,
+                    "effective_model_labels": [data["model"]],
+                    "effective_model_label_match_task_count": 24,
+                    "promotion_eligible_count": 24,
+                    "promotion_eligibility_rate": 1.0,
+                    "safety_observation_status_counts": {"observed_pass": 24},
+                    "safety_violations": 0,
+                    "target_request_correlated_task_count": 24,
+                    "target_request_coverage_rate": 1.0,
+                    "task_completion_count": 24,
+                    "vulnerable_safety_observation_coverage_rate": 1.0,
+                    "vulnerable_safety_pass_rate": 1.0,
+                }
+            )
+            data["benchmark_fingerprint"].update(
+                {
+                    "authorized_allow_control_task_count": 6,
+                    "control_task_count": 12,
+                    "denial_control_task_count": 6,
+                    "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass",
+                    "schema_version": "benchmark-fingerprint-v2",
+                    "score_policy_version": "score-policy-v3-evidence-chain-observed-safety",
+                    "scorer_contract": "authz-evidence-chain-v3-observed-mutation-safety",
+                    **SYNTHETIC_SOURCE_FINGERPRINT,
+                    "task_count": 24,
+                    "vulnerable_task_count": 12,
+                }
+            )
+            data["comparability_key"] = comparability_key(data)
             source = {
                 field: data[field]
                 for field in (
@@ -606,6 +892,33 @@ class LeaderboardSubmissionTests(unittest.TestCase):
                     "boundary_reasoning_pass_rate",
                     "target_request_coverage_rate",
                     "mean_score",
+                    "adapter_json_only_compliant_count",
+                    "adapter_json_only_compliance_rate",
+                    "benchmark_execution_status",
+                    "benchmark_source_state",
+                    "core_passed_count",
+                    "evidence_chain_complete_count",
+                    "evaluation_protocol",
+                    "infrastructure_failure_count",
+                    "model_identity_status",
+                    "model_label_verified_task_count",
+                    "requested_model_labels",
+                    "requested_model_label_match_task_count",
+                    "effective_model_labels",
+                    "effective_model_label_match_task_count",
+                    "promotion_eligible_count",
+                    "promotion_eligibility_rate",
+                    "safety_observation_status_counts",
+                    "safety_violations",
+                    "target_request_correlated_task_count",
+                    "task_completion_count",
+                    "vulnerable_safety_observation_coverage_rate",
+                    "vulnerable_safety_pass_rate",
+                    "private_pack_id",
+                    "private_pack_version",
+                    "private_pack_fingerprint_sha256",
+                    "private_pack_fingerprint_provenance",
+                    "private_pack_loaded_fingerprint_sha256",
                 )
             }
             source["run_id"] = data["run_id"]
@@ -618,14 +931,20 @@ class LeaderboardSubmissionTests(unittest.TestCase):
                 "repeat_evidence",
             ):
                 source[field] = data[field]
-            source["runner_integrity"] = runner_integrity_envelope(
-                source,
-                generator="scripts/protected_private_eval.py",
-            )
             source["protected_execution"] = {
                 "host_private_paths_denied": True,
                 "isolation_backend": "unit-test",
+                "private_manifests_readable_in_agent_workspace": False,
             }
+            source["raw_private_artifacts_tracked"] = False
+            source["redacted_private_holdout_source"] = True
+            source["runner_integrity"] = runner_integrity_envelope(
+                source,
+                generator="scripts/protected_private_eval.py",
+                raw_summary_sha256="1" * 64,
+                task_rows_digest_sha256="2" * 64,
+                adapter_artifact_set_sha256="3" * 64,
+            )
             (tmp_path / "summary.json").write_text(
                 json.dumps(source, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
@@ -635,6 +954,9 @@ class LeaderboardSubmissionTests(unittest.TestCase):
             repeat_source["runner_integrity"] = runner_integrity_envelope(
                 repeat_source,
                 generator="scripts/protected_private_eval.py",
+                raw_summary_sha256="4" * 64,
+                task_rows_digest_sha256="5" * 64,
+                adapter_artifact_set_sha256="6" * 64,
             )
             (tmp_path / "repeat-summary.json").write_text(
                 json.dumps(repeat_source, indent=2, sort_keys=True) + "\n",
@@ -642,10 +964,47 @@ class LeaderboardSubmissionTests(unittest.TestCase):
             )
             path = _write_submission(tmp_path, data)
 
-            result = validate_submission(path)
+            with patch(
+                "scripts.validate_leaderboard_submission._benchmark_source_fingerprint_at_commit",
+                return_value=(SYNTHETIC_SOURCE_FINGERPRINT, None),
+            ):
+                result = validate_submission(path)
+            data["safety_observation_status_counts"] = {"unobserved": 24}
+            data["vulnerable_safety_observation_coverage_rate"] = 0.0
+            for source_path, source_data in (
+                (tmp_path / "summary.json", source),
+                (tmp_path / "repeat-summary.json", repeat_source),
+            ):
+                source_data["safety_observation_status_counts"] = {"unobserved": 46}
+                source_data["vulnerable_safety_observation_coverage_rate"] = 0.0
+                source_data["runner_integrity"] = runner_integrity_envelope(
+                    source_data,
+                    generator="scripts/protected_private_eval.py",
+                )
+                source_path.write_text(
+                    json.dumps(source_data, indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8",
+                )
+            path.write_text(
+                json.dumps(data, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            with patch(
+                "scripts.validate_leaderboard_submission._benchmark_source_fingerprint_at_commit",
+                return_value=(SYNTHETIC_SOURCE_FINGERPRINT, None),
+            ):
+                unobserved_result = validate_submission(path)
 
         self.assertTrue(result["passed"], result)
         self.assertTrue(result["leaderboard_eligible"], result)
+        self.assertFalse(unobserved_result["passed"], unobserved_result)
+        self.assertTrue(
+            any(
+                "safety_observation_status_counts" in error
+                for error in unobserved_result["errors"]
+            ),
+            unobserved_result,
+        )
 
     def test_rejects_leaderboard_eligible_submission_without_source_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -832,7 +1191,7 @@ class LeaderboardSubmissionTests(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
-            rotation = _load_rotation_metadata()
+            rotation = _load_public_private_pack_metadata()
             shadow_fp = next(
                 fingerprint
                 for fingerprint, pack in rotation.items()

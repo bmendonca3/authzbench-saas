@@ -36,12 +36,77 @@ class HarborAdapterBlockerValidatorTests(unittest.TestCase):
             result = validate_harbor_adapter_blockers(path)
 
         self.assertFalse(result["passed"], result)
-        self.assertIn("public_claim_boundary must reject adapter readiness and parity evidence claims", result["errors"])
+        self.assertIn(
+            "public_claim_boundary must reject platform acceptance, hosted operation, and external review claims",
+            result["errors"],
+        )
         self.assertTrue(any("status must be" in error for error in result["errors"]), result)
         self.assertTrue(any("required_evidence must be a non-empty list" in error for error in result["errors"]), result)
         self.assertTrue(any("claim_boundary must state what the helper does not prove" in error for error in result["errors"]), result)
         self.assertTrue(any("sensitive private detail marker" in error for error in result["errors"]), result)
         self.assertTrue(any("local absolute path is not allowed" in error for error in result["errors"]), result)
+
+    def test_rejects_authored_complete_status_when_evidence_is_historical(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "harbor-adapter-readiness-blockers.json"
+            data = json.loads(BLOCKERS_PATH.read_text(encoding="utf-8"))
+            parity = next(
+                row
+                for row in data["required_before_adapter_ready"]
+                if row["item"] == "parity_experiment_json"
+            )
+            parity["status"] = "complete"
+            parity.pop("missing_input", None)
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            result = validate_harbor_adapter_blockers(path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn(
+            "parity_experiment_json: declared status 'complete' does not match derived status 'historical_stale'",
+            result["errors"],
+        )
+        self.assertEqual(
+            result["derived_statuses"]["parity_experiment_json"],
+            "historical_stale",
+        )
+
+    def test_rejects_positive_external_or_hosted_claims(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "harbor-adapter-readiness-blockers.json"
+            data = json.loads(BLOCKERS_PATH.read_text(encoding="utf-8"))
+            data["harbor_acceptance_claimed"] = True
+            data["hosted_execution_verified"] = True
+            path.write_text(json.dumps(data), encoding="utf-8")
+
+            result = validate_harbor_adapter_blockers(path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn(
+            "harbor_acceptance_claimed must be explicitly false",
+            result["errors"],
+        )
+        self.assertIn(
+            "hosted_execution_verified must be explicitly false",
+            result["errors"],
+        )
+
+    def test_rejects_duplicate_json_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "harbor-adapter-readiness-blockers.json"
+            path.write_text(
+                '{"schema_version":"harbor-adapter-readiness-blockers-v1",'
+                '"schema_version":"harbor-adapter-readiness-blockers-v1"}',
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_adapter_blockers(path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("duplicate JSON key: schema_version" in error for error in result["errors"]),
+            result,
+        )
 
 
 if __name__ == "__main__":

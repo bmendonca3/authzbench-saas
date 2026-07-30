@@ -16,7 +16,9 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
 
         self.assertEqual(result["schema_version"], "harbor-local-execution-preflight-v1")
         self.assertFalse(result["harbor_cli_found"])
+        self.assertFalse(result["harbor_cli_runnable"])
         self.assertTrue(result["generated_skeleton_validated"], result)
+        self.assertFalse(result["local_harbor_run_runnable"])
         self.assertFalse(result["ready_for_local_harbor_run"])
         self.assertFalse(result["harbor_execution_verified"])
         self.assertIn("not Harbor execution evidence", result["public_claim_boundary"])
@@ -33,8 +35,10 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
             )
 
         self.assertTrue(result["harbor_cli_found"])
+        self.assertTrue(result["harbor_cli_runnable"])
         self.assertTrue(result["generated_skeleton_validated"], result)
-        self.assertFalse(result["ready_for_local_harbor_run"])
+        self.assertTrue(result["local_harbor_run_runnable"])
+        self.assertTrue(result["ready_for_local_harbor_run"])
         self.assertFalse(result["harbor_execution_verified"])
         self.assertEqual(result["blocked_until"], ["real Harbor execution has not been run by this preflight"])
         self.assertIn("run -c run_authzbench_saas.yaml --yes", result["local_run_template"])
@@ -53,6 +57,7 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
         self.assertEqual(which.call_args_list, [mock.call("uvx"), mock.call("uvx")])
         run.assert_called_once()
         self.assertTrue(result["harbor_cli_found"], result)
+        self.assertTrue(result["local_harbor_run_runnable"], result)
         self.assertIn("uvx harbor run -c run_authzbench_saas.yaml --yes", result["local_run_template"])
 
     def test_default_discovery_uses_uvx_harbor_when_direct_command_missing(self) -> None:
@@ -71,6 +76,7 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
         self.assertEqual(run.call_count, 1)
         self.assertTrue(result["harbor_cli_found"], result)
         self.assertEqual(result["harbor_command"], "uvx harbor")
+        self.assertTrue(result["ready_for_local_harbor_run"])
         self.assertEqual(result["blocked_until"], ["real Harbor execution has not been run by this preflight"])
 
     def test_uvx_harbor_requires_explicit_command(self) -> None:
@@ -89,6 +95,7 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
         run.assert_called_once()
         self.assertTrue(result["harbor_cli_found"], result)
         self.assertEqual(result["harbor_command"], "uvx harbor")
+        self.assertTrue(result["ready_for_local_harbor_run"])
         self.assertEqual(result["blocked_until"], ["real Harbor execution has not been run by this preflight"])
 
     def test_can_skip_harbor_discovery_for_deterministic_public_fixtures(self) -> None:
@@ -100,8 +107,29 @@ class HarborLocalExecutionPreflightTests(unittest.TestCase):
             )
 
         self.assertFalse(result["harbor_cli_found"])
+        self.assertEqual(result["harbor_cli_check_status"], "not_checked")
+        self.assertFalse(result["local_harbor_run_runnable"])
         self.assertFalse(result["ready_for_local_harbor_run"])
-        self.assertIn("Harbor CLI/package is not installed or not on PATH", result["blocked_until"])
+        self.assertIn("Harbor CLI runnable state was not checked", result["blocked_until"])
+
+    def test_live_http_lane_is_explicitly_planned_unsupported(self) -> None:
+        with (
+            mock.patch("scripts.check_harbor_local_execution.shutil.which") as which,
+            mock.patch("scripts.check_harbor_local_execution.subprocess.run") as run,
+        ):
+            result = check_harbor_local_execution(
+                task_patterns=["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                harness_lane="live_http_tool_agent",
+                harbor_command="harbor",
+            )
+
+        which.assert_not_called()
+        run.assert_not_called()
+        self.assertEqual(result["evidence_status"], "planned_unsupported")
+        self.assertEqual(result["harness_lane_status"], "planned_unsupported")
+        self.assertFalse(result["generated_skeleton_validated"])
+        self.assertFalse(result["local_harbor_run_runnable"])
+        self.assertFalse(result["harbor_execution_verified"])
 
 
 if __name__ == "__main__":

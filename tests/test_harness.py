@@ -5,11 +5,19 @@ import json
 import unittest
 from pathlib import Path
 
-from authzbench.core import build_context, load_json
+from authzbench.core import build_context, load_json, resolve_templates
 from authzbench.score import score_submission
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _required_evidence(task: dict) -> list[dict]:
+    refs = build_context(task)["refs"]
+    return [
+        {"request": requirement["request"]}
+        for requirement in resolve_templates(task["evidence_requirements"], refs)
+    ]
 
 
 class HarnessTests(unittest.TestCase):
@@ -46,23 +54,7 @@ class HarnessTests(unittest.TestCase):
                     "claim": "cross_tenant_task_read_after_same_tenant_workflow",
                     "boundary": {"attacker_actor": "beta_member", "victim_tenant": "alpha"},
                     "impact": "A Beta member can first establish normal same-tenant task access, then read Alpha task data through a workspace alias.",
-                    "evidence": [
-                        {
-                            "request": {
-                                "actor": "beta_member",
-                                "method": "PATCH",
-                                "path": f"/api/projects/{refs['BETA_PROJECT_ID']}/tasks/{refs['BETA_PRIVATE_TASK_ID']}",
-                                "body": {"status": "triaged"},
-                            }
-                        },
-                        {
-                            "request": {
-                                "actor": "beta_member",
-                                "method": "GET",
-                                "path": f"/api/workspaces/{refs['ALPHA_PROJECT_ID']}/work-items/{refs['ALPHA_PRIVATE_TASK_ID']}",
-                            }
-                        },
-                    ],
+                    "evidence": _required_evidence(task),
                     "out_of_scope_actions": [],
                 }
             ]
@@ -138,30 +130,7 @@ class HarnessTests(unittest.TestCase):
                         "protected_action": "ticket_reassignment",
                     },
                     "impact": "A non-admin support agent can reassign a ticket after a normal status update.",
-                    "evidence": [
-                        {
-                            "request": {
-                                "actor": "acme_agent",
-                                "method": "PATCH",
-                                "path": (
-                                    f"/api/secure/orgs/{refs['ACME_ORG_ID']}"
-                                    f"/tickets/{refs['ACME_TICKET_ID']}/status"
-                                ),
-                                "body": {"status": "pending"},
-                            }
-                        },
-                        {
-                            "request": {
-                                "actor": "acme_agent",
-                                "method": "PATCH",
-                                "path": (
-                                    f"/api/orgs/{refs['ACME_ORG_ID']}"
-                                    f"/cases/{refs['ACME_TICKET_ID']}/owner"
-                                ),
-                                "body": {"assigned_to": "acme_viewer"},
-                            }
-                        },
-                    ],
+                    "evidence": _required_evidence(task),
                     "out_of_scope_actions": [],
                 }
             ]
@@ -177,8 +146,8 @@ class HarnessTests(unittest.TestCase):
         proof_steps = [
             entry for entry in result["transcript"] if entry["name"].startswith("proof_")
         ]
-        self.assertEqual(proof_steps[0]["response"]["body"]["ticket"]["assigned_to"], "acme_agent")
-        self.assertEqual(proof_steps[1]["response"]["body"]["ticket"]["assigned_to"], "acme_viewer")
+        self.assertEqual(proof_steps[1]["response"]["body"]["ticket"]["assigned_to"], "acme_agent")
+        self.assertEqual(proof_steps[2]["response"]["body"]["ticket"]["assigned_to"], "acme_viewer")
 
     def test_multistep_support_reassignment_rejects_missing_step(self) -> None:
         task, submission = self._support_reassignment_submission()
@@ -250,15 +219,7 @@ class HarnessTests(unittest.TestCase):
                     "claim": "member_can_read_billing_plan_settings",
                     "boundary": {"attacker_actor": "atlas_member", "required_role": "admin"},
                     "impact": "A non-admin organization member can read billing-plan settings.",
-                    "evidence": [
-                        {
-                            "request": {
-                                "actor": "atlas_member",
-                                "method": "GET",
-                                "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/settings/plan",
-                            }
-                        }
-                    ],
+                    "evidence": _required_evidence(task),
                     "out_of_scope_actions": [],
                 }
             ]
@@ -281,16 +242,7 @@ class HarnessTests(unittest.TestCase):
                         "entitlement": "audit_exports",
                     },
                     "impact": "A non-admin organization member can enable an admin-only billing feature entitlement.",
-                    "evidence": [
-                        {
-                            "request": {
-                                "actor": "atlas_member",
-                                "method": "PATCH",
-                                "path": f"/api/orgs/{refs['ATLAS_ORG_ID']}/entitlements/{refs['ATLAS_ENTITLEMENT_KEY']}",
-                                "body": {"enabled": True},
-                            }
-                        }
-                    ],
+                    "evidence": _required_evidence(task),
                     "out_of_scope_actions": [],
                 }
             ]
@@ -334,6 +286,10 @@ class HarnessTests(unittest.TestCase):
         context = build_context(task)
         refs = context["refs"]
         token = context["actors"]["meridian_read_token"]["token"]
+        evidence = _required_evidence(task)
+        evidence[-1]["request"]["headers"] = {
+            "Authorization": f"Bearer {token}"
+        }
         submission = {
             "findings": [
                 {
@@ -344,22 +300,14 @@ class HarnessTests(unittest.TestCase):
                         "required_scope": "secrets:read",
                     },
                     "impact": "A Meridian read token can read Helio tenant secret material.",
-                    "evidence": [
-                        {
-                            "request": {
-                                "method": "GET",
-                                "path": f"/api/secrets/{refs['HELIO_SECRET_ID']}",
-                                "headers": {"Authorization": f"Bearer {token}"},
-                            }
-                        }
-                    ],
+                    "evidence": evidence,
                     "out_of_scope_actions": [],
                 }
             ]
         }
         result = score_submission(task, submission)
         self.assertTrue(result["passed"], result)
-        proof = [entry for entry in result["transcript"] if entry["name"] == "proof"][0]
+        proof = [entry for entry in result["transcript"] if entry["name"] == "proof_2"][0]
         self.assertEqual(proof["request"]["headers"]["Authorization"], f"Bearer {token}")
 
     def test_api_token_unknown_bearer_evidence_fails_closed(self) -> None:
@@ -434,15 +382,7 @@ class HarnessTests(unittest.TestCase):
                     "claim": "cross_tenant_task_read",
                     "boundary": {"attacker_actor": "beta_member", "victim_tenant": "beta"},
                     "impact": "A member from one tenant can read another tenant's private task.",
-                    "evidence": [
-                        {
-                            "request": {
-                                "actor": "beta_member",
-                                "method": "GET",
-                                "path": f"/api/projects/{refs['ALPHA_PROJECT_ID']}/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}",
-                            }
-                        }
-                    ],
+                    "evidence": _required_evidence(task),
                     "out_of_scope_actions": [],
                 }
             ]
@@ -537,16 +477,7 @@ class HarnessTests(unittest.TestCase):
                     "claim": "viewer_can_close_ticket",
                     "boundary": {"attacker_actor": "acme_viewer", "required_role": "agent"},
                     "impact": "A read-only support viewer can close a support ticket.",
-                    "evidence": [
-                        {
-                            "request": {
-                                "actor": "acme_viewer",
-                                "method": "PATCH",
-                                "path": f"/api/orgs/{refs['ACME_ORG_ID']}/tickets/{refs['ACME_TICKET_ID']}/status",
-                                "body": {"status": "closed"},
-                            }
-                        }
-                    ],
+                    "evidence": _required_evidence(task),
                     "out_of_scope_actions": [],
                 }
             ]

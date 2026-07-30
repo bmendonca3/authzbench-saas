@@ -5,7 +5,14 @@ import glob
 from pathlib import Path
 from typing import Any
 
-from .core import build_context, dump_json, is_safe_identifier, load_json, resolve_templates
+from .core import (
+    EVIDENCE_CONTRACT_VERSION,
+    build_context,
+    dump_json,
+    is_safe_identifier,
+    load_json,
+    resolve_templates,
+)
 
 
 REQUIRED_FIELDS = {
@@ -290,6 +297,17 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
         if _contains_unresolved_template(resolved_section):
             errors.append(f"{path}: unresolved template in {section_name}")
     evidence_requirements = data.get("evidence_requirements")
+    if data["expected_vulnerable"] is True:
+        if data.get("evidence_contract_version") != EVIDENCE_CONTRACT_VERSION:
+            errors.append(
+                f"{path}: vulnerable task must set evidence_contract_version "
+                f"to {EVIDENCE_CONTRACT_VERSION}"
+            )
+        if not isinstance(evidence_requirements, list) or len(evidence_requirements) < 2:
+            errors.append(
+                f"{path}: vulnerable task must declare at least two deny-then-bypass "
+                "evidence_requirements"
+            )
     if evidence_requirements is not None:
         if data["expected_vulnerable"] is not True:
             errors.append(f"{path}: evidence_requirements are only supported for vulnerable tasks")
@@ -325,6 +343,25 @@ def validate_manifest(path: Path, seen_ids: set[str]) -> list[str]:
                     errors.append(f"{path}: evidence_requirements[{index}] must include status or body_contains")
             if seen_requirement_indexes and seen_requirement_indexes != set(range(len(seen_requirement_indexes))):
                 errors.append(f"{path}: evidence_requirements indexes must be contiguous starting at 0")
+            if (
+                len(evidence_requirements) >= 2
+                and isinstance(evidence_requirements[0], dict)
+                and isinstance(evidence_requirements[-1], dict)
+            ):
+                first_status = evidence_requirements[0].get("status")
+                if (
+                    isinstance(first_status, bool)
+                    or not isinstance(first_status, int)
+                    or 200 <= first_status < 300
+                ):
+                    errors.append(
+                        f"{path}: first evidence requirement must prove a non-2xx denial"
+                    )
+                final_status = evidence_requirements[-1].get("status")
+                if final_status != oracle.get("status"):
+                    errors.append(
+                        f"{path}: final evidence requirement status must match the oracle status"
+                    )
     return errors
 
 

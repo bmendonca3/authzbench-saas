@@ -12,7 +12,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .core import SCORE_POLICY_VERSION, benchmark_fingerprint, build_context, dump_json, is_safe_identifier, load_json
+from .core import (
+    SCORE_POLICY_VERSION,
+    benchmark_fingerprint,
+    benchmark_git_source_state,
+    build_context,
+    dump_json,
+    is_safe_identifier,
+    load_json,
+)
 from .score import score_submission
 
 
@@ -271,6 +279,9 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
     authorized_allow_controls = [item for item in controls if item.get("control_type") == "authorized_allow"]
     vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
     exploit_proven = sum(1 for item in vulnerable if item["exploit_proof"] == 1)
+    evidence_chain_complete = sum(
+        1 for item in vulnerable if item.get("evidence_chain_complete") is True
+    )
     boundary_reasoning_passed = sum(1 for item in vulnerable if item["boundary_reasoning"] == 1)
     boundary_health_status = (
         "not_applicable"
@@ -288,7 +299,15 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
         else 0
     )
     claim_exact_match_count = sum(1 for item in vulnerable if item.get("claim_exact_match"))
-    vulnerable_safety_passed = sum(1 for item in vulnerable if item["safety"] == 1)
+    vulnerable_safety_observed = [
+        item for item in vulnerable if item.get("safety") in {0, 1}
+    ]
+    vulnerable_safety_passed = sum(
+        1 for item in vulnerable_safety_observed if item["safety"] == 1
+    )
+    promotion_eligible = sum(
+        1 for item in task_results if item.get("promotion_eligible") is True
+    )
     controls_failed = sum(1 for item in controls if not item["passed"])
     controls_with_findings = sum(1 for item in controls if int(item["submission_finding_count"]) > 0)
     control_replay_passed = sum(1 for item in controls if item["control_replay_passed"] is True)
@@ -308,18 +327,7 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
         for item in task_results
         if item.get("model_tool_plan_artifact") and item.get("planner_returncode") not in {None, 0}
     )
-    v0_passed_count = sum(
-        1
-        for item in task_results
-        if (
-            item["expected_vulnerable"]
-            and item["exploit_proof"] == 1
-            and item["boundary_reasoning"] == 1
-            and item["control_replay_passed"] is True
-            and item["safety"] == 1
-        )
-        or (not item["expected_vulnerable"] and item["passed"])
-    )
+    v0_passed_count = sum(1 for item in task_results if item["passed"])
     target_log_tasks = [item for item in task_results if "target_request_count" in item]
     target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
     return {
@@ -345,12 +353,21 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
         ],
         "task_count": len(task_results),
         "passed_count": sum(1 for item in task_results if item["passed"]),
+        "core_passed_count": sum(
+            1 for item in task_results if item.get("core_passed") is True
+        ),
+        "promotion_eligible_count": promotion_eligible,
+        "promotion_eligibility_rate": (
+            round(promotion_eligible / len(task_results), 4)
+            if task_results
+            else None
+        ),
         "mean_score": (
             round(sum(float(item["score"]) for item in task_results) / len(task_results), 4)
             if task_results
             else 0
         ),
-        "v0_metric_profile": "v0-candidate-authz-evidence",
+        "v0_metric_profile": "deprecated-alias-score-policy-v3-core-authz",
         "v0_passed_count": v0_passed_count,
         "v0_mean_score": round(v0_passed_count / len(task_results), 4) if task_results else 0,
         "invalid_submission_count": invalid_submissions,
@@ -361,6 +378,7 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
         "authorized_allow_control_task_count": len(authorized_allow_controls),
         "exploit_proven_task_count": exploit_proven,
         "exploit_proven_success_rate": round(exploit_proven / len(vulnerable), 4) if vulnerable else 0,
+        "evidence_chain_complete_count": evidence_chain_complete,
         "vulnerable_full_pass_count": vulnerable_passed,
         "boundary_reasoning_pass_rate": (
             round(boundary_reasoning_passed / len(vulnerable), 4) if vulnerable else 0
@@ -379,7 +397,32 @@ def summarize_task_results(task_results: list[dict[str, Any]]) -> dict[str, Any]
             round(claim_exact_match_count / len(vulnerable), 4) if vulnerable else 0
         ),
         "vulnerable_safety_pass_rate": (
-            round(vulnerable_safety_passed / len(vulnerable), 4) if vulnerable else 0
+            round(
+                vulnerable_safety_passed / len(vulnerable_safety_observed),
+                4,
+            )
+            if vulnerable_safety_observed
+            else None
+        ),
+        "vulnerable_safety_observation_coverage_rate": (
+            round(len(vulnerable_safety_observed) / len(vulnerable), 4)
+            if vulnerable
+            else None
+        ),
+        "safety_observation_status_counts": dict(
+            sorted(
+                {
+                    status: sum(
+                        1
+                        for item in task_results
+                        if item.get("safety_observation_status") == status
+                    )
+                    for status in {
+                        str(item.get("safety_observation_status", "unobserved"))
+                        for item in task_results
+                    }
+                }.items()
+            )
         ),
         "control_false_report_count": controls_with_findings,
         "control_false_report_rate": round(controls_with_findings / len(controls), 4) if controls else 0,
@@ -419,6 +462,7 @@ def run_benchmark(
             f"the canonical scorer is {SCORE_POLICY_VERSION!r}"
         )
     run_id = run_id or _utc_run_id()
+    benchmark_source = benchmark_git_source_state(benchmark_commit_sha)
     if not is_safe_identifier(run_id):
         raise ValueError("run_id must be a safe single path component")
     run_dir = results_dir / run_id
@@ -469,6 +513,26 @@ def run_benchmark(
 
         _write_json(task_dir / "agent.json", agent_result)
 
+        observed_requests: list[dict[str, Any]] | None = None
+        target_request_count: int | None = None
+        target_request_warning: str | None = None
+        if target_log_dir is not None:
+            target_log_exists = (target_log_dir / f"{task['app']}.jsonl").exists()
+            observed_requests = _target_requests(
+                target_log_dir,
+                task["app"],
+                run_id,
+                task["id"],
+                agent_id,
+                target_log_start_offset,
+            )
+            _write_jsonl(task_dir / "target-requests.jsonl", observed_requests)
+            target_request_count = len(observed_requests)
+            if not target_log_exists:
+                target_request_warning = "target_log_missing"
+            elif target_request_count == 0:
+                target_request_warning = "no_target_requests_correlated"
+
         model_output = _load_adapter_output(task_dir / "model-output.json")
         adapter_failure_type = _adapter_failure_type(model_output)
         if adapter_failure_type is not None:
@@ -484,7 +548,11 @@ def run_benchmark(
             score = _invalid_runner_score(task, "agent did not write submission file")
         else:
             try:
-                score = score_submission(task, load_json(submission_path))
+                score = score_submission(
+                    task,
+                    load_json(submission_path),
+                    observed_requests=observed_requests,
+                )
             except Exception as exc:  # noqa: BLE001 - runner must preserve per-task failure evidence.
                 score = _invalid_runner_score(
                     task,
@@ -511,18 +579,6 @@ def run_benchmark(
         adapter_parse_error = model_output.get("parse_error") if isinstance(model_output, dict) else None
         model_label_verified = model_output.get("model_label_verified") if isinstance(model_output, dict) else None
         adapter_failed = bool(model_output and (model_output.get("adapter_failed") or adapter_parse_error))
-        target_request_count: int | None = None
-        target_request_warning: str | None = None
-        if target_log_dir is not None:
-            target_log_exists = (target_log_dir / f"{task['app']}.jsonl").exists()
-            requests = _target_requests(target_log_dir, task["app"], run_id, task["id"], agent_id, target_log_start_offset)
-            _write_jsonl(task_dir / "target-requests.jsonl", requests)
-            target_request_count = len(requests)
-            if not target_log_exists:
-                target_request_warning = "target_log_missing"
-            elif target_request_count == 0:
-                target_request_warning = "no_target_requests_correlated"
-
         task_results.append(
             {
                 "task_id": task["id"],
@@ -536,6 +592,9 @@ def run_benchmark(
                 "submission_finding_count": score.get("submission_finding_count", 0),
                 "control_replay_passed": score.get("control_replay_passed"),
                 "exploit_proof": score.get("subscores", {}).get("exploit_proof", 0),
+                "evidence_chain_complete": bool(
+                    score.get("evidence_chain_complete")
+                ),
                 "boundary_reasoning": score.get("subscores", {}).get("boundary_reasoning", 0),
                 "claim_exact_match": bool(score.get("claim_exact_match")),
                 "boundary_exact_match": bool(score.get("boundary_exact_match")),
@@ -544,7 +603,13 @@ def run_benchmark(
                 "boundary_match_mode": score.get("boundary_match_mode", "not_evaluated"),
                 "boundary_field_match_rate": score.get("boundary_field_match_rate", 0),
                 "false_positive_control": score.get("subscores", {}).get("false_positive_control", 0),
-                "safety": score.get("subscores", {}).get("safety", 0),
+                "safety": score.get("subscores", {}).get("safety"),
+                "core_passed": bool(score.get("core_passed")),
+                "promotion_eligible": bool(score.get("promotion_eligible")),
+                "safety_observation_status": score.get(
+                    "safety_observation_status",
+                    "unobserved",
+                ),
                 "adapter_failure_type": adapter_failure_type,
                 "runner_agent_failure": runner_agent_failure,
                 "infrastructure_failure": infrastructure_failure,
@@ -604,7 +669,8 @@ def run_benchmark(
         "run_id": run_id,
         "benchmark_version": benchmark_version,
         "score_policy_version": score_policy_version,
-        "benchmark_commit_sha": benchmark_commit_sha,
+        "benchmark_commit_sha": benchmark_source["benchmark_commit_sha"],
+        "benchmark_source_state": benchmark_source["benchmark_source_state"],
         "benchmark_fingerprint": fingerprint,
         "agent_cmd": agent_cmd,
         "agent": agent,

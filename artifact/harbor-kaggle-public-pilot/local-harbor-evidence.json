@@ -1,5 +1,9 @@
 {
   "schema_version": "authzbench-harbor-local-evidence-v2",
+  "evidence_status": "historical_stale_requires_rebuild",
+  "current_claim_eligible": false,
+  "requires_rebuild_before_current_claim": true,
+  "stale_reason": "The checked-in three-task dataset no longer matches the current canonical task/scorer source set. Historical NOP/Oracle results are retained, but the dataset must be rebuilt and rerun before a current compatibility claim.",
   "generated_at": "2026-07-24T11:00:40-07:00",
   "claim_boundary": "Local Harbor 0.13.2 NOP/Oracle and current-starter compatibility evidence only; not Kaggle-hosted execution, Model Proxy evidence, platform acceptance, independent review, or launch evidence.",
   "runtime": {
@@ -8,8 +12,7 @@
     "n_concurrent": 1,
     "max_retries": 0,
     "raw_jobs_retained_outside_repository": true,
-    "fresh_job_root": "/private/tmp/authzbench-explicit-schema-local-matrix-20260724",
-    "prior_repeat_job_root": "/private/tmp/authzbench-harbor-pilot-runs-retained.20260722T2305",
+    "job_roots_redacted": true,
     "verifier_source_set_sha256": "e09bcbe3105412f09b27055fec8cdf1410d6f44430e44278bda5dc3f56fedbb6"
   },
   "manifest_contract": {

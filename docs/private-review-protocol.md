@@ -10,12 +10,12 @@ external-validation companion to
 
 - Reviewer must be an active AppSec, SaaS-security, or benchmark-evals
   practitioner with verifiable prior work in the area.
-- Reviewer must accept the no-redistribution terms in
+- Reviewer must explicitly accept the no-redistribution terms in
   [`docs/reviews/external-review-intake.md`](reviews/external-review-intake.md)
   before any controlled review session.
-- Reviewer cannot be a current employee of an entity that operates a
-  competing hosted benchmark; conflict-of-interest declarations go in
-  the same intake doc.
+- Reviewer must provide a conflict-of-interest declaration in the same intake.
+  A disclosed conflict is assessed by the maintainer; it is not silently
+  converted into reviewer eligibility.
 
 ## What the reviewer sees
 
@@ -48,11 +48,11 @@ The reviewer cannot:
 
 ## Review form
 
-Per task, the reviewer submits a structured form with the following
-fields. The form schema lives at
-`docs/reviews/schemas/appsec-review.schema.json` (and
-`evals-review.schema.json`, `agent-tooling-review.schema.json` for the
-other two lanes).
+Per task, the reviewer submits a structured form with the following fields.
+The controlled, untracked form schema is
+`docs/reviews/schemas/private-appsec-review.schema.json`. The public AppSec
+schema intentionally accepts only `pack_id: "public"` and must never be reused
+for private responses.
 
 ```json
 {
@@ -67,6 +67,8 @@ other two lanes).
   "false_positive_control_meaningful": 1,
   "unsafe_ambiguity": 0,
   "difficulty_estimate": "single-step-obvious | single-step-with-decoy | multi-step-discovery | state-changing | token-scope-reasoning | false-positive-trap-heavy",
+  "blocking_issue": false,
+  "leakage_concern": false,
   "comments_public_safe": "..."
 }
 ```
@@ -79,19 +81,24 @@ destructive actions, no plausible false-positive reading).
 
 ## Public output rules
 
+Controlled per-task responses are stored only in the reviewer environment under
+the ignored `private-review-responses/` path. They are never added to Git,
+attached to a public issue, or copied into either public registry.
+
 The public output of a controlled review session is:
 
-- A single `docs/reviews/external-review-summary.md` entry per lane
-  per pack, containing the aggregate rating distribution and the
-  reviewer's per-pack `overall_disposition` (`accept` /
-  `accept_with_minor_changes` / `reject`). No per-task private
-  content is reproduced.
-- An updated `docs/reviews/review-registry.json` entry with the
-  reviewer id, the review date, the reviewed commit SHA, and the
-  pack ids that were audited.
+- An aggregate projection matching
+  `docs/reviews/schemas/private-review-aggregate.schema.json`, containing pack
+  role only (`active` or `shadow`), aggregate counts/rating distributions,
+  blocking count, reviewed commit SHA, claim-boundary impact, and overall
+  disposition. It contains no pack ID or task ID.
+- A public-safe citation from the formal AppSec lane only after that aggregate
+  projection and the public 63-task AppSec records validate against the same
+  frozen reviewed commit.
 
-Per-task private content stays inside the controlled viewer and is
-not republished.
+The historical `docs/reviews/review-registry.json` is not the submission target.
+Per-task private content stays inside the controlled viewer and is not
+republished.
 
 ## What counts as a blocking issue
 
@@ -124,11 +131,12 @@ before the active pack is replaced.
   `leakage_concern: true` field in the review form, and the
   maintainer treats it as a leakage event per
   `docs/private-holdout-lifecycle.md`.
+- Any leakage concern blocks aggregate publication until it is resolved.
 
 ## See also
 
 - [`docs/private-holdout-lifecycle.md`](private-holdout-lifecycle.md)
 - [`docs/reviews/external-review-intake.md`](reviews/external-review-intake.md)
 - [`docs/reviews/external-review-summary.md`](reviews/external-review-summary.md)
-- [`docs/reviews/review-registry.json`](reviews/review-registry.json)
+- [`docs/reviews/external-review-registry.json`](reviews/external-review-registry.json)
 - [`docs/claims-and-evidence.md`](claims-and-evidence.md#5-deferred-v2-validation-tracks)

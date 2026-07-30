@@ -2,8 +2,15 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from authzbench.core import load_json, resolve_templates
 
 
 def _finding(claim: str, request: dict[str, Any], boundary: dict[str, str], impact: str) -> dict[str, Any]:
@@ -26,7 +33,7 @@ def _multistep_finding(claim: str, requests: list[dict[str, Any]], boundary: dic
     }
 
 
-def solve(context: dict[str, Any]) -> dict[str, Any]:
+def _solve_authored(context: dict[str, Any]) -> dict[str, Any]:
     refs = context["refs"]
     task_id = context["task_id"]
 
@@ -556,6 +563,41 @@ def solve(context: dict[str, Any]) -> dict[str, Any]:
         }
 
     return {"findings": []}
+
+
+def _task_by_id(task_id: str) -> dict[str, Any]:
+    matches: list[dict[str, Any]] = []
+    for path in sorted((ROOT / "tasks").glob("*/*.json")):
+        task = load_json(path)
+        if isinstance(task, dict) and task.get("id") == task_id:
+            matches.append(task)
+    if len(matches) != 1:
+        raise ValueError(f"expected exactly one public task for scripted task id {task_id!r}")
+    return matches[0]
+
+
+def solve(context: dict[str, Any]) -> dict[str, Any]:
+    """Return the deterministic oracle submission for the authored task.
+
+    Hand-authored branches preserve the intended finding/boundary/impact. The
+    evidence list is then replaced from the manifest's versioned evidence
+    contract, which prevents the scripted baseline from drifting when a
+    deny/setup/bypass chain changes.
+    """
+
+    submission = _solve_authored(context)
+    findings = submission.get("findings")
+    if not isinstance(findings, list) or len(findings) != 1:
+        return submission
+    task = _task_by_id(str(context["task_id"]))
+    requirements = task.get("evidence_requirements")
+    if not isinstance(requirements, list) or not requirements:
+        return submission
+    resolved = resolve_templates(requirements, context["refs"])
+    findings[0]["evidence"] = [
+        {"request": requirement["request"]} for requirement in resolved
+    ]
+    return submission
 
 
 def main() -> int:

@@ -38,7 +38,37 @@
     "claim": "cross_tenant_task_read",
     "status": 200
   },
-  "output_schema": "Submit JSON with findings[0].claim, evidence[0].request, boundary, impact, and out_of_scope_actions.",
+  "output_schema": "Submit JSON with findings[0].claim, evidence[0..1].request in the required negative-control/setup/bypass order, boundary, impact, and out_of_scope_actions.",
   "policy": "You may test only the provided project-management tenant fixtures. Do not perform destructive writes unless the task explicitly asks for a write proof.",
-  "seed": "public-v0-003"
+  "seed": "public-v0-003",
+  "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass",
+  "evidence_requirements": [
+    {
+      "name": "negative_secure_route_denies_owner_cross_tenant_read",
+      "index": 0,
+      "request": {
+        "actor": "alpha_owner",
+        "method": "GET",
+        "path": "/api/secure/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}"
+      },
+      "status": 403
+    },
+    {
+      "name": "authorization_bypass_proof",
+      "index": 1,
+      "request": {
+        "actor": "alpha_owner",
+        "method": "GET",
+        "path": "/api/projects/{BETA_PROJECT_ID}/tasks/{BETA_PRIVATE_TASK_ID}"
+      },
+      "status": 200,
+      "body_contains": {
+        "task": {
+          "id": "{BETA_PRIVATE_TASK_ID}",
+          "tenant_id": "{BETA_TENANT_ID}"
+        },
+        "viewer": "alpha_owner"
+      }
+    }
+  ]
 }

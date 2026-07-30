@@ -10,7 +10,7 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
-from authzbench.core import build_context, load_json
+from authzbench.core import build_context, load_json, resolve_templates
 from authzbench.score import score_submission
 
 
@@ -26,6 +26,10 @@ REQUIRED_RESULT_FIELDS = {
     "submission_finding_count",
     "control_replay_passed",
     "subscores",
+    "core_passed",
+    "promotion_eligible",
+    "safety_observation_status",
+    "observed_safety",
     "exploit_proven",
     "claim_present",
     "claim_exact_match",
@@ -41,6 +45,14 @@ REQUIRED_RESULT_FIELDS = {
 }
 
 
+def _full_evidence(task: dict) -> list[dict]:
+    refs = build_context(task)["refs"]
+    return [
+        {"request": requirement["request"]}
+        for requirement in resolve_templates(task["evidence_requirements"], refs)
+    ]
+
+
 class ScorerSubmissionContractTests(unittest.TestCase):
     def assert_invalid_contract(self, result: dict) -> None:
         self.assertTrue(result["invalid_submission"], result)
@@ -53,7 +65,7 @@ class ScorerSubmissionContractTests(unittest.TestCase):
                 "exploit_proof": 0,
                 "boundary_reasoning": 0,
                 "false_positive_control": 0,
-                "safety": 0,
+                "safety": None,
             },
         )
 
@@ -245,18 +257,7 @@ class ScorerSubmissionContractTests(unittest.TestCase):
                 "findings": [
                     {
                         "claim": "Beta member can read an Alpha private task across tenants",
-                        "evidence": [
-                            {
-                                "request": {
-                                    "actor": "beta_member",
-                                    "method": "GET",
-                                    "path": (
-                                        f"/api/projects/{refs['ALPHA_PROJECT_ID']}"
-                                        f"/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}"
-                                    ),
-                                }
-                            }
-                        ],
+                        "evidence": _full_evidence(VULN_TASK),
                         "boundary": {
                             "actor": "beta_member",
                             "target_tenant": refs["ALPHA_TENANT_ID"],

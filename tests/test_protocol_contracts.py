@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from authzbench.core import build_context, load_json
+from authzbench.core import build_context, load_json, resolve_templates
 from authzbench.protocol_contracts import (
     DEFAULT_SCHEMA_PATH,
     audit_evidence_contracts,
@@ -24,13 +24,15 @@ VULNERABLE_TASK = load_json(
 
 def _valid_finding_submission() -> dict:
     refs = build_context(VULNERABLE_TASK)["refs"]
-    request = copy.deepcopy(VULNERABLE_TASK["evidence_requirements"][0]["request"])
-    request["path"] = request["path"].format(**refs)
+    requirements = resolve_templates(VULNERABLE_TASK["evidence_requirements"], refs)
     return {
         "findings": [
             {
                 "claim": VULNERABLE_TASK["oracle"]["claim"],
-                "evidence": [{"request": request}],
+                "evidence": [
+                    {"request": copy.deepcopy(requirement["request"])}
+                    for requirement in requirements
+                ],
                 "boundary": {"attacker_actor": "meridian_read_token"},
                 "impact": "Cross-tenant secret disclosure.",
                 "out_of_scope_actions": [],
@@ -145,14 +147,14 @@ class ProtocolContractTests(unittest.TestCase):
         self.assertIn("replay_request_extra_fields", codes)
         self.assertIn("replay_request_body_invalid", codes)
 
-    def test_current_public_coverage_is_reported_without_activation(self) -> None:
+    def test_current_public_coverage_is_complete_but_schema_remains_draft(self) -> None:
         result = audit_evidence_contracts(["tasks/**/*.json"])
         self.assertTrue(result["valid"], result)
-        self.assertFalse(result["complete"], result)
+        self.assertTrue(result["complete"], result)
         self.assertEqual(result["task_count"], 63)
         self.assertEqual(result["vulnerable_task_count"], 27)
-        self.assertEqual(result["covered_vulnerable_task_count"], 8)
-        self.assertEqual(len(result["missing_task_ids"]), 19)
+        self.assertEqual(result["covered_vulnerable_task_count"], 27)
+        self.assertEqual(result["missing_task_ids"], [])
         self.assertEqual(result["contract_status"], "draft-non-promotable")
         self.assertRegex(result["audited_task_set_sha256"], r"^[0-9a-f]{64}$")
         self.assertRegex(result["replay_source_set_sha256"], r"^[0-9a-f]{64}$")
@@ -181,7 +183,7 @@ class ProtocolContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "task.json"
             task = copy.deepcopy(VULNERABLE_TASK)
-            task["evidence_requirements"][0]["request"]["actor"] = "definitely_not_an_actor"
+            task["evidence_requirements"][-1]["request"]["actor"] = "definitely_not_an_actor"
             path.write_text(json.dumps(task), encoding="utf-8")
             result = audit_evidence_contracts([str(path)])
         self.assertFalse(result["valid"], result)
@@ -293,7 +295,7 @@ class ProtocolContractTests(unittest.TestCase):
         self.assertFalse(result["valid"], result)
         self.assertEqual(result["finding_counts"], {"task_json_invalid": 1})
 
-    def test_cli_default_reports_debt_and_strict_mode_fails(self) -> None:
+    def test_cli_default_and_strict_report_complete_coverage(self) -> None:
         command = ["python3", "scripts/audit_evidence_contracts.py"]
         default = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, check=False)
         strict = subprocess.run(
@@ -304,8 +306,9 @@ class ProtocolContractTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(default.returncode, 0, default.stderr)
-        self.assertIn("8/27", default.stdout)
-        self.assertEqual(strict.returncode, 1, strict.stderr)
+        self.assertIn("27/27", default.stdout)
+        self.assertEqual(strict.returncode, 0, strict.stderr)
+        self.assertIn("27/27", strict.stdout)
 
     def test_cli_default_is_repository_anchored_and_strict_cannot_be_narrowed(self) -> None:
         script = ROOT / "scripts/audit_evidence_contracts.py"
@@ -330,7 +333,7 @@ class ProtocolContractTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(anchored.returncode, 0, anchored.stderr)
-        self.assertIn("8/27", anchored.stdout)
+        self.assertIn("27/27", anchored.stdout)
         self.assertEqual(narrowed.returncode, 2, narrowed.stderr)
         self.assertIn("does not accept custom patterns", narrowed.stderr)
 

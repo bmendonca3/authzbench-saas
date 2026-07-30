@@ -8,8 +8,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from authzbench.core import load_json as load_strict_json
+
+
 DEFAULT_EVIDENCE_PATH = ROOT / "artifact" / "harbor-local-execution-smoke.json"
 SCHEMA_VERSION = "harbor-local-execution-smoke-v1"
 ABSOLUTE_PATH_RE = re.compile(r"(?<![A-Za-z0-9_.:/-])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]*")
@@ -32,8 +36,7 @@ DISALLOWED_OVERCLAIMS = (
 
 
 def _load_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    data = load_strict_json(path)
     if not isinstance(data, dict):
         raise ValueError(f"{path}: expected JSON object")
     return data
@@ -129,8 +132,31 @@ def validate_harbor_local_evidence(path: Path = DEFAULT_EVIDENCE_PATH) -> dict[s
     errors: list[str] = []
     if data.get("schema_version") != SCHEMA_VERSION:
         errors.append(f"schema_version must be {SCHEMA_VERSION}")
-    if data.get("evidence_status") != "local_harbor_execution_smoke":
-        errors.append("evidence_status must be local_harbor_execution_smoke")
+    evidence_status = data.get("evidence_status")
+    if evidence_status not in {
+        "local_harbor_execution_smoke",
+        "historical_source_bound_smoke",
+    }:
+        errors.append(
+            "evidence_status must be local_harbor_execution_smoke or "
+            "historical_source_bound_smoke"
+        )
+    if _checked_in_evidence_path(path):
+        if evidence_status != "historical_source_bound_smoke":
+            errors.append(
+                "checked-in older smoke evidence must be historical_source_bound_smoke"
+            )
+        if data.get("current_claim_eligible") is not False:
+            errors.append(
+                "checked-in historical smoke must set current_claim_eligible=false"
+            )
+        if data.get("requires_rerun_before_current_claim") is not True:
+            errors.append(
+                "checked-in historical smoke must require a rerun before a current claim"
+            )
+        stale_reason = data.get("stale_reason")
+        if not isinstance(stale_reason, str) or not stale_reason.strip():
+            errors.append("checked-in historical smoke must include stale_reason")
     boundary = str(data.get("public_claim_boundary", ""))
     if "not parity evidence" not in boundary or "not v1 readiness" not in boundary:
         errors.append("public_claim_boundary must reject parity and v1 readiness claims")

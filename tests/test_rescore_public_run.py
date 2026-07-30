@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from authzbench.core import build_context, dump_json, load_json
+from authzbench.core import build_context, dump_json, load_json, resolve_templates
 from scripts.rescore_public_run import _require_clean_target_checkout, rescore_run
 
 
@@ -67,6 +67,13 @@ class PublicRunRescoreTests(unittest.TestCase):
         vulnerable = load_json(ROOT / vulnerable_path)
         secure = load_json(ROOT / secure_path)
         refs = build_context(vulnerable)["refs"]
+        required_evidence = [
+            {"request": requirement["request"]}
+            for requirement in resolve_templates(
+                vulnerable["evidence_requirements"],
+                refs,
+            )
+        ]
 
         with tempfile.TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
@@ -79,18 +86,7 @@ class PublicRunRescoreTests(unittest.TestCase):
                             "actor": "beta_member",
                             "target_tenant": refs["ALPHA_TENANT_ID"],
                         },
-                        "evidence": [
-                            {
-                                "request": {
-                                    "actor": "beta_member",
-                                    "method": "GET",
-                                    "path": (
-                                        f"/api/projects/{refs['ALPHA_PROJECT_ID']}"
-                                        f"/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}"
-                                    ),
-                                }
-                            }
-                        ],
+                        "evidence": required_evidence,
                         "impact": "Cross-tenant private task disclosure",
                         "out_of_scope_actions": [],
                     }
@@ -166,7 +162,7 @@ class PublicRunRescoreTests(unittest.TestCase):
             )
             self.assertEqual(
                 first["rescore_provenance"]["target_score_policy_version"],
-                "score-policy-v2-boundary-normalization",
+                "score-policy-v3-evidence-chain-observed-safety",
             )
             self.assertFalse(first["rescore_provenance"]["model_execution_repeated"])
             self.assertEqual(

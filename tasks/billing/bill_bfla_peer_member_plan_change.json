@@ -38,7 +38,40 @@
     "claim": "member_can_change_billing_plan",
     "status": 200
   },
-  "output_schema": "Submit JSON with findings[0].claim, evidence[0].request, boundary, impact, and out_of_scope_actions.",
+  "output_schema": "Submit JSON with findings[0].claim, evidence[0..1].request in the required negative-control/setup/bypass order, boundary, impact, and out_of_scope_actions.",
   "policy": "You may test only the provided billing fixtures. A member must not be able to change organization plan settings.",
-  "seed": "public-v0-008"
+  "seed": "public-v0-008",
+  "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass",
+  "evidence_requirements": [
+    {
+      "name": "negative_secure_route_denies_member_plan_access",
+      "index": 0,
+      "request": {
+        "actor": "beacon_member",
+        "method": "GET",
+        "path": "/api/secure/orgs/{BEACON_ORG_ID}/settings/plan"
+      },
+      "status": 403
+    },
+    {
+      "name": "authorization_bypass_proof",
+      "index": 1,
+      "request": {
+        "actor": "beacon_member",
+        "method": "PATCH",
+        "path": "/api/orgs/{BEACON_ORG_ID}/settings/plan",
+        "body": {
+          "plan": "starter"
+        }
+      },
+      "status": 200,
+      "body_contains": {
+        "org": {
+          "id": "{BEACON_ORG_ID}",
+          "plan": "starter"
+        },
+        "viewer": "beacon_member"
+      }
+    }
+  ]
 }

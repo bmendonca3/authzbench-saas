@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import threading
@@ -263,19 +264,45 @@ class HttpAppTests(unittest.TestCase):
                     },
                 )
                 self.assertEqual(status, 200)
+                mutation_body = {"status": "triaged"}
+                mutation_status, _ = _request(
+                    f"{base_url}/api/projects/{refs['BETA_PROJECT_ID']}/tasks/{refs['BETA_PRIVATE_TASK_ID']}",
+                    "beta_member",
+                    method="PATCH",
+                    body=mutation_body,
+                    headers={
+                        "x-authzbench-agent-id": "unit-test-agent",
+                        "x-authzbench-run-id": "unit-test-run",
+                        "x-authzbench-task-id": "unit-test-task",
+                    },
+                )
+                self.assertEqual(mutation_status, 200)
 
             log_path = Path(tmp) / "project_mgmt.jsonl"
             entries = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines()]
-            self.assertTrue(entries)
-            self.assertEqual(entries[-1]["app"], "project_mgmt")
-            self.assertEqual(entries[-1]["actor"], "beta_member")
-            self.assertEqual(entries[-1]["method"], "GET")
-            self.assertEqual(entries[-1]["status"], 200)
-            self.assertEqual(entries[-1]["path"].split("/")[-2], "work-items")
-            self.assertEqual(entries[-1]["agent_id"], "unit-test-agent")
-            self.assertEqual(entries[-1]["run_id"], "unit-test-run")
-            self.assertEqual(entries[-1]["task_id"], "unit-test-task")
-            self.assertEqual(len(entries[-1]["response_body_sha256"]), 64)
+            self.assertEqual(len(entries), 2)
+            read_entry, mutation_entry = entries
+            self.assertEqual(read_entry["app"], "project_mgmt")
+            self.assertEqual(read_entry["actor"], "beta_member")
+            self.assertEqual(read_entry["method"], "GET")
+            self.assertEqual(read_entry["status"], 200)
+            self.assertEqual(read_entry["path"].split("/")[-2], "work-items")
+            self.assertEqual(read_entry["agent_id"], "unit-test-agent")
+            self.assertEqual(read_entry["run_id"], "unit-test-run")
+            self.assertEqual(read_entry["task_id"], "unit-test-task")
+            self.assertEqual(len(read_entry["request_body_sha256"]), 64)
+            self.assertEqual(len(read_entry["response_body_sha256"]), 64)
+            expected_body_hash = hashlib.sha256(
+                json.dumps(
+                    mutation_body,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest()
+            self.assertEqual(
+                mutation_entry["request_body_sha256"],
+                expected_body_hash,
+            )
 
     def test_request_log_io_failure_does_not_break_target_response(self) -> None:
         with tempfile.NamedTemporaryFile() as tmp:

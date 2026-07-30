@@ -7,7 +7,8 @@
     "parity_experiment.json is computed from real multi-task Harbor and native run artifacts"
   ],
   "docker_server_version": "29.5.2",
-  "evidence_status": "local_harbor_execution_smoke",
+  "current_claim_eligible": false,
+  "evidence_status": "historical_source_bound_smoke",
   "expected_reward_reason": "The generated public oracle solution writes findings: [] for a secure-control task, so Harbor verifier reward should match the native AuthZBench-SaaS scorer reward. This is a local control-task smoke only, not full adapter parity.",
   "harbor_command": "uvx harbor",
   "harbor_execution_verified": true,
@@ -31,12 +32,14 @@
   "raw_harbor_jobs_tracked": false,
   "reward_mean": 1.0,
   "run_command_template": "cd <generated-public-dataset> && harbor run -c run_authzbench_saas.yaml --yes --debug",
+  "requires_rerun_before_current_claim": true,
   "schema_version": "harbor-local-execution-smoke-v1",
   "scorer_reward_parity_verified": true,
   "task_count": 1,
   "task_ids": [
     "pm_same_tenant_read_control"
   ],
+  "stale_reason": "This one-task smoke is valid historical evidence for its recorded source commit, not execution evidence for the current benchmark source state.",
   "verifier_reward_files": [
     "reward.json",
     "reward.txt"

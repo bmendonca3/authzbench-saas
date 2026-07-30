@@ -217,6 +217,13 @@ class ValidatePublicScriptTests(unittest.TestCase):
         self.assertIn([validate_public.sys.executable, "scripts/validate_harbor_integration.py"], commands)
         self.assertIn([validate_public.sys.executable, "scripts/validate_packaged_harbor.py"], commands)
         self.assertIn([validate_public.sys.executable, "scripts/check_harbor_local_execution.py"], commands)
+        self.assertIn(
+            [
+                validate_public.sys.executable,
+                "scripts/validate_harbor_compatibility_state.py",
+            ],
+            commands,
+        )
 
     def test_validate_runs_leaderboard_submission_gate(self) -> None:
         with (

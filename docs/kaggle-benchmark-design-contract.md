@@ -95,6 +95,31 @@ tasks and all three behavior classes. Private launch admission remains blocked
 until cluster IDs, cluster-disjoint cohort rules, and a minimum discriminating
 task count are versioned and independently reviewed.
 
+### Scored-cohort candidate contract
+
+A versioned candidate contract is maintained at
+[`../artifact/scored-cohort-contract.v1.json`](../artifact/scored-cohort-contract.v1.json).
+Validate it with:
+
+```bash
+python3 scripts/validate_scored_cohort_contract.py
+```
+
+The candidate maps all 63 public calibration tasks into 17 semantic clusters and
+derives the exact public behavior totals: 27 vulnerable, 21 denial, and
+15 authorized-allow. The 17-cluster mapping is a candidate pending independent
+review; it is not accepted methodology or launch evidence.
+
+Public-safe aggregate private evidence: 48 total private holdouts (24 active and
+24 shadow), comprising 24 vulnerable and 24 controls (12 denial and
+12 authorized-allow), with aggregate public structure overlap 0. Aggregate
+overlap 0 is not proof of semantic cluster disjointness.
+
+All pending gates are explicitly preserved: private cluster assignment pending,
+cluster disjointness unverified (false), numeric minimum task and cluster counts
+null with `pending-review` status, independent methodology review pending,
+admitted scored tasks 0, and launch readiness false.
+
 ## 4. Harness Decision
 
 The proposed first launch track uses one canonical `no_tools` Harbor harness.

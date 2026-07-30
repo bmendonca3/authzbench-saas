@@ -65,7 +65,7 @@ controlled review protocol.
 
 ## Review form
 
-Per task, the reviewer submits a structured form
+For each public task, the reviewer submits a structured public-safe form
 (`docs/reviews/schemas/appsec-review.schema.json`) with the
 following fields:
 
@@ -74,14 +74,15 @@ following fields:
   "reviewer_role": "AppSec reviewer",
   "review_date": "YYYY-MM-DD",
   "reviewed_commit_sha": "...",
-  "pack_id": "public | active-private-holdout-v1-pack | shadow-private-holdout-v1-pack",
+  "pack_id": "public",
   "task_id": "...",
   "realistic": 1,
   "oracle_clear": 1,
   "boundary_valid": 1,
   "false_positive_control_meaningful": 1,
-  "unsafe_ambiguity": 0,
+  "unsafe_ambiguity": 1,
   "difficulty_estimate": "single-step-obvious | single-step-with-decoy | multi-step-discovery | state-changing | token-scope-reasoning | false-positive-trap-heavy",
+  "blocking_issue": false,
   "cwe_or_owasp_mapping": "CWE-639 | OWASP-API1:2023 | ...",
   "comments_public_safe": "..."
 }
@@ -92,6 +93,13 @@ The `realistic`, `oracle_clear`, `boundary_valid`,
 1-5 ordinal ratings. `unsafe_ambiguity` is inverted: a high rating
 means the task wording is unambiguously safe (no out-of-scope
 destructive actions, no plausible false-positive reading).
+
+Private-task review responses stay in the controlled review environment and
+must match `docs/reviews/schemas/private-appsec-review.schema.json`; they must
+not be copied into the public registry. Record only a projection matching
+`docs/reviews/schemas/private-review-aggregate.schema.json`; never include
+private pack IDs, task identifiers, routes, seeds, oracle bodies, or raw
+reviewer notes.
 
 ## What counts as blocking
 
@@ -114,6 +122,10 @@ for rework.
 ## Submission
 
 Submit the review form to
-`docs/reviews/review-registry.json` and a per-lane summary to
-`docs/reviews/external-review-summary.md`. Do not include per-task
-private contents.
+the `appsec` lane's `per_task_records` in
+`docs/reviews/external-review-registry.json`, then copy the public-safe lane
+disposition to `docs/reviews/external-review-summary.json` and
+`docs/reviews/external-review-summary.md`. Do not include per-task private
+contents or identifiers. Run
+`python3 scripts/validate_v2_external_validation.py --require-complete`; a
+public-only response or private aggregate alone cannot complete the lane.

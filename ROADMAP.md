@@ -298,15 +298,29 @@ Next improvements:
 - [x] Add clear rules for reruns, ties, stale scores, and task-pack rotations.
 - [x] Add a public-safe Harbor adapter target contract, skeleton builder, and
       blocker record without claiming Harbor execution.
-- [x] Implement full Harbor adapter path: adapter package, CLI, scorer bridge,
-      redaction helpers, local 6-task smoke, native-vs-Harbor parity experiment,
-      dataset validator, and adapter metadata/parity validators.
+- [x] Implement the Harbor no-tools adapter path: adapter package, CLI, scorer
+      bridge, redaction helpers, historical local 6-task smoke,
+      native-vs-Harbor parity experiment, dataset validator, and adapter
+      metadata/parity validators. The live HTTP lane remains
+      `planned_unsupported`, and fresh current-source three-task execution is
+      still required.
       Harbor platform acceptance, Kaggle acceptance, hosted leaderboard operation,
       and third-party submissions remain v2 gates.
 
-## Milestone 5: v1 Internal Release — Complete
+## Milestone 5: v1 Internal Release — Historical Snapshot
 
-Status: complete. v1 internal release-candidate infrastructure validated; external validation deferred to v2.
+Status: historical snapshot. v1 internal release-candidate infrastructure validated at a past source pin; external validation deferred to v2. This milestone does not describe current-HEAD readiness.
+
+### Current-head evidence refresh
+
+A new candidate requires a deliberate source freeze plus fresh matching smoke, private rows, paper tables/charts/LaTeX, fixture, and CI/release evidence.
+
+- [ ] deliberate source freeze
+- [ ] fresh matching smoke evidence
+- [ ] fresh private-row evidence
+- [ ] fresh paper tables/charts/LaTeX
+- [ ] fresh readiness fixture
+- [ ] fresh CI/release evidence
 
 v1 does not claim external review, hosted leaderboard operation, SaaS-provider validation, or platform acceptance.
 Those are tracked as v2 gates in

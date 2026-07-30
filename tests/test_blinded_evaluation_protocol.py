@@ -16,7 +16,6 @@ from authzbench.evaluate import (
     _protocol_manifest,
     _protocol_source_paths,
     _summarize_model_tool_attempt_telemetry,
-    _verified_benchmark_commit_sha,
     _wilson_interval,
     run_evaluation,
 )
@@ -124,18 +123,6 @@ class BlindedEvaluationProtocolTests(unittest.TestCase):
         self.assertNotEqual(first["source_set_sha256"], second["source_set_sha256"])
         with self.assertRaisesRegex(ValueError, "agent source path"):
             _protocol_source_paths([])
-
-    def test_evaluation_commit_label_must_match_observed_head(self) -> None:
-        git_provenance = {"git_commit_sha": "a" * 40}
-
-        self.assertEqual(
-            _verified_benchmark_commit_sha(git_provenance, "a" * 40),
-            "a" * 40,
-        )
-        with self.assertRaisesRegex(ValueError, "exactly match"):
-            _verified_benchmark_commit_sha(git_provenance, "b" * 40)
-        with self.assertRaisesRegex(ValueError, "unable to resolve Git HEAD"):
-            _verified_benchmark_commit_sha({}, None)
 
     def test_blinded_context_removes_authored_outcome_and_canonical_id(self) -> None:
         vulnerable = load_json(

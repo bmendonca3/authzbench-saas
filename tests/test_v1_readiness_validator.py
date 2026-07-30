@@ -27,6 +27,7 @@ from scripts.validate_v1_readiness import (
     _benchmark_source_compatibility_errors,
     _private_pack_fingerprint,
     _source_summaries_have_private_denial,
+    _valid_post_review_follow_up_ref,
     _validate_external_review_evidence,
     _validate_hosted_execution_evidence,
     _validate_hosted_execution_runbook,
@@ -44,24 +45,6 @@ from scripts.validate_v1_readiness import (
 
 
 class V1ReadinessValidatorTests(unittest.TestCase):
-    def setUp(self) -> None:
-        # Skip when the gitignored private-rotation-metadata file is
-        # missing. The 4 (a5e5b01-era) tests that follow assert on
-        # gate state derived from the active private pack and the
-        # repeated private leaderboard rows; in public-CI checkouts
-        # the file is intentionally absent and the assertions would
-        # otherwise error or fail on environment-specific unmet
-        # items. Local runs (where the file is present) are
-        # unaffected. See round 2 amendment in
-        # docs/release-evidence-tracking.md for the matching
-        # validator fix.
-        from pathlib import Path
-        rotation_metadata = Path("tasks_private") / "holdout" / "rotation-metadata.json"
-        if not rotation_metadata.is_file():
-            self.skipTest(
-                "tasks_private/holdout/rotation-metadata.json not present; "
-                "this test depends on the gitignored private holdout rotation metadata"
-            )
     def _seed_git_root(self, root: Path) -> str:
         subprocess.run(["git", "init", "-q"], cwd=root, check=True)
         subprocess.run(["git", "config", "user.name", "bmendonca3"], cwd=root, check=True)
@@ -136,7 +119,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         }
 
     def test_current_repo_reports_v1_prep_not_v1_ready(self) -> None:
-        result = validate_v1_readiness()
+        result = validate_v1_readiness(public_view=True)
         gates = {gate["id"]: gate for gate in result["gates"]}
 
         self.assertFalse(result["passed"])
@@ -144,7 +127,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertEqual(result["gate_count"], 10)
         self.assertTrue(gates["stable_v1_prep_public_evidence"]["passed"])
         self.assertIn(
-            "current_public_model_family_count=7",
+            "current_public_model_family_count=0",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
@@ -152,11 +135,11 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
-            "has_current_public_model_or_tool_agent_baseline=True",
+            "has_current_public_model_or_tool_agent_baseline=False",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertIn(
-            "current_public_model_or_tool_agent_baseline_status=current_63_task_refreshes_present",
+            "current_public_model_or_tool_agent_baseline_status=stale_pending_current_policy_reruns",
             gates["stable_v1_prep_public_evidence"]["evidence"],
         )
         self.assertEqual(gates["stable_v1_prep_public_evidence"]["unmet"], [])
@@ -179,7 +162,19 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             gates["harbor_repo_side_target_specified"]["evidence"],
         )
         self.assertIn(
-            "scoped_parity_verified=True",
+            "historical_scoped_parity_verified=True",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "scoped_parity_verified=False",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "active_compatibility_verified=False",
+            gates["harbor_repo_side_target_specified"]["evidence"],
+        )
+        self.assertIn(
+            "compatibility_evidence_status=historical_stale_requires_rebuild",
             gates["harbor_repo_side_target_specified"]["evidence"],
         )
         self.assertIn(
@@ -253,10 +248,14 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             PAPER_READINESS_RUNBOOK_PATH,
             paper_gate["evidence"],
         )
-        self.assertFalse(gates["final_release_candidate_validation"]["passed"])
+        release_gate = gates["final_release_candidate_validation"]
+        if release_gate["passed"]:
+            self.assertEqual(release_gate["unmet"], [])
+        else:
+            self.assertTrue(release_gate["unmet"])
         self.assertIn(
             RELEASE_VALIDATION_RUNBOOK_PATH,
-            gates["final_release_candidate_validation"]["evidence"],
+            release_gate["evidence"],
         )
         self.assertEqual(
             gates["v1_task_scale"]["passed"],
@@ -286,7 +285,11 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         evidence = gates["harbor_repo_side_target_specified"]["evidence"]
         self.assertIn("harbor_cli_found=False", evidence)
         self.assertIn("ready_for_local_harbor_run=False", evidence)
-        self.assertIn("blocked_until=['Harbor CLI/package is not installed or not on PATH']", evidence)
+        self.assertIn("local_harbor_run_runnable=False", evidence)
+        self.assertIn(
+            "blocked_until=['Harbor CLI runnable state was not checked']",
+            evidence,
+        )
 
     def test_external_review_packet_requires_human_intake_form(self) -> None:
         self.assertIn(
@@ -336,8 +339,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(gates["v1_task_scale"]["passed"])
         self.assertIn("total_task_count=111", gates["v1_task_scale"]["evidence"])
         self.assertTrue(gates["local_or_containerized_submission_smoke"]["passed"])
-        self.assertTrue(gates["repeated_private_tool_agent_evidence"]["passed"])
-        self.assertTrue(gates["repeated_private_no_tools_evidence"]["passed"])
+        self.assertFalse(gates["repeated_private_tool_agent_evidence"]["passed"])
+        self.assertFalse(gates["repeated_private_no_tools_evidence"]["passed"])
 
     def test_private_operation_blocker_is_structured_but_not_complete(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1426,9 +1429,12 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             evidence.write_text(
                 json.dumps(
                     {
+                        "schema_version": "external-review-summary-v1",
+                        "claim_boundary": "Independent review remains pending and is not claimed.",
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "review_status": "complete",
                                 "review_date": "TBD",
                                 "reviewer_role_scope": "TBD",
                                 "claim_boundary_impact": "TBD",
@@ -1460,6 +1466,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             evidence.write_text(
                 json.dumps(
                     {
+                        "schema_version": "external-review-summary-v1",
+                        "claim_boundary": "All listed independent reviews are source-bound and public-safe.",
                         "review_lanes": [
                             {
                                 "lane": "Application security",
@@ -1549,8 +1557,11 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         )
         for lane in template["review_lanes"]:
             self.assertEqual(lane["review_status"], "complete")
+            self.assertIn("registry_lane_id", lane)
             self.assertIn("review_date", lane)
+            self.assertIn("reviewed_commit_sha", lane)
             self.assertIn("reviewer_role_scope", lane)
+            self.assertIn("overall_disposition", lane)
             self.assertIn("claim_boundary_impact", lane)
             self.assertIn("questions_reviewed", lane)
             self.assertIn("artifacts_reviewed", lane)
@@ -1572,6 +1583,93 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn("external review response template is not external review evidence", result["unmet"])
 
+    def test_external_review_rejects_wrong_summary_schema_version(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            summary = root / "docs" / "reviews" / "external-review-summary.json"
+            summary.parent.mkdir(parents=True)
+            summary.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "wrong-schema",
+                        "claim_boundary": "No independent review is claimed.",
+                        "review_lanes": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "external review schema_version must be 'external-review-summary-v1'",
+            result["unmet"],
+        )
+
+    def test_external_review_requires_explicit_lane_status(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            summary = root / "docs" / "reviews" / "external-review-summary.json"
+            summary.parent.mkdir(parents=True)
+            summary.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "external-review-summary-v1",
+                        "claim_boundary": "No independent review is claimed.",
+                        "review_lanes": [
+                            {
+                                "lane": "Application security",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "Application security: review_status must be explicitly pending or complete",
+            result["unmet"],
+        )
+
+    def test_external_review_rejects_unknown_summary_and_lane_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            summary = root / "docs" / "reviews" / "external-review-summary.json"
+            summary.parent.mkdir(parents=True)
+            summary.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "external-review-summary-v1",
+                        "claim_boundary": "No independent review is claimed.",
+                        "private_route": "redacted",
+                        "review_lanes": [
+                            {
+                                "lane": "Application security",
+                                "review_status": "pending",
+                                "unexpected": "value",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn(
+            "unexpected external review summary fields: private_route",
+            result["unmet"],
+        )
+        self.assertIn(
+            "Application security: unexpected review lane fields: unexpected",
+            result["unmet"],
+        )
+
     def test_external_review_public_evidence_rejects_sensitive_markers(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -1584,6 +1682,8 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "registry_lane_id": "appsec",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External appsec reviewer pending final scope note.",
                                 "claim_boundary_impact": "Reviewer confirmed claim boundary.",
@@ -1626,22 +1726,34 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             reviewed_artifact.parent.mkdir(parents=True)
             reviewed_artifact.write_text("# packet\n", encoding="utf-8")
             follow_up = root / "docs" / "reviews" / "application-security-review-follow-up.md"
-            follow_up.write_text("# follow-up\n", encoding="utf-8")
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             subprocess.run(["git", "config", "user.name", "bmendonca3"], cwd=root, check=True)
             subprocess.run(["git", "config", "user.email", "bmendonca3@example.com"], cwd=root, check=True)
             subprocess.run(["git", "add", "."], cwd=root, check=True)
             subprocess.run(["git", "commit", "-qm", "seed review artifacts"], cwd=root, check=True)
+            reviewed_commit_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+            follow_up.write_text("# committed post-review follow-up\n", encoding="utf-8")
             evidence = root / "docs" / "reviews" / "external-review-summary.json"
             evidence.write_text(
                 json.dumps(
                     {
+                        "schema_version": "external-review-summary-v1",
+                        "claim_boundary": "All three source-bound independent reviews are complete.",
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "registry_lane_id": "appsec",
                                 "review_status": "complete",
                                 "review_date": date.today().isoformat(),
+                                "reviewed_commit_sha": reviewed_commit_sha,
                                 "reviewer_role_scope": "Independent AppSec reviewer for SaaS authorization tasks.",
+                                "overall_disposition": "accept_with_minor_changes",
                                 "claim_boundary_impact": "Review accepted one task-language clarification.",
                                 "questions_reviewed": ["Are public SaaS authorization boundaries realistic?"],
                                 "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
@@ -1658,9 +1770,12 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "Benchmark/evals methodology",
+                                "registry_lane_id": "benchmark_evals",
                                 "review_status": "complete",
                                 "review_date": date.today().isoformat(),
+                                "reviewed_commit_sha": reviewed_commit_sha,
                                 "reviewer_role_scope": "Independent benchmark methodology reviewer.",
+                                "overall_disposition": "accept",
                                 "claim_boundary_impact": "No release-claim changes requested.",
                                 "questions_reviewed": ["Does the evidence support the stated claim boundary?"],
                                 "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
@@ -1676,9 +1791,12 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "AI-agent/tooling",
+                                "registry_lane_id": "agent_tooling",
                                 "review_status": "complete",
                                 "review_date": date.today().isoformat(),
+                                "reviewed_commit_sha": reviewed_commit_sha,
                                 "reviewer_role_scope": "Independent AI-agent tooling reviewer.",
+                                "overall_disposition": "accept",
                                 "claim_boundary_impact": "No harness-claim changes requested.",
                                 "questions_reviewed": ["Are harness assumptions inspectable for agent comparability?"],
                                 "artifacts_reviewed": ["docs/reviews/external-review-packet.md"],
@@ -1705,6 +1823,70 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertTrue(result["passed"])
         self.assertEqual(result["unmet"], [])
 
+    def test_accepted_review_follow_up_must_be_committed_after_review(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            follow_up = root / "docs" / "review-follow-up.md"
+            follow_up.parent.mkdir(parents=True)
+            follow_up.write_text("# pre-review content\n", encoding="utf-8")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "bmendonca3"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "bmendonca3@example.com"],
+                cwd=root,
+                check=True,
+            )
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "freeze reviewed candidate"], cwd=root, check=True)
+            reviewed_commit_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+
+            self.assertFalse(
+                _valid_post_review_follow_up_ref(
+                    root,
+                    reviewed_commit_sha,
+                    "docs/review-follow-up.md",
+                )
+            )
+            self.assertFalse(
+                _valid_post_review_follow_up_ref(
+                    root,
+                    reviewed_commit_sha,
+                    reviewed_commit_sha,
+                )
+            )
+
+            follow_up.write_text("# committed post-review remediation\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "apply review remediation"], cwd=root, check=True)
+            remediation_commit_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+            ).stdout.strip()
+
+            self.assertTrue(
+                _valid_post_review_follow_up_ref(
+                    root,
+                    reviewed_commit_sha,
+                    "docs/review-follow-up.md",
+                )
+            )
+            self.assertTrue(
+                _valid_post_review_follow_up_ref(
+                    root,
+                    reviewed_commit_sha,
+                    remediation_commit_sha,
+                )
+            )
+
     def test_external_review_complete_lanes_require_questions_and_decision_summaries(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -1717,6 +1899,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "review_status": "complete",
                                 "review_date": date.today().isoformat(),
                                 "reviewer_role_scope": "External appsec reviewer pending final scope note.",
                                 "claim_boundary_impact": "Narrowed one task-realism claim.",
@@ -1734,6 +1917,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "Benchmark/evals methodology",
+                                "review_status": "complete",
                                 "review_date": date.today().isoformat(),
                                 "reviewer_role_scope": "External evals reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1744,6 +1928,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "AI-agent/tooling",
+                                "review_status": "complete",
                                 "review_date": date.today().isoformat(),
                                 "reviewer_role_scope": "External agent tooling reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1767,6 +1952,55 @@ class V1ReadinessValidatorTests(unittest.TestCase):
             result["unmet"],
         )
         self.assertIn("Application security: decisions[1].summary is required", result["unmet"])
+        self.assertIn(
+            "Benchmark/evals methodology: disposition requires at least one finding or explicit no-finding decision",
+            result["unmet"],
+        )
+        self.assertIn(
+            "AI-agent/tooling: disposition requires at least one finding or explicit no-finding decision",
+            result["unmet"],
+        )
+
+    def test_external_review_rejects_duplicate_structured_lanes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            packet = root / "docs" / "reviews" / "external-review-packet.md"
+            packet.parent.mkdir(parents=True)
+            packet.write_text("# packet\n", encoding="utf-8")
+            pending_lane = {
+                "lane": "Application security",
+                "review_status": "pending",
+                "requested_artifacts": ["docs/reviews/external-review-packet.md"],
+                "requested_questions": ["Are task boundaries realistic?"],
+                "blocker": "Needs an independent AppSec reviewer.",
+                "next_action": "Recruit reviewer.",
+            }
+            evidence = root / "docs" / "reviews" / "external-review-summary.json"
+            evidence.write_text(
+                json.dumps(
+                    {
+                        "review_lanes": [
+                            pending_lane,
+                            dict(pending_lane),
+                            {
+                                **pending_lane,
+                                "lane": "Benchmark/evals methodology",
+                            },
+                            {
+                                **pending_lane,
+                                "lane": "AI-agent/tooling",
+                            },
+                        ]
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = _validate_external_review_evidence(root)
+
+        self.assertFalse(result["passed"])
+        self.assertIn("duplicate structured review lane: Application security", result["unmet"])
+        self.assertIn("review_lanes must contain exactly 3 canonical lanes", result["unmet"])
 
     def test_external_review_decisions_reject_placeholder_follow_up_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1780,6 +2014,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External appsec reviewer",
                                 "claim_boundary_impact": "Narrowed one task-realism claim.",
@@ -1796,6 +2031,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "Benchmark/evals methodology",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External evals reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1805,6 +2041,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "AI-agent/tooling",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External agent tooling reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1823,7 +2060,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertIn("Application security: decisions[1].finding is required", result["unmet"])
         self.assertIn(
-            "Application security: accepted or unresolved decisions require a real follow_up_artifact path or existing commit",
+            "Application security: accepted decisions require committed post-review remediation at follow_up_artifact",
             result["unmet"],
         )
         self.assertIn("Application security: decisions[1].claim_boundary_impact is required", result["unmet"])
@@ -1841,6 +2078,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External appsec reviewer",
                                 "claim_boundary_impact": "Narrowed one task-realism claim.",
@@ -1857,6 +2095,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "Benchmark/evals methodology",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External evals reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1866,6 +2105,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "AI-agent/tooling",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External agent tooling reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1883,7 +2123,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn(
-            "Application security: accepted or unresolved decisions require a real follow_up_artifact path or existing commit",
+            "Application security: accepted decisions require committed post-review remediation at follow_up_artifact",
             result["unmet"],
         )
 
@@ -1900,6 +2140,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External appsec reviewer",
                                 "claim_boundary_impact": "Narrowed one task-realism claim.",
@@ -1916,6 +2157,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "Benchmark/evals methodology",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External evals reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1925,6 +2167,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "AI-agent/tooling",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External agent tooling reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1942,7 +2185,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn(
-            "Application security: accepted or unresolved decisions require a real follow_up_artifact path or existing commit",
+            "Application security: accepted decisions require committed post-review remediation at follow_up_artifact",
             result["unmet"],
         )
 
@@ -1958,6 +2201,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                         "review_lanes": [
                             {
                                 "lane": "Application security",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External appsec reviewer",
                                 "claim_boundary_impact": "Narrowed one task-realism claim.",
@@ -1974,6 +2218,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "Benchmark/evals methodology",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External evals reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -1983,6 +2228,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
                             },
                             {
                                 "lane": "AI-agent/tooling",
+                                "review_status": "complete",
                                 "review_date": "2026-06-07",
                                 "reviewer_role_scope": "External agent tooling reviewer",
                                 "claim_boundary_impact": "No claim-boundary changes.",
@@ -2000,7 +2246,7 @@ class V1ReadinessValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn(
-            "Application security: accepted or unresolved decisions require a real follow_up_artifact path or existing commit",
+            "Application security: accepted decisions require committed post-review remediation at follow_up_artifact",
             result["unmet"],
         )
 

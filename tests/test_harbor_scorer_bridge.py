@@ -12,7 +12,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import build_context, load_json
+from authzbench.core import build_context, load_json, resolve_templates
 from authzbench_harbor.scorer_bridge import run_scorer_bridge
 from authzbench_harbor.schemas import SCORER_BRIDGE_OUTPUT_SCHEMA_VERSION
 
@@ -61,6 +61,13 @@ class TestRunScorerBridge(unittest.TestCase):
     def test_exploit_proof_diagnostic_is_independent_of_full_task_pass(self) -> None:
         task = _load_task("pm_bola_read_alpha_from_beta")
         refs = build_context(task)["refs"]
+        evidence = [
+            {"request": requirement["request"]}
+            for requirement in resolve_templates(
+                task["evidence_requirements"],
+                refs,
+            )
+        ]
         submission = {
             "findings": [
                 {
@@ -68,18 +75,7 @@ class TestRunScorerBridge(unittest.TestCase):
                     "boundary": {},
                     "impact": "Cross-tenant private task disclosure",
                     "out_of_scope_actions": [],
-                    "evidence": [
-                        {
-                            "request": {
-                                "actor": "beta_member",
-                                "method": "GET",
-                                "path": (
-                                    f"/api/projects/{refs['ALPHA_PROJECT_ID']}"
-                                    f"/tasks/{refs['ALPHA_PRIVATE_TASK_ID']}"
-                                ),
-                            }
-                        }
-                    ],
+                    "evidence": evidence,
                 }
             ]
         }

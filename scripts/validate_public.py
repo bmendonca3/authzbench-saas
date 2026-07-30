@@ -146,6 +146,10 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
     scan_disallowed_coauthor_trailers(cwd)
     run([sys.executable, "-Wd", "-m", "unittest", "discover", "-s", "tests"], cwd)
     run([sys.executable, "-m", "authzbench.validate_manifests", "--task", "tasks/*/*.json"], cwd)
+    run([sys.executable, "scripts/generate_vulnerable_evidence_contracts.py"], cwd)
+    run([sys.executable, "scripts/audit_evidence_contracts.py", "--require-complete"], cwd)
+    run([sys.executable, "scripts/generate_task_oracle_audit.py", "--check"], cwd)
+    run([sys.executable, "scripts/generate_scripted_baseline_summary.py"], cwd)
     run(
         [
             sys.executable,
@@ -179,6 +183,10 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
         ],
         cwd,
     )
+    run([sys.executable, "scripts/validate_scored_cohort_contract.py"], cwd)
+    run([sys.executable, "scripts/validate_cohort_methodology_decision.py"], cwd)
+    run([sys.executable, "scripts/validate_private_review_contract.py"], cwd)
+    run([sys.executable, "scripts/validate_v2_external_validation.py"], cwd)
     run([sys.executable, "scripts/check_claim_boundary.py"], cwd)
     run([sys.executable, "scripts/check_v1_overclaim.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_adapter_blockers.py"], cwd)
@@ -186,6 +194,7 @@ def validate(cwd: Path, include_scripted_baseline: bool, include_container_smoke
     run([sys.executable, "scripts/validate_harbor_integration.py"], cwd)
     run([sys.executable, "scripts/validate_packaged_harbor.py"], cwd)
     run([sys.executable, "scripts/check_harbor_local_execution.py"], cwd)
+    run([sys.executable, "scripts/validate_harbor_compatibility_state.py"], cwd)
     run([sys.executable, "scripts/validate_harbor_local_evidence.py"], cwd)
     run([sys.executable, "scripts/generate_task_quality_matrix.py"], cwd)
     run(["git", "diff", "--exit-code", "--", "docs/task-quality-matrix.json", "docs/task-quality-matrix.md"], cwd)

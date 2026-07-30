@@ -53,6 +53,46 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
         self.assertTrue(any("local absolute path is not allowed" in error for error in result["errors"]), result)
         self.assertTrue(any("runbook missing required term:" in error for error in result["errors"]), result)
 
+    def test_rejects_live_http_as_implemented_or_required(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "harbor-adapter-contract.json"
+            data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+            live_lane = next(
+                lane
+                for lane in data["lanes"]
+                if lane["name"] == "live_http_tool_agent"
+            )
+            live_lane["required"] = True
+            live_lane["status"] = "implemented_local"
+            contract.write_text(json.dumps(data), encoding="utf-8")
+
+            result = validate_harbor_integration(contract, RUNBOOK_PATH)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn(
+            "live_http_tool_agent: required must be false",
+            result["errors"],
+        )
+        self.assertIn(
+            "live_http_tool_agent: status must be planned_unsupported",
+            result["errors"],
+        )
+
+    def test_rejects_positive_external_claim_boolean(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "harbor-adapter-contract.json"
+            data = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+            data["platform_acceptance_claimed"] = True
+            contract.write_text(json.dumps(data), encoding="utf-8")
+
+            result = validate_harbor_integration(contract, RUNBOOK_PATH)
+
+        self.assertFalse(result["passed"], result)
+        self.assertIn(
+            "platform_acceptance_claimed must be explicitly false",
+            result["errors"],
+        )
+
     def test_rejects_incomplete_expected_adapter_package(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -125,6 +165,23 @@ class HarborIntegrationValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(any(error.startswith("adapter_readiness_blockers:") for error in result["errors"]), result)
+
+    def test_rejects_duplicate_json_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            contract = Path(tmp) / "harbor-adapter-contract.json"
+            contract.write_text(
+                '{"schema_version":"harbor-adapter-contract-v1",'
+                '"schema_version":"harbor-adapter-contract-v1"}',
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_integration(contract, RUNBOOK_PATH)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("duplicate JSON key: schema_version" in error for error in result["errors"]),
+            result,
+        )
 
 
 if __name__ == "__main__":

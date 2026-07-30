@@ -23,8 +23,13 @@ PARITY_METHODOLOGY_DEFAULT = "per_task_pairing"
 # "historical_backcompat": aggregate-means evidence kept for back-compat with
 #   the pre per-task reward extraction era. Validator only allows
 #   parity_verified=true with aggregate_means when this status is set.
+# "historical_stale": a previously valid per-task run retained for audit after
+# its source/task surface changed. It may preserve its historical parity result
+# but cannot support a current compatibility claim without a rerun.
 # "blocked": the parity experiment is blocked (e.g. Harbor CLI unavailable).
-PARITY_EVIDENCE_STATUS_VALUES = frozenset({"current", "historical_backcompat", "blocked"})
+PARITY_EVIDENCE_STATUS_VALUES = frozenset(
+    {"current", "historical_backcompat", "historical_stale", "blocked"}
+)
 
 # Strict reward equality tolerance for per_task_pairing.
 # abs(native_score - harbor_reward) must be <= reward_tolerance when

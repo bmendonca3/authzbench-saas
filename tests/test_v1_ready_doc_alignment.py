@@ -81,5 +81,27 @@ class V1ReadyDocAlignmentTests(unittest.TestCase):
             self.fail(f"Unqualified v1_ready: true found in public docs:\n{details}")
 
 
+    def test_status_and_roadmap_mark_historical_snapshot(self) -> None:
+        """status.md and ROADMAP.md must mark v1.0-internal as historical,
+        state current public-view 9/10, and record an open current-head
+        evidence refresh. Do not assert transient file counts."""
+        status = (ROOT / "docs" / "status.md").read_text(encoding="utf-8")
+        roadmap = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
+
+        # Normalize whitespace for phrase matching
+        status_normalized = " ".join(status.split())
+        roadmap_normalized = " ".join(roadmap.split())
+
+        # Historical snapshot vs current main
+        self.assertIn("historical internal/non-external snapshot", status_normalized)
+        self.assertIn("current `main` is not a freshly validated release candidate", status_normalized)
+        self.assertIn("historical snapshot", roadmap_normalized)
+        self.assertIn("public-view readiness is 9/10", status_normalized)
+
+        # Open current-head evidence refresh
+        self.assertIn("Current-head evidence refresh", roadmap_normalized)
+        self.assertIn("deliberate source freeze", roadmap_normalized)
+
+
 if __name__ == "__main__":
     unittest.main()

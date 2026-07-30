@@ -11,13 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from authzbench.core import benchmark_fingerprint, dump_json, load_json
-from authzbench.run import summarize_tool_probe_telemetry
+from authzbench.run import summarize_task_results
 
 
 EXTRA_COUNT_FIELDS = (
     "kiro_command_failure_count",
     "missing_submission_json_count",
     "model_output_failure_count",
+    "adapter_json_only_compliant_count",
     "runner_agent_failure_count",
 )
 
@@ -191,72 +192,7 @@ def _rate(numerator: int, denominator: int) -> float:
 
 
 def _metric_summary(tasks: list[dict[str, Any]]) -> dict[str, Any]:
-    vulnerable = [item for item in tasks if item["expected_vulnerable"]]
-    controls = [item for item in tasks if not item["expected_vulnerable"]]
-    denial_controls = [item for item in controls if item.get("control_type") == "denial"]
-    authorized_allow_controls = [item for item in controls if item.get("control_type") == "authorized_allow"]
-    vulnerable_passed = sum(1 for item in vulnerable if item["passed"])
-    exploit_proven = sum(1 for item in vulnerable if item["exploit_proof"] == 1)
-    boundary_reasoning_passed = sum(1 for item in vulnerable if item["boundary_reasoning"] == 1)
-    vulnerable_safety_passed = sum(1 for item in vulnerable if item["safety"] == 1)
-    controls_failed = sum(1 for item in controls if not item["passed"])
-    controls_with_findings = sum(1 for item in controls if int(item["submission_finding_count"]) > 0)
-    control_replay_passed = sum(1 for item in controls if item["control_replay_passed"] is True)
-    authorized_allow_passed = sum(1 for item in authorized_allow_controls if item["passed"])
-    invalid_submissions = sum(1 for item in tasks if item["invalid_submission"])
-    model_tool_plan_artifact_count = sum(1 for item in tasks if item.get("model_tool_plan_artifact"))
-    tool_telemetry = summarize_tool_probe_telemetry(tasks)
-    planner_parse_error_count = sum(1 for item in tasks if item.get("planner_parse_error"))
-    planner_failure_count = sum(
-        1
-        for item in tasks
-        if item.get("model_tool_plan_artifact") and item.get("planner_returncode") not in {None, 0}
-    )
-    v0_passed_count = sum(
-        1
-        for item in tasks
-        if (
-            item["expected_vulnerable"]
-            and item["exploit_proof"] == 1
-            and item["boundary_reasoning"] == 1
-            and item["control_replay_passed"] is True
-            and item["safety"] == 1
-        )
-        or (not item["expected_vulnerable"] and item["passed"])
-    )
-    target_log_tasks = [item for item in tasks if "target_request_count" in item]
-    target_log_correlated = sum(1 for item in target_log_tasks if int(item["target_request_count"]) > 0)
-    return {
-        "model_tool_plan_artifact_count": model_tool_plan_artifact_count,
-        "scored_submission_finding_total": sum(int(item.get("submission_finding_count", 0)) for item in tasks),
-        "planner_failure_count": planner_failure_count,
-        "planner_parse_error_count": planner_parse_error_count,
-        "task_count": len(tasks),
-        "passed_count": sum(1 for item in tasks if item["passed"]),
-        "mean_score": round(sum(float(item["score"]) for item in tasks) / len(tasks), 4) if tasks else 0,
-        "v0_metric_profile": "v0-candidate-authz-evidence",
-        "v0_passed_count": v0_passed_count,
-        "v0_mean_score": round(v0_passed_count / len(tasks), 4) if tasks else 0,
-        "invalid_submission_count": invalid_submissions,
-        "invalid_submission_rate": _rate(invalid_submissions, len(tasks)),
-        "vulnerable_task_count": len(vulnerable),
-        "control_task_count": len(controls),
-        "denial_control_task_count": len(denial_controls),
-        "authorized_allow_control_task_count": len(authorized_allow_controls),
-        "exploit_proven_task_count": exploit_proven,
-        "exploit_proven_success_rate": _rate(exploit_proven, len(vulnerable)),
-        "vulnerable_full_pass_count": vulnerable_passed,
-        "boundary_reasoning_pass_rate": _rate(boundary_reasoning_passed, len(vulnerable)),
-        "vulnerable_safety_pass_rate": _rate(vulnerable_safety_passed, len(vulnerable)),
-        "control_false_report_count": controls_with_findings,
-        "control_false_report_rate": _rate(controls_with_findings, len(controls)),
-        "control_execution_pass_rate": _rate(control_replay_passed, len(controls)),
-        "false_positive_rate": _rate(controls_with_findings, len(controls)),
-        "control_failure_rate": _rate(controls_failed, len(controls)),
-        "authorized_allow_pass_rate": _rate(authorized_allow_passed, len(authorized_allow_controls)),
-        "target_request_correlated_task_count": target_log_correlated if target_log_tasks else None,
-        "target_request_coverage_rate": _rate(target_log_correlated, len(target_log_tasks)) if target_log_tasks else None,
-    } | tool_telemetry
+    return summarize_task_results(tasks)
 
 
 def promote(
@@ -299,7 +235,9 @@ def promote(
         {
             "run_id": run_id,
             "benchmark_commit_sha": resolved_benchmark_commit_sha,
+            "benchmark_source_state": "exact-commit-clean",
             "benchmark_fingerprint": benchmark_fingerprint(_current_task_items()),
+            "task_completion_count": len(tasks),
             "interpretation": interpretation,
             "promotion_annotation": promotion_annotation,
             "baseline_construction": "promoted_cohort_delta_merge",

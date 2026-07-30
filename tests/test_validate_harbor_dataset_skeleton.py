@@ -9,6 +9,7 @@ from unittest.mock import patch
 from scripts import validate_harbor_dataset_skeleton as validator_module
 from scripts.build_harbor_dataset_skeleton import build_harbor_dataset_skeleton
 from scripts.validate_harbor_dataset_skeleton import validate_harbor_dataset_skeleton
+from authzbench_harbor.dataset_builder import harbor_task_content_digest
 
 
 class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
@@ -332,6 +333,64 @@ class HarborDatasetSkeletonValidatorTests(unittest.TestCase):
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("tests/test.sh" in error and "private detail marker" in error for error in result["errors"]), result)
+
+    def test_rejects_coordinated_generated_manifest_and_digest_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            manifest_path = dataset_dir / "dataset-manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            task_entry = manifest["tasks"][0]
+            task_dir = dataset_dir / task_entry["harbor_task_dir"]
+
+            for copied_manifest in (
+                task_dir / "verifier" / "task_manifest.json",
+                task_dir / "tests" / "task_manifest.json",
+            ):
+                copied = json.loads(copied_manifest.read_text(encoding="utf-8"))
+                copied["policy"] = "coordinated generated-only mutation"
+                copied_manifest.write_text(json.dumps(copied), encoding="utf-8")
+
+            old_digest = task_entry["harbor_content_digest"]
+            new_digest = harbor_task_content_digest(task_dir)
+            task_entry["harbor_content_digest"] = new_digest
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            dataset_toml = dataset_dir / "dataset.toml"
+            dataset_toml.write_text(
+                dataset_toml.read_text(encoding="utf-8").replace(old_digest, new_digest),
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("canonical public task source" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_rejects_noncanonical_source_task_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp) / "harbor-public"
+            build_harbor_dataset_skeleton(
+                ["tasks/project_mgmt/pm_same_tenant_read_control.json"],
+                dataset_dir,
+            )
+            manifest_path = dataset_dir / "dataset-manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["tasks"][0]["source_task_path"] = "artifact/public-lookalike.json"
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            result = validate_harbor_dataset_skeleton(dataset_dir)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("source_task_path must resolve under the canonical public tasks directory" in error for error in result["errors"]),
+            result,
+        )
 
 
 if __name__ == "__main__":

@@ -91,10 +91,11 @@ class V11PrepCohortTests(unittest.TestCase):
                     "exploit_proof": 1,
                     "boundary_reasoning": 1,
                     "false_positive_control": 1,
-                    "safety": 1,
+                    "safety": None,
                 },
-                f"{path.name}: subscores should be all-ones under valid submission",
+                f"{path.name}: core subscores should pass and unobserved safety stay null",
             )
+            self.assertEqual(result["safety_observation_status"], "unobserved")
 
     def test_v11_prep_tasks_reject_wrong_actor_in_exploit_step(self) -> None:
         for path in ROOT.glob(V11_PREP_GLOB):

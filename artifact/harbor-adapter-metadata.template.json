@@ -26,8 +26,14 @@
     "tests/test.sh"
   ],
   "supported_lanes": [
-    "no_tools",
-    "live_http_tool_agent"
+    "no_tools"
+  ],
+  "planned_unsupported_lanes": [
+    {
+      "name": "live_http_tool_agent",
+      "reason": "The packaged adapter does not yet implement target-service orchestration or request-correlation verification.",
+      "status": "planned_unsupported"
+    }
   ],
   "artifact_policy": {
     "agent_submission_path": "/logs/artifacts/submission.json",

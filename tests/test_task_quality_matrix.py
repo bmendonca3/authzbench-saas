@@ -50,21 +50,21 @@ class TaskQualityMatrixTests(unittest.TestCase):
         self.assertEqual(summary["control_task_count"], 36, summary)
         self.assertEqual(summary["denial_control_task_count"], 21, summary)
         self.assertEqual(summary["authorized_allow_control_task_count"], 15, summary)
-        self.assertEqual(summary["vulnerable_workflow_evidence_task_count"], 8, summary)
+        self.assertEqual(summary["vulnerable_workflow_evidence_task_count"], 27, summary)
         self.assertEqual(summary["tasks_with_quality_flags"], [], summary)
         self.assertTrue(matrix["source"]["public_safe"])
 
         task = next(
             item for item in matrix["tasks"] if item["id"] == "pm_multistep_beta_update_then_alpha_alias_read"
         )
-        self.assertEqual(task["evidence_requirements_count"], 2, task)
+        self.assertEqual(task["evidence_requirements_count"], 3, task)
         self.assertEqual(task["replay_proof_status"], "multi_step_evidence_requirements", task)
         support_task = next(
             item
             for item in matrix["tasks"]
             if item["id"] == "sup_multistep_agent_status_then_admin_reassignment"
         )
-        self.assertEqual(support_task["evidence_requirements_count"], 2, support_task)
+        self.assertEqual(support_task["evidence_requirements_count"], 3, support_task)
         self.assertEqual(
             support_task["replay_proof_status"],
             "multi_step_evidence_requirements",

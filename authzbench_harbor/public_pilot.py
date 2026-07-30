@@ -33,6 +33,11 @@ def build_public_pilot_reference_submission(task: dict[str, Any]) -> dict[str, A
     refs = context["refs"]
 
     if behavior == "vulnerable":
+        requirements = resolve_templates(task.get("evidence_requirements", []), refs)
+        if len(requirements) < 2:
+            raise ValueError(
+                "public Harbor pilot vulnerable task requires a deny-then-bypass evidence chain"
+            )
         return {
             "findings": [
                 {
@@ -44,13 +49,8 @@ def build_public_pilot_reference_submission(task: dict[str, Any]) -> dict[str, A
                     },
                     "impact": "A Meridian read token can read Helio tenant secret material.",
                     "evidence": [
-                        {
-                            "request": {
-                                "actor": "meridian_read_token",
-                                "method": "GET",
-                                "path": f"/api/secrets/{refs['HELIO_SECRET_ID']}",
-                            }
-                        }
+                        {"request": requirement["request"]}
+                        for requirement in requirements
                     ],
                     "out_of_scope_actions": [],
                 }

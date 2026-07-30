@@ -31,7 +31,7 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **`v1.0-internal` complete** | Supported | `docs/releases/v1.0-internal.md`; public-view readiness fixture match with `--allow-incomplete`; current fixture reports `v1_ready: false` with 1 unmet gate under honest post-cleanup evidence; internal/non-external scope only | "community benchmark", "externally validated benchmark", "hosted leaderboard operation benchmark" |
 | **63 public tasks** | Supported | `tasks/` manifests and public baseline summaries | "hosted leaderboard operation public split" |
 | **48 private holdout tasks** | Supported by fingerprint / count | Ignored local private packs, rotation metadata, and public redaction summaries | "publicly reproducible private holdouts", "open private holdout task list" |
-| **Local Harbor adapter path** | Supported | Packaged `authzbench_harbor/` CLI, isolated wheel-install smoke, six-task local Harbor execution, and six-of-six per-task empty-findings reward parity in `artifact/harbor-parity-experiment.json` | "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready", "full 63-task/model parity" |
+| **Local Harbor no-tools adapter path** | Supported with current-evidence limits | Packaged `authzbench_harbor/` CLI and isolated wheel-install smoke support `no_tools`; `live_http_tool_agent` is `planned_unsupported` and fails closed. The one-task/six-task local execution and parity artifacts are historical, and the intended three-task compatibility pilot currently requires a source-matching rebuild and rerun. | "current-source Harbor execution", "Harbor accepted", "Harbor endorsed", "Harbor leaderboard-ready", "full 63-task/model parity" |
 | **Local / containerized submission smoke** | Supported | `artifact/submission-runner-smoke.json` and local test suites | "hosted leaderboard", "hosted submission operation" |
 | **Deterministic backend-replay scorer** | Supported | Scorer package codebase and test suites | "human-judged scoring", "model-graded scoring" |
 | **Public / private split with holdout governance** | Supported | Rotation and lifecycle specification documents | "public leaderboard operation", "open private holdout reuse" |
@@ -59,7 +59,7 @@ This ledger defines the boundary between supported claims and forbidden stronger
 | **Scorer replay** | Submitted evidence can be verified against backend behavior. | The agent interacted with a live target unless request logs are correlated. |
 | **Secure controls** | The benchmark penalizes false positives and over-reporting. | All real SaaS false-positive patterns are covered. |
 | **Rotation metadata** | Private packs are defined, verified, and gitignored. | Public reproducibility of the private holdouts. |
-| **Local Harbor adapter and scoped parity** | The packaged CLI installs outside the source tree; a six-task public empty-findings smoke completed and matched native rewards per task. | Full 63-task parity, representative model/agent parity, Harbor platform acceptance, or hosted Harbor-side operation. |
+| **Local Harbor adapter and historical scoped parity** | The no-tools packaged CLI installs outside the source tree. Historical one-task and six-task public runs remain auditable, including a six-of-six empty-findings/native reward match. | Current-source compatibility until the three-task pilot is rebuilt and rerun; live HTTP support; full 63-task parity; representative model/agent parity; Harbor platform acceptance; or hosted Harbor-side operation. |
 
 ---
 

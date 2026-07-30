@@ -2,7 +2,7 @@
   "schema_version": "harbor-adapter-metadata-v1",
   "template_only": false,
   "evidence_status": "adapter_metadata_complete",
-  "public_claim_boundary": "This metadata describes the Harbor-compatible adapter configuration. It does not claim Harbor platform acceptance, hosted leaderboard readiness, or Google/Gemini endorsement.",
+  "public_claim_boundary": "This metadata describes the local no-tools Harbor-compatible adapter configuration. It does not claim Harbor platform acceptance, hosted leaderboard readiness, external review, SaaS-provider validation, or Google/Gemini endorsement.",
   "adapter_version": "0.1.0",
   "adapter_name": "authzbench-saas-harbor",
   "dataset_name": "authzbench-saas-public-skeleton",
@@ -27,9 +27,23 @@
     "tests/test.sh"
   ],
   "supported_lanes": [
-    "no_tools",
-    "live_http_tool_agent"
+    "no_tools"
   ],
+  "planned_unsupported_lanes": [
+    {
+      "name": "live_http_tool_agent",
+      "reason": "The packaged adapter does not start or attach target services and does not verify request correlation.",
+      "status": "planned_unsupported"
+    }
+  ],
+  "external_review_complete": false,
+  "harbor_acceptance_claimed": false,
+  "harbor_endorsement_claimed": false,
+  "hosted_execution_verified": false,
+  "hosted_public_leaderboard_claimed": false,
+  "kaggle_acceptance_claimed": false,
+  "platform_acceptance_claimed": false,
+  "saas_provider_validation_complete": false,
   "artifact_policy": {
     "agent_submission_path": "/logs/artifacts/submission.json",
     "score_output_path": "/logs/artifacts/score.json",

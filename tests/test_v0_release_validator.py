@@ -4,53 +4,38 @@ import os
 import subprocess
 import sys
 import unittest
+from unittest.mock import patch
 
 from scripts.validate_v0_release import ROOT, validate_v0_release
 
 
 class V0ReleaseValidatorTests(unittest.TestCase):
-    def setUp(self) -> None:
-        # Skip when the gitignored private-rotation-metadata file is
-        # missing. The 4 (a5e5b01-era) tests that follow assert on
-        # gate state derived from the active private pack and the
-        # repeated private leaderboard rows; in public-CI checkouts
-        # the file is intentionally absent and the assertions would
-        # otherwise error or fail on environment-specific unmet
-        # items. Local runs (where the file is present) are
-        # unaffected. See round 2 amendment in
-        # docs/release-evidence-tracking.md for the matching
-        # validator fix.
-        from pathlib import Path
-        rotation_metadata = Path("tasks_private") / "holdout" / "rotation-metadata.json"
-        if not rotation_metadata.is_file():
-            self.skipTest(
-                "tasks_private/holdout/rotation-metadata.json not present; "
-                "this test depends on the gitignored private holdout rotation metadata"
-            )
-    def test_current_repo_reports_readiness_from_available_evidence(self) -> None:
+    @patch(
+        "scripts.validate_v0_release._private_holdout_pack_patterns",
+        return_value=[str(ROOT / "__nonexistent_test_private_holdout__" / "**" / "*.json")],
+    )
+    def test_current_repo_separates_historical_v0_snapshot_from_current_eligibility(
+        self,
+        _private_patterns: object,
+    ) -> None:
         result = validate_v0_release()
         gates = {gate["id"]: gate for gate in result["gates"]}
-        has_private_holdouts = gates["private_holdout_pack"]["passed"]
 
-        self.assertEqual(result["passed"], has_private_holdouts, result)
-        self.assertEqual(result["v0_ready"], has_private_holdouts, result)
+        self.assertFalse(result["passed"], result)
+        self.assertFalse(result["v0_ready"], result)
         self.assertEqual(result["gate_count"], 8, result)
         self.assertTrue(gates["public_split_scope"]["passed"], result)
         self.assertTrue(gates["documentation_packaging"]["passed"], result)
-        if has_private_holdouts:
-            self.assertTrue(gates["task_mix"]["passed"], result)
-            self.assertGreaterEqual(gates["task_mix"]["evidence"]["total_vulnerable_tasks"], 25, result)
-            self.assertGreaterEqual(gates["task_mix"]["evidence"]["total_controls"], 30, result)
-        else:
-            self.assertFalse(gates["task_mix"]["passed"], result)
-            self.assertIn("real private holdout pack is missing", gates["private_holdout_pack"]["unmet"])
-            self.assertIn("total vulnerable tasks must be at least 25; got 24", gates["task_mix"]["unmet"])
-            self.assertNotIn("total secure controls must be at least 30; got 33", gates["task_mix"]["unmet"])
+        self.assertFalse(gates["private_holdout_pack"]["passed"], result)
+        self.assertIn("real private holdout pack is missing", gates["private_holdout_pack"]["unmet"])
+        self.assertTrue(gates["task_mix"]["passed"], result)
+        self.assertGreaterEqual(gates["task_mix"]["evidence"]["total_vulnerable_tasks"], 25, result)
+        self.assertGreaterEqual(gates["task_mix"]["evidence"]["total_controls"], 30, result)
         self.assertTrue(gates["baseline_credibility"]["passed"], result)
-        self.assertTrue(gates["leaderboard_submissions"]["passed"], result)
+        self.assertFalse(gates["leaderboard_submissions"]["passed"], result)
         self.assertTrue(gates["sectional_reviews"]["passed"], result)
         self.assertTrue(gates["release_verification_evidence"]["passed"], result)
-        self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
+        self.assertFalse(gates["baseline_credibility"]["evidence"]["v0_baseline_ready"], result)
         self.assertTrue(gates["baseline_credibility"]["evidence"]["v0_release_snapshot_ready"], result)
         self.assertEqual(
             gates["baseline_credibility"]["evidence"]["release_snapshots"][0]["id"],
@@ -58,19 +43,23 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             result,
         )
         self.assertEqual(gates["baseline_credibility"]["unmet"], [], result)
-        self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 7, result)
-        self.assertEqual(gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"], 7, result)
+        self.assertEqual(gates["baseline_credibility"]["evidence"]["current_public_model_family_count"], 0, result)
+        self.assertEqual(gates["baseline_credibility"]["evidence"]["repeated_model_baseline_count"], 0, result)
         self.assertGreaterEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_submission_count"],
             2,
             result,
         )
         self.assertEqual(
-            gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"] >= 1,
-            True,
+            gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
+            0,
             result,
         )
-        self.assertEqual(gates["leaderboard_submissions"]["unmet"], [], result)
+        self.assertIn(
+            "no release-candidate leaderboard submission is currently eligible",
+            gates["leaderboard_submissions"]["unmet"],
+            result,
+        )
         self.assertEqual(gates["sectional_reviews"]["evidence"]["v0_ready_section_count"], 6, result)
 
     def test_allow_incomplete_cli_returns_success_for_current_evidence_state(self) -> None:
@@ -101,9 +90,9 @@ class V0ReleaseValidatorTests(unittest.TestCase):
             2,
             result,
         )
-        self.assertGreaterEqual(
+        self.assertEqual(
             gates["leaderboard_submissions"]["evidence"]["release_candidate_leaderboard_eligible_count"],
-            1,
+            0,
             result,
         )
 

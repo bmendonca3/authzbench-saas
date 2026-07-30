@@ -1,7 +1,13 @@
 {
   "schema_version": "harbor-adapter-contract-v1",
   "evidence_status": "implementation_target",
+  "external_review_complete": false,
+  "harbor_acceptance_claimed": false,
+  "hosted_execution_verified": false,
+  "hosted_public_leaderboard_claimed": false,
+  "platform_acceptance_claimed": false,
   "public_claim_boundary": "This contract records the public-safe repo-side Harbor adapter surface and local smoke/parity target. It is not Harbor platform acceptance, not hosted leaderboard readiness, and not v1 external-readiness evidence.",
+  "saas_provider_validation_complete": false,
   "public_sources": [
     "https://github.com/harbor-framework/harbor",
     "https://www.harborframework.com/docs/run-jobs/run-evals",
@@ -51,7 +57,7 @@
     {
       "name": "runner_bridge",
       "required": true,
-      "responsibility": "Invoke the Harbor no-tools or tool-agent lane with rendered context and an artifact output path."
+      "responsibility": "Invoke the implemented Harbor no-tools lane with rendered context and an artifact output path; fail closed for planned but unsupported lanes."
     },
     {
       "name": "output_collector",
@@ -88,16 +94,23 @@
     {
       "name": "no_tools",
       "required": true,
+      "status": "implemented_local",
       "agent_input": "instruction-only rendered context",
       "agent_output": "structured AuthZBench-SaaS submission.json",
       "scoring_rule": "vulnerable tasks require replayable finding evidence; secure controls require findings: []"
     },
     {
       "name": "live_http_tool_agent",
-      "required": true,
+      "required": false,
+      "status": "planned_unsupported",
       "agent_input": "rendered context plus live target service access",
       "agent_output": "structured AuthZBench-SaaS submission.json plus optional public-safe plan/probe artifacts",
       "scoring_rule": "scorer-owned backend replay plus target-request coverage when request logging is available",
+      "blocked_until": [
+        "the packaged adapter starts or attaches target services",
+        "agent network policy is enforced",
+        "request-correlation capture is implemented and verified"
+      ],
       "service_orchestration": [
         "target service image or compose source",
         "startup healthcheck",
@@ -183,7 +196,7 @@
       "--overwrite",
       "--task-ids"
     ],
-    "repo_side_compatibility_helper": "python3 -m authzbench_harbor.cli build supports --output-dir, --limit, --overwrite, --harness-lane, --task-id, and --task-ids as the public-safe repo-side compatibility target.",
+    "repo_side_compatibility_helper": "python3 -m authzbench_harbor.cli build supports --output-dir, --limit, --overwrite, --harness-lane, --task-id, and --task-ids as the public-safe repo-side compatibility target. The only implemented --harness-lane value is no_tools; live_http_tool_agent fails closed as planned_unsupported.",
     "blocked_until": [
       "Harbor platform review or publishing path is chosen",
       "platform packaging requirements are mapped",

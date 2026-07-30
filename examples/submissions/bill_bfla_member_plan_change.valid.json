@@ -13,6 +13,13 @@
         {
           "request": {
             "actor": "atlas_member",
+            "method": "GET",
+            "path": "/api/secure/orgs/{ATLAS_ORG_ID}/settings/plan"
+          }
+        },
+        {
+          "request": {
+            "actor": "atlas_member",
             "method": "PATCH",
             "path": "/api/orgs/{ATLAS_ORG_ID}/settings/plan",
             "body": {

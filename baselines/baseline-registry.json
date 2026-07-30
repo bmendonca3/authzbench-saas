@@ -3,23 +3,23 @@
     {
       "capability_baseline": false,
       "cohort": "schema-sanity",
-      "evidence_status": "current",
+      "evidence_status": "current_development_unfrozen",
       "expected_agent": "scripted_baseline_agent",
       "expected_harness_type": "scripted",
       "expected_model": "deterministic-script",
-      "expected_score_policy_version": "score-policy-v2-boundary-normalization",
+      "expected_score_policy_version": "score-policy-v3-evidence-chain-observed-safety",
       "expected_task_count": 63,
       "id": "scripted-sanity-public-63",
       "kind": "harness_check",
       "leaderboard_eligible": false,
       "model_name": "n/a",
       "model_version": "n/a",
-      "notes": "Current 63-task deterministic harness sanity check for the v1.1 public split. Useful for validating scorer and manifests, but not a model result, tool-agent result, private-holdout evidence, or hosted-leaderboard evidence.",
+      "notes": "Current development-only 63-task deterministic harness sanity check under score-policy-v3. It verifies the public manifests, required deny-then-bypass evidence chains, scorer, and runner against the working source fingerprint. Safety is unobserved without target request logs, so promotion_eligible_count is zero. This is not a model result, exact-commit release result, tool-agent result, private-holdout result, or hosted-leaderboard result.",
       "purpose": "deterministic scripted sanity row; useful for harness/scorer/provenance checks, not a model or tool-agent result",
       "release_suitability": "current_public_harness_check",
       "requires_rerun_before_current_comparison": false,
       "run_count": 1,
-      "run_date": "2026-06-20",
+      "run_date": "2026-07-29",
       "scaffold_name": "scripted_baseline_agent",
       "summary_path": "scripted-baseline-public-63-summary.json"
     },
@@ -204,7 +204,7 @@
     {
       "capability_baseline": true,
       "cohort": "current-model",
-      "evidence_status": "current",
+      "evidence_status": "stale_after_score_policy_v3",
       "expected_agent": "kiro_baseline_agent",
       "expected_harness_type": "no-tools-model",
       "expected_model": "qwen3-coder-next",
@@ -216,10 +216,10 @@
       "model_family": "kiro-qwen",
       "model_name": "qwen3-coder-next",
       "model_version": "v1.0-internal",
-      "notes": "Saved public submissions re-scored offline under score-policy-v2 without repeating model execution. Adapter failures now fail closed: run 1 records 21 adapter failures (7 infrastructure) and run 2 records 15 adapter failures (3 infrastructure), so this is end-to-end model-plus-harness evidence rather than clean model-only capability. Public-split evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
+      "notes": "Historical score-policy-v2 evidence retained for audit. The saved submissions do not contain the score-policy-v3 deny-then-bypass evidence chain, current source fingerprint, or observed-safety contract and cannot be promoted or compared as current without a fresh run. The historical runs recorded 21 and 15 adapter failures respectively. Not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
       "result_derivation": "offline_rescore_from_saved_public_submissions",
-      "requires_rerun_before_current_comparison": false,
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "kiro-qwen3-coder-next-current-public-63-run1-summary.json",
         "kiro-qwen3-coder-next-current-public-63-run2-summary.json"
@@ -232,7 +232,7 @@
     {
       "capability_baseline": true,
       "cohort": "current-model",
-      "evidence_status": "current",
+      "evidence_status": "stale_after_score_policy_v3",
       "expected_agent": "kiro_baseline_agent",
       "expected_harness_type": "no-tools-model",
       "expected_model": "claude-haiku-4.5",
@@ -244,10 +244,10 @@
       "model_family": "kiro-claude-haiku",
       "model_name": "claude-haiku-4.5",
       "model_version": "v1.0-internal",
-      "notes": "Saved public submissions re-scored offline under score-policy-v2 without repeating model execution; both runs have zero adapter or infrastructure failures. Public-split evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
+      "notes": "Historical score-policy-v2 evidence retained for audit. The saved submissions do not contain the score-policy-v3 deny-then-bypass evidence chain, current source fingerprint, or observed-safety contract and cannot be promoted or compared as current without a fresh run. Both historical runs had zero adapter or infrastructure failures. Not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
       "result_derivation": "offline_rescore_from_saved_public_submissions",
-      "requires_rerun_before_current_comparison": false,
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "kiro-claude-haiku-4.5-current-public-63-run1-summary.json",
         "kiro-claude-haiku-4.5-current-public-63-run2-summary.json"
@@ -260,7 +260,7 @@
     {
       "capability_baseline": true,
       "cohort": "current-model",
-      "evidence_status": "current",
+      "evidence_status": "stale_after_score_policy_v3",
       "expected_agent": "kiro_baseline_agent",
       "expected_harness_type": "no-tools-model",
       "expected_model": "claude-sonnet-4.6",
@@ -272,10 +272,10 @@
       "model_family": "kiro-claude-sonnet",
       "model_name": "claude-sonnet-4.6",
       "model_version": "v1.0-internal",
-      "notes": "Saved public submissions re-scored offline under score-policy-v2 without repeating model execution; both runs have zero adapter or infrastructure failures. Public-split evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
+      "notes": "Historical score-policy-v2 evidence retained for audit. The saved submissions do not contain the score-policy-v3 deny-then-bypass evidence chain, current source fingerprint, or observed-safety contract and cannot be promoted or compared as current without a fresh run. Both historical runs had zero adapter or infrastructure failures. Not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
       "result_derivation": "offline_rescore_from_saved_public_submissions",
-      "requires_rerun_before_current_comparison": false,
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "kiro-claude-sonnet-4.6-current-public-63-run1-summary.json",
         "kiro-claude-sonnet-4.6-current-public-63-run2-summary.json"
@@ -288,7 +288,7 @@
     {
       "capability_baseline": true,
       "cohort": "current-model",
-      "evidence_status": "current",
+      "evidence_status": "stale_after_score_policy_v3",
       "expected_agent": "kiro_baseline_agent",
       "expected_harness_type": "no-tools-model",
       "expected_model": "glm-5",
@@ -300,10 +300,10 @@
       "model_family": "kiro-glm",
       "model_name": "glm-5",
       "model_version": "v1.0-internal",
-      "notes": "Saved public submissions re-scored offline under score-policy-v2 without repeating model execution. Run 1 has zero infrastructure failures and two schema-invalid findings that omitted required out_of_scope_actions; run 2 preserves one runner timeout as a fail-closed invalid task. Public-split evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
+      "notes": "Historical score-policy-v2 evidence retained for audit. The saved submissions do not contain the score-policy-v3 deny-then-bypass evidence chain, current source fingerprint, or observed-safety contract and cannot be promoted or compared as current without a fresh run. The historical artifacts retain their schema-invalid findings and timeout. Not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
       "result_derivation": "offline_rescore_from_saved_public_submissions",
-      "requires_rerun_before_current_comparison": false,
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "kiro-glm-5-current-public-63-run1-summary.json",
         "kiro-glm-5-current-public-63-run2-summary.json"
@@ -316,7 +316,7 @@
     {
       "capability_baseline": true,
       "cohort": "current-model",
-      "evidence_status": "current",
+      "evidence_status": "stale_after_score_policy_v3",
       "expected_agent": "kiro_baseline_agent",
       "expected_harness_type": "no-tools-model",
       "expected_model": "claude-opus-4.6",
@@ -328,10 +328,10 @@
       "model_family": "kiro-claude-opus",
       "model_name": "claude-opus-4.6",
       "model_version": "v1.0-internal",
-      "notes": "Saved public submissions re-scored offline under score-policy-v2 without repeating model execution; both runs have zero adapter or infrastructure failures. Public-split evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
+      "notes": "Historical score-policy-v2 evidence retained for audit. The saved submissions do not contain the score-policy-v3 deny-then-bypass evidence chain, current source fingerprint, or observed-safety contract and cannot be promoted or compared as current without a fresh run. Both historical runs had zero adapter or infrastructure failures. Not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
       "result_derivation": "offline_rescore_from_saved_public_submissions",
-      "requires_rerun_before_current_comparison": false,
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "kiro-claude-opus-4.6-current-public-63-run1-summary.json",
         "kiro-claude-opus-4.6-current-public-63-run2-summary.json"
@@ -344,7 +344,7 @@
     {
       "capability_baseline": true,
       "cohort": "current-model",
-      "evidence_status": "current",
+      "evidence_status": "stale_after_score_policy_v3",
       "expected_agent": "agy_baseline_agent",
       "expected_harness_type": "no-tools-model",
       "expected_model": "Gemini 3.1 Pro (High)",
@@ -356,10 +356,10 @@
       "model_family": "agy-gemini-3-1-pro",
       "model_name": "Gemini 3.1 Pro (High)",
       "model_version": "antigravity-cli-label-verified-2026-07-06",
-      "notes": "Saved public submissions re-scored offline under score-policy-v2 without repeating model execution. Every preserved successful task log verifies Gemini 3.1 Pro (High); parse/command fallbacks now fail closed as 4 invalid tasks in run 1 and 2 in run 2 (including one infrastructure failure). Public-split evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
+      "notes": "Historical score-policy-v2 evidence retained for audit. The saved submissions do not contain the score-policy-v3 deny-then-bypass evidence chain, current source fingerprint, or observed-safety contract and cannot be promoted or compared as current without a fresh run. The historical artifacts preserve verified model labels and their parse or command failures. Not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
       "result_derivation": "offline_rescore_from_saved_public_submissions",
-      "requires_rerun_before_current_comparison": false,
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "agy-gemini-3.1-pro-high-current-public-63-run1-summary.json",
         "agy-gemini-3.1-pro-high-current-public-63-run2-summary.json"
@@ -372,7 +372,7 @@
     {
       "capability_baseline": true,
       "cohort": "current-tool-agent",
-      "evidence_status": "current",
+      "evidence_status": "stale_after_score_policy_v3",
       "expected_agent": "kiro_live_tool_agent",
       "expected_harness_type": "tool-agent",
       "expected_model": "claude-sonnet-4.6",
@@ -384,10 +384,10 @@
       "model_family": "kiro-live-tool-agent-sonnet",
       "model_name": "claude-sonnet-4.6",
       "model_version": "v1.0-internal",
-      "notes": "Saved public submissions re-scored offline under score-policy-v2 without repeating model execution. Both live HTTP runs preserve complete target-request correlation and have zero adapter or infrastructure failures. Public-split evidence only; not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
-      "release_suitability": "current_public_split",
+      "notes": "Historical score-policy-v2 tool-agent evidence retained for audit. The saved submissions do not contain the score-policy-v3 deny-then-bypass evidence chain or current source fingerprint and cannot be promoted or compared as current without a fresh run, even though both historical runs preserved complete target-request correlation and had zero adapter or infrastructure failures. Not private-holdout, hosted-leaderboard, Harbor, external-review, or release-acceptance evidence.",
+      "release_suitability": "current_public_stale",
       "result_derivation": "offline_rescore_from_saved_public_submissions",
-      "requires_rerun_before_current_comparison": false,
+      "requires_rerun_before_current_comparison": true,
       "run_artifacts": [
         "kiro-live-tool-agent-sonnet-current-public-63-run1-summary.json",
         "kiro-live-tool-agent-sonnet-current-public-63-run2-summary.json"

@@ -23,15 +23,15 @@ class BenchmarkChartTests(unittest.TestCase):
         self.assertEqual(tool_row["release_suitability"], "current_public_stale")
         self.assertTrue(tool_row["requires_rerun_before_current_comparison"])
 
-    def test_canonical_gemini_chart_row_is_current_rescore_evidence(self) -> None:
+    def test_canonical_gemini_chart_row_is_stale_v2_rescore_evidence(self) -> None:
         registry = load_json(ROOT / "baselines" / "baseline-registry.json")
         rows = {row["id"]: row for row in baseline_rows(registry)}
 
         gemini_row = rows["agy-gemini-3-1-pro-high-current-public-63"]
 
         self.assertEqual(gemini_row["label"], "Gemini 3.1 Pro")
-        self.assertEqual(gemini_row["release_suitability"], "current_public_split")
-        self.assertFalse(gemini_row["requires_rerun_before_current_comparison"])
+        self.assertEqual(gemini_row["release_suitability"], "current_public_stale")
+        self.assertTrue(gemini_row["requires_rerun_before_current_comparison"])
 
     def test_stale_tool_agent_chart_row_preserves_target_request_coverage(self) -> None:
         registry = load_json(ROOT / "baselines" / "baseline-registry.json")

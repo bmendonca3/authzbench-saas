@@ -24,6 +24,9 @@ from scripts.check_harbor_local_execution import check_harbor_local_execution
 from scripts.validate_baseline_registry import validate_registry
 from scripts.validate_harbor_adapter_blockers import validate_harbor_adapter_blockers
 from scripts.validate_harbor_adapter_templates import validate_harbor_adapter_templates
+from scripts.validate_harbor_compatibility_state import (
+    validate_harbor_compatibility_state,
+)
 from scripts.validate_harbor_integration import validate_harbor_integration
 from scripts.validate_harbor_local_evidence import validate_harbor_local_evidence
 from scripts.validate_harbor_parity_experiment import validate_parity_experiment
@@ -36,6 +39,11 @@ REQUIRED_REVIEW_LANES = (
     "Benchmark/evals methodology",
     "AI-agent/tooling",
 )
+REVIEW_LANE_IDS = {
+    "Application security": "appsec",
+    "Benchmark/evals methodology": "benchmark_evals",
+    "AI-agent/tooling": "agent_tooling",
+}
 
 REQUIRED_REVIEW_PACKET_ARTIFACTS = (
     "README.md",
@@ -72,6 +80,10 @@ HARBOR_INTEGRATION_RUNBOOK_PATH = "docs/harbor-integration-runbook.md"
 HARBOR_INTEGRATION_VALIDATOR_PATH = "scripts/validate_harbor_integration.py"
 HARBOR_LOCAL_EVIDENCE_PATH = "artifact/harbor-local-execution-smoke.json"
 HARBOR_LOCAL_PREFLIGHT_PATH = "scripts/check_harbor_local_execution.py"
+HARBOR_COMPATIBILITY_VALIDATOR_PATH = "scripts/validate_harbor_compatibility_state.py"
+HARBOR_COMPATIBILITY_EVIDENCE_PATH = (
+    "artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json"
+)
 HARBOR_PARITY_EVIDENCE_PATH = "artifact/harbor-parity-experiment.json"
 HARBOR_PARITY_VALIDATOR_PATH = "scripts/validate_harbor_parity_experiment.py"
 HARBOR_PACKAGED_VALIDATOR_PATH = "scripts/validate_packaged_harbor.py"
@@ -153,6 +165,7 @@ REQUIRED_RELEASE_VALIDATION_COMMANDS = (
 )
 VALID_REVIEW_DECISIONS = {"accepted", "rejected", "unresolved"}
 VALID_REVIEW_DISPOSITIONS = {"findings", "no_findings"}
+VALID_REVIEW_OVERALL_DISPOSITIONS = {"accept", "accept_with_minor_changes", "reject"}
 VALID_REVIEW_STATUSES = {"pending", "complete"}
 
 POST_SOURCE_EVIDENCE_ONLY_PATHS = {
@@ -442,18 +455,12 @@ PAPER_POST_SOURCE_EVIDENCE_ONLY_PATHS = POST_SOURCE_EVIDENCE_ONLY_PATHS | {
     "docs/index.md",
     "scripts/check_v1_overclaim.py",
     "tests/test_v1_overclaim_check.py",
-    # Round 2 Option B / Option A follow-up: test-infrastructure CI-only
-    # skip guards for absent gitignored rotation metadata. These files
-    # received a new setUp method that calls self.skipTest(...) when
-    # tasks_private/holdout/rotation-metadata.json is missing (the file
-    # is gitignored and not in public Git, so CI checkouts always lack
-    # it; local runs are unaffected). The test bodies, assertions,
-    # fixtures, scoring, and benchmark source are unchanged. They are
-    # non-benchmark-source test-infrastructure, same justification as
-    # the 14 other tests/test_*.py files already allow-listed above
-    # (e.g. tests/test_claim_boundary_check.py,
-    # tests/test_harbor_adapter_build.py,
-    # tests/test_submission_bundle_validator.py).
+    # Leaderboard/release test infrastructure. These tests use public blocker
+    # metadata or synthetic public-view inputs, so public CI executes the
+    # assertions instead of skipping the classes when gitignored private
+    # rotation metadata is absent. They are non-benchmark-source tests, with
+    # the same justification as the other tests/test_*.py files allow-listed
+    # above.
     "tests/test_build_leaderboard_submission.py",
     "tests/test_leaderboard_submission.py",
     "tests/test_v0_release_validator.py",
@@ -627,6 +634,101 @@ def _valid_follow_up_ref(root: Path, value: Any) -> bool:
     if match:
         return _git_commit_exists(root, match.group(1))
     return False
+
+
+def _follow_up_commit_ref(value: Any) -> str | None:
+    if not _nonempty_string(value) or _placeholder(value):
+        return None
+    text = str(value).strip()
+    if re.fullmatch(r"[0-9a-f]{7,40}", text):
+        return text
+    match = re.fullmatch(
+        r"https://github\.com/bmendonca3/authzbench-saas/commit/([0-9a-f]{7,40})",
+        text,
+    )
+    return match.group(1) if match else None
+
+
+def _git_ref_is_strict_descendant_with_changes(
+    root: Path,
+    reviewed_commit_sha: str,
+    descendant_ref: str,
+    *,
+    relative_path: str | None = None,
+) -> bool:
+    if not _git_commit_exists(root, reviewed_commit_sha) or not _git_commit_exists(
+        root,
+        descendant_ref,
+    ):
+        return False
+    if not _git_ok(
+        root,
+        ["merge-base", "--is-ancestor", reviewed_commit_sha, descendant_ref],
+    ):
+        return False
+    reviewed = subprocess.run(
+        ["git", "rev-parse", f"{reviewed_commit_sha}^{{commit}}"],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    descendant = subprocess.run(
+        ["git", "rev-parse", f"{descendant_ref}^{{commit}}"],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if (
+        reviewed.returncode != 0
+        or descendant.returncode != 0
+        or reviewed.stdout.strip() == descendant.stdout.strip()
+    ):
+        return False
+    cmd = [
+        "git",
+        "diff",
+        "--quiet",
+        f"{reviewed_commit_sha}..{descendant_ref}",
+    ]
+    if relative_path is not None:
+        cmd.extend(["--", relative_path])
+    diff = subprocess.run(
+        cmd,
+        cwd=root,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return diff.returncode == 1
+
+
+def _valid_post_review_follow_up_ref(
+    root: Path,
+    reviewed_commit_sha: Any,
+    value: Any,
+) -> bool:
+    if not _sha(reviewed_commit_sha) or not _nonempty_string(value):
+        return False
+    text = str(value).strip()
+    if _safe_existing_relative_path(root, text):
+        return _git_ref_is_strict_descendant_with_changes(
+            root,
+            str(reviewed_commit_sha),
+            "HEAD",
+            relative_path=text,
+        )
+    commit_ref = _follow_up_commit_ref(text)
+    if commit_ref is None:
+        return False
+    return _git_ref_is_strict_descendant_with_changes(
+        root,
+        str(reviewed_commit_sha),
+        commit_ref,
+    )
 
 
 def _current_commit_sha() -> str:
@@ -1619,11 +1721,28 @@ def _external_review_summary_state() -> dict[str, Any]:
     }
 
 
-def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
+def _validate_external_review_evidence(
+    root: Path = ROOT,
+    *,
+    require_complete: bool = True,
+) -> dict[str, Any]:
     unmet: list[str] = []
     data = _json_object(root / EXTERNAL_REVIEW_EVIDENCE_PATH, unmet)
     if data is None:
         return {"passed": False, "lanes": [], "unmet": unmet}
+    allowed_top_fields = {
+        "schema_version",
+        "template_only",
+        "claim_boundary",
+        "review_lanes",
+    }
+    extra_top_fields = sorted(set(data) - allowed_top_fields)
+    if extra_top_fields:
+        unmet.append(f"unexpected external review summary fields: {', '.join(extra_top_fields)}")
+    if data.get("schema_version") != "external-review-summary-v1":
+        unmet.append("external review schema_version must be 'external-review-summary-v1'")
+    if not _nonempty_string(data.get("claim_boundary")) or _unresolved_placeholder(data.get("claim_boundary")):
+        unmet.append("external review claim_boundary must be concrete text")
     if data.get("template_only") is True or data.get("schema_version") == "external-review-response-template-v1":
         unmet.append("external review response template is not external review evidence")
     unmet.extend(_external_review_public_safety_errors(data))
@@ -1633,6 +1752,7 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
         unmet.append("review_lanes must be a list")
         lanes = []
     lanes_by_name: dict[str, dict[str, Any]] = {}
+    lane_names: list[str] = []
     for index, lane in enumerate(lanes, start=1):
         if not isinstance(lane, dict):
             unmet.append(f"review_lanes[{index}] must be an object")
@@ -1641,11 +1761,39 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
         if name not in REQUIRED_REVIEW_LANES:
             unmet.append(f"review_lanes[{index}].lane must be one of the required review lanes")
             continue
+        lane_names.append(str(name))
+        if name in lanes_by_name:
+            unmet.append(f"duplicate structured review lane: {name}")
         lanes_by_name[str(name)] = lane
-        review_status = lane.get("review_status", "complete")
+        review_status = lane.get("review_status")
         if review_status not in VALID_REVIEW_STATUSES:
-            unmet.append(f"{name}: review_status must be pending or complete")
+            unmet.append(f"{name}: review_status must be explicitly pending or complete")
             continue
+        common_fields = {"lane", "review_status"}
+        pending_fields = {
+            "requested_artifacts",
+            "requested_questions",
+            "blocker",
+            "next_action",
+        }
+        complete_fields = {
+            "registry_lane_id",
+            "review_date",
+            "reviewed_commit_sha",
+            "reviewer_role_scope",
+            "overall_disposition",
+            "claim_boundary_impact",
+            "questions_reviewed",
+            "artifacts_reviewed",
+            "disposition",
+            "decisions",
+        }
+        allowed_lane_fields = common_fields | (
+            pending_fields if review_status == "pending" else complete_fields
+        )
+        extra_lane_fields = sorted(set(lane) - allowed_lane_fields)
+        if extra_lane_fields:
+            unmet.append(f"{name}: unexpected review lane fields: {', '.join(extra_lane_fields)}")
         if review_status == "pending":
             requested_artifacts = lane.get("requested_artifacts")
             if (
@@ -1676,8 +1824,18 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
                 unmet.append(f"{name}: pending review requires blocker")
             if not _nonempty_string(lane.get("next_action")) or _unresolved_placeholder(lane.get("next_action")):
                 unmet.append(f"{name}: pending review requires next_action")
-            unmet.append(f"{name}: independent review is pending")
+            if require_complete:
+                unmet.append(f"{name}: independent review is pending")
             continue
+        if lane.get("registry_lane_id") != REVIEW_LANE_IDS[name]:
+            unmet.append(f"{name}: registry_lane_id must be {REVIEW_LANE_IDS[name]!r}")
+        if lane.get("overall_disposition") not in VALID_REVIEW_OVERALL_DISPOSITIONS:
+            unmet.append(
+                f"{name}: overall_disposition must be one of "
+                f"{sorted(VALID_REVIEW_OVERALL_DISPOSITIONS)}"
+            )
+        elif require_complete and lane.get("overall_disposition") == "reject":
+            unmet.append(f"{name}: overall_disposition must be accepted for external validation")
         try:
             review_date = date.fromisoformat(str(lane.get("review_date", "")))
         except ValueError:
@@ -1685,6 +1843,11 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
         else:
             if review_date > date.today():
                 unmet.append(f"{name}: review_date cannot be in the future")
+        reviewed_commit_sha = lane.get("reviewed_commit_sha")
+        if not _sha(reviewed_commit_sha):
+            unmet.append(f"{name}: reviewed_commit_sha must be a 40-character lowercase Git SHA")
+        elif not _git_commit_exists(root, str(reviewed_commit_sha)):
+            unmet.append(f"{name}: reviewed_commit_sha must reference an existing commit")
         if not _nonempty_string(lane.get("reviewer_role_scope")) or _unresolved_placeholder(lane.get("reviewer_role_scope")):
             unmet.append(f"{name}: reviewer_role_scope is required")
         if not _nonempty_string(lane.get("claim_boundary_impact")) or _unresolved_placeholder(lane.get("claim_boundary_impact")):
@@ -1719,24 +1882,51 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
         if not isinstance(decisions, list):
             unmet.append(f"{name}: decisions must be a list")
             decisions = []
-        if disposition == "findings" and not decisions:
-            unmet.append(f"{name}: findings disposition requires at least one decision")
+        if disposition in VALID_REVIEW_DISPOSITIONS and not decisions:
+            unmet.append(f"{name}: disposition requires at least one finding or explicit no-finding decision")
         for decision_index, decision in enumerate(decisions, start=1):
             if not isinstance(decision, dict):
                 unmet.append(f"{name}: decisions[{decision_index}] must be an object")
                 continue
+            allowed_decision_fields = {
+                "finding",
+                "decision",
+                "summary",
+                "claim_boundary_impact",
+                "follow_up_artifact",
+            }
+            extra_decision_fields = sorted(set(decision) - allowed_decision_fields)
+            if extra_decision_fields:
+                unmet.append(
+                    f"{name}: decisions[{decision_index}] has unexpected fields: "
+                    + ", ".join(extra_decision_fields)
+                )
             if not _nonempty_string(decision.get("finding")) or _unresolved_placeholder(decision.get("finding")):
                 unmet.append(f"{name}: decisions[{decision_index}].finding is required")
             if decision.get("decision") not in VALID_REVIEW_DECISIONS:
                 unmet.append(f"{name}: decisions[{decision_index}].decision must be accepted, rejected, or unresolved")
+            elif require_complete and decision.get("decision") == "unresolved":
+                unmet.append(
+                    f"{name}: decisions[{decision_index}] must be resolved for external validation"
+                )
             if not _nonempty_string(decision.get("summary")) or _unresolved_placeholder(decision.get("summary")):
                 unmet.append(f"{name}: decisions[{decision_index}].summary is required")
-            if decision.get("decision") in {"accepted", "unresolved"} and not _valid_follow_up_ref(
+            if decision.get("decision") == "accepted" and not _valid_post_review_follow_up_ref(
+                root,
+                reviewed_commit_sha,
+                decision.get("follow_up_artifact"),
+            ):
+                unmet.append(
+                    f"{name}: accepted decisions require committed post-review remediation "
+                    "at follow_up_artifact"
+                )
+            elif decision.get("decision") == "unresolved" and not _valid_follow_up_ref(
                 root,
                 decision.get("follow_up_artifact"),
             ):
                 unmet.append(
-                    f"{name}: accepted or unresolved decisions require a real follow_up_artifact path or existing commit"
+                    f"{name}: unresolved decisions require a real follow_up_artifact "
+                    "path or existing commit"
                 )
             if not _nonempty_string(decision.get("claim_boundary_impact")) or _unresolved_placeholder(
                 decision.get("claim_boundary_impact")
@@ -1746,6 +1936,8 @@ def _validate_external_review_evidence(root: Path = ROOT) -> dict[str, Any]:
     missing_lanes = sorted(set(REQUIRED_REVIEW_LANES) - set(lanes_by_name))
     if missing_lanes:
         unmet.append(f"missing structured review lanes: {', '.join(missing_lanes)}")
+    if len(lanes) != len(REQUIRED_REVIEW_LANES) or len(lane_names) != len(REQUIRED_REVIEW_LANES):
+        unmet.append(f"review_lanes must contain exactly {len(REQUIRED_REVIEW_LANES)} canonical lanes")
     return {"passed": not unmet, "lanes": sorted(lanes_by_name), "unmet": unmet}
 
 
@@ -2478,6 +2670,13 @@ def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str,
     if not parity["passed"]:
         unmet.extend(f"harbor parity evidence: {error}" for error in parity["errors"])
 
+    compatibility = validate_harbor_compatibility_state()
+    if not compatibility["passed"]:
+        unmet.extend(
+            f"harbor compatibility evidence: {error}"
+            for error in compatibility["errors"]
+        )
+
     preflight = check_harbor_local_execution(discover_harbor_cli=not public_view)
     if preflight.get("generated_skeleton_validated") is not True:
         unmet.append("Harbor local preflight did not validate a generated public skeleton")
@@ -2497,6 +2696,8 @@ def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str,
         HARBOR_INTEGRATION_VALIDATOR_PATH,
         HARBOR_LOCAL_PREFLIGHT_PATH,
         HARBOR_LOCAL_EVIDENCE_PATH,
+        HARBOR_COMPATIBILITY_VALIDATOR_PATH,
+        HARBOR_COMPATIBILITY_EVIDENCE_PATH,
         HARBOR_PARITY_EVIDENCE_PATH,
         HARBOR_PARITY_VALIDATOR_PATH,
         HARBOR_PACKAGED_VALIDATOR_PATH,
@@ -2507,12 +2708,22 @@ def _validate_harbor_repo_side_target(*, public_view: bool = False) -> dict[str,
     return {
         "blocked_until": preflight.get("blocked_until", []),
         "harbor_cli_found": preflight.get("harbor_cli_found"),
+        "harbor_cli_check_status": preflight.get("harbor_cli_check_status"),
         "harbor_execution_verified": preflight.get("harbor_execution_verified"),
+        "active_compatibility_verified": compatibility.get(
+            "active_compatibility_verified"
+        ),
+        "compatibility_evidence_status": compatibility.get("declared_status"),
+        "historical_scoped_parity_verified": parity.get("parity_verified"),
         "local_execution_smoke_valid": local_evidence.get("passed"),
+        "local_harbor_run_runnable": preflight.get("local_harbor_run_runnable"),
         "packaged_validation_wired": (ROOT / HARBOR_PACKAGED_VALIDATOR_PATH).is_file(),
         "passed": not unmet,
         "scoped_parity_task_count": parity.get("task_count"),
-        "scoped_parity_verified": parity.get("parity_verified"),
+        "scoped_parity_verified": (
+            parity.get("parity_verified") is True
+            and parity.get("evidence_status") == "current"
+        ),
         "ready_for_local_harbor_run": preflight.get("ready_for_local_harbor_run"),
         "skeleton_validated": preflight.get("generated_skeleton_validated"),
         "unmet": unmet,
@@ -2597,7 +2808,7 @@ def validate_v1_readiness(
     current_baseline_status = (
         "current_63_task_refreshes_present"
         if registry_result.get("has_current_public_model_or_tool_agent_baseline")
-        else "stale_pending_63_task_refreshes"
+        else "stale_pending_current_policy_reruns"
     )
     _add_gate(
         gates,
@@ -2653,17 +2864,23 @@ def validate_v1_readiness(
             HARBOR_ADAPTER_TEMPLATES_VALIDATOR_PATH,
             HARBOR_LOCAL_PREFLIGHT_PATH,
             HARBOR_LOCAL_EVIDENCE_PATH,
+            HARBOR_COMPATIBILITY_VALIDATOR_PATH,
+            HARBOR_COMPATIBILITY_EVIDENCE_PATH,
             HARBOR_PARITY_EVIDENCE_PATH,
             HARBOR_PARITY_VALIDATOR_PATH,
             HARBOR_PACKAGED_VALIDATOR_PATH,
             f"harbor_cli_found={harbor_repo_side['harbor_cli_found']}",
             f"generated_skeleton_validated={harbor_repo_side['skeleton_validated']}",
             f"harbor_execution_verified={harbor_repo_side['harbor_execution_verified']}",
+            f"active_compatibility_verified={harbor_repo_side['active_compatibility_verified']}",
+            f"compatibility_evidence_status={harbor_repo_side['compatibility_evidence_status']}",
             f"local_execution_smoke_valid={harbor_repo_side['local_execution_smoke_valid']}",
+            f"historical_scoped_parity_verified={harbor_repo_side['historical_scoped_parity_verified']}",
             f"scoped_parity_verified={harbor_repo_side['scoped_parity_verified']}",
             f"scoped_parity_task_count={harbor_repo_side['scoped_parity_task_count']}",
             f"packaged_validation_wired={harbor_repo_side['packaged_validation_wired']}",
             f"ready_for_local_harbor_run={harbor_repo_side['ready_for_local_harbor_run']}",
+            f"local_harbor_run_runnable={harbor_repo_side['local_harbor_run_runnable']}",
             f"blocked_until={harbor_repo_side['blocked_until']}",
         ],
         list(harbor_repo_side["unmet"]),

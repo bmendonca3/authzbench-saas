@@ -1,6 +1,19 @@
 # Release Status
 
-Last updated: 2026-07-24
+Last updated: 2026-07-28
+
+## Release-label semantics
+
+The completed `v1.0-internal` label describes a historical internal/non-external
+snapshot; current `main` is not a freshly validated release candidate. At
+audited HEAD `acb6434`, public-view readiness is 9/10 and
+`paper_and_artifact_readiness` correctly remains false because
+release-affecting changes followed source pin `54e87b0`. The old smoke,
+private-row, paper, and CI records remain historical evidence, not
+current-HEAD evidence. A new candidate requires a deliberate source freeze
+plus fresh matching smoke, private rows, paper tables/charts/LaTeX, fixture,
+and CI/release evidence. External, Kaggle, and launch gates remain separate
+and are not addressed by this repair.
 
 ## v1.0-Internal Status
 
@@ -21,24 +34,32 @@ Current v1.0-internal boundary:
   correlation in both runs. All are stale for current 63-task comparison.
 - v1.0-internal does not imply hosted leaderboard operation, external
   validation, platform acceptance, or community-scale benchmark maturity.
-- Harbor preparation includes a packaged adapter CLI, isolated wheel-install
-  smoke, six-task local execution, and six-of-six per-task empty-findings
-  reward parity. Full 63-task/model parity, hosted operation, and platform
-  acceptance remain incomplete.
-- Kaggle/Harbor onboarding now includes a current digest-backed three-task
-  public pilot, fresh local NOP `0.0` and Oracle `1.0` controls, and one
-  completed local mini-swe-agent secure-control run through Kaggle Model Proxy
-  with passing CTRF/score and reward `1.0`. That model run used a temporary
-  all-public task network mode and is compatibility evidence only. The schema
+- Harbor preparation includes a no-tools packaged adapter CLI and an isolated
+  wheel-install smoke. The one-task and six-task local execution/parity
+  artifacts are historical; `live_http_tool_agent` is
+  `planned_unsupported`. Fresh current-source compatibility, full
+  63-task/model parity, hosted operation, and platform acceptance remain
+  incomplete.
+- Kaggle/Harbor onboarding includes a three-task public pilot with historical
+  local NOP `0.0` and Oracle `1.0` controls, and one completed historical local
+  mini-swe-agent secure-control run through Kaggle Model Proxy with passing
+  CTRF/score and reward `1.0`. The checked-in pilot now requires a
+  source-matching rebuild and rerun before any current compatibility claim.
+  That model run used a temporary all-public task network mode and is
+  historical compatibility evidence only. The schema
   clarification is pushed at exact commit `20cd189`; Kaggle's pinned published
   runner checked out that commit locally but Harbor 0.15 failed before agent
   startup because its nested egress sidecar could not install required
   nftables `fib` rules. Exact-commit reward parity, Kaggle-hosted execution,
   verifier-isolation proof, platform acceptance, and launch remain open.
 - The active scorer fingerprint is
-  `score-policy-v2-boundary-normalization`. It removes the undeclared exact
-  claim-string gate, keeps boundary credit binary, and fails adapter/runner
-  errors closed.
+  `score-policy-v3-evidence-chain-observed-safety`. It keeps boundary credit
+  binary, requires the declared deny-then-bypass evidence chain for vulnerable
+  exploit credit, makes safety an observed-mutation promotion gate with zero
+  core-score weight, and fails adapter/runner errors closed. The preceding
+  `score-policy-v2-boundary-normalization` removed the undeclared exact
+  claim-string gate; its tracked offline rescores are historical rows marked
+  `stale_after_score_policy_v3`.
 
 Current main / v1.0-internal split:
 
@@ -186,6 +207,7 @@ python3 scripts/validate_harbor_adapter_blockers.py
 python3 scripts/validate_harbor_adapter_templates.py
 python3 scripts/validate_harbor_integration.py
 python3 scripts/check_harbor_local_execution.py
+python3 scripts/validate_harbor_compatibility_state.py
 python3 scripts/validate_leaderboard_submission.py --submission 'examples/leaderboard/*.json' --require-source-summary
 python3 -m compileall -q authzbench authzbench_harbor apps tests scripts
 python3 -m authzbench.run --task 'tasks/*/*.json' --agent-cmd 'python3 scripts/scripted_baseline_agent.py' --results-dir results/scripted-baseline --timeout-seconds 10 --benchmark-commit-sha "$(git rev-parse HEAD)" --agent scripted_baseline_agent --model deterministic-script --harness-type scripted
@@ -213,7 +235,9 @@ python3 scripts/validate_v1_readiness.py \
 
 `--allow-incomplete` returns 0 when the rendered output matches the expected
 fixture match, even if `v1_ready` is false under honest post-cleanup evidence.
-The current fixture reports `v1_ready: false` with 1 unmet gate. External
+The current fixture reports `v1_ready: false` with 3 unmet gates: repeated
+private no-tools and tool-agent rows pending current-policy reruns, plus the
+paper-and-artifact source-binding gate. External
 review, hosted operation, platform acceptance, and third-party submissions
 are v2 gates and are not inferred from public artifacts. Strict
 `python3 scripts/validate_v0_release.py` should be rerun in a maintainer

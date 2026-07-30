@@ -7,9 +7,16 @@ and the
 [`docs/reviews/external-review-intake.md`](external-review-intake.md)
 intake form.
 
+Status: local public-safe handoff candidate refreshed from base commit
+`acb6434c4bb25cce53a1a9f4eb31c869986743ca` with evidence through
+2026-07-28. It has not been sent. Freeze and record the final review commit
+before an external reviewer starts.
+
 ## Scope
 
 - The public / private split and the holdout lifecycle.
+- The draft semantic-cluster and scored-cohort contract, including the
+  disjointness and minimum-count decision method.
 - The scoring policy and the deterministic replay contract.
 - The baseline registry, variance report, and release-snapshot
   policy.
@@ -23,12 +30,16 @@ intake form.
 - `docs/benchmark-spec.md`
 - `docs/scoring-and-submissions.md`
 - `docs/score-stability-policy.md`
+- `docs/kaggle-benchmark-design-contract.md`
 - `docs/holdout-rotation-protocol.md`
 - `docs/v1-community-submission-governance.md`
 - `docs/baseline-credibility.md`
 - `docs/baseline-variance-analysis.md` (generated)
 - `artifact/baseline-variance-summary.json` (generated)
 - `artifact/task-oracle-audit.json` (generated)
+- `artifact/scored-cohort-contract.v1.json`
+- `docs/reviews/cohort-methodology-decision.json`
+- `docs/reviews/schemas/cohort-methodology-decision.schema.json`
 - `artifact/expected-output/v1-readiness-public-view.json`
 - `baselines/baseline-registry.json`
 - `scripts/check_claim_boundary.py`
@@ -66,6 +77,19 @@ intake form.
    budget abuse, multiple submissions against the same private pack)?
 8. **Claim-boundary enforcement**: Is the forbidden-phrase CI check
    broad enough to catch the wording drift the reviewer would flag?
+9. **Scored-cohort design**: Does the draft 17-cluster contract define
+   defensible semantic clusters and cluster-disjoint split rules? What
+   analysis should determine the minimum discriminating task and cluster
+   counts before any cohort is admitted?
+10. **Evidence generations**: Are stale 44-task, frozen 46-task, historical
+    49-task, stale 54-task and 60-task, and current 63-task evidence separated
+    clearly? Is the current 63-task model/tool evidence accurately described
+    as offline policy-v2 rescores of saved full-split submissions rather than
+    fresh repeated model execution under policy v2?
+11. **Private cohort decision**: After controlled private analysis, are the
+    aggregate private cluster assignment, exact public/private source
+    bindings, semantic disjointness result, and numeric minimum analysis
+    sufficient to admit a scored cohort without exposing private task details?
 
 ## Review form
 
@@ -82,6 +106,12 @@ intake form.
   "leaderboard_tiers_acceptable": 1,
   "anti_gaming_policy_acceptable": 1,
   "claim_boundary_enforcement_acceptable": 1,
+  "private_cluster_assignment_reviewed": false,
+  "public_private_cluster_disjointness_verified": false,
+  "minimum_analysis_artifact": "...",
+  "minimum_scored_task_count": 1,
+  "minimum_semantic_cluster_count": 1,
+  "cohort_methodology_decision": "accept | accept_with_minor_changes | reject",
   "blocking_issues": [],
   "nonblocking_issues": [],
   "comments_public_safe": "..."
@@ -91,5 +121,11 @@ intake form.
 ## Submission
 
 Submit the review form to
-`docs/reviews/review-registry.json` and a per-lane summary to
-`docs/reviews/external-review-summary.md`.
+`docs/reviews/external-review-registry.json` and copy the public-safe per-lane
+summary into `docs/reviews/external-review-summary.json` and
+`docs/reviews/external-review-summary.md`. Do not mark the lane complete until
+the registry contains a real reviewer record and the validators accept it.
+Separately update `docs/reviews/cohort-methodology-decision.json` only from
+public-safe, source-bound aggregate evidence. Structural validation is
+`python3 scripts/validate_cohort_methodology_decision.py`; strict acceptance is
+`python3 scripts/validate_cohort_methodology_decision.py --require-complete`.

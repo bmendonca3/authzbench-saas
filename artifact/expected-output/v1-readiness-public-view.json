@@ -5,13 +5,13 @@
       "evidence": [
         "public_task_count=63",
         "vulnerable_task_count=27",
-        "current_public_model_family_count=7",
+        "current_public_model_family_count=0",
         "current_public_scripted_sanity_baseline_present=True",
-        "current_public_model_or_tool_agent_baseline_present=True",
+        "current_public_model_or_tool_agent_baseline_present=False",
         "has_current_public_scripted_sanity_baseline=True",
-        "has_current_public_model_or_tool_agent_baseline=True",
+        "has_current_public_model_or_tool_agent_baseline=False",
         "current_public_model_or_tool_agent_baseline_required=false",
-        "current_public_model_or_tool_agent_baseline_status=current_63_task_refreshes_present"
+        "current_public_model_or_tool_agent_baseline_status=stale_pending_current_policy_reruns"
       ],
       "id": "stable_v1_prep_public_evidence",
       "passed": true,
@@ -37,18 +37,24 @@
         "scripts/validate_harbor_adapter_templates.py",
         "scripts/check_harbor_local_execution.py",
         "artifact/harbor-local-execution-smoke.json",
+        "scripts/validate_harbor_compatibility_state.py",
+        "artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json",
         "artifact/harbor-parity-experiment.json",
         "scripts/validate_harbor_parity_experiment.py",
         "scripts/validate_packaged_harbor.py",
         "harbor_cli_found=False",
         "generated_skeleton_validated=True",
         "harbor_execution_verified=False",
+        "active_compatibility_verified=False",
+        "compatibility_evidence_status=historical_stale_requires_rebuild",
         "local_execution_smoke_valid=True",
-        "scoped_parity_verified=True",
+        "historical_scoped_parity_verified=True",
+        "scoped_parity_verified=False",
         "scoped_parity_task_count=6",
         "packaged_validation_wired=True",
         "ready_for_local_harbor_run=False",
-        "blocked_until=['Harbor CLI/package is not installed or not on PATH']"
+        "local_harbor_run_runnable=False",
+        "blocked_until=['Harbor CLI runnable state was not checked']"
       ],
       "id": "harbor_repo_side_target_specified",
       "passed": true,
@@ -82,19 +88,23 @@
     },
     {
       "evidence": [
-        "eligible_private_tool_agent_rows=[{'path': 'leaderboard_submissions/2026-06-20/heuristic-private-tool-agent-54e87b0.leaderboard.json', 'harness_type': 'tool-agent', 'run_count': 2, 'model': 'deterministic-heuristic-tool-probe', 'benchmark_commit_sha': '54e87b04ce67a5cbc163dfb64cd2c8f63c6bdeef', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': 1.0, 'source_private_path_denial': True}]"
+        "eligible_private_tool_agent_rows=[]"
       ],
       "id": "repeated_private_tool_agent_evidence",
-      "passed": true,
-      "unmet": []
+      "passed": false,
+      "unmet": [
+        "no repeated eligible private-holdout tool-agent leaderboard row exists"
+      ]
     },
     {
       "evidence": [
-        "eligible_private_no_tools_rows=[{'path': 'leaderboard_submissions/2026-06-20/empty-response-private-no-tools-54e87b0.leaderboard.json', 'harness_type': 'no-tools-model', 'run_count': 2, 'model': 'deterministic-empty-response-no-tools', 'benchmark_commit_sha': '54e87b04ce67a5cbc163dfb64cd2c8f63c6bdeef', 'private_pack_fingerprint_sha256': '6b8b51c03492238c881b737029e7802d4127ab2a53655db2b7d5bf25032ba7c8', 'target_request_coverage_rate': None, 'source_private_path_denial': True}]"
+        "eligible_private_no_tools_rows=[]"
       ],
       "id": "repeated_private_no_tools_evidence",
-      "passed": true,
-      "unmet": []
+      "passed": false,
+      "unmet": [
+        "no repeated eligible private-holdout no-tools model leaderboard row exists"
+      ]
     },
     {
       "evidence": [
@@ -117,6 +127,7 @@
       "id": "paper_and_artifact_readiness",
       "passed": false,
       "unmet": [
+        "live upstream review and infrastructure gates must pass",
         "release-affecting files changed after benchmark_source_sha: .gitattributes, artifact/README.md, artifact/docs-alignment-stale-wording-inventory.md, artifact/harbor-kaggle-public-pilot/dataset-manifest.json, artifact/harbor-kaggle-public-pilot/dataset.toml, artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json, artifact/harbor-kaggle-public-pilot/run_authzbench_saas.yaml, artifact/harbor-kaggle-public-pilot/tasks/tok_cross_tenant_secret_read/environment/Dockerfile, artifact/harbor-kaggle-public-pilot/tasks/tok_cross_tenant_secret_read/environment/context.json, artifact/harbor-kaggle-public-pilot/tasks/tok_cross_tenant_secret_read/instruction.md"
       ]
     },
@@ -131,7 +142,7 @@
     }
   ],
   "passed": false,
-  "passed_gate_count": 9,
-  "unmet_gate_count": 1,
+  "passed_gate_count": 7,
+  "unmet_gate_count": 3,
   "v1_ready": false
 }

@@ -1,24 +1,15 @@
-"""One-command clean-room public validation runner.
+"""One-command clean-room wrapper for the dependency-free public gate.
 
-The plan section 5.1 wants a single command a reviewer can run on
-a fresh clone to reproduce the public artifact. This script wraps
-the per-step validation surface and emits a single
-``public-reproduction-summary.json`` artifact with the
-per-step pass / fail record.
-
-It is intentionally a thin orchestration layer over the existing
-``scripts/validate_public.py``,
-``scripts/check_claim_boundary.py``,
-``scripts/generate_task_oracle_audit.py``,
-``scripts/generate_task_taxonomy.py``, and
-``scripts/analyze_baseline_variance.py`` entry points. The goal
-is "one command, one summary", not a re-implementation of those
-scripts.
+The wrapper delegates to ``scripts/validate_public.py`` instead of maintaining
+a second validation list. Container smoke is included by default; callers
+without Docker can explicitly omit it with ``--skip-container-smoke``. The
+summary is printed without writing a file unless ``--output`` is supplied.
 
 Usage:
     python3 scripts/reproduce_public_artifact.py
     python3 scripts/reproduce_public_artifact.py --skip-container-smoke
     python3 scripts/reproduce_public_artifact.py --json
+    python3 scripts/reproduce_public_artifact.py --output /tmp/public-summary.json
 """
 
 from __future__ import annotations
@@ -34,56 +25,24 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUTPUT = ROOT / "artifact" / "reproduction" / "public-reproduction-summary.json"
-
-STEPS: tuple[dict[str, Any], ...] = (
-    {
-        "id": "v1_readiness",
-        "description": "Public-view v1 readiness fixture match",
-        "command": ["python3", "scripts/validate_v1_readiness.py", "--allow-incomplete", "--public-view", "--expected-output", "artifact/expected-output/v1-readiness-public-view.json"],
-    },
-    {
-        "id": "claim_boundary",
-        "description": "Claim-boundary forbidden-phrase CI check",
-        "command": ["python3", "scripts/check_claim_boundary.py"],
-    },
-    {
-        "id": "task_oracle_audit",
-        "description": "Task oracle audit (schema gate)",
-        "command": ["python3", "scripts/generate_task_oracle_audit.py", "--check"],
-    },
-    {
-        "id": "task_taxonomy",
-        "description": "Task taxonomy report",
-        "command": ["python3", "scripts/generate_task_taxonomy.py"],
-    },
-    {
-        "id": "baseline_variance",
-        "description": "Baseline variance and confidence",
-        "command": ["python3", "scripts/analyze_baseline_variance.py", "--require-current-public", "--allow-stale-pending-rerun"],
-    },
-    {
-        "id": "harbor_claim_boundary",
-        "description": "Harbor non-claim test",
-        "command": ["python3", "-m", "pytest", "tests/test_harbor_claim_boundary.py", "-q"],
-    },
-    {
-        "id": "scorer_adversarial",
-        "description": "Adversarial scorer test count (objective-3 reachability gate)",
-        "command": [
-            "python3",
-            "-m",
-            "pytest",
-            "tests/test_scorer_adversarial_submissions.py",
-            "-q",
-            "--collect-only",
-            "-q",
-        ],
-    },
-)
 
 
-def _run_step(step: dict[str, Any], cwd: Path, skip_container_smoke: bool) -> dict[str, Any]:
+def _public_validation_step(skip_container_smoke: bool) -> dict[str, Any]:
+    command = [
+        sys.executable,
+        "scripts/validate_public.py",
+        "--include-scripted-baseline",
+    ]
+    if not skip_container_smoke:
+        command.append("--include-container-smoke")
+    return {
+        "id": "public_validation",
+        "description": "Dependency-free public validation gate",
+        "command": command,
+    }
+
+
+def _run_step(step: dict[str, Any], cwd: Path) -> dict[str, Any]:
     started = time.time()
     try:
         result = subprocess.run(
@@ -116,56 +75,74 @@ def _run_step(step: dict[str, Any], cwd: Path, skip_container_smoke: bool) -> di
     }
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--root", default=str(ROOT))
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Optional JSON summary path. No file is written by default.",
+    )
     parser.add_argument("--json", action="store_true", help="Print the full summary as JSON.")
     parser.add_argument(
         "--skip-container-smoke",
         action="store_true",
-        help="Reserved for callers that don't have Docker available. The default step set already skips the per-app container smoke.",
+        help="Omit Docker-backed container smoke from the public validation gate.",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     root = Path(args.root).resolve()
-    if not (root / "scripts" / "validate_v1_readiness.py").is_file():
+    if not (root / "scripts" / "validate_public.py").is_file():
         print(f"not an AuthZBench-SaaS repo: {root}", file=sys.stderr)
         return 2
 
     if shutil.which("docker") is None and not args.skip_container_smoke:
-        # The default step set already avoids docker; this is a hint to
-        # the operator, not a hard gate.
-        pass
+        print(
+            "docker is required for the default reproduction; "
+            "use --skip-container-smoke to run the dependency-free Python gate only",
+            file=sys.stderr,
+        )
+        return 2
 
-    step_results = [_run_step(step, root, args.skip_container_smoke) for step in STEPS]
+    step = _public_validation_step(args.skip_container_smoke)
+    step_results = [_run_step(step, root)]
     overall_passed = all(s["passed"] for s in step_results)
     summary = {
         "schema_version": "public-reproduction-v1",
         "root": ".",
+        "container_smoke_included": not args.skip_container_smoke,
         "overall_passed": overall_passed,
         "step_count": len(step_results),
         "passed_step_count": sum(1 for s in step_results if s["passed"]),
         "steps": step_results,
     }
 
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output_path: Path | None = None
+    if args.output is not None:
+        output_path = args.output.expanduser().resolve()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(
+            json.dumps(summary, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
     if args.json:
         print(json.dumps(summary, indent=2, sort_keys=True))
     else:
-        try:
-            output_label = str(args.output.relative_to(root))
-        except ValueError:
-            output_label = str(args.output)
+        output_note = (
+            f"; summary at {output_path}"
+            if output_path is not None
+            else "; no summary file written"
+        )
         if overall_passed:
             print(
-                f"reproduction ok: {summary['passed_step_count']}/{summary['step_count']} steps passed; summary at {output_label}"
+                f"reproduction ok: {summary['passed_step_count']}/{summary['step_count']} "
+                f"steps passed{output_note}"
             )
         else:
             print(
-                f"reproduction FAILED: {summary['passed_step_count']}/{summary['step_count']} steps passed; summary at {output_label}",
+                f"reproduction FAILED: {summary['passed_step_count']}/{summary['step_count']} "
+                f"steps passed{output_note}",
                 file=sys.stderr,
             )
             for step in step_results:

@@ -180,7 +180,9 @@ python3 scripts/validate_v1_readiness.py \
 `--allow-incomplete` returns 0 when the rendered output matches the
 expected fixture match, even if `v1_ready` is false under honest
 post-cleanup evidence. The current fixture reports `v1_ready: false`
-with 1 unmet gate. This does not infer external release evidence from
+with 3 unmet gates: repeated private no-tools and tool-agent rows
+pending current-policy reruns, plus the paper-and-artifact
+source-binding gate. This does not infer external release evidence from
 public artifacts; external release evidence is a v2/release-time gate
 kept outside public Git per the completion gate in
 [`docs/goal.md`](goal.md).
@@ -244,7 +246,7 @@ or local work that the maintainer controls.
 - [x] Local row eligibility tiers. Evidence: `docs/scoring-and-submissions.md`.
 - [x] Clean-room reproduction command. Evidence: `python3 scripts/reproduce_public_artifact.py`; `Dockerfile`; `.env.example`; `docs/container-digests.md`.
 - [x] Public artifact index. Evidence: `artifact/INDEX.md`; `docs/artifact-index.md`.
-- [x] Scoped local per-task Harbor parity. Evidence: `artifact/harbor-parity-experiment.json` records six-of-six matching public empty-findings rewards under `per_task_pairing`; `scripts/validate_packaged_harbor.py` verifies the installed wheel/CLI path. This does not prove full 63-task/model parity or platform acceptance.
+- [x] Historical scoped local per-task Harbor parity retained. Evidence: `artifact/harbor-parity-experiment.json` records the past six-of-six public empty-findings match under `per_task_pairing` and is explicitly `historical_stale`; `scripts/validate_packaged_harbor.py` verifies the installed no-tools wheel/CLI path. Fresh current-source three-task execution/parity is not complete, and this does not prove live HTTP support, full 63-task/model parity, or platform acceptance.
 - [ ] Full 63-task and representative model/agent Harbor parity, if included in a future stronger claim. Evidence: not collected; remains a v2/platform-review track.
 
 ### Externally validated benchmark

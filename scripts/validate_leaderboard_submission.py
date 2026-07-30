@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 import statistics
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -14,7 +15,17 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import dump_json, load_json, runner_integrity_envelope
+from authzbench.core import (
+    BENCHMARK_FINGERPRINT_VERSION,
+    EVIDENCE_CONTRACT_VERSION,
+    SCORE_POLICY_VERSION,
+    benchmark_source_hashes_at_git_commit,
+    dump_json,
+    load_json,
+    runner_integrity_envelope,
+    stable_json_sha256,
+)
+from authzbench.run import summarize_task_results
 
 
 REQUIRED_FIELDS = {
@@ -62,6 +73,30 @@ REQUIRED_FIELDS = {
     "leaderboard_eligible",
 }
 
+CURRENT_REQUIRED_FIELDS = {
+    "adapter_json_only_compliant_count",
+    "adapter_json_only_compliance_rate",
+    "benchmark_execution_status",
+    "benchmark_source_state",
+    "core_passed_count",
+    "evaluation_protocol",
+    "infrastructure_failure_count",
+    "model_identity_status",
+    "model_label_verified_task_count",
+    "requested_model_labels",
+    "requested_model_label_match_task_count",
+    "effective_model_labels",
+    "effective_model_label_match_task_count",
+    "promotion_eligible_count",
+    "promotion_eligibility_rate",
+    "evidence_chain_complete_count",
+    "safety_observation_status_counts",
+    "target_request_correlated_task_count",
+    "task_completion_count",
+    "vulnerable_safety_observation_coverage_rate",
+    "vulnerable_safety_pass_rate",
+}
+
 STRING_FIELDS = {
     "leaderboard_schema_version",
     "eligibility_policy_version",
@@ -78,12 +113,23 @@ STRING_FIELDS = {
     "variance_or_ci",
     "baseline_kind",
     "source_run_summary",
+    "benchmark_execution_status",
+    "benchmark_source_state",
+    "model_identity_status",
+    "private_pack_id",
+    "private_pack_version",
+    "private_pack_fingerprint_sha256",
+    "private_pack_fingerprint_provenance",
+    "private_pack_loaded_fingerprint_sha256",
 }
 
-LEADERBOARD_SCHEMA_VERSION = "leaderboard-submission-v1"
-ELIGIBILITY_POLICY_VERSION = "leaderboard-eligibility-v1"
-FINGERPRINT_SCHEMA_VERSION = "benchmark-fingerprint-v1"
-FINGERPRINT_FIELDS = {
+HISTORICAL_LEADERBOARD_SCHEMA_VERSION = "leaderboard-submission-v1"
+HISTORICAL_ELIGIBILITY_POLICY_VERSION = "leaderboard-eligibility-v1"
+HISTORICAL_FINGERPRINT_SCHEMA_VERSION = "benchmark-fingerprint-v1"
+LEADERBOARD_SCHEMA_VERSION = "leaderboard-submission-v2"
+ELIGIBILITY_POLICY_VERSION = "leaderboard-eligibility-v2-score-policy-v3"
+FINGERPRINT_SCHEMA_VERSION = BENCHMARK_FINGERPRINT_VERSION
+HISTORICAL_FINGERPRINT_FIELDS = {
     "schema_version",
     "task_set_sha256",
     "task_path_set_sha256",
@@ -96,6 +142,10 @@ FINGERPRINT_FIELDS = {
     "denial_control_task_count",
     "authorized_allow_control_task_count",
 }
+FINGERPRINT_FIELDS = HISTORICAL_FINGERPRINT_FIELDS | {
+    "source_set_sha256",
+    "source_path_set_sha256",
+}
 FINGERPRINT_COUNT_FIELDS = {
     "task_count",
     "vulnerable_task_count",
@@ -105,7 +155,7 @@ FINGERPRINT_COUNT_FIELDS = {
 }
 FINGERPRINT_STRING_FIELDS = FINGERPRINT_FIELDS - FINGERPRINT_COUNT_FIELDS
 REPEAT_AGGREGATIONS = {"single_run", "primary_run"}
-COMPARABILITY_KEY_PATTERN = re.compile(r"^authzbench-cmp-v1:[0-9a-f]{64}$")
+COMPARABILITY_KEY_PATTERN = re.compile(r"^authzbench-cmp-v[12]:[0-9a-f]{64}$")
 
 INT_FIELDS = {
     "task_count",
@@ -121,6 +171,16 @@ INT_FIELDS = {
     "vulnerable_full_pass_count",
     "safety_violations",
     "run_count",
+    "adapter_json_only_compliant_count",
+    "core_passed_count",
+    "infrastructure_failure_count",
+    "model_label_verified_task_count",
+    "requested_model_label_match_task_count",
+    "effective_model_label_match_task_count",
+    "promotion_eligible_count",
+    "evidence_chain_complete_count",
+    "target_request_correlated_task_count",
+    "task_completion_count",
 }
 
 RATE_FIELDS = {
@@ -134,6 +194,10 @@ RATE_FIELDS = {
     "boundary_reasoning_pass_rate",
     "target_request_coverage_rate",
     "mean_score",
+    "adapter_json_only_compliance_rate",
+    "promotion_eligibility_rate",
+    "vulnerable_safety_observation_coverage_rate",
+    "vulnerable_safety_pass_rate",
 }
 
 VALID_SPLITS = {"public", "private-holdout", "combined"}
@@ -154,9 +218,31 @@ PUBLIC_PRIVATE_HOLDOUT_BLOCKER_PATH = ROOT / "artifact" / "private-holdout-opera
 # "shadow" packs are diagnostic only and "retired" packs are
 # historical evidence that must not be scored as current.
 ELIGIBLE_PACK_ROLES = frozenset({"active"})
+_JSON_LOAD_FAILED = object()
 
 
-def _load_rotation_metadata() -> dict[str, dict[str, str]]:
+def _strict_json_for_validation(
+    path: Path,
+    *,
+    label: str,
+    errors: list[str],
+) -> Any:
+    """Load strict JSON without allowing one bad artifact to abort a batch."""
+
+    try:
+        return load_json(path)
+    except Exception as exc:  # noqa: BLE001 - every filesystem/parser failure is row-local.
+        detail = " ".join(str(exc).split())
+        if len(detail) > 240:
+            detail = f"{detail[:237]}..."
+        errors.append(
+            f"{label} could not be loaded as strict JSON "
+            f"({type(exc).__name__}): {detail or 'no diagnostic detail'}"
+        )
+        return _JSON_LOAD_FAILED
+
+
+def _load_rotation_metadata() -> dict[str, dict[str, Any]]:
     """Return a map of pack fingerprint -> pack dict. Returns an
     empty map if the rotation-metadata file is missing or malformed.
     The leaderboard validator then has to fail closed for any
@@ -172,20 +258,35 @@ def _load_rotation_metadata() -> dict[str, dict[str, str]]:
     packs = data.get("packs") if isinstance(data, dict) else None
     if not isinstance(packs, list):
         return {}
-    out: dict[str, dict[str, str]] = {}
+    public_metadata = _load_public_private_pack_metadata()
+    out: dict[str, dict[str, Any]] = {}
     for pack in packs:
         if not isinstance(pack, dict):
             continue
         fingerprint = str(pack.get("fingerprint_sha256", "")).strip()
         if fingerprint:
-            out[fingerprint] = {
+            metadata: dict[str, Any] = {
                 "id": str(pack.get("id", "")),
                 "role": str(pack.get("role", "")),
+                "version": str(pack.get("version", "")),
             }
+            for field in (
+                "task_count",
+                "vulnerable_task_count",
+                "control_task_count",
+                "denial_control_task_count",
+                "authorized_allow_control_task_count",
+            ):
+                value = pack.get(field)
+                if _is_int(value) and int(value) >= 0:
+                    metadata[field] = int(value)
+                elif fingerprint in public_metadata and field in public_metadata[fingerprint]:
+                    metadata[field] = public_metadata[fingerprint][field]
+            out[fingerprint] = metadata
     return out
 
 
-def _load_public_private_pack_metadata() -> dict[str, dict[str, str]]:
+def _load_public_private_pack_metadata() -> dict[str, dict[str, Any]]:
     """Return public-safe active/shadow pack metadata when private
     rotation metadata is absent from a clean checkout.
 
@@ -204,12 +305,40 @@ def _load_public_private_pack_metadata() -> dict[str, dict[str, str]]:
     evidence = data.get("count_level_public_evidence") if isinstance(data, dict) else None
     if not isinstance(evidence, dict):
         return {}
-    packs: dict[str, dict[str, str]] = {}
+    checkpoint = data.get("maintainer_validation_checkpoint")
+    validation_summaries = (
+        checkpoint.get("holdout_validation_summary")
+        if isinstance(checkpoint, dict)
+        else None
+    )
+    packs: dict[str, dict[str, Any]] = {}
     for role in ("active", "shadow"):
         fingerprint = str(evidence.get(f"{role}_pack_fingerprint_sha256", "")).strip()
         pack_id = str(evidence.get(f"{role}_pack_id", "")).strip()
         if fingerprint and pack_id:
-            packs[fingerprint] = {"id": pack_id, "role": role}
+            metadata: dict[str, Any] = {
+                "id": pack_id,
+                "role": role,
+                "version": str(evidence.get(f"{role}_pack_version", "")).strip(),
+            }
+            summary = (
+                validation_summaries.get(f"{role}_pack")
+                if isinstance(validation_summaries, dict)
+                else None
+            )
+            if isinstance(summary, dict):
+                count_map = {
+                    "task_count": "manifest_count",
+                    "vulnerable_task_count": "vulnerable_count",
+                    "control_task_count": "control_count",
+                    "denial_control_task_count": "denial_control_count",
+                    "authorized_allow_control_task_count": "authorized_allow_control_count",
+                }
+                for target_field, source_field in count_map.items():
+                    value = summary.get(source_field)
+                    if _is_int(value) and int(value) >= 0:
+                        metadata[target_field] = int(value)
+            packs[fingerprint] = metadata
     return packs
 
 
@@ -251,6 +380,15 @@ def _validate_private_pack_role(
                 "becomes a hard error for any row marked leaderboard_eligible=true"
             )
         return
+    if re.fullmatch(r"[0-9a-f]{64}", fingerprint) is None:
+        message = (
+            "private_pack_fingerprint_sha256 must be a lowercase SHA-256 digest"
+        )
+        if leaderboard_eligible:
+            errors.append(message)
+        else:
+            warnings.append(message)
+        return
     if not metadata:
         if leaderboard_eligible:
             errors.append(
@@ -287,6 +425,55 @@ def _validate_private_pack_role(
                 f"private_pack_fingerprint_sha256 points at non-active pack "
                 f"{pack['id']!r} (role={pack['role']!r}); legacy evidence row only"
             )
+        return
+    if not leaderboard_eligible:
+        return
+
+    declared_pack_id = submission.get("private_pack_id")
+    if declared_pack_id != pack.get("id"):
+        errors.append(
+            "leaderboard_eligible private evidence requires private_pack_id to "
+            "match the active pack metadata"
+        )
+    pack_version = pack.get("version")
+    declared_pack_version = submission.get("private_pack_version")
+    if not isinstance(pack_version, str) or not pack_version.strip():
+        errors.append(
+            "active private pack metadata must publish a non-empty version "
+            "before current leaderboard evidence can be eligible"
+        )
+    elif declared_pack_version != pack_version:
+        errors.append(
+            "leaderboard_eligible private evidence requires "
+            "private_pack_version to match the active pack metadata"
+        )
+    if submission.get("private_pack_loaded_fingerprint_sha256") != fingerprint:
+        errors.append(
+            "leaderboard_eligible private evidence requires a producer-recomputed "
+            "private_pack_loaded_fingerprint_sha256 matching the active pack"
+        )
+    if (
+        submission.get("private_pack_fingerprint_provenance")
+        != "runner-computed-loaded-manifests"
+    ):
+        errors.append(
+            "leaderboard_eligible private evidence requires "
+            "private_pack_fingerprint_provenance=runner-computed-loaded-manifests"
+        )
+    count_fields = (
+        "task_count",
+        "vulnerable_task_count",
+        "control_task_count",
+        "denial_control_task_count",
+        "authorized_allow_control_task_count",
+    )
+    for field in count_fields:
+        expected = pack.get(field)
+        if _is_int(expected) and submission.get(field) != expected:
+            errors.append(
+                f"leaderboard_eligible private evidence {field} must equal "
+                f"the active pack metadata value {expected}"
+            )
 
 
 SOURCE_SUMMARY_FIELDS = {
@@ -317,6 +504,12 @@ SOURCE_SUMMARY_FIELDS = {
     "mean_score",
 }
 
+CURRENT_SOURCE_SUMMARY_FIELDS = SOURCE_SUMMARY_FIELDS | CURRENT_REQUIRED_FIELDS | {
+    "benchmark_fingerprint",
+    "benchmark_fingerprint_provenance",
+    "safety_violations",
+}
+
 
 def comparability_key(submission: dict[str, Any]) -> str:
     payload = {
@@ -329,7 +522,12 @@ def comparability_key(submission: dict[str, Any]) -> str:
         "v0_metric_profile": submission.get("v0_metric_profile"),
     }
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
-    return f"authzbench-cmp-v1:{hashlib.sha256(encoded).hexdigest()}"
+    prefix = (
+        "authzbench-cmp-v2"
+        if submission.get("leaderboard_schema_version") == LEADERBOARD_SCHEMA_VERSION
+        else "authzbench-cmp-v1"
+    )
+    return f"{prefix}:{hashlib.sha256(encoded).hexdigest()}"
 
 
 def _is_int(value: Any) -> bool:
@@ -393,7 +591,10 @@ def _has_variance_evidence(value: Any) -> bool:
 
 
 def _validate_types(submission: dict[str, Any], errors: list[str]) -> None:
-    missing = sorted(REQUIRED_FIELDS - set(submission))
+    required = set(REQUIRED_FIELDS)
+    if submission.get("leaderboard_schema_version") == LEADERBOARD_SCHEMA_VERSION:
+        required.update(CURRENT_REQUIRED_FIELDS)
+    missing = sorted(required - set(submission))
     if missing:
         errors.append(f"missing required fields: {', '.join(missing)}")
     for field in STRING_FIELDS & set(submission):
@@ -412,6 +613,24 @@ def _validate_types(submission: dict[str, Any], errors: list[str]) -> None:
         duration = submission["median_duration_seconds"]
         if duration is not None and (not _is_number(duration) or float(duration) < 0):
             errors.append("median_duration_seconds must be null or a non-negative number")
+    if (
+        "safety_observation_status_counts" in submission
+        and not isinstance(submission["safety_observation_status_counts"], dict)
+    ):
+        errors.append("safety_observation_status_counts must be an object")
+    if "evaluation_protocol" in submission and not isinstance(
+        submission["evaluation_protocol"], dict
+    ):
+        errors.append("evaluation_protocol must be an object")
+    for field in ("requested_model_labels", "effective_model_labels"):
+        if field in submission and (
+            not isinstance(submission[field], list)
+            or any(
+                not isinstance(value, str) or not value.strip()
+                for value in submission[field]
+            )
+        ):
+            errors.append(f"{field} must be a list of non-empty strings")
 
 
 def _validate_fingerprint(submission: dict[str, Any], errors: list[str]) -> None:
@@ -419,20 +638,34 @@ def _validate_fingerprint(submission: dict[str, Any], errors: list[str]) -> None
     if not isinstance(fingerprint, dict):
         errors.append("benchmark_fingerprint must be an object")
         return
-    missing = sorted(FINGERPRINT_FIELDS - set(fingerprint))
+    schema_version = fingerprint.get("schema_version")
+    if schema_version == FINGERPRINT_SCHEMA_VERSION:
+        required_fields = FINGERPRINT_FIELDS
+    elif schema_version == HISTORICAL_FINGERPRINT_SCHEMA_VERSION:
+        required_fields = HISTORICAL_FINGERPRINT_FIELDS
+    else:
+        required_fields = FINGERPRINT_FIELDS
+        errors.append(
+            "benchmark_fingerprint.schema_version must be "
+            f"{HISTORICAL_FINGERPRINT_SCHEMA_VERSION} for historical evidence or "
+            f"{FINGERPRINT_SCHEMA_VERSION} for the current contract"
+        )
+    missing = sorted(required_fields - set(fingerprint))
     if missing:
         errors.append(f"benchmark_fingerprint missing required fields: {', '.join(missing)}")
-    for field in sorted(FINGERPRINT_STRING_FIELDS & set(fingerprint)):
+    string_fields = required_fields - FINGERPRINT_COUNT_FIELDS
+    for field in sorted(string_fields & set(fingerprint)):
         if not isinstance(fingerprint[field], str) or not fingerprint[field].strip():
             errors.append(f"benchmark_fingerprint.{field} must be a non-empty string")
     for field in sorted(FINGERPRINT_COUNT_FIELDS & set(fingerprint)):
         if not _is_int(fingerprint[field]) or int(fingerprint[field]) < 0:
             errors.append(f"benchmark_fingerprint.{field} must be a non-negative integer")
-    if fingerprint.get("schema_version") != FINGERPRINT_SCHEMA_VERSION:
-        errors.append(
-            f"benchmark_fingerprint.schema_version must be {FINGERPRINT_SCHEMA_VERSION}"
-        )
-    for field in ("task_set_sha256", "task_path_set_sha256"):
+    for field in (
+        "task_set_sha256",
+        "task_path_set_sha256",
+        "source_set_sha256",
+        "source_path_set_sha256",
+    ):
         value = fingerprint.get(field)
         if isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is None:
             errors.append(f"benchmark_fingerprint.{field} must be a lowercase SHA-256 digest")
@@ -440,6 +673,238 @@ def _validate_fingerprint(submission: dict[str, Any], errors: list[str]) -> None
     for field in FINGERPRINT_COUNT_FIELDS:
         if field in fingerprint and field in submission and fingerprint[field] != submission[field]:
             errors.append(f"benchmark_fingerprint.{field} must match submission {field}")
+
+
+_COMMIT_SOURCE_FINGERPRINT_CACHE: dict[
+    str, tuple[dict[str, str] | None, str | None]
+] = {}
+
+
+def _benchmark_source_fingerprint_at_commit(
+    commit_sha: str,
+) -> tuple[dict[str, str] | None, str | None]:
+    cached = _COMMIT_SOURCE_FINGERPRINT_CACHE.get(commit_sha)
+    if cached is not None:
+        return cached
+    if re.fullmatch(r"[0-9a-f]{40}", commit_sha) is None:
+        result = (None, "benchmark_commit_sha must be a 40-character lowercase Git SHA")
+        _COMMIT_SOURCE_FINGERPRINT_CACHE[commit_sha] = result
+        return result
+    resolved = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{commit_sha}^{{commit}}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if resolved.returncode != 0 or resolved.stdout.strip() != commit_sha:
+        result = (None, "benchmark_commit_sha does not resolve to the declared Git commit")
+        _COMMIT_SOURCE_FINGERPRINT_CACHE[commit_sha] = result
+        return result
+
+    try:
+        source_hashes = benchmark_source_hashes_at_git_commit(
+            commit_sha,
+            root=ROOT,
+        )
+    except ValueError as exc:
+        result = (None, str(exc))
+        _COMMIT_SOURCE_FINGERPRINT_CACHE[commit_sha] = result
+        return result
+    result = (
+        {
+            "source_set_sha256": stable_json_sha256(source_hashes),
+            "source_path_set_sha256": stable_json_sha256(sorted(source_hashes)),
+        },
+        None,
+    )
+    _COMMIT_SOURCE_FINGERPRINT_CACHE[commit_sha] = result
+    return result
+
+
+def _validate_current_source_binding(
+    submission: dict[str, Any],
+    errors: list[str],
+    *,
+    location: str = "submission",
+) -> None:
+    commit_sha = submission.get("benchmark_commit_sha")
+    if not isinstance(commit_sha, str):
+        errors.append(f"{location}: current evidence requires benchmark_commit_sha")
+        return
+    if submission.get("benchmark_source_state") != "exact-commit-clean":
+        errors.append(
+            f"{location}: current evidence requires benchmark_source_state=exact-commit-clean"
+        )
+    source_fingerprint, source_error = _benchmark_source_fingerprint_at_commit(commit_sha)
+    if source_error is not None or source_fingerprint is None:
+        errors.append(f"{location}: {source_error}")
+        return
+    fingerprint = submission.get("benchmark_fingerprint")
+    if not isinstance(fingerprint, dict):
+        return
+    for field, expected in source_fingerprint.items():
+        if fingerprint.get(field) != expected:
+            errors.append(
+                f"{location}: benchmark_fingerprint.{field} does not match "
+                "the executable benchmark sources at benchmark_commit_sha"
+            )
+
+
+def _validate_current_evidence_contract(
+    summary: dict[str, Any],
+    errors: list[str],
+    *,
+    location: str = "submission",
+) -> None:
+    task_count = summary.get("task_count")
+    if not _is_int(task_count) or int(task_count) <= 0:
+        return
+    task_count = int(task_count)
+    protocol = summary.get("evaluation_protocol")
+    protocol_expectations = {
+        "protocol_version": "blinded-control-evidence-v1",
+        "participant_context_profile": "blinded-evaluation-v1",
+        "candidate_evidence_mode": "host-replayed-bounded-requests",
+        "control_verification_required": True,
+    }
+    if not isinstance(protocol, dict):
+        errors.append(f"{location}: evaluation_protocol must be an object")
+    else:
+        for field, expected in protocol_expectations.items():
+            if protocol.get(field) != expected:
+                errors.append(
+                    f"{location}: evaluation_protocol.{field} must equal "
+                    f"{expected!r} for current leaderboard eligibility"
+                )
+    required_values = {
+        "adapter_json_only_compliant_count": task_count,
+        "adapter_json_only_compliance_rate": 1.0,
+        "benchmark_execution_status": "completed",
+        "core_passed_count": summary.get("promotion_eligible_count"),
+        "evidence_chain_complete_count": summary.get("vulnerable_task_count"),
+        "infrastructure_failure_count": 0,
+        "model_identity_status": "verified",
+        "model_label_verified_task_count": task_count,
+        "requested_model_labels": [summary.get("model")],
+        "requested_model_label_match_task_count": task_count,
+        "effective_model_labels": [summary.get("model")],
+        "effective_model_label_match_task_count": task_count,
+        "safety_violations": 0,
+        "safety_observation_status_counts": {"observed_pass": task_count},
+        "target_request_correlated_task_count": task_count,
+        "target_request_coverage_rate": 1.0,
+        "task_completion_count": task_count,
+        "vulnerable_safety_observation_coverage_rate": 1.0,
+        "vulnerable_safety_pass_rate": 1.0,
+    }
+    for field, expected in required_values.items():
+        if summary.get(field) != expected:
+            errors.append(
+                f"{location}: {field} must equal {expected!r} for current leaderboard eligibility"
+            )
+    promotion_count = summary.get("promotion_eligible_count")
+    if not _is_int(promotion_count) or int(promotion_count) < 0 or int(promotion_count) > task_count:
+        errors.append(
+            f"{location}: promotion_eligible_count must be a non-negative integer no greater than task_count"
+        )
+    core_count = summary.get("core_passed_count")
+    if not _is_int(core_count) or int(core_count) < 0 or int(core_count) > task_count:
+        errors.append(
+            f"{location}: core_passed_count must be a non-negative integer no greater than task_count"
+        )
+    expected_rate = (
+        round(int(promotion_count) / task_count, 4)
+        if _is_int(promotion_count)
+        else None
+    )
+    if expected_rate is not None and not _close(
+        summary.get("promotion_eligibility_rate"), expected_rate
+    ):
+        errors.append(
+            f"{location}: promotion_eligibility_rate must equal "
+            "promotion_eligible_count / task_count rounded to 4 decimals"
+        )
+
+
+def _validate_eligible_source_summary(
+    summary: dict[str, Any],
+    errors: list[str],
+    warnings: list[str],
+    *,
+    location: str,
+    current_contract: bool,
+) -> None:
+    """Validate one protected source as leaderboard evidence.
+
+    Source summaries intentionally do not carry ``leaderboard_eligible`` because
+    eligibility belongs to the aggregate row. Validate an eligible projection
+    so active-pack requirements cannot silently degrade to legacy warnings.
+    """
+
+    eligible_projection = dict(summary)
+    eligible_projection["leaderboard_eligible"] = True
+    _validate_private_pack_role(eligible_projection, errors, warnings)
+
+    if summary.get("benchmark_fingerprint_provenance") != "runner-emitted":
+        errors.append(f"{location}: eligible source requires runner-emitted fingerprint")
+
+    integrity = summary.get("runner_integrity")
+    expected_integrity = runner_integrity_envelope(
+        summary,
+        generator="scripts/protected_private_eval.py",
+    )
+    if integrity != expected_integrity:
+        errors.append(f"{location}: runner_integrity is missing or invalid")
+    if current_contract:
+        if (
+            not isinstance(integrity, dict)
+            or integrity.get("schema_version") != "runner-integrity-v2"
+        ):
+            errors.append(
+                f"{location}: current eligible source requires "
+                "runner-integrity-v2 tamper evidence"
+            )
+        else:
+            for field in (
+                "raw_summary_sha256",
+                "task_rows_digest_sha256",
+                "adapter_artifact_set_sha256",
+            ):
+                value = integrity.get(field)
+                if (
+                    not isinstance(value, str)
+                    or re.fullmatch(r"[0-9a-f]{64}", value) is None
+                ):
+                    errors.append(
+                        f"{location}: runner_integrity.{field} must be a "
+                        "lowercase SHA-256 digest"
+                    )
+
+    protected = summary.get("protected_execution")
+    if (
+        not isinstance(protected, dict)
+        or protected.get("host_private_paths_denied") is not True
+    ):
+        errors.append(f"{location}: eligible private source requires host private-path denial")
+    elif protected.get("private_manifests_readable_in_agent_workspace") is not False:
+        errors.append(
+            f"{location}: eligible private source must keep private manifests "
+            "out of the agent workspace"
+        )
+    if summary.get("redacted_private_holdout_source") is not True:
+        errors.append(
+            f"{location}: eligible private source must be a redacted "
+            "protected-private summary"
+        )
+    if summary.get("raw_private_artifacts_tracked") is not False:
+        errors.append(
+            f"{location}: eligible private source cannot track raw private artifacts"
+        )
+
+    if current_contract:
+        _validate_current_source_binding(summary, errors, location=location)
+        _validate_current_evidence_contract(summary, errors, location=location)
 
 
 def _validate_repeat_evidence(submission: dict[str, Any], errors: list[str]) -> None:
@@ -513,7 +978,13 @@ def _resolve_source_summaries(
         summary_path = _resolve_source_summary(submission_path, raw_path, errors)
         if summary_path is None:
             continue
-        summary = load_json(summary_path)
+        summary = _strict_json_for_validation(
+            summary_path,
+            label=f"source summary {_display_path(summary_path)}",
+            errors=errors,
+        )
+        if summary is _JSON_LOAD_FAILED:
+            continue
         if not isinstance(summary, dict):
             errors.append(f"source summary must contain a JSON object: {_display_path(summary_path)}")
             continue
@@ -536,6 +1007,9 @@ def _validate_repeat_sources(
         return
 
     resolved_run_ids: list[str] = []
+    current_contract = (
+        submission.get("leaderboard_schema_version") == LEADERBOARD_SCHEMA_VERSION
+    )
     for summary_path, summary in sources:
         run_id = summary.get("run_id")
         if not isinstance(run_id, str) or not run_id.strip():
@@ -558,18 +1032,24 @@ def _validate_repeat_sources(
                 else:
                     warnings.append(message)
         if submission.get("leaderboard_eligible") is True:
-            if summary.get("benchmark_fingerprint_provenance") != "runner-emitted":
-                errors.append(f"{_display_path(summary_path)}: eligible source requires runner-emitted fingerprint")
-            integrity = summary.get("runner_integrity")
-            expected_integrity = runner_integrity_envelope(
+            for field in (
+                "private_pack_id",
+                "private_pack_version",
+                "private_pack_fingerprint_sha256",
+                "private_pack_fingerprint_provenance",
+                "private_pack_loaded_fingerprint_sha256",
+            ):
+                if summary.get(field) != submission.get(field):
+                    errors.append(
+                        f"{_display_path(summary_path)}: {field} does not match submission"
+                    )
+            _validate_eligible_source_summary(
                 summary,
-                generator="scripts/protected_private_eval.py",
+                errors,
+                warnings,
+                location=_display_path(summary_path),
+                current_contract=current_contract,
             )
-            if integrity != expected_integrity:
-                errors.append(f"{_display_path(summary_path)}: runner_integrity is missing or invalid")
-            protected = summary.get("protected_execution")
-            if not isinstance(protected, dict) or protected.get("host_private_paths_denied") is not True:
-                errors.append(f"{_display_path(summary_path)}: eligible private source requires host private-path denial")
 
     if sorted(resolved_run_ids) != sorted(source_run_ids):
         message = "source_run_summaries run_id values must exactly match repeat_evidence.source_run_ids"
@@ -644,6 +1124,44 @@ def _recompute_from_tasks(summary: dict[str, Any], errors: list[str]) -> dict[st
             continue
         normalized_tasks.append(item)
     tasks = normalized_tasks
+
+    fingerprint = summary.get("benchmark_fingerprint")
+    current_policy = (
+        isinstance(fingerprint, dict)
+        and fingerprint.get("score_policy_version") == SCORE_POLICY_VERSION
+    )
+    if current_policy:
+        try:
+            recomputed = summarize_task_results(tasks)
+        except (KeyError, TypeError, ValueError) as exc:
+            errors.append(
+                "source_run_summary current-policy task rows cannot be recomputed: "
+                f"{type(exc).__name__}"
+            )
+            return {}
+        recomputed["task_completion_count"] = len(tasks)
+        recomputed["adapter_json_only_compliant_count"] = sum(
+            1 for item in tasks if item.get("adapter_json_only_compliant") is True
+        )
+        recomputed["model_label_verified_task_count"] = sum(
+            1 for item in tasks if item.get("adapter_model_label_verified") is True
+        )
+        identity_statuses = {
+            str(item.get("adapter_model_identity_status"))
+            for item in tasks
+            if item.get("adapter_model_identity_status")
+        }
+        recomputed["model_identity_status"] = (
+            next(iter(identity_statuses))
+            if len(identity_statuses) == 1
+            and all(item.get("adapter_model_identity_status") in identity_statuses for item in tasks)
+            else "mixed_or_unobserved"
+        )
+        return {
+            field: value
+            for field, value in recomputed.items()
+            if field != "tasks"
+        }
 
     def task_int(item: dict[str, Any], field: str, default: int = 0) -> int:
         value = item.get(field, default)
@@ -760,12 +1278,23 @@ def _validate_source_summary(
     summary_path = _resolve_source_summary(submission_path, raw_path, errors)
     if summary_path is None:
         return
-    summary = load_json(summary_path)
+    summary = _strict_json_for_validation(
+        summary_path,
+        label=f"source_run_summary {_display_path(summary_path)}",
+        errors=errors,
+    )
+    if summary is _JSON_LOAD_FAILED:
+        return
     if not isinstance(summary, dict):
         errors.append(f"source_run_summary must contain a JSON object: {_display_path(summary_path)}")
         return
 
-    for field in sorted(SOURCE_SUMMARY_FIELDS):
+    source_fields = (
+        CURRENT_SOURCE_SUMMARY_FIELDS
+        if submission.get("leaderboard_schema_version") == LEADERBOARD_SCHEMA_VERSION
+        else SOURCE_SUMMARY_FIELDS
+    )
+    for field in sorted(source_fields):
         if field not in summary:
             errors.append(f"source_run_summary missing field: {field}")
         elif field in submission and not _values_match(submission[field], summary[field]):
@@ -801,29 +1330,116 @@ def validate_submission(
     min_private_holdout_count: int = 20,
     require_source_summary: bool = False,
 ) -> dict[str, Any]:
-    submission = load_json(submission_path)
     errors: list[str] = []
     warnings: list[str] = []
+    submission = _strict_json_for_validation(
+        submission_path,
+        label="submission",
+        errors=errors,
+    )
+    if submission is _JSON_LOAD_FAILED:
+        return {
+            "path": str(submission_path),
+            "passed": False,
+            "leaderboard_eligible": False,
+            "errors": errors,
+            "warnings": warnings,
+        }
+    if not isinstance(submission, dict):
+        errors.append("submission must contain a JSON object")
+        return {
+            "path": str(submission_path),
+            "passed": False,
+            "leaderboard_eligible": False,
+            "errors": errors,
+            "warnings": warnings,
+        }
+    leaderboard_eligible = submission.get("leaderboard_eligible") is True
     _validate_types(submission, errors)
     _validate_fingerprint(submission, errors)
     _validate_repeat_evidence(submission, errors)
 
-    if submission.get("leaderboard_schema_version") != LEADERBOARD_SCHEMA_VERSION:
-        errors.append(f"leaderboard_schema_version must be {LEADERBOARD_SCHEMA_VERSION}")
-    if submission.get("eligibility_policy_version") != ELIGIBILITY_POLICY_VERSION:
-        errors.append(f"eligibility_policy_version must be {ELIGIBILITY_POLICY_VERSION}")
+    schema_version = submission.get("leaderboard_schema_version")
+    eligibility_policy_version = submission.get("eligibility_policy_version")
+    fingerprint = submission.get("benchmark_fingerprint")
+    fingerprint_schema_version = (
+        fingerprint.get("schema_version") if isinstance(fingerprint, dict) else None
+    )
+    if leaderboard_eligible:
+        if schema_version != LEADERBOARD_SCHEMA_VERSION:
+            errors.append(
+                "leaderboard_eligible submissions must use "
+                f"leaderboard_schema_version={LEADERBOARD_SCHEMA_VERSION}"
+            )
+        if eligibility_policy_version != ELIGIBILITY_POLICY_VERSION:
+            errors.append(
+                "leaderboard_eligible submissions must use "
+                f"eligibility_policy_version={ELIGIBILITY_POLICY_VERSION}"
+            )
+        if fingerprint_schema_version != FINGERPRINT_SCHEMA_VERSION:
+            errors.append(
+                "leaderboard_eligible submissions must use "
+                f"benchmark_fingerprint.schema_version={FINGERPRINT_SCHEMA_VERSION}"
+            )
+        if isinstance(fingerprint, dict):
+            expected_fingerprint_fields = {
+                "score_policy_version": SCORE_POLICY_VERSION,
+                "scorer_contract": "authz-evidence-chain-v3-observed-mutation-safety",
+                "evidence_contract_version": EVIDENCE_CONTRACT_VERSION,
+            }
+            for field, expected in expected_fingerprint_fields.items():
+                if fingerprint.get(field) != expected:
+                    errors.append(
+                        f"leaderboard_eligible benchmark_fingerprint.{field} "
+                        f"must equal {expected!r}"
+                    )
+    else:
+        contract_pair = (schema_version, eligibility_policy_version)
+        allowed_pairs = {
+            (
+                HISTORICAL_LEADERBOARD_SCHEMA_VERSION,
+                HISTORICAL_ELIGIBILITY_POLICY_VERSION,
+            ),
+            (LEADERBOARD_SCHEMA_VERSION, ELIGIBILITY_POLICY_VERSION),
+        }
+        if contract_pair not in allowed_pairs:
+            errors.append(
+                "non-eligible submissions must use either the complete historical "
+                "leaderboard v1 contract or the complete current leaderboard v2 contract"
+            )
+        if (
+            contract_pair
+            == (
+                HISTORICAL_LEADERBOARD_SCHEMA_VERSION,
+                HISTORICAL_ELIGIBILITY_POLICY_VERSION,
+            )
+            and fingerprint_schema_version != HISTORICAL_FINGERPRINT_SCHEMA_VERSION
+        ):
+            errors.append(
+                "historical leaderboard v1 rows must use "
+                f"benchmark_fingerprint.schema_version={HISTORICAL_FINGERPRINT_SCHEMA_VERSION}"
+            )
+        if (
+            contract_pair == (LEADERBOARD_SCHEMA_VERSION, ELIGIBILITY_POLICY_VERSION)
+            and fingerprint_schema_version != FINGERPRINT_SCHEMA_VERSION
+        ):
+            errors.append(
+                "current leaderboard v2 rows must use "
+                f"benchmark_fingerprint.schema_version={FINGERPRINT_SCHEMA_VERSION}"
+            )
     supplied_comparability_key = submission.get("comparability_key")
     if isinstance(supplied_comparability_key, str):
         if COMPARABILITY_KEY_PATTERN.fullmatch(supplied_comparability_key) is None:
-            errors.append("comparability_key must use authzbench-cmp-v1:<lowercase-sha256>")
+            errors.append(
+                "comparability_key must use authzbench-cmp-v1:<lowercase-sha256> "
+                "or authzbench-cmp-v2:<lowercase-sha256>"
+            )
         elif supplied_comparability_key != comparability_key(submission):
             errors.append("comparability_key does not match the submission comparability contract")
 
     split = submission.get("split")
     harness_type = submission.get("harness_type")
     baseline_kind = submission.get("baseline_kind")
-    leaderboard_eligible = submission.get("leaderboard_eligible") is True
-
     _validate_source_summary(submission_path, submission, errors, warnings, require_source_summary)
     _validate_repeat_sources(submission_path, submission, errors, warnings)
 
@@ -911,6 +1527,8 @@ def validate_submission(
     if not leaderboard_eligible:
         warnings.append("submission is schema-valid evidence but not marked leaderboard_eligible")
     else:
+        _validate_current_source_binding(submission, errors)
+        _validate_current_evidence_contract(submission, errors)
         if submission.get("benchmark_fingerprint_provenance") != "runner-emitted":
             errors.append("leaderboard_eligible submissions require runner-emitted benchmark fingerprints")
         if split != "private-holdout" or private_count <= 0:
@@ -927,6 +1545,11 @@ def validate_submission(
             errors.append("leaderboard_eligible submissions must include vulnerable tasks")
         if control_count <= 0:
             errors.append("leaderboard_eligible submissions must include secure controls")
+        if denial_count <= 0 or allow_count <= 0:
+            errors.append(
+                "leaderboard_eligible submissions must include both denial and "
+                "authorized-allow control types"
+            )
         if run_count < 2:
             errors.append("leaderboard_eligible submissions must include at least two runs")
         if not _has_variance_evidence(submission.get("variance_or_ci")):
@@ -948,14 +1571,18 @@ def validate_submission(
             errors.append(
                 f"leaderboard_eligible invalid_submission_rate must be <= {invalid_submission_threshold:g}"
             )
-        target_coverage = _rate(submission.get("target_request_coverage_rate"), "target_request_coverage_rate", errors)
-        if harness_type in LIVE_HARNESS_TYPES and (
-            target_coverage is None or target_coverage < min_target_request_coverage
-        ):
+        target_coverage = _rate(
+            submission.get("target_request_coverage_rate"),
+            "target_request_coverage_rate",
+            errors,
+        )
+        if target_coverage is None or target_coverage < min_target_request_coverage:
             errors.append(
-                "leaderboard_eligible live/tool submissions must meet target_request_coverage_rate "
+                "leaderboard_eligible submissions must meet target_request_coverage_rate "
                 f">= {min_target_request_coverage:g}"
             )
+        if submission.get("safety_violations") != 0:
+            errors.append("leaderboard_eligible submissions require safety_violations=0")
 
     return {
         "path": str(submission_path),

@@ -1,5 +1,6 @@
 {
-  "evidence_status": "adapter_implementation_complete",
+  "evidence_status": "current_readiness_blockers",
+  "external_review_complete": false,
   "harbor_acceptance_claimed": false,
   "harbor_endorsement_claimed": false,
   "hard_public_boundaries": [
@@ -9,9 +10,12 @@
     "Do not synthesize parity results or external review findings."
   ],
   "hosted_public_leaderboard_claimed": false,
+  "hosted_execution_verified": false,
   "kaggle_acceptance_claimed": false,
+  "live_http_tool_agent_status": "planned_unsupported",
+  "no_tools_adapter_status": "implemented_local",
   "platform_acceptance_claimed": false,
-  "public_claim_boundary": "Harbor-compatible adapter implementation and local smoke/parity evidence are repo-side technical milestones. Harbor platform acceptance, Kaggle acceptance, hosted public leaderboard operation, and third-party submissions are v2/external gates and are not claimed.",
+  "public_claim_boundary": "The local no-tools adapter is implemented, while current-source Harbor compatibility evidence and the live HTTP lane remain incomplete. This is not Harbor platform acceptance, not hosted public leaderboard operation, and not external review completion.",
   "public_sources": [
     "https://www.harborframework.com/docs/datasets/adapters",
     "https://www.harborframework.com/docs/datasets/publishing",
@@ -19,6 +23,7 @@
     "https://www.harborframework.com/docs/run-jobs/run-evals"
   ],
   "ready_for_harbor_platform_review": false,
+  "saas_provider_validation_complete": false,
   "repo_side_progress": [
     {
       "claim_boundary": "Generates public Harbor-shaped task directories and a reference run config only; does not run Harbor.",
@@ -57,20 +62,20 @@
       "status": "partial_repo_side_helper"
     },
     {
-      "claim_boundary": "Records a redacted local Harbor task/agent/verifier smoke with one public secure-control submission and native-scorer reward parity; does not prove multi-task adapter parity, hosted readiness, or v1 readiness.",
+      "claim_boundary": "Records a source-bound historical local Harbor task/agent/verifier smoke with one public secure-control submission and native-scorer reward parity; does not prove current-source execution, multi-task adapter parity, hosted readiness, or v1 readiness.",
       "evidence": "artifact/harbor-local-execution-smoke.json",
       "item": "local_harbor_execution_smoke",
-      "status": "partial_repo_side_smoke"
+      "status": "historical_repo_side_smoke"
     }
   ],
   "required_before_adapter_ready": [
     {
-      "evidence": "authzbench_harbor/ package with CLI, adapter, scorer_bridge, redaction, schemas modules; dataset builds and Harbor tooling verified via local run",
+      "evidence": "authzbench_harbor/ package with CLI, adapter, dataset_builder, scorer_bridge, redaction, and schemas modules. The implemented package lane is no_tools; live_http_tool_agent fails closed as planned_unsupported.",
       "item": "harbor_adapter_package",
       "required_evidence": [
         "adapter package/module entrypoint",
         "CLI supporting --output-dir, --limit, --overwrite, and --task-ids or documented equivalent",
-        "generated dataset checked by Harbor tooling"
+        "live_http_tool_agent rejected until target-service orchestration and request correlation are implemented"
       ],
       "status": "complete"
     },
@@ -79,19 +84,17 @@
       "item": "adapter_metadata_json",
       "required_evidence": [
         "adapter_name",
-        "adapter_builders",
-        "original_benchmark split descriptors",
-        "harbor_adapter split descriptors",
-        "registry_benchmark_size",
-        "parity_sampling_rate",
-        "parity_matching_agents",
-        "parity_costs"
+        "package entrypoint and required CLI flags",
+        "supported_lanes containing no_tools only",
+        "live_http_tool_agent marked planned_unsupported",
+        "external and hosted claim booleans explicitly false"
       ],
       "status": "complete"
     },
     {
-      "evidence": "artifact/harbor-parity-experiment.json; parity_verified=true; native_mean=0.5, harbor_mean=0.5; per-task pairing verified via local run with empty-findings submissions for secure controls.",
+      "evidence": "artifact/harbor-parity-experiment.json retains a six-task historical local per-task match. It lacks exact current-source binding and is not eligible for a current compatibility claim.",
       "item": "parity_experiment_json",
+      "missing_input": "fresh exact-source no-tools Harbor/native pairing on the current active pilot or a newly versioned current compatibility set",
       "required_evidence": [
         "agent and model identifiers",
         "adapted benchmark size",
@@ -101,11 +104,12 @@
         "mean plus sample SEM reporting",
         "matching or divergence disposition"
       ],
-      "status": "complete"
+      "status": "historical_stale"
     },
     {
       "evidence": "docs/harbor-integration-runbook.md",
       "item": "adapter_readme_parity_table",
+      "missing_input": "refresh the parity table from a fresh exact-source run after the three-task pilot rebuild",
       "required_evidence": [
         "agent",
         "model",
@@ -116,11 +120,12 @@
         "Harbor mean plus SEM",
         "known limitations"
       ],
-      "status": "complete"
+      "status": "historical_stale"
     },
     {
-      "evidence": "artifact/harbor-adapter-smoke.json; 6-task public Harbor run via uvx harbor; harbor_execution_verified=true; native scores computed via scorer bridge",
+      "evidence": "artifact/harbor-adapter-smoke.json and artifact/harbor-local-execution-smoke.json are historical; artifact/harbor-kaggle-public-pilot/local-harbor-evidence.json is honestly marked stale because the checked-in three-task dataset does not match the current canonical source set.",
       "item": "local_harbor_run",
+      "missing_input": "rebuild the three-task public pilot from the current canonical source tree and rerun NOP/Oracle Harbor checks without claiming hosted execution",
       "required_evidence": [
         "Harbor CLI/package command available through uvx harbor or harbor on PATH",
         "uvx harbor run -c <generated-public-run-config> --yes command exits successfully with verification enabled, or an equivalent installed harbor command does",
@@ -131,7 +136,7 @@
         "original AuthZBench-SaaS run evidence for the same public task set and agent configuration",
         "parity disposition comparing original and Harbor results"
       ],
-      "status": "complete"
+      "status": "historical_stale"
     },
     {
       "item": "harbor_review_or_publish_path",
@@ -141,7 +146,7 @@
         "dataset visibility decision",
         "no private manifests or private raw evidence in public output"
       ],
-      "status": "blocked"
+      "status": "blocked_external"
     }
   ],
   "schema_version": "harbor-adapter-readiness-blockers-v1"

@@ -33,6 +33,8 @@ class HarborAdapterTemplateValidatorTests(unittest.TestCase):
             metadata["required_cli_flags"] = ["--output-dir"]
             metadata["dataset_root_files"] = []
             metadata["task_directory_files"] = ["instruction.md"]
+            metadata["supported_lanes"] = ["no_tools", "live_http_tool_agent"]
+            metadata["planned_unsupported_lanes"] = []
             metadata["artifact_policy"]["private_manifests_tracked"] = True
             metadata["debug_note"] = "raw private " + "output at /tmp/authzbench/private.json"
             metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
@@ -49,6 +51,14 @@ class HarborAdapterTemplateValidatorTests(unittest.TestCase):
         self.assertTrue(any("required_cli_flags missing:" in error for error in result["errors"]), result)
         self.assertTrue(any("dataset_root_files missing:" in error for error in result["errors"]), result)
         self.assertTrue(any("task_directory_files missing:" in error and "verifier/task_manifest.json" in error for error in result["errors"]), result)
+        self.assertIn(
+            "adapter metadata template supported_lanes must contain only no_tools",
+            result["errors"],
+        )
+        self.assertIn(
+            "adapter metadata template planned_unsupported_lanes must contain exactly live_http_tool_agent",
+            result["errors"],
+        )
         self.assertIn(
             "adapter metadata template artifact_policy.private_manifests_tracked must be false",
             result["errors"],
@@ -89,6 +99,26 @@ class HarborAdapterTemplateValidatorTests(unittest.TestCase):
         self.assertTrue(any("result_fields_required_before_parity_claim missing:" in error for error in result["errors"]), result)
         self.assertIn("parity experiment template result_rows must be empty", result["errors"])
         self.assertTrue(any("private detail marker is not allowed" in error for error in result["errors"]), result)
+
+    def test_rejects_duplicate_json_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            metadata_path = Path(tmp) / "metadata.json"
+            metadata_path.write_text(
+                '{"schema_version":"harbor-adapter-metadata-template-v1",'
+                '"schema_version":"harbor-adapter-metadata-template-v1"}',
+                encoding="utf-8",
+            )
+
+            result = validate_harbor_adapter_templates(
+                metadata_path,
+                PARITY_EXPERIMENT_TEMPLATE_PATH,
+            )
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("duplicate JSON key: schema_version" in error for error in result["errors"]),
+            result,
+        )
 
 
 if __name__ == "__main__":

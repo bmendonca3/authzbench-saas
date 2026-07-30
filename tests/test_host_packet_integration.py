@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.build_host_review_bundle import build_bundle
+from scripts.build_host_review_bundle import build_bundle, resolve_git_commit
 from scripts.validate_host_review_bundle import validate_bundle
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,7 +19,7 @@ class HostPacketIntegrationTests(unittest.TestCase):
             # We pass allow_dirty=True to ensure the test passes even if there are uncommitted changes during development.
             build_result = build_bundle(
                 tmp_path,
-                ref_commit="52e7bda3468d01d0a625d1db43b34191ede5c4b3",
+                ref_commit=resolve_git_commit(root=ROOT),
                 allow_dirty=True,
                 created_at_utc="2026-06-16T00:00:00Z"
             )

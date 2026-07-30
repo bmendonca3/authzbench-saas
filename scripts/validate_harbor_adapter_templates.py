@@ -9,6 +9,11 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from authzbench.core import load_json as load_strict_json
+
+
 ADAPTER_METADATA_TEMPLATE_PATH = ROOT / "artifact" / "harbor-adapter-metadata.template.json"
 PARITY_EXPERIMENT_TEMPLATE_PATH = ROOT / "artifact" / "harbor-parity-experiment.template.json"
 ADAPTER_METADATA_SCHEMA_VERSION = "harbor-adapter-metadata-template-v1"
@@ -23,7 +28,8 @@ REQUIRED_TASK_DIRECTORY_FILES = {
     "solution/solve.sh",
     "tests/test.sh",
 }
-REQUIRED_LANES = {"no_tools", "live_http_tool_agent"}
+IMPLEMENTED_LANES = {"no_tools"}
+PLANNED_UNSUPPORTED_LANES = {"live_http_tool_agent"}
 REQUIRED_PARITY_INPUTS = {
     "real Harbor runs from the packaged adapter",
     "matching original AuthZBench-SaaS runs",
@@ -64,8 +70,7 @@ ALLOWED_ABSOLUTE_PREFIXES = ("/logs/artifacts/",)
 
 
 def _load_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    data = load_strict_json(path)
     if not isinstance(data, dict):
         raise ValueError(f"{path}: expected JSON object")
     return data
@@ -150,9 +155,45 @@ def validate_harbor_adapter_templates(
     missing_task_files = _missing(REQUIRED_TASK_DIRECTORY_FILES, metadata.get("task_directory_files"))
     if missing_task_files:
         errors.append("adapter metadata template task_directory_files missing: " + ", ".join(missing_task_files))
-    missing_lanes = _missing(REQUIRED_LANES, metadata.get("supported_lanes"))
-    if missing_lanes:
-        errors.append("adapter metadata template supported_lanes missing: " + ", ".join(missing_lanes))
+    supported_lanes = metadata.get("supported_lanes")
+    if (
+        not isinstance(supported_lanes, list)
+        or set(supported_lanes) != IMPLEMENTED_LANES
+    ):
+        errors.append(
+            "adapter metadata template supported_lanes must contain only no_tools"
+        )
+    planned_rows = metadata.get("planned_unsupported_lanes")
+    if not isinstance(planned_rows, list):
+        errors.append(
+            "adapter metadata template planned_unsupported_lanes must be a list"
+        )
+        planned_rows = []
+    planned_names: set[str] = set()
+    for index, row in enumerate(planned_rows):
+        if not isinstance(row, dict):
+            errors.append(
+                f"adapter metadata template planned_unsupported_lanes[{index}] must be an object"
+            )
+            continue
+        name = row.get("name")
+        if isinstance(name, str):
+            planned_names.add(name)
+        if row.get("status") != "planned_unsupported":
+            errors.append(
+                "adapter metadata template planned_unsupported_lanes"
+                f"[{index}].status must be planned_unsupported"
+            )
+        if not isinstance(row.get("reason"), str) or not row["reason"].strip():
+            errors.append(
+                "adapter metadata template planned_unsupported_lanes"
+                f"[{index}].reason must be a non-empty string"
+            )
+    if planned_names != PLANNED_UNSUPPORTED_LANES:
+        errors.append(
+            "adapter metadata template planned_unsupported_lanes must contain "
+            "exactly live_http_tool_agent"
+        )
     artifact_policy = metadata.get("artifact_policy")
     if not isinstance(artifact_policy, dict):
         errors.append("adapter metadata template artifact_policy must be an object")

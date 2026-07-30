@@ -305,7 +305,12 @@ class Handler(BaseHTTPRequestHandler):
                 return actor_name
         return None
 
-    def _log_and_send(self, method: str, response: dict[str, Any]) -> None:
+    def _log_and_send(
+        self,
+        method: str,
+        response: dict[str, Any],
+        body: dict[str, Any] | None = None,
+    ) -> None:
         seed = self.headers.get("x-authzbench-seed") or "dev"
         actor = self._actor_name(self._state())
         log_request(
@@ -315,6 +320,7 @@ class Handler(BaseHTTPRequestHandler):
             method=method,
             path=urlparse(self.path).path,
             status=response["status"],
+            request_body=body,
             response_body=response["body"],
             run_id=self.headers.get("x-authzbench-run-id"),
             agent_id=self.headers.get("x-authzbench-agent-id"),
@@ -326,7 +332,7 @@ class Handler(BaseHTTPRequestHandler):
         state = self._state()
         actor = self._actor_name(state)
         response = handle(state, method, self.path, actor, body)
-        self._log_and_send(method, response)
+        self._log_and_send(method, response, body)
 
     def _read_json_body(self) -> dict[str, Any] | None:
         length = int(self.headers.get("content-length", "0") or "0")

@@ -104,6 +104,14 @@ def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, 
             "agent": entry["expected_agent"],
             "model": entry["expected_model"],
             "harness_type": entry["expected_harness_type"],
+            "benchmark_commit_sha": "a" * 40,
+            "benchmark_source_state": "exact-commit",
+            "task_completion_count": 63,
+            "model_identity_status": "verified",
+            "model_identity_status_counts": {"verified": 63},
+            "model_label_verified_task_count": 63,
+            "adapter_json_only_compliant_count": 63,
+            "adapter_output_format_counts": {"structured_json": 63},
             "baseline_construction": "promoted_cohort_delta_merge",
             "public_split_freshness": "current_promoted_composite_not_full_rerun",
             "rerun_scope": "delta_public_tasks_only",
@@ -152,26 +160,44 @@ def _add_synthetic_promoted_composite_entry(registry_path: Path) -> tuple[dict, 
     return registry, entry
 
 
+def _validate_registry_with_synthetic_exact_commit(registry_path: Path) -> dict:
+    fingerprint = load_json(
+        registry_path.parent / "scripted-baseline-public-63-summary.json"
+    )["benchmark_fingerprint"]
+    with mock.patch(
+        "scripts.validate_baseline_registry._benchmark_fingerprint_at_commit",
+        return_value=(fingerprint, None),
+    ):
+        return validate_registry(registry_path)
+
+
 class BaselineRegistryTests(unittest.TestCase):
-    def test_current_registry_keeps_60_task_rows_stale_and_63_task_rows_current(self) -> None:
+    def test_current_registry_marks_pre_v3_model_rows_stale(self) -> None:
         result = validate_registry(REGISTRY)
 
         self.assertTrue(result["passed"], result)
         self.assertEqual(result["baseline_count"], 46, result)
         self.assertEqual(result["public_split"]["task_count"], 63, result)
-        self.assertEqual(result["current_public_model_family_count"], 7, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 7, result)
-        self.assertTrue(result["has_current_public_tool_agent_baseline"], result)
+        self.assertEqual(result["current_public_model_family_count"], 0, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 0, result)
+        self.assertFalse(result["has_current_public_tool_agent_baseline"], result)
         self.assertTrue(result["has_current_public_scripted_sanity_baseline"], result)
-        self.assertTrue(result["has_current_public_model_or_tool_agent_baseline"], result)
-        self.assertTrue(result["v0_baseline_ready"], result)
+        self.assertFalse(result["has_current_public_model_or_tool_agent_baseline"], result)
+        self.assertFalse(result["v0_baseline_ready"], result)
         self.assertTrue(result["v0_release_snapshot_ready"], result)
         self.assertEqual(len(result["release_snapshots"]), 1, result)
         self.assertEqual(result["release_snapshots"][0]["id"], "v0.0", result)
         self.assertEqual(result["release_snapshots"][0]["public_split"]["task_count"], 46, result)
         self.assertEqual(result["release_snapshots"][0]["model_family_count"], 5, result)
         self.assertEqual(result["release_snapshots"][0]["repeated_model_baseline_count"], 5, result)
-        self.assertEqual(result["unmet_v0_requirements"], [])
+        self.assertEqual(
+            result["unmet_v0_requirements"],
+            [
+                "current public model families: 0 of 5",
+                "repeated model baselines: 0 of 5",
+                "missing current public tool-agent baseline",
+            ],
+        )
 
         registry = load_json(REGISTRY)
         current_scripted_63 = _baseline_by_id(registry, CURRENT_SCRIPTED_63_ID)
@@ -179,6 +205,25 @@ class BaselineRegistryTests(unittest.TestCase):
         self.assertEqual(current_scripted_63["run_count"], 1)
         self.assertEqual(current_scripted_63["release_suitability"], "current_public_harness_check")
         self.assertFalse(current_scripted_63["requires_rerun_before_current_comparison"])
+        self.assertEqual(
+            current_scripted_63["expected_score_policy_version"],
+            "score-policy-v3-evidence-chain-observed-safety",
+        )
+
+        stale_v2_rows = [
+            entry
+            for entry in registry["baselines"]
+            if entry["expected_task_count"] == 63
+            and entry["kind"] in {"model_baseline", "tool_agent_baseline"}
+            and entry.get("expected_score_policy_version")
+            == "score-policy-v2-boundary-normalization"
+        ]
+        self.assertEqual(len(stale_v2_rows), 7)
+        for entry in stale_v2_rows:
+            self.assertEqual(entry["release_suitability"], "current_public_stale")
+            self.assertEqual(entry["evidence_status"], "stale_after_score_policy_v3")
+            self.assertTrue(entry["requires_rerun_before_current_comparison"])
+            self.assertFalse(entry["leaderboard_eligible"])
 
         current_scripted = _baseline_by_id(registry, CURRENT_SCRIPTED_60_ID)
         self.assertEqual(current_scripted["expected_task_count"], 60)
@@ -252,8 +297,7 @@ class BaselineRegistryTests(unittest.TestCase):
     def test_rejects_current_blinded_row_without_verified_effective_model_identity(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
-            registry = load_json(registry_path)
-            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            _, entry = _add_synthetic_promoted_composite_entry(registry_path)
             summary_path = registry_path.parent / entry["summary_path"]
             summary = load_json(summary_path)
             summary["evaluation_protocol"] = {
@@ -267,7 +311,7 @@ class BaselineRegistryTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = validate_registry(registry_path)
+            result = _validate_registry_with_synthetic_exact_commit(registry_path)
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(
@@ -282,8 +326,7 @@ class BaselineRegistryTests(unittest.TestCase):
     def test_rejects_conflicting_evaluation_protocol_version_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
-            registry = load_json(registry_path)
-            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            _, entry = _add_synthetic_promoted_composite_entry(registry_path)
             summary_path = registry_path.parent / entry["summary_path"]
             summary = load_json(summary_path)
             summary["evaluation_protocol"] = {
@@ -295,7 +338,7 @@ class BaselineRegistryTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = validate_registry(registry_path)
+            result = _validate_registry_with_synthetic_exact_commit(registry_path)
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(
@@ -306,8 +349,7 @@ class BaselineRegistryTests(unittest.TestCase):
     def test_rejects_unsupported_current_evaluation_protocol(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
-            registry = load_json(registry_path)
-            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            _, entry = _add_synthetic_promoted_composite_entry(registry_path)
             summary_path = registry_path.parent / entry["summary_path"]
             summary = load_json(summary_path)
             summary["evaluation_protocol"] = {"protocol_version": "typo-or-unsupported"}
@@ -316,7 +358,7 @@ class BaselineRegistryTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = validate_registry(registry_path)
+            result = _validate_registry_with_synthetic_exact_commit(registry_path)
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(
@@ -327,15 +369,14 @@ class BaselineRegistryTests(unittest.TestCase):
     def test_runner_emitted_current_row_requires_protocol_identity(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             registry_path = _copy_registry_workspace(Path(tmp))
-            registry = load_json(registry_path)
-            entry = _baseline_by_id(registry, CURRENT_QWEN_63_ID)
+            registry, entry = _add_synthetic_promoted_composite_entry(registry_path)
             entry["result_derivation"] = "runner_emitted"
             registry_path.write_text(
                 json.dumps(registry, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
             )
 
-            result = validate_registry(registry_path)
+            result = _validate_registry_with_synthetic_exact_commit(registry_path)
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(
@@ -958,11 +999,50 @@ class BaselineRegistryTests(unittest.TestCase):
             registry_path = _copy_registry_workspace(Path(tmp))
             _add_synthetic_promoted_composite_entry(registry_path)
 
-            result = validate_registry(registry_path)
+            result = _validate_registry_with_synthetic_exact_commit(registry_path)
 
         self.assertTrue(result["passed"], result)
-        self.assertEqual(result["current_public_model_family_count"], 7, result)
-        self.assertEqual(result["repeated_model_baseline_count"], 8, result)
+        self.assertEqual(result["current_public_model_family_count"], 1, result)
+        self.assertEqual(result["repeated_model_baseline_count"], 1, result)
+
+    def test_rejects_current_model_without_resolvable_exact_commit_binding(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            _add_synthetic_promoted_composite_entry(registry_path)
+
+            result = validate_registry(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any(
+                "benchmark_commit_sha does not resolve to the declared Git commit"
+                in error
+                for error in result["errors"]
+            ),
+            result,
+        )
+
+    def test_rejects_leaderboard_row_without_observed_safety(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            registry_path = _copy_registry_workspace(Path(tmp))
+            registry, entry = _add_synthetic_promoted_composite_entry(registry_path)
+            _baseline_by_id(registry, entry["id"])["leaderboard_eligible"] = True
+            registry_path.write_text(
+                json.dumps(registry, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+
+            result = _validate_registry_with_synthetic_exact_commit(registry_path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("observed_pass safety for every task" in error for error in result["errors"]),
+            result,
+        )
+        self.assertTrue(
+            any("target_request_coverage_rate=1.0" in error for error in result["errors"]),
+            result,
+        )
 
     def test_rejects_current_promoted_composite_without_explicit_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -973,7 +1053,7 @@ class BaselineRegistryTests(unittest.TestCase):
             promoted["not_full_rerun"] = False
             registry_path.write_text(json.dumps(registry, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-            result = validate_registry(registry_path)
+            result = _validate_registry_with_synthetic_exact_commit(registry_path)
 
         self.assertFalse(result["passed"], result)
         self.assertTrue(any("promoted composite entry missing fields" in error for error in result["errors"]), result)

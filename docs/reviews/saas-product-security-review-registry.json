@@ -1,0 +1,16 @@
+{
+  "schema_version": "saas-product-security-review-registry-v1",
+  "claim_boundary": "This pending registry is a public-safe intake surface, not SaaS-provider validation, product-security endorsement, production-deployment evidence, or external-validation completion.",
+  "packet": "docs/reviews/saas-provider-review-packet.md",
+  "schema": "docs/reviews/schemas/saas-product-security-review.schema.json",
+  "review_status": "pending",
+  "reviewer_id": null,
+  "review_date": null,
+  "reviewed_commit_sha": null,
+  "overall_disposition": null,
+  "blocking_issues": [],
+  "nonblocking_issues": [],
+  "records": [],
+  "blocker": "An independent SaaS product-security reviewer has not returned a public-safe disposition.",
+  "next_action": "Freeze the review commit, obtain app and vulnerability-family realism records, resolve every blocking issue, and run the strict completion validator."
+}

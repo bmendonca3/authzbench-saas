@@ -75,9 +75,10 @@ python3 scripts/check_harbor_local_execution.py
 ```
 
 This generates and validates a temporary public skeleton and records whether
-the `harbor` CLI is on `PATH`. It does not invoke `harbor run`. In a checkout
-without Harbor installed, the local execution gate is recorded as blocked on
-the missing CLI.
+the Harbor command is runnable. `local_harbor_run_runnable` is separate from
+`harbor_execution_verified`, which remains false because the preflight never
+invokes `harbor run`. The `live_http_tool_agent` lane is
+`planned_unsupported` and fails closed.
 
 ## Harbor Local Smoke
 
@@ -89,12 +90,15 @@ python3 scripts/run_harbor_local_smoke.py
 python3 scripts/validate_harbor_local_evidence.py
 ```
 
-The checked-in one-task smoke summary proves only local task/agent/verifier
-execution and deliberately retains `parity_verified: false`. The separate
-six-task parity artifact records current matching native/Harbor rewards:
+The checked-in one-task smoke summary is source-bound historical
+task/agent/verifier evidence and deliberately retains `parity_verified:
+false`. The separate six-task parity artifact records a historical matching
+native/Harbor result. Validate the intended three-task compatibility surface
+and its explicit stale/current classification too:
 
 ```bash
 python3 scripts/validate_harbor_parity_experiment.py
+python3 scripts/validate_harbor_compatibility_state.py
 python3 scripts/validate_packaged_harbor.py
 ```
 

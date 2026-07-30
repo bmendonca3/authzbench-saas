@@ -13,6 +13,7 @@ from typing import Any
 
 from .core import (
     benchmark_fingerprint,
+    benchmark_git_source_state,
     build_context,
     dump_json,
     is_safe_identifier,
@@ -162,17 +163,6 @@ def _protocol_manifest(source_paths: dict[str, Path]) -> dict[str, Any]:
     return manifest
 
 
-def _verified_benchmark_commit_sha(
-    git_provenance: dict[str, Any], benchmark_commit_sha: str | None
-) -> str:
-    observed_commit_sha = git_provenance.get("git_commit_sha")
-    if not isinstance(observed_commit_sha, str) or not observed_commit_sha:
-        raise ValueError("unable to resolve Git HEAD for benchmark provenance")
-    if benchmark_commit_sha is not None and benchmark_commit_sha != observed_commit_sha:
-        raise ValueError("benchmark_commit_sha must exactly match the observed Git HEAD")
-    return observed_commit_sha
-
-
 def _evaluate_control_verification(
     task: dict[str, Any],
     submission: dict[str, Any],
@@ -254,13 +244,16 @@ def _evaluate_control_verification(
 
     score["control_verification_passed"] = verification_passed
     if not verification_passed or score["invalid_submission"]:
+        safety = score.get("subscores", {}).get("safety")
         score["passed"] = False
+        score["core_passed"] = False
+        score["promotion_eligible"] = False
         score["score"] = 0
         score["subscores"] = {
             "exploit_proof": 0,
             "boundary_reasoning": 0,
             "false_positive_control": 0,
-            "safety": 0 if score["invalid_submission"] else 1,
+            "safety": safety,
         }
         score["reason"] = "participant control verification was missing, malformed, or did not match a control"
     return score
@@ -436,9 +429,11 @@ def run_evaluation(
     source_paths = _protocol_source_paths(agent_source_paths)
     protocol = _protocol_manifest(source_paths)
     git_provenance = _git_provenance(root, source_paths)
-    resolved_benchmark_commit_sha = _verified_benchmark_commit_sha(
-        git_provenance, benchmark_commit_sha
-    )
+    benchmark_source = benchmark_git_source_state(benchmark_commit_sha)
+    resolved_benchmark_commit_sha = benchmark_source["benchmark_commit_sha"]
+    git_provenance["benchmark_source_state"] = benchmark_source[
+        "benchmark_source_state"
+    ]
     task_results: list[dict[str, Any]] = []
 
     for _fingerprint_path_text, task_path, task in loaded_tasks:
@@ -489,6 +484,26 @@ def run_evaluation(
             }
         _write_json(task_dir / "agent.json", agent_result)
 
+        observed_requests: list[dict[str, Any]] | None = None
+        target_request_count: int | None = None
+        target_request_warning: str | None = None
+        if target_log_dir is not None:
+            target_log_exists = (target_log_dir / f"{task['app']}.jsonl").exists()
+            observed_requests = _target_requests(
+                target_log_dir,
+                task["app"],
+                run_id,
+                participant_case_id,
+                agent_id,
+                target_log_start_offset,
+            )
+            _write_jsonl(task_dir / "target-requests.jsonl", observed_requests)
+            target_request_count = len(observed_requests)
+            if not target_log_exists:
+                target_request_warning = "target_log_missing"
+            elif target_request_count == 0:
+                target_request_warning = "no_target_requests_correlated"
+
         model_output = _load_adapter_output(task_dir / "model-output.json")
         adapter_failure_type = _adapter_failure_type(model_output)
         submission: dict[str, Any] | None = None
@@ -506,7 +521,11 @@ def run_evaluation(
         else:
             try:
                 submission = load_json(submission_path)
-                score = score_submission(task, submission)
+                score = score_submission(
+                    task,
+                    submission,
+                    observed_requests=observed_requests,
+                )
                 score = _evaluate_control_verification(task, submission, score)
             except Exception as exc:  # noqa: BLE001 - preserve task-level failure evidence.
                 score = _invalid_runner_score(
@@ -534,25 +553,6 @@ def run_evaluation(
         submitted_finding_count = _optional_int(tool_probes, "submitted_finding_count")
         planner_returncode = _planner_returncode(model_tool_plan)
         planner_parse_error = _planner_parse_error(model_tool_plan)
-        target_request_count: int | None = None
-        target_request_warning: str | None = None
-        if target_log_dir is not None:
-            target_log_exists = (target_log_dir / f"{task['app']}.jsonl").exists()
-            requests = _target_requests(
-                target_log_dir,
-                task["app"],
-                run_id,
-                participant_case_id,
-                agent_id,
-                target_log_start_offset,
-            )
-            _write_jsonl(task_dir / "target-requests.jsonl", requests)
-            target_request_count = len(requests)
-            if not target_log_exists:
-                target_request_warning = "target_log_missing"
-            elif target_request_count == 0:
-                target_request_warning = "no_target_requests_correlated"
-
         row: dict[str, Any] = {
             "task_id": task["id"],
             "participant_case_id": participant_case_id,
@@ -573,6 +573,9 @@ def run_evaluation(
             "control_verification_present": bool(score.get("control_verification_present")),
             "control_verification_passed": score.get("control_verification_passed"),
             "exploit_proof": score.get("subscores", {}).get("exploit_proof", 0),
+            "evidence_chain_complete": bool(
+                score.get("evidence_chain_complete")
+            ),
             "boundary_reasoning": score.get("subscores", {}).get("boundary_reasoning", 0),
             "claim_exact_match": bool(score.get("claim_exact_match")),
             "boundary_exact_match": bool(score.get("boundary_exact_match")),
@@ -583,7 +586,13 @@ def run_evaluation(
             "false_positive_control": score.get("subscores", {}).get(
                 "false_positive_control", 0
             ),
-            "safety": score.get("subscores", {}).get("safety", 0),
+            "safety": score.get("subscores", {}).get("safety"),
+            "core_passed": bool(score.get("core_passed")),
+            "promotion_eligible": bool(score.get("promotion_eligible")),
+            "safety_observation_status": score.get(
+                "safety_observation_status",
+                "unobserved",
+            ),
             "adapter_failure_type": adapter_failure_type,
             "runner_agent_failure": runner_agent_failure,
             "infrastructure_failure": infrastructure_failure,
@@ -633,6 +642,9 @@ def run_evaluation(
         "run_id": run_id,
         "benchmark_version": benchmark_version,
         "benchmark_commit_sha": resolved_benchmark_commit_sha,
+        "benchmark_source_state": (
+            benchmark_source["benchmark_source_state"]
+        ),
         "benchmark_fingerprint": fingerprint,
         "benchmark_source_provenance": git_provenance,
         "evaluation_protocol": protocol,

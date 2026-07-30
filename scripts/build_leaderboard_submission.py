@@ -10,8 +10,21 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import dump_json, load_json
-from scripts.validate_leaderboard_submission import comparability_key
+from authzbench.core import (
+    BENCHMARK_FINGERPRINT_VERSION,
+    EVIDENCE_CONTRACT_VERSION,
+    SCORE_POLICY_VERSION,
+    dump_json,
+    load_json,
+)
+from scripts.validate_leaderboard_submission import (
+    ELIGIBILITY_POLICY_VERSION,
+    HISTORICAL_ELIGIBILITY_POLICY_VERSION,
+    HISTORICAL_LEADERBOARD_SCHEMA_VERSION,
+    LEADERBOARD_SCHEMA_VERSION,
+    _validate_eligible_source_summary,
+    comparability_key,
+)
 
 
 PRIMARY_FIELDS = (
@@ -20,8 +33,10 @@ PRIMARY_FIELDS = (
     "harness_type",
     "benchmark_version",
     "benchmark_commit_sha",
+    "benchmark_execution_status",
     "benchmark_fingerprint",
     "benchmark_fingerprint_provenance",
+    "benchmark_source_state",
     "task_count",
     "vulnerable_task_count",
     "control_task_count",
@@ -34,6 +49,7 @@ PRIMARY_FIELDS = (
     "invalid_submission_rate",
     "exploit_proven_task_count",
     "exploit_proven_success_rate",
+    "evidence_chain_complete_count",
     "vulnerable_full_pass_count",
     "control_false_report_rate",
     "control_execution_pass_rate",
@@ -43,7 +59,29 @@ PRIMARY_FIELDS = (
     "target_request_coverage_rate",
     "mean_score",
     "safety_violations",
+    "adapter_json_only_compliant_count",
+    "adapter_json_only_compliance_rate",
+    "core_passed_count",
+    "evaluation_protocol",
+    "infrastructure_failure_count",
+    "model_identity_status",
+    "model_label_verified_task_count",
+    "requested_model_labels",
+    "requested_model_label_match_task_count",
+    "effective_model_labels",
+    "effective_model_label_match_task_count",
+    "promotion_eligible_count",
+    "promotion_eligibility_rate",
+    "safety_observation_status_counts",
+    "target_request_correlated_task_count",
+    "task_completion_count",
+    "vulnerable_safety_observation_coverage_rate",
+    "vulnerable_safety_pass_rate",
+    "private_pack_id",
+    "private_pack_version",
     "private_pack_fingerprint_sha256",
+    "private_pack_fingerprint_provenance",
+    "private_pack_loaded_fingerprint_sha256",
 )
 
 
@@ -71,6 +109,45 @@ def build_submission(
     if primary_run_id not in by_run_id:
         raise ValueError("primary_run_id must match one source summary")
     primary = by_run_id[primary_run_id]
+    fingerprints = [summary.get("benchmark_fingerprint") for summary in summaries]
+    current_contract = all(
+        isinstance(fingerprint, dict)
+        and fingerprint.get("schema_version") == BENCHMARK_FINGERPRINT_VERSION
+        and fingerprint.get("score_policy_version") == SCORE_POLICY_VERSION
+        and fingerprint.get("scorer_contract")
+        == "authz-evidence-chain-v3-observed-mutation-safety"
+        and fingerprint.get("evidence_contract_version")
+        == EVIDENCE_CONTRACT_VERSION
+        for fingerprint in fingerprints
+    )
+    if leaderboard_eligible and not current_contract:
+        raise ValueError(
+            "leaderboard_eligible rows require current score-policy-v3, "
+            "evidence-chain, and benchmark-fingerprint-v2 source summaries"
+        )
+    if not current_contract and any(
+        isinstance(fingerprint, dict)
+        and fingerprint.get("schema_version") == BENCHMARK_FINGERPRINT_VERSION
+        for fingerprint in fingerprints
+    ):
+        raise ValueError("source summaries mix or incompletely implement the current benchmark contract")
+    if leaderboard_eligible:
+        source_errors: list[str] = []
+        source_warnings: list[str] = []
+        for path, summary in zip(source_paths, summaries):
+            location = _display_path(path)
+            _validate_eligible_source_summary(
+                summary,
+                source_errors,
+                source_warnings,
+                location=location,
+                current_contract=True,
+            )
+        if source_errors:
+            raise ValueError(
+                "source summaries do not satisfy current leaderboard eligibility: "
+                + "; ".join(source_errors)
+            )
 
     values = [summary.get(variance_metric) for summary in summaries]
     if any(isinstance(value, bool) or not isinstance(value, (int, float)) for value in values):
@@ -93,9 +170,17 @@ def build_submission(
             "capability_baseline": not is_schema_sanity,
             "cohort": "schema-sanity" if is_schema_sanity else "capability",
             "comparability_key": "",
-            "eligibility_policy_version": "leaderboard-eligibility-v1",
+            "eligibility_policy_version": (
+                ELIGIBILITY_POLICY_VERSION
+                if current_contract
+                else HISTORICAL_ELIGIBILITY_POLICY_VERSION
+            ),
             "leaderboard_eligible": leaderboard_eligible,
-            "leaderboard_schema_version": "leaderboard-submission-v1",
+            "leaderboard_schema_version": (
+                LEADERBOARD_SCHEMA_VERSION
+                if current_contract
+                else HISTORICAL_LEADERBOARD_SCHEMA_VERSION
+            ),
             "median_duration_seconds": primary.get("median_duration_seconds"),
             "private_holdout_task_count": task_count if split == "private-holdout" else 0,
             "public_task_count": task_count if split == "public" else 0,

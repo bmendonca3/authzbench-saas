@@ -29,13 +29,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import dump_json
+from authzbench.core import dump_json, load_json
 from authzbench_harbor.redaction import scan_for_violations
 from authzbench_harbor.schemas import (
     DEFAULT_REWARD_TOLERANCE,
@@ -63,6 +64,14 @@ PER_TASK_PAIRING_REQUIRED_FIELDS = (
     "per_task_match_rate",
     "per_task_disagreements",
     "parity_match_threshold",
+    "reward_tolerance",
+    "required_match_rate",
+    "task_ids",
+    "task_count",
+    "harbor_results",
+    "native_authzbench_results",
+    "harbor_reward_mean",
+    "native_mean_score",
 )
 
 
@@ -87,11 +96,18 @@ def validate_parity_experiment(
         }
 
     try:
-        data = json.loads(parity_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
+        data = load_json(parity_path)
+    except (OSError, ValueError) as exc:
         return {
             "passed": False,
             "errors": [f"parity experiment file is not valid JSON: {exc}"],
+            "warnings": [],
+            "is_template": False,
+        }
+    if not isinstance(data, dict):
+        return {
+            "passed": False,
+            "errors": ["parity experiment JSON must be an object"],
             "warnings": [],
             "is_template": False,
         }
@@ -116,7 +132,21 @@ def validate_parity_experiment(
     if data.get("private_artifacts_tracked") is True:
         errors.append("private_artifacts_tracked must be false")
 
-    parity_verified = data.get("parity_verified") is True
+    parity_verified_value = data.get("parity_verified")
+    if not isinstance(parity_verified_value, bool):
+        errors.append(
+            f"parity_verified must be a boolean (got {parity_verified_value!r})"
+        )
+    parity_verified = parity_verified_value is True
+    evidence_status = data.get("evidence_status")
+    methodology = data.get("parity_methodology")
+
+    if not _is_known_status(evidence_status):
+        prefix = "parity_verified=true requires " if parity_verified else ""
+        errors.append(
+            f"{prefix}evidence_status to be one of "
+            f"{sorted(PARITY_EVIDENCE_STATUS_VALUES)} (got {evidence_status!r})"
+        )
 
     if parity_verified:
         harbor_results = data.get("harbor_results")
@@ -143,20 +173,10 @@ def validate_parity_experiment(
                 "parity_verified=true requires parity_methodology to be explicitly set "
                 f"in {sorted(PARITY_METHODOLOGY_VALUES)}"
             )
-            methodology = None
-        else:
-            methodology = data.get("parity_methodology")
-            if methodology not in PARITY_METHODOLOGY_VALUES:
-                errors.append(
-                    f"parity_methodology must be one of {sorted(PARITY_METHODOLOGY_VALUES)} "
-                    f"when parity_verified is true (got {methodology!r})"
-                )
-
-        evidence_status = data.get("evidence_status")
-        if not _is_known_status(evidence_status):
+        elif methodology not in PARITY_METHODOLOGY_VALUES:
             errors.append(
-                "parity_verified=true requires evidence_status to be one of "
-                f"{sorted(PARITY_EVIDENCE_STATUS_VALUES)} (got {evidence_status!r})"
+                f"parity_methodology must be one of {sorted(PARITY_METHODOLOGY_VALUES)} "
+                f"when parity_verified is true (got {methodology!r})"
             )
 
         if methodology == "aggregate_means":
@@ -167,33 +187,36 @@ def validate_parity_experiment(
                 )
             # Aggregate-means evidence is exempted from per-task field checks
             # because historical evidence predates per-task reward extraction.
-        elif methodology == "per_task_pairing":
-            _validate_per_task_pairing(data, errors)
+
     # Plan 6.2 cross-direction check: any evidence_status="current" payload
     # must declare parity_methodology="per_task_pairing" regardless of
     # whether parity_verified is true or false. This is the validator
     # contract that says "new evidence must use per-task pairing".
-    evidence_status_all = data.get("evidence_status")
-    if evidence_status_all == "current":
-        methodology_all = data.get("parity_methodology")
-        if methodology_all != "per_task_pairing":
+    if evidence_status == "current":
+        if methodology != "per_task_pairing":
             errors.append(
                 "evidence_status='current' requires parity_methodology='per_task_pairing' "
-                f"(got {methodology_all!r})"
+                f"(got {methodology!r})"
             )
-        # If methodology is None or unknown, per-task checks are skipped;
-            # the methodology error above is the actionable signal.
+        else:
+            # Current evidence is always recomputed, including an artifact
+            # that truthfully declares parity_verified=false.
+            _validate_per_task_pairing(data, errors)
+    elif methodology == "per_task_pairing":
+        _validate_per_task_pairing(data, errors)
 
-    else:
-        # parity_verified is false. If evidence_status is "blocked" the
-        # per-task fields may be empty or omitted. For other non-verified
-        # evidence we still require consistent status.
-        evidence_status = data.get("evidence_status")
-        if not _is_known_status(evidence_status):
+    if evidence_status == "historical_stale":
+        if data.get("current_claim_eligible") is not False:
             errors.append(
-                f"evidence_status must be one of {sorted(PARITY_EVIDENCE_STATUS_VALUES)} "
-                f"(got {evidence_status!r})"
+                "historical_stale evidence must set current_claim_eligible=false"
             )
+        if data.get("requires_rerun_before_current_claim") is not True:
+            errors.append(
+                "historical_stale evidence must require a rerun before a current claim"
+            )
+        stale_reason = data.get("stale_reason")
+        if not isinstance(stale_reason, str) or not stale_reason.strip():
+            errors.append("historical_stale evidence must include stale_reason")
 
     violations = scan_for_violations(data, "parity experiment")
     errors.extend(violations)
@@ -211,126 +234,392 @@ def validate_parity_experiment(
     }
 
 
+def _is_finite_number(value: object) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+    )
+
+
+def _is_nonnegative_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _same_number(left: float, right: float) -> bool:
+    return math.isclose(left, right, rel_tol=0.0, abs_tol=1e-12)
+
+
+def _exact_task_mapping(
+    data: dict,
+    field: str,
+    task_ids: list[str],
+    errors: list,
+) -> dict | None:
+    value = data.get(field)
+    if not isinstance(value, dict):
+        errors.append(f"{field} must be a dict keyed by task_id")
+        return None
+
+    expected = set(task_ids)
+    actual = set(value)
+    if actual != expected:
+        missing = sorted(expected - actual)
+        unexpected = sorted((repr(key) for key in actual - expected))
+        if field == "harbor_per_task_rewards" and missing:
+            errors.append(
+                "per_task_pairing requires harbor_per_task_rewards for every task_id; "
+                f"{field} keys must exactly match task_ids; "
+                f"missing={missing}, unexpected={unexpected}"
+            )
+        elif field == "native_per_task_scores" and missing:
+            errors.append(
+                "per_task_pairing requires native_per_task_scores for every task_id; "
+                f"{field} keys must exactly match task_ids; "
+                f"missing={missing}, unexpected={unexpected}"
+            )
+        else:
+            errors.append(
+                f"{field} keys must exactly match task_ids; "
+                f"missing={missing}, unexpected={unexpected}"
+            )
+    return value
+
+
 def _validate_per_task_pairing(data: dict, errors: list) -> None:
-    """Enforce the per_task_pairing contract: complete per-task maps, strict tolerance."""
+    """Recompute a complete per-task pairing artifact and fail closed on drift."""
     for field in PER_TASK_PAIRING_REQUIRED_FIELDS:
         if field not in data:
             errors.append(
                 f"parity_methodology='per_task_pairing' requires field '{field}'"
             )
 
-    # All task_ids must appear in both per-task maps.
-    task_ids = data.get("task_ids") or []
+    task_ids = data.get("task_ids")
     if not isinstance(task_ids, list) or not task_ids:
         errors.append(
             "parity_methodology='per_task_pairing' requires a non-empty 'task_ids' list"
         )
         return
+    if not all(isinstance(task_id, str) and task_id for task_id in task_ids):
+        errors.append("task_ids must contain only non-empty strings")
+        return
+    duplicate_task_ids = sorted(
+        {task_id for task_id in task_ids if task_ids.count(task_id) > 1}
+    )
+    if duplicate_task_ids:
+        errors.append(f"duplicate task_ids are not allowed: {duplicate_task_ids}")
 
-    harbor_rewards = data.get("harbor_per_task_rewards")
-    native_scores = data.get("native_per_task_scores")
-    per_task_match = data.get("per_task_match")
-    per_task_disagreements = data.get("per_task_disagreements")
-
-    if isinstance(harbor_rewards, dict):
-        missing_harbor = [tid for tid in task_ids if tid not in harbor_rewards]
-        if missing_harbor:
-            errors.append(
-                "per_task_pairing requires harbor_per_task_rewards for every task_id; "
-                f"missing: {missing_harbor[:5]}{'...' if len(missing_harbor) > 5 else ''}"
-            )
-    if isinstance(native_scores, dict):
-        missing_native = [tid for tid in task_ids if tid not in native_scores]
-        if missing_native:
-            errors.append(
-                "per_task_pairing requires native_per_task_scores for every task_id; "
-                f"missing: {missing_native[:5]}{'...' if len(missing_native) > 5 else ''}"
-            )
-
-    # Strict reward equality: abs(native - harbor) <= reward_tolerance.
-    tolerance = data.get("reward_tolerance", DEFAULT_REWARD_TOLERANCE)
-    if not isinstance(tolerance, (int, float)) or tolerance > DEFAULT_REWARD_TOLERANCE:
+    task_count = data.get("task_count")
+    task_count_valid = _is_nonnegative_int(task_count) and task_count == len(task_ids)
+    if not task_count_valid:
         errors.append(
-            f"reward_tolerance must be a number <= {DEFAULT_REWARD_TOLERANCE} (got {tolerance!r})"
+            f"task_count is {task_count!r} but must exactly match task_ids length {len(task_ids)}"
         )
 
-    if isinstance(harbor_rewards, dict) and isinstance(native_scores, dict):
-        for tid in task_ids:
-            if tid not in harbor_rewards or tid not in native_scores:
-                continue
-            try:
-                native_score = float(native_scores[tid])
-                harbor_reward = float(harbor_rewards[tid])
-            except (TypeError, ValueError):
-                errors.append(
-                    f"per_task_pairing: non-numeric reward/score for task_id '{tid}'"
-                )
-                continue
-            if abs(native_score - harbor_reward) > tolerance:
-                # Surface as a disagreement; the disagreements list is the
-                # authoritative per-task mismatch record.
-                if (
-                    isinstance(per_task_disagreements, list)
-                    and tid not in per_task_disagreements
-                ):
-                    errors.append(
-                        f"per_task_pairing: reward mismatch for task_id '{tid}' "
-                        f"(|native-harbor|={abs(native_score - harbor_reward):.2e} > tolerance={tolerance:.2e}) "
-                        "is not reflected in per_task_disagreements"
-                    )
+    harbor_rewards = _exact_task_mapping(
+        data, "harbor_per_task_rewards", task_ids, errors
+    )
+    native_scores = _exact_task_mapping(
+        data, "native_per_task_scores", task_ids, errors
+    )
+    per_task_match = _exact_task_mapping(
+        data, "per_task_match", task_ids, errors
+    )
+    native_results = _exact_task_mapping(
+        data, "native_authzbench_results", task_ids, errors
+    )
+    per_task_disagreements = data.get("per_task_disagreements")
 
-    # Recompute match count / rate / disagreements from per-task maps and
-    # require them to be consistent.
-    if isinstance(harbor_rewards, dict) and isinstance(native_scores, dict) and isinstance(per_task_match, dict):
-        computed_disagreements = []
-        computed_match_count = 0
+    tolerance_value = data.get("reward_tolerance")
+    tolerance_valid = (
+        _is_finite_number(tolerance_value)
+        and 0.0 <= float(tolerance_value) <= DEFAULT_REWARD_TOLERANCE
+    )
+    if not tolerance_valid:
+        errors.append(
+            "reward_tolerance must be a finite number between 0 and "
+            f"{DEFAULT_REWARD_TOLERANCE} (got {tolerance_value!r})"
+        )
+    tolerance = float(tolerance_value) if tolerance_valid else DEFAULT_REWARD_TOLERANCE
+
+    required_match_rate = data.get("required_match_rate")
+    required_match_rate_valid = (
+        _is_finite_number(required_match_rate)
+        and _same_number(float(required_match_rate), REQUIRED_MATCH_RATE)
+    )
+    if not required_match_rate_valid:
+        errors.append(
+            f"required_match_rate must equal {REQUIRED_MATCH_RATE} "
+            f"(got {required_match_rate!r})"
+        )
+    parity_match_threshold = data.get("parity_match_threshold")
+    parity_match_threshold_valid = (
+        _is_finite_number(parity_match_threshold)
+        and _same_number(float(parity_match_threshold), REQUIRED_MATCH_RATE)
+    )
+    if not parity_match_threshold_valid:
+        errors.append(
+            f"parity_match_threshold must equal {REQUIRED_MATCH_RATE} "
+            f"(got {parity_match_threshold!r})"
+        )
+
+    values_valid = True
+    harbor_values: dict[str, float] = {}
+    native_values: dict[str, float] = {}
+    if harbor_rewards is not None and native_scores is not None:
         for tid in task_ids:
             if tid not in harbor_rewards or tid not in native_scores:
+                values_valid = False
                 continue
-            try:
-                native_score = float(native_scores[tid])
-                harbor_reward = float(harbor_rewards[tid])
-            except (TypeError, ValueError):
-                computed_match_count += 0
-                continue
-            match = abs(native_score - harbor_reward) <= tolerance
-            if per_task_match.get(tid) != match:
+            if not _is_finite_number(harbor_rewards[tid]):
                 errors.append(
-                    f"per_task_match['{tid}'] is {per_task_match.get(tid)!r} "
-                    f"but recomputed value is {match} (tolerance={tolerance:.2e})"
+                    f"harbor_per_task_rewards['{tid}'] must be a finite number"
                 )
-            if match:
-                computed_match_count += 1
+                values_valid = False
             else:
-                computed_disagreements.append(tid)
+                harbor_values[tid] = float(harbor_rewards[tid])
+            if not _is_finite_number(native_scores[tid]):
+                errors.append(
+                    f"native_per_task_scores['{tid}'] must be a finite number"
+                )
+                values_valid = False
+            else:
+                native_values[tid] = float(native_scores[tid])
+    else:
+        values_valid = False
 
-        if isinstance(per_task_disagreements, list) and sorted(per_task_disagreements) != sorted(computed_disagreements):
+    native_rows_valid = native_results is not None
+    if native_results is not None:
+        for tid in task_ids:
+            row = native_results.get(tid)
+            if not isinstance(row, dict):
+                errors.append(
+                    f"native_authzbench_results['{tid}'] must be an object"
+                )
+                native_rows_valid = False
+                continue
+            row_score = row.get("score")
+            if not _is_finite_number(row_score):
+                errors.append(
+                    f"native_authzbench_results['{tid}'].score must be a finite number"
+                )
+                native_rows_valid = False
+                continue
+            if tid in native_values and float(row_score) != native_values[tid]:
+                errors.append(
+                    f"native_authzbench_results['{tid}'].score is {row_score!r} "
+                    f"but native_per_task_scores['{tid}'] is {native_values[tid]!r}"
+                )
+                native_rows_valid = False
+
+    computed_match: dict[str, bool] = {}
+    if values_valid and len(harbor_values) == len(task_ids) and len(native_values) == len(task_ids):
+        computed_match = {
+            tid: abs(native_values[tid] - harbor_values[tid]) <= tolerance
+            for tid in task_ids
+        }
+
+    match_map_valid = per_task_match is not None
+    if per_task_match is not None:
+        for tid in task_ids:
+            declared = per_task_match.get(tid)
+            if not isinstance(declared, bool):
+                errors.append(f"per_task_match['{tid}'] must be a boolean")
+                match_map_valid = False
+                continue
+            if tid in computed_match and declared is not computed_match[tid]:
+                errors.append(
+                    f"per_task_match['{tid}'] is {declared!r} "
+                    f"but recomputed value is {computed_match[tid]} "
+                    f"(tolerance={tolerance:.2e})"
+                )
+                match_map_valid = False
+
+    computed_disagreements = [
+        tid for tid in task_ids if computed_match.get(tid) is False
+    ]
+    disagreements_valid = isinstance(per_task_disagreements, list)
+    if not disagreements_valid:
+        errors.append("per_task_disagreements must be a list of unique task_ids")
+    else:
+        if (
+            not all(isinstance(tid, str) for tid in per_task_disagreements)
+            or len(set(per_task_disagreements)) != len(per_task_disagreements)
+            or not set(per_task_disagreements).issubset(set(task_ids))
+        ):
+            errors.append(
+                "per_task_disagreements must contain only unique task_ids"
+            )
+            disagreements_valid = False
+        elif sorted(per_task_disagreements) != sorted(computed_disagreements):
             errors.append(
                 f"per_task_disagreements is {sorted(per_task_disagreements)} "
                 f"but recomputed disagreements are {sorted(computed_disagreements)}"
             )
+            disagreements_valid = False
 
-        match_count = data.get("per_task_match_count")
-        if match_count != computed_match_count:
+    computed_match_count = sum(computed_match.values())
+    match_count = data.get("per_task_match_count")
+    match_count_valid = (
+        _is_nonnegative_int(match_count) and match_count == computed_match_count
+    )
+    if not match_count_valid:
+        errors.append(
+            f"per_task_match_count is {match_count!r} "
+            f"but recomputed value is {computed_match_count}"
+        )
+
+    expected_rate = computed_match_count / len(task_ids)
+    match_rate = data.get("per_task_match_rate")
+    match_rate_valid = (
+        _is_finite_number(match_rate)
+        and _same_number(float(match_rate), expected_rate)
+    )
+    if not match_rate_valid:
+        errors.append(
+            f"per_task_match_rate is {match_rate!r} "
+            f"but recomputed value is {expected_rate}"
+        )
+
+    means_valid = values_valid and bool(computed_match)
+    if means_valid:
+        recomputed_harbor_mean = sum(harbor_values.values()) / len(task_ids)
+        recomputed_native_mean = sum(native_values.values()) / len(task_ids)
+    else:
+        recomputed_harbor_mean = None
+        recomputed_native_mean = None
+
+    harbor_mean = data.get("harbor_reward_mean")
+    if (
+        recomputed_harbor_mean is None
+        or not _is_finite_number(harbor_mean)
+        or not _same_number(float(harbor_mean), recomputed_harbor_mean)
+    ):
+        errors.append(
+            f"harbor_reward_mean is {harbor_mean!r} "
+            f"but recomputed value is {recomputed_harbor_mean!r}"
+        )
+        means_valid = False
+
+    native_mean = data.get("native_mean_score")
+    if (
+        recomputed_native_mean is None
+        or not _is_finite_number(native_mean)
+        or not _same_number(float(native_mean), recomputed_native_mean)
+    ):
+        errors.append(
+            f"native_mean_score is {native_mean!r} "
+            f"but recomputed value is {recomputed_native_mean!r}"
+        )
+        means_valid = False
+
+    harbor_results = data.get("harbor_results")
+    harbor_results_valid = isinstance(harbor_results, dict)
+    counts_valid = harbor_results_valid
+    run_id_valid = False
+    if not harbor_results_valid:
+        errors.append("harbor_results must be an object for per_task_pairing")
+    else:
+        run_id = harbor_results.get("harbor_run_id")
+        run_id_valid = isinstance(run_id, str) and bool(run_id.strip())
+        if not run_id_valid:
+            errors.append("harbor_results.harbor_run_id must be a non-empty string")
+
+        count_values: dict[str, int] = {}
+        for field in (
+            "n_total_trials",
+            "n_completed_trials",
+            "n_errored_trials",
+        ):
+            value = harbor_results.get(field)
+            if not _is_nonnegative_int(value):
+                errors.append(f"harbor_results.{field} must be a non-negative integer")
+                counts_valid = False
+            else:
+                count_values[field] = value
+
+        if len(count_values) == 3:
+            total = count_values["n_total_trials"]
+            completed = count_values["n_completed_trials"]
+            errored = count_values["n_errored_trials"]
+            if total != task_count or total != len(task_ids):
+                errors.append(
+                    f"harbor_results.n_total_trials is {total} "
+                    f"but must exactly match task_count {task_count!r} "
+                    f"and task_ids length {len(task_ids)}"
+                )
+                counts_valid = False
+            if completed + errored != total:
+                errors.append(
+                    "harbor_results.n_completed_trials + n_errored_trials "
+                    f"must equal n_total_trials ({completed} + {errored} != {total})"
+                )
+                counts_valid = False
+            if data.get("parity_verified") is True and errored != 0:
+                errors.append(
+                    "parity_verified=true requires zero errored trials "
+                    f"(got {errored})"
+                )
+                counts_valid = False
+
+        result_mean = harbor_results.get("reward_mean")
+        if (
+            recomputed_harbor_mean is None
+            or not _is_finite_number(result_mean)
+            or not _same_number(float(result_mean), recomputed_harbor_mean)
+        ):
             errors.append(
-                f"per_task_match_count is {match_count} "
-                f"but recomputed value is {computed_match_count}"
+                f"harbor_results.reward_mean is {result_mean!r} "
+                f"but recomputed value is {recomputed_harbor_mean!r}"
             )
+            means_valid = False
 
-        match_rate = data.get("per_task_match_rate")
-        if isinstance(task_ids, list) and task_ids:
-            expected_rate = computed_match_count / len(task_ids)
-            if abs(float(match_rate) - expected_rate) > 1e-9:
-                errors.append(
-                    f"per_task_match_rate is {match_rate} "
-                    f"but recomputed value is {expected_rate}"
-                )
-            # And require parity_verified evidence to meet the strict threshold.
-            if data.get("parity_verified") is True and abs(float(match_rate) - REQUIRED_MATCH_RATE) > 1e-9:
-                errors.append(
-                    f"parity_verified is true but per_task_match_rate is {match_rate}, "
-                    f"expected {REQUIRED_MATCH_RATE}"
-                )
+    complete_zero_error_trials = False
+    if harbor_results_valid and counts_valid:
+        complete_zero_error_trials = (
+            harbor_results.get("n_total_trials") == len(task_ids)
+            and harbor_results.get("n_completed_trials") == len(task_ids)
+            and harbor_results.get("n_errored_trials") == 0
+        )
+
+    recomputed_parity = (
+        not duplicate_task_ids
+        and task_count_valid
+        and tolerance_valid
+        and required_match_rate_valid
+        and parity_match_threshold_valid
+        and values_valid
+        and native_rows_valid
+        and match_map_valid
+        and disagreements_valid
+        and match_count_valid
+        and match_rate_valid
+        and means_valid
+        and run_id_valid
+        and complete_zero_error_trials
+        and len(computed_match) == len(task_ids)
+        and computed_match_count == len(task_ids)
+        and not computed_disagreements
+    )
+    declared_parity = data.get("parity_verified")
+    if isinstance(declared_parity, bool) and declared_parity is not recomputed_parity:
+        errors.append(
+            f"parity_verified is {declared_parity} "
+            f"but recomputed value is {recomputed_parity}"
+        )
+    if data.get("evidence_status") == "current":
+        if data.get("current_claim_eligible") is not recomputed_parity:
+            errors.append(
+                "current_claim_eligible must equal the recomputed parity result "
+                "for current evidence"
+            )
+        if data.get("requires_rerun_before_current_claim") is not (
+            not recomputed_parity
+        ):
+            errors.append(
+                "requires_rerun_before_current_claim must be the inverse of "
+                "the recomputed parity result for current evidence"
+            )
 
 
 def main() -> int:

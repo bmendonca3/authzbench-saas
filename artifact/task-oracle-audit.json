@@ -1,4 +1,5 @@
 {
+  "control_classification": "task behavior uses expected_vulnerable + control_type; per-control outcomes use validated HTTP status classes only",
   "entries": [
     {
       "app": "api_tokens",
@@ -12,23 +13,26 @@
         "secure_secret_route_denies_cross_tenant_token",
         "alias_vault_route_exposes_same_cross_tenant_secret"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": true,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "tok_cross_tenant_secret_read",
       "manifest_path": "tasks/api_tokens/tok_cross_tenant_secret_read.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "api_tokens",
@@ -40,23 +44,26 @@
       "control_names": [
         "secure_export_route_denies_missing_export_scope"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "tok_export_scope_bypass",
       "manifest_path": "tasks/api_tokens/tok_export_scope_bypass.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "api_tokens",
@@ -65,21 +72,26 @@
       "control_names": [
         "secure_export_route_allows_export_token"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "tok_export_token_reads_export_control",
       "manifest_path": "tasks/api_tokens/tok_export_token_reads_export_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "api_tokens",
@@ -91,24 +103,28 @@
       "control_names": [
         "secure_secret_route_denies_read_only_write"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "tok_read_scope_updates_secret",
       "manifest_path": "tasks/api_tokens/tok_read_scope_updates_secret.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "api_tokens",
@@ -117,21 +133,26 @@
       "control_names": [
         "secure_secret_route_denies_cross_tenant_token"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "tok_secure_cross_tenant_secret_control",
       "manifest_path": "tasks/api_tokens/tok_secure_cross_tenant_secret_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "api_tokens",
@@ -141,21 +162,26 @@
         "secure_export_route_denies_missing_export_scope",
         "decoy_token_admin_export_denies_read_token"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": true,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "tok_secure_export_scope_control",
       "manifest_path": "tasks/api_tokens/tok_secure_export_scope_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "api_tokens",
@@ -164,21 +190,26 @@
       "control_names": [
         "secure_secret_route_allows_same_tenant_read_token"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "tok_secure_same_tenant_secret_control",
       "manifest_path": "tasks/api_tokens/tok_secure_same_tenant_secret_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "api_tokens",
@@ -187,23 +218,28 @@
       "control_names": [
         "secure_secret_route_denies_read_only_write"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "tok_secure_write_scope_control",
       "manifest_path": "tasks/api_tokens/tok_secure_write_scope_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "api_tokens",
@@ -216,23 +252,26 @@
       "control_names": [
         "secure_secret_route_denies_cross_tenant_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "tok_vault_alias_cross_tenant_secret_read",
       "manifest_path": "tasks/api_tokens/tok_vault_alias_cross_tenant_secret_read.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "api_tokens",
@@ -241,23 +280,28 @@
       "control_names": [
         "secure_secret_route_allows_write_token"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "tok_write_token_rotates_secret_control",
       "manifest_path": "tasks/api_tokens/tok_write_token_rotates_secret_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "audit_settings",
@@ -266,23 +310,28 @@
       "control_names": [
         "secure_settings_route_allows_admin_update"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "aud_admin_updates_security_settings_control",
       "manifest_path": "tasks/audit_settings/aud_admin_updates_security_settings_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "audit_settings",
@@ -291,21 +340,26 @@
       "control_names": [
         "secure_export_route_allows_same_org_auditor"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "aud_auditor_downloads_export_control",
       "manifest_path": "tasks/audit_settings/aud_auditor_downloads_export_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "audit_settings",
@@ -314,21 +368,26 @@
       "control_names": [
         "secure_audit_route_allows_same_org_auditor"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "aud_auditor_reads_own_audit_control",
       "manifest_path": "tasks/audit_settings/aud_auditor_reads_own_audit_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "audit_settings",
@@ -341,24 +400,28 @@
       "control_names": [
         "secure_settings_route_denies_member_sso_change"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "aud_bfla_member_disables_sso",
       "manifest_path": "tasks/audit_settings/aud_bfla_member_disables_sso.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "audit_settings",
@@ -372,21 +435,26 @@
         "secure_export_route_denies_member",
         "decoy_compliance_export_preview_denies_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": true,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "aud_bfla_member_downloads_audit_export",
       "manifest_path": "tasks/audit_settings/aud_bfla_member_downloads_audit_export.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "audit_settings",
@@ -400,23 +468,26 @@
         "secure_audit_route_denies_cross_org_auditor",
         "alias_event_route_exposes_same_cross_org_audit_log"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": true,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "aud_bola_nimbus_reads_quasar_audit_log",
       "manifest_path": "tasks/audit_settings/aud_bola_nimbus_reads_quasar_audit_log.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "audit_settings",
@@ -429,23 +500,26 @@
       "control_names": [
         "secure_audit_log_route_denies_cross_org_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "aud_event_alias_cross_org_log_read",
       "manifest_path": "tasks/audit_settings/aud_event_alias_cross_org_log_read.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "audit_settings",
@@ -454,21 +528,26 @@
       "control_names": [
         "compliance_export_preview_denies_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "aud_member_export_preview_denial_control",
       "manifest_path": "tasks/audit_settings/aud_member_export_preview_denial_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "audit_settings",
@@ -477,21 +556,26 @@
       "control_names": [
         "secure_audit_route_denies_cross_org_auditor"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "aud_secure_cross_org_audit_control",
       "manifest_path": "tasks/audit_settings/aud_secure_cross_org_audit_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "billing",
@@ -505,23 +589,26 @@
       "control_names": [
         "secure_plan_route_denies_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_account_entitlements_alias_plan_change",
       "manifest_path": "tasks/billing/bill_account_entitlements_alias_plan_change.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "billing",
@@ -530,23 +617,28 @@
       "control_names": [
         "admin_secure_entitlement_write_allowed"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "bill_admin_entitlement_access_control",
       "manifest_path": "tasks/billing/bill_admin_entitlement_access_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "billing",
@@ -555,21 +647,26 @@
       "control_names": [
         "admin_export_denies_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_admin_export_denies_member_control",
       "manifest_path": "tasks/billing/bill_admin_export_denies_member_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "billing",
@@ -578,21 +675,26 @@
       "control_names": [
         "admin_secure_plan_access_allowed"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "bill_admin_plan_access_control",
       "manifest_path": "tasks/billing/bill_admin_plan_access_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "billing",
@@ -608,24 +710,28 @@
         "secure_route_denies_member_entitlement_downgrade",
         "admin_secure_entitlement_upgrade_allowed"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "bill_bfla_member_disables_export_entitlement_discovery",
       "manifest_path": "tasks/billing/bill_bfla_member_disables_export_entitlement_discovery.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "billing",
@@ -641,24 +747,28 @@
         "cross_org_entitlement_write_denied",
         "admin_secure_entitlement_write_allowed"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "bill_bfla_member_enables_export_entitlement",
       "manifest_path": "tasks/billing/bill_bfla_member_enables_export_entitlement.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "billing",
@@ -671,24 +781,28 @@
         "secure_route_denies_member_plan_access",
         "alias_entitlements_route_exposes_member_plan_change"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": true,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "bill_bfla_member_plan_change",
       "manifest_path": "tasks/billing/bill_bfla_member_plan_change.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "billing",
@@ -700,23 +814,26 @@
       "control_names": [
         "secure_route_denies_member_plan_access"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_bfla_member_reads_plan_settings",
       "manifest_path": "tasks/billing/bill_bfla_member_reads_plan_settings.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "billing",
@@ -728,23 +845,26 @@
       "control_names": [
         "secure_route_denies_member_plan_access"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_bfla_peer_member_plan_change",
       "manifest_path": "tasks/billing/bill_bfla_peer_member_plan_change.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "billing",
@@ -753,21 +873,26 @@
       "control_names": [
         "cross_org_invoice_read_denied"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": false,
+      "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_cross_org_invoice_control",
       "manifest_path": "tasks/billing/bill_cross_org_invoice_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "billing",
@@ -776,23 +901,28 @@
       "control_names": [
         "cross_org_plan_write_denied"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": false,
+      "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_cross_org_plan_write_control",
       "manifest_path": "tasks/billing/bill_cross_org_plan_write_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "billing",
@@ -801,21 +931,26 @@
       "control_names": [
         "same_org_invoice_read_allowed"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "bill_same_org_invoice_read_control",
       "manifest_path": "tasks/billing/bill_same_org_invoice_read_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "billing",
@@ -824,23 +959,28 @@
       "control_names": [
         "secure_route_denies_member_entitlement_write"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_secure_member_entitlement_control",
       "manifest_path": "tasks/billing/bill_secure_member_entitlement_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "billing",
@@ -850,21 +990,26 @@
         "secure_route_denies_member_plan_access",
         "decoy_admin_export_denies_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": true,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "bill_secure_member_plan_control",
       "manifest_path": "tasks/billing/bill_secure_member_plan_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "file_sharing",
@@ -873,21 +1018,26 @@
       "control_names": [
         "secure_share_link_route_allows_active_link"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "fs_active_share_link_control",
       "manifest_path": "tasks/file_sharing/fs_active_share_link_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "file_sharing",
@@ -899,24 +1049,28 @@
       "control_names": [
         "secure_share_creation_denies_viewer"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "fs_bfla_viewer_creates_public_link",
       "manifest_path": "tasks/file_sharing/fs_bfla_viewer_creates_public_link.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "file_sharing",
@@ -929,23 +1083,26 @@
         "secure_file_route_denies_cross_workspace_read",
         "alias_document_route_exposes_same_cross_workspace_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": true,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "fs_bola_northstar_reads_apex_file",
       "manifest_path": "tasks/file_sharing/fs_bola_northstar_reads_apex_file.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "file_sharing",
@@ -954,21 +1111,26 @@
       "control_names": [
         "secure_file_route_allows_same_workspace_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "fs_same_workspace_file_read_control",
       "manifest_path": "tasks/file_sharing/fs_same_workspace_file_read_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "file_sharing",
@@ -977,21 +1139,26 @@
       "control_names": [
         "secure_file_route_denies_cross_workspace_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "fs_secure_cross_workspace_file_control",
       "manifest_path": "tasks/file_sharing/fs_secure_cross_workspace_file_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "file_sharing",
@@ -1000,21 +1167,26 @@
       "control_names": [
         "secure_share_link_route_denies_expired_link"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "fs_secure_expired_share_link_control",
       "manifest_path": "tasks/file_sharing/fs_secure_expired_share_link_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "file_sharing",
@@ -1024,23 +1196,28 @@
         "secure_share_creation_denies_viewer",
         "decoy_security_report_denies_viewer"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": true,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "fs_secure_viewer_share_control",
       "manifest_path": "tasks/file_sharing/fs_secure_viewer_share_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "file_sharing",
@@ -1052,23 +1229,26 @@
       "control_names": [
         "secure_share_link_route_denies_expired_link"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "fs_stale_expired_share_link_access",
       "manifest_path": "tasks/file_sharing/fs_stale_expired_share_link_access.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "file_sharing",
@@ -1082,23 +1262,26 @@
         "secure_file_route_denies_cross_workspace_read",
         "secure_file_route_authorizes_workspace_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "fs_team_membership_cross_workspace_discovery",
       "manifest_path": "tasks/file_sharing/fs_team_membership_cross_workspace_discovery.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "project_mgmt",
@@ -1110,23 +1293,26 @@
       "control_names": [
         "secure_route_denies_owner_cross_tenant_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "pm_bola_owner_reads_beta_task",
       "manifest_path": "tasks/project_mgmt/pm_bola_owner_reads_beta_task.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "project_mgmt",
@@ -1140,21 +1326,26 @@
         "alias_route_exposes_same_cross_tenant_read",
         "decoy_project_admin_export_denies_cross_tenant_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": true,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": true,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "pm_bola_read_alpha_from_beta",
       "manifest_path": "tasks/project_mgmt/pm_bola_read_alpha_from_beta.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "project_mgmt",
@@ -1166,23 +1357,26 @@
       "control_names": [
         "secure_route_denies_cross_tenant_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "pm_bola_read_beta_from_alpha",
       "manifest_path": "tasks/project_mgmt/pm_bola_read_beta_from_alpha.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "project_mgmt",
@@ -1191,23 +1385,28 @@
       "control_names": [
         "cross_tenant_member_patch_denied"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": false,
+      "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "pm_cross_tenant_write_control",
       "manifest_path": "tasks/project_mgmt/pm_cross_tenant_write_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "project_mgmt",
@@ -1221,23 +1420,28 @@
         "same_tenant_beta_update_is_authorized",
         "decoy_project_admin_export_still_denies_beta_member"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": true,
-      "has_decoy_control": true,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "pm_multistep_beta_update_then_alpha_alias_read",
       "manifest_path": "tasks/project_mgmt/pm_multistep_beta_update_then_alpha_alias_read.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "project_mgmt",
@@ -1247,23 +1451,28 @@
         "same_tenant_owner_status_update_allowed",
         "same_tenant_owner_secure_read_allowed"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 2
+      },
+      "control_type": "authorized_allow",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "pm_multistep_owner_update_control",
       "manifest_path": "tasks/project_mgmt/pm_multistep_owner_update_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "project_mgmt",
@@ -1272,21 +1481,26 @@
       "control_names": [
         "same_tenant_owner_read_allowed"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "pm_same_tenant_read_control",
       "manifest_path": "tasks/project_mgmt/pm_same_tenant_read_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "project_mgmt",
@@ -1295,21 +1509,26 @@
       "control_names": [
         "secure_route_denies_cross_tenant_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "pm_secure_cross_tenant_read_control",
       "manifest_path": "tasks/project_mgmt/pm_secure_cross_tenant_read_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "project_mgmt",
@@ -1318,23 +1537,28 @@
       "control_names": [
         "viewer_patch_denied"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": false,
+      "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "pm_viewer_write_control",
       "manifest_path": "tasks/project_mgmt/pm_viewer_write_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "support",
@@ -1343,23 +1567,28 @@
       "control_names": [
         "secure_admin_assignment_is_authorized"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "sup_admin_reassignment_control",
       "manifest_path": "tasks/support/sup_admin_reassignment_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "support",
@@ -1368,23 +1597,28 @@
       "control_names": [
         "secure_agent_status_update_preserves_assignment"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 0,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": "authorized_allow",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
-      "has_denial_control": true,
+      "has_denial_control": false,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "sup_agent_status_only_update_control",
       "manifest_path": "tasks/support/sup_agent_status_only_update_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "authorized_allow"
     },
     {
       "app": "support",
@@ -1396,24 +1630,28 @@
       "control_names": [
         "secure_status_route_denies_viewer_write"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "sup_bfla_viewer_closes_ticket",
       "manifest_path": "tasks/support/sup_bfla_viewer_closes_ticket.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "support",
@@ -1427,24 +1665,28 @@
         "secure_ticket_read_allows_viewer_for_discovery",
         "secure_status_route_denies_viewer_write"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "sup_bfla_viewer_updates_assigned_ticket_status_discovery",
       "manifest_path": "tasks/support/sup_bfla_viewer_updates_assigned_ticket_status_discovery.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "support",
@@ -1457,23 +1699,26 @@
         "secure_ticket_route_denies_cross_org_read",
         "alias_case_route_exposes_same_cross_org_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": false,
       "expected_vulnerable": true,
-      "has_alias_control": true,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "sup_bola_acme_reads_orbit_ticket",
       "manifest_path": "tasks/support/sup_bola_acme_reads_orbit_ticket.json",
-      "risk_flags": [
-        "vulnerable_task_no_decoy_control"
-      ]
+      "risk_flags": [],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "support",
@@ -1482,23 +1727,28 @@
       "control_names": [
         "cross_org_assignment_denies_acme_agent"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "sup_cross_org_assignment_control",
       "manifest_path": "tasks/support/sup_cross_org_assignment_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "support",
@@ -1510,24 +1760,28 @@
       "control_names": [
         "secure_invite_route_denies_agent_admin_invite"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "sup_invite_agent_creates_admin_invite",
       "manifest_path": "tasks/support/sup_invite_agent_creates_admin_invite.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "support",
@@ -1543,24 +1797,28 @@
         "cross_org_assignment_denies_acme_agent",
         "secure_admin_assignment_is_authorized"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 1
+      },
+      "control_type": null,
       "destructive_write": true,
       "expected_vulnerable": true,
-      "has_alias_control": false,
-      "has_authorized_allow_control": true,
       "has_boundary_aliases": true,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": true,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": true,
       "id": "sup_multistep_agent_status_then_admin_reassignment",
       "manifest_path": "tasks/support/sup_multistep_agent_status_then_admin_reassignment.json",
       "risk_flags": [
-        "destructive_write",
-        "vulnerable_task_no_decoy_control"
-      ]
+        "destructive_write"
+      ],
+      "task_behavior": "vulnerable"
     },
     {
       "app": "support",
@@ -1569,23 +1827,28 @@
       "control_names": [
         "secure_assignment_route_denies_agent"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "sup_secure_agent_assignment_control",
       "manifest_path": "tasks/support/sup_secure_agent_assignment_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "support",
@@ -1595,23 +1858,28 @@
         "secure_invite_route_denies_agent_admin_invite",
         "decoy_ticket_export_denies_agent"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 2,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": true,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "sup_secure_agent_invite_control",
       "manifest_path": "tasks/support/sup_secure_agent_invite_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     },
     {
       "app": "support",
@@ -1620,21 +1888,26 @@
       "control_names": [
         "secure_ticket_route_denies_cross_org_read"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": false,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "sup_secure_cross_org_ticket_control",
       "manifest_path": "tasks/support/sup_secure_cross_org_ticket_control.json",
-      "risk_flags": []
+      "risk_flags": [],
+      "task_behavior": "denial"
     },
     {
       "app": "support",
@@ -1643,60 +1916,92 @@
       "control_names": [
         "secure_status_route_denies_viewer_write"
       ],
+      "control_outcome_counts": {
+        "denial_4xx": 1,
+        "other_status": 0,
+        "success_2xx": 0
+      },
+      "control_type": "denial",
       "destructive_write": true,
       "expected_vulnerable": false,
-      "has_alias_control": false,
-      "has_authorized_allow_control": false,
       "has_boundary_aliases": false,
-      "has_decoy_control": false,
       "has_denial_control": true,
       "has_expected_boundary": false,
       "has_objective": true,
       "has_oracle_body_contains": true,
       "has_oracle_claim": true,
       "has_oracle_status": true,
+      "has_successful_control": false,
       "id": "sup_secure_viewer_status_control",
       "manifest_path": "tasks/support/sup_secure_viewer_status_control.json",
       "risk_flags": [
         "destructive_write"
-      ]
+      ],
+      "task_behavior": "denial"
     }
   ],
   "per_app": {
     "api_tokens": {
+      "authorized_allow": 3,
+      "denial": 3,
       "secure_control": 6,
       "total": 10,
       "vulnerable": 4
     },
     "audit_settings": {
+      "authorized_allow": 3,
+      "denial": 2,
       "secure_control": 5,
       "total": 9,
       "vulnerable": 4
     },
     "billing": {
+      "authorized_allow": 3,
+      "denial": 5,
       "secure_control": 8,
       "total": 14,
       "vulnerable": 6
     },
     "file_sharing": {
+      "authorized_allow": 2,
+      "denial": 3,
       "secure_control": 5,
       "total": 9,
       "vulnerable": 4
     },
     "project_mgmt": {
+      "authorized_allow": 2,
+      "denial": 3,
       "secure_control": 5,
       "total": 9,
       "vulnerable": 4
     },
     "support": {
+      "authorized_allow": 2,
+      "denial": 5,
       "secure_control": 7,
       "total": 12,
       "vulnerable": 5
     }
   },
+  "public_manifest_count": 63,
+  "public_manifest_digest_algorithm": "sha256 of canonical JSON over sorted manifest_path + parsed manifest objects",
+  "public_manifest_set_sha256": "5473041d83749ede71dea35f62d92978dc12867647c5c03e2a1cda9449fb943b",
   "schema_gate_failures": [],
-  "schema_version": "task-oracle-audit-v1",
+  "schema_version": "task-oracle-audit-v2",
+  "source_binding": {
+    "claim_boundary": "The source-set digest binds the exact audit implementation content. It does not assert a clean Git worktree, release-candidate status, hosted execution, external validation, or platform acceptance.",
+    "current_source_set_sha256": "04d67394eebe5dd3018e69193766caadbe28caed9ec7aa89207c4f4d69b690e4",
+    "schema_version": "task-oracle-audit-source-binding-v1",
+    "source_sha256": {
+      "authzbench/core.py": "b6075c3a3c8fde36587215d7a61a7f3f0410fd45114b750ff775d1596e7510b4",
+      "authzbench/validate_manifests.py": "6c5801b93f2acdf8245f9a947a6fc1ada153cd7bf59e0378df5b672874dbc6c6",
+      "scripts/generate_task_oracle_audit.py": "05da1040d40d8d4534e33ca093f41ed841ff810960ff91ce882d1bafab0d1bd9"
+    }
+  },
   "summary": {
+    "authorized_allow": 15,
+    "denial": 21,
     "secure_control": 36,
     "total": 63,
     "vulnerable": 27

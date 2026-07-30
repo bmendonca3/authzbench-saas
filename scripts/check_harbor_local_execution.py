@@ -15,6 +15,10 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.build_harbor_dataset_skeleton import build_harbor_dataset_skeleton
 from scripts.validate_harbor_dataset_skeleton import validate_harbor_dataset_skeleton
+from authzbench_harbor.adapter import (
+    PLANNED_UNSUPPORTED_HARNESS_LANES,
+    SUPPORTED_HARNESS_LANES,
+)
 
 
 SCHEMA_VERSION = "harbor-local-execution-preflight-v1"
@@ -60,13 +64,66 @@ def check_harbor_local_execution(
     require_harbor: bool = False,
     discover_harbor_cli: bool = True,
 ) -> dict[str, Any]:
-    """Check whether a verified generated skeleton is ready for a future Harbor run.
+    """Check whether a generated skeleton and Harbor command are runnable.
 
     This preflight intentionally does not invoke `harbor run`; it only records
     whether the CLI/package command is runnable and whether our generated public
     skeleton passes local structural/redaction validation.
     """
     task_patterns = task_patterns or [DEFAULT_TASK]
+    if harness_lane in PLANNED_UNSUPPORTED_HARNESS_LANES:
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "evidence_status": "planned_unsupported",
+            "public_claim_boundary": (
+                "The live_http_tool_agent lane is a planning contract only. "
+                "This preflight is not Harbor execution evidence, parity evidence, "
+                "or v1 readiness."
+            ),
+            "harbor_command": harbor_command,
+            "harbor_cli_check_status": "not_checked",
+            "harbor_cli_found": False,
+            "harbor_cli_runnable": False,
+            "generated_skeleton_validated": False,
+            "harness_lane": harness_lane,
+            "harness_lane_status": "planned_unsupported",
+            "task_count": 0,
+            "local_harbor_run_runnable": False,
+            "ready_for_local_harbor_run": False,
+            "harbor_execution_verified": False,
+            "local_run_template": None,
+            "blocked_until": [
+                "the packaged adapter implements target-service orchestration",
+                "request-correlation capture is implemented and verified",
+            ],
+            "skeleton_errors": [
+                "live_http_tool_agent is planned_unsupported by the packaged adapter"
+            ],
+        }
+    if harness_lane not in SUPPORTED_HARNESS_LANES:
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "evidence_status": "invalid_configuration",
+            "public_claim_boundary": (
+                "This preflight is not Harbor execution evidence, parity evidence, "
+                "or v1 readiness."
+            ),
+            "harbor_command": harbor_command,
+            "harbor_cli_check_status": "not_checked",
+            "harbor_cli_found": False,
+            "harbor_cli_runnable": False,
+            "generated_skeleton_validated": False,
+            "harness_lane": harness_lane,
+            "harness_lane_status": "unsupported",
+            "task_count": 0,
+            "local_harbor_run_runnable": False,
+            "ready_for_local_harbor_run": False,
+            "harbor_execution_verified": False,
+            "local_run_template": None,
+            "blocked_until": ["select an implemented harness lane"],
+            "skeleton_errors": [f"unsupported harness lane: {harness_lane}"],
+        }
+
     with tempfile.TemporaryDirectory(prefix="authzbench-harbor-preflight-") as tmp:
         output_dir = Path(tmp) / "generated-dataset"
         manifest = build_harbor_dataset_skeleton(
@@ -78,15 +135,28 @@ def check_harbor_local_execution(
         skeleton_result = validate_harbor_dataset_skeleton(output_dir)
 
     effective_harbor_command = _resolve_harbor_command(harbor_command) if discover_harbor_cli else harbor_command
-    harbor_cli_found = _harbor_command_is_runnable(effective_harbor_command) if discover_harbor_cli else False
+    harbor_cli_runnable = (
+        _harbor_command_is_runnable(effective_harbor_command)
+        if discover_harbor_cli
+        else False
+    )
+    harbor_cli_check_status = (
+        "runnable"
+        if harbor_cli_runnable
+        else "not_runnable"
+        if discover_harbor_cli
+        else "not_checked"
+    )
     blocked_until: list[str] = []
-    if not harbor_cli_found:
+    if not discover_harbor_cli:
+        blocked_until.append("Harbor CLI runnable state was not checked")
+    elif not harbor_cli_runnable:
         blocked_until.append("Harbor CLI/package is not installed or not on PATH")
     if not skeleton_result["passed"]:
         blocked_until.append("generated public Harbor skeleton does not validate")
 
-    ready_for_local_run = False
-    if harbor_cli_found and skeleton_result["passed"]:
+    local_run_runnable = harbor_cli_runnable and skeleton_result["passed"]
+    if local_run_runnable:
         blocked_until.append("real Harbor execution has not been run by this preflight")
 
     return {
@@ -94,11 +164,15 @@ def check_harbor_local_execution(
         "evidence_status": "local_preflight_only",
         "public_claim_boundary": "This preflight is not Harbor execution evidence, not parity evidence, and not v1 readiness. It does not run Harbor.",
         "harbor_command": effective_harbor_command,
-        "harbor_cli_found": harbor_cli_found,
+        "harbor_cli_check_status": harbor_cli_check_status,
+        "harbor_cli_found": harbor_cli_runnable,
+        "harbor_cli_runnable": harbor_cli_runnable,
         "generated_skeleton_validated": skeleton_result["passed"],
         "harness_lane": harness_lane,
+        "harness_lane_status": "implemented",
         "task_count": manifest["task_count"],
-        "ready_for_local_harbor_run": ready_for_local_run,
+        "local_harbor_run_runnable": local_run_runnable,
+        "ready_for_local_harbor_run": local_run_runnable,
         "harbor_execution_verified": False,
         "local_run_template": f"cd <generated-harbor-dataset-path> && {effective_harbor_command} run -c run_authzbench_saas.yaml --yes",
         "blocked_until": blocked_until,

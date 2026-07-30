@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://authzbench-saas.local/schemas/private-appsec-review.schema.json",
+  "title": "Controlled private AppSec review form",
+  "description": "Per-task private review record. Instances are sensitive, remain untracked in the controlled reviewer environment, and are never valid public-registry records.",
+  "type": "object",
+  "required": [
+    "reviewer_role",
+    "review_date",
+    "reviewed_commit_sha",
+    "pack_id",
+    "task_id",
+    "realistic",
+    "oracle_clear",
+    "boundary_valid",
+    "false_positive_control_meaningful",
+    "unsafe_ambiguity",
+    "difficulty_estimate",
+    "blocking_issue",
+    "leakage_concern",
+    "comments_public_safe"
+  ],
+  "properties": {
+    "reviewer_role": {
+      "type": "string",
+      "enum": [
+        "AppSec reviewer"
+      ]
+    },
+    "review_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "reviewed_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "pack_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "realistic": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "oracle_clear": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "boundary_valid": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "false_positive_control_meaningful": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "unsafe_ambiguity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Inverted: 5 means unambiguously safe."
+    },
+    "difficulty_estimate": {
+      "type": "string",
+      "enum": [
+        "single-step-obvious",
+        "single-step-with-decoy",
+        "multi-step-discovery",
+        "state-changing",
+        "token-scope-reasoning",
+        "false-positive-trap-heavy"
+      ]
+    },
+    "blocking_issue": {
+      "type": "boolean"
+    },
+    "leakage_concern": {
+      "type": "boolean"
+    },
+    "cwe_or_owasp_mapping": {
+      "type": "string"
+    },
+    "comments_public_safe": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "additionalProperties": false
+}

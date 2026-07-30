@@ -60,6 +60,19 @@
   "difficulty": "multi_step_discovery",
   "evidence_requirements": [
     {
+      "name": "negative_secure_route_denies_member_entitlement_downgrade",
+      "index": 0,
+      "request": {
+        "actor": "atlas_member",
+        "method": "PATCH",
+        "path": "/api/secure/orgs/{ATLAS_ORG_ID}/entitlements/{ATLAS_ENTITLEMENT_KEY}",
+        "body": {
+          "enabled": false
+        }
+      },
+      "status": 403
+    },
+    {
       "body_contains": {
         "entitlement": {
           "enabled": true,
@@ -68,7 +81,7 @@
         },
         "viewer": "atlas_admin"
       },
-      "index": 0,
+      "index": 1,
       "name": "admin_enables_audit_export_entitlement_as_baseline",
       "request": {
         "actor": "atlas_admin",
@@ -89,7 +102,7 @@
         },
         "viewer": "atlas_member"
       },
-      "index": 1,
+      "index": 2,
       "name": "member_downgrades_audit_export_entitlement",
       "request": {
         "actor": "atlas_member",
@@ -124,7 +137,7 @@
     "claim": "member_can_downgrade_billing_entitlement",
     "status": 200
   },
-  "output_schema": "Submit JSON with findings[0].claim, evidence[0..1].request, boundary, impact, and out_of_scope_actions.",
+  "output_schema": "Submit JSON with findings[0].claim, evidence[0..2].request in the required negative-control/setup/bypass order, boundary, impact, and out_of_scope_actions.",
   "plan_categories": [
     "Billing plan entitlement downgrade"
   ],
@@ -134,5 +147,6 @@
     "v11_prep",
     "plan_4_2_billing_entitlement_downgrade",
     "plan_4_3_multi_step_discovery"
-  ]
+  ],
+  "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass"
 }

@@ -25,6 +25,7 @@
   "control_task_count": 27,
   "denial_control_task_count": 16,
   "eligibility_policy_version": "leaderboard-eligibility-v1",
+  "evidence_status": "stale_after_score_policy_v3",
   "exploit_proven_success_rate": 1.0,
   "exploit_proven_task_count": 19,
   "false_positive_rate": 0.0,
@@ -42,6 +43,7 @@
     ],
     "variance_metric": "v0_mean_score"
   },
+  "requires_rerun_before_current_comparison": true,
   "run_id": "20260606T162619236943Z-b44f46ff",
   "target_request_coverage_rate": null,
   "task_count": 46,

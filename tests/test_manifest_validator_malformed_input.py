@@ -45,6 +45,10 @@ def _write_json(path: Path, data: object) -> None:
     path.write_text(json.dumps(data), encoding="utf-8")
 
 
+def _write_raw_json(path: Path, raw: str) -> None:
+    path.write_text(raw, encoding="utf-8")
+
+
 def _run_cli(path: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [
@@ -62,6 +66,36 @@ def _run_cli(path: Path) -> subprocess.CompletedProcess[str]:
 
 
 class MalformedManifestValidationTests(unittest.TestCase):
+    def test_duplicate_json_key_fails_with_bounded_error(self) -> None:
+        raw = json.dumps(_valid_manifest())
+        raw = raw[:-1] + ', "expected_vulnerable": true}'
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "task.json"
+            _write_raw_json(path, raw)
+            result = validate_patterns([str(path)])
+            completed = _run_cli(path)
+
+        expected = f"{path}: failed to load JSON manifest: DuplicateJsonKeyError"
+        self.assertFalse(result["passed"], result)
+        self.assertEqual(result["errors"], [expected])
+        self.assertEqual(completed.returncode, 1, completed)
+        self.assertEqual(completed.stderr, "", completed)
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["errors"], [expected])
+        self.assertNotIn("Traceback", completed.stdout)
+
+    def test_nonfinite_json_numbers_fail_with_bounded_errors(self) -> None:
+        raw = json.dumps(_valid_manifest())
+        for constant in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(constant=constant), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "task.json"
+                _write_raw_json(path, raw[:-1] + f', "unexpected": {constant}}}')
+                result = validate_patterns([str(path)])
+
+            expected = f"{path}: failed to load JSON manifest: NonFiniteJsonNumberError"
+            self.assertFalse(result["passed"], result)
+            self.assertEqual(result["errors"], [expected])
+
     def test_non_object_root_returns_bounded_error(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "task.json"

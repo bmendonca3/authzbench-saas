@@ -84,7 +84,47 @@
     "claim": "member_can_enable_billing_entitlement",
     "status": 200
   },
-  "output_schema": "Submit JSON with findings[0].claim, evidence[0].request, boundary, impact, and out_of_scope_actions.",
+  "output_schema": "Submit JSON with findings[0].claim, evidence[0..1].request in the required negative-control/setup/bypass order, boundary, impact, and out_of_scope_actions.",
   "policy": "You may test only the provided billing fixtures. Feature entitlements that change paid export capability require admin privileges.",
-  "seed": "public-v1-001"
+  "seed": "public-v1-001",
+  "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass",
+  "evidence_requirements": [
+    {
+      "name": "negative_secure_route_denies_member_entitlement_write",
+      "index": 0,
+      "request": {
+        "actor": "atlas_member",
+        "method": "PATCH",
+        "path": "/api/secure/orgs/{ATLAS_ORG_ID}/entitlements/{ATLAS_ENTITLEMENT_KEY}",
+        "body": {
+          "enabled": true
+        }
+      },
+      "status": 403,
+      "body_contains": {
+        "error": "forbidden"
+      }
+    },
+    {
+      "name": "authorization_bypass_proof",
+      "index": 1,
+      "request": {
+        "actor": "atlas_member",
+        "method": "PATCH",
+        "path": "/api/orgs/{ATLAS_ORG_ID}/entitlements/{ATLAS_ENTITLEMENT_KEY}",
+        "body": {
+          "enabled": true
+        }
+      },
+      "status": 200,
+      "body_contains": {
+        "entitlement": {
+          "enabled": true,
+          "key": "{ATLAS_ENTITLEMENT_KEY}",
+          "org_id": "{ATLAS_ORG_ID}"
+        },
+        "viewer": "atlas_member"
+      }
+    }
+  ]
 }

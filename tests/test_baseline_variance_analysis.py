@@ -106,6 +106,7 @@ class StalePendingRerunTests(unittest.TestCase):
     def test_is_stale_pending_rerun_true_for_honest_stale_row(self) -> None:
         entry = {
             "kind": "model_baseline",
+            "release_suitability": "current_public_stale",
             "requires_rerun_before_current_comparison": True,
             "leaderboard_eligible": False,
             "evidence_status": "stale_after_v1_1_public_split",
@@ -116,6 +117,7 @@ class StalePendingRerunTests(unittest.TestCase):
     def test_is_stale_pending_rerun_true_without_evidence_status(self) -> None:
         entry = {
             "kind": "tool_agent_baseline",
+            "release_suitability": "legacy_snapshot",
             "requires_rerun_before_current_comparison": True,
             "leaderboard_eligible": False,
             "expected_task_count": 54,
@@ -125,6 +127,7 @@ class StalePendingRerunTests(unittest.TestCase):
     def test_is_stale_pending_rerun_false_for_current_row(self) -> None:
         entry = {
             "kind": "model_baseline",
+            "release_suitability": "current_public_split",
             "requires_rerun_before_current_comparison": False,
             "leaderboard_eligible": False,
             "expected_task_count": 63,
@@ -134,20 +137,22 @@ class StalePendingRerunTests(unittest.TestCase):
     def test_is_stale_pending_rerun_false_for_leaderboard_eligible(self) -> None:
         entry = {
             "kind": "model_baseline",
+            "release_suitability": "current_public_stale",
             "requires_rerun_before_current_comparison": True,
             "leaderboard_eligible": True,
             "expected_task_count": 60,
         }
         self.assertFalse(_is_stale_pending_rerun(entry))
 
-    def test_is_stale_pending_rerun_false_for_63_task_row(self) -> None:
+    def test_is_stale_pending_rerun_true_for_stale_63_task_v2_row(self) -> None:
         entry = {
             "kind": "model_baseline",
+            "release_suitability": "current_public_stale",
             "requires_rerun_before_current_comparison": True,
             "leaderboard_eligible": False,
             "expected_task_count": 63,
         }
-        self.assertFalse(_is_stale_pending_rerun(entry))
+        self.assertTrue(_is_stale_pending_rerun(entry))
 
     def test_is_stale_pending_rerun_false_for_non_capability_kind(self) -> None:
         entry = {
@@ -172,15 +177,15 @@ class StalePendingRerunTests(unittest.TestCase):
 
     def test_all_capability_rows_stale_pending_true(self) -> None:
         registry = {"baselines": [
-            {"kind": "model_baseline", "requires_rerun_before_current_comparison": True, "leaderboard_eligible": False, "expected_task_count": 60},
-            {"kind": "tool_agent_baseline", "requires_rerun_before_current_comparison": True, "leaderboard_eligible": False, "expected_task_count": 60},
+            {"kind": "model_baseline", "release_suitability": "current_public_stale", "requires_rerun_before_current_comparison": True, "leaderboard_eligible": False, "expected_task_count": 60},
+            {"kind": "tool_agent_baseline", "release_suitability": "legacy_snapshot", "requires_rerun_before_current_comparison": True, "leaderboard_eligible": False, "expected_task_count": 60},
         ]}
         self.assertTrue(_all_capability_rows_stale_pending(registry))
 
     def test_all_capability_rows_stale_pending_false_when_one_current(self) -> None:
         registry = {"baselines": [
-            {"kind": "model_baseline", "requires_rerun_before_current_comparison": True, "leaderboard_eligible": False, "expected_task_count": 60},
-            {"kind": "tool_agent_baseline", "requires_rerun_before_current_comparison": False, "leaderboard_eligible": False, "expected_task_count": 63},
+            {"kind": "model_baseline", "release_suitability": "current_public_stale", "requires_rerun_before_current_comparison": True, "leaderboard_eligible": False, "expected_task_count": 60},
+            {"kind": "tool_agent_baseline", "release_suitability": "current_public_split", "requires_rerun_before_current_comparison": False, "leaderboard_eligible": False, "expected_task_count": 63},
         ]}
         self.assertFalse(_all_capability_rows_stale_pending(registry))
 
@@ -212,7 +217,10 @@ class StalePendingRerunTests(unittest.TestCase):
             ]}
             report = analyze_registry(registry, baselines_dir=tmp, require_current_public=True, allow_stale_pending_rerun=True)
             self.assertEqual(report["issues"], [])
-            self.assertEqual(report["capability_baseline_status"], "stale_pending_63_task_rerun")
+            self.assertEqual(
+                report["capability_baseline_status"],
+                "stale_pending_current_policy_rerun",
+            )
             self.assertIsNotNone(report["capability_baseline_disclosure"])
 
     def test_stale_pending_rerun_fails_without_sanity_63(self) -> None:

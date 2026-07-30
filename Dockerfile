@@ -16,8 +16,9 @@ WORKDIR /bench
 # Install the project in editable mode. There are no third-party
 # runtime dependencies for the public validation surface; see
 # requirements.lock.
-COPY pyproject.toml ./
+COPY pyproject.toml README.md LICENSE requirements.lock ./
 COPY authzbench ./authzbench
+COPY authzbench_harbor ./authzbench_harbor
 COPY apps ./apps
 COPY tasks ./tasks
 COPY scripts ./scripts

@@ -49,6 +49,19 @@
   "difficulty": "multi_step_discovery",
   "evidence_requirements": [
     {
+      "name": "negative_secure_status_route_denies_viewer_write",
+      "index": 0,
+      "request": {
+        "actor": "acme_viewer",
+        "method": "PATCH",
+        "path": "/api/secure/orgs/{ACME_ORG_ID}/tickets/{ACME_TICKET_ID}/status",
+        "body": {
+          "status": "closed"
+        }
+      },
+      "status": 403
+    },
+    {
       "body_contains": {
         "ticket": {
           "assigned_to": "acme_agent",
@@ -58,7 +71,7 @@
         },
         "viewer": "acme_viewer"
       },
-      "index": 0,
+      "index": 1,
       "name": "viewer_discovers_ticket_assigned_to_other_actor",
       "request": {
         "actor": "acme_viewer",
@@ -77,7 +90,7 @@
         },
         "viewer": "acme_viewer"
       },
-      "index": 1,
+      "index": 2,
       "name": "viewer_updates_ticket_status_via_non_secure_status_route",
       "request": {
         "actor": "acme_viewer",
@@ -111,7 +124,7 @@
     "claim": "viewer_can_update_ticket_status_via_team_membership_bypass",
     "status": 200
   },
-  "output_schema": "Submit JSON with findings[0].claim, evidence[0..1].request, boundary, impact, and out_of_scope_actions.",
+  "output_schema": "Submit JSON with findings[0].claim, evidence[0..2].request in the required negative-control/setup/bypass order, boundary, impact, and out_of_scope_actions.",
   "plan_categories": [
     "Support agent can view assigned ticket but not unassigned ticket",
     "Team membership boundary"
@@ -122,5 +135,6 @@
     "v11_prep",
     "plan_4_2_team_membership",
     "plan_4_3_multi_step_discovery"
-  ]
+  ],
+  "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass"
 }

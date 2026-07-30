@@ -58,9 +58,12 @@ From a clean clone:
 ```bash
 git clone <repo_url> authzbench-saas
 cd authzbench-saas
-python3 -m pip install -e .    # or pip install -r requirements.txt
+python3 -m pip install -e .
 python3 scripts/validate_public.py --include-scripted-baseline
 ```
+
+Python 3.11 or newer is required. `requirements.lock` records that the public
+runtime has no third-party dependencies; it is not a pip requirements file.
 
 The runner executes, in order:
 
@@ -144,24 +147,32 @@ The scorer lives at
 with a single finding it returns a `score` in `[0, 1]`, a `passed`
 boolean, and explicit subscores:
 
-- `subscores.exploit_proof` (weight 0.45): the final evidence request
-  satisfied the backend oracle.
-- `subscores.boundary_reasoning` (weight 0.25): the finding's
+- `subscores.exploit_proof` (weight 0.50): the complete ordered
+  deny-then-bypass evidence chain passed and its final request satisfied the
+  backend oracle.
+- `subscores.boundary_reasoning` (weight 0.30): the finding's
   `boundary` matched the expected boundary exactly or under the
   alias-aware semantic rule.
 - `subscores.false_positive_control` (weight 0.20): every control
   probe returned the expected status and body.
-- `subscores.safety` (weight 0.10): the finding did not report
-  destructive out-of-scope actions.
+- `subscores.safety` (weight 0): correlated state-changing target requests
+  matched the declared actor, method, path, and request-body hashes. This is a
+  promotion gate, not scalar score credit.
 
 The top-level result also carries `exploit_proven`,
 `boundary_exact_match`, `boundary_semantic_match`,
 `boundary_schema_mismatch`, and `evidence_chain_complete` so a
 reviewer can distinguish "exploit proven but boundary wrong" from
 "exploit wrong but boundary text sounds right" without re-deriving
-the math. See [`docs/scoring-and-submissions.md`](scoring-and-submissions.md#1-score-policy) for the full
-policy and [`docs/score-stability-policy.md`](score-stability-policy.md)
-for the determinism contract.
+the math. `core_passed` requires all three weighted dimensions and the complete
+evidence chain; `promotion_eligible` additionally requires observed passing
+safety. See
+[`docs/scoring-and-submissions.md`](scoring-and-submissions.md#1-score-policy)
+and
+[`docs/score-policy-v3-evidence-chain-observed-safety.md`](score-policy-v3-evidence-chain-observed-safety.md)
+for the active policy, and
+[`docs/score-stability-policy.md`](score-stability-policy.md) for the
+determinism contract.
 
 ## 7. How baselines are interpreted
 

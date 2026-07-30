@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Build and validate the public-safe host review bundle."""
 
+from __future__ import annotations
+
 import argparse
 import datetime
 import hashlib
@@ -117,34 +119,118 @@ def check_private_markers(path: Path) -> list:
     return errors
 
 
-def get_git_commit() -> str:
-    try:
-        res = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            cwd=ROOT,
-            check=True,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        return res.stdout.strip()
-    except Exception:
-        return "unknown"
+def _git_error(label: str, stderr: str) -> RuntimeError:
+    detail = stderr.strip() or "no error output"
+    return RuntimeError(f"{label}: {detail}")
 
 
-def is_git_dirty() -> bool:
-    try:
-        res = subprocess.run(
-            ["git", "status", "--porcelain"],
-            cwd=ROOT,
-            check=True,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+def resolve_git_commit(ref_commit: str = "", root: Path = ROOT) -> str:
+    requested_ref = ref_commit or "HEAD"
+    res = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{requested_ref}^{{commit}}"],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if res.returncode != 0:
+        raise _git_error(f"Failed to resolve Git ref '{requested_ref}'", res.stderr)
+    commit_sha = res.stdout.strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", commit_sha):
+        raise RuntimeError(
+            f"Resolved Git ref '{requested_ref}' to invalid commit SHA '{commit_sha}'"
         )
-        return len(res.stdout.strip()) > 0
-    except Exception:
-        return False
+    return commit_sha
+
+
+def get_git_commit(root: Path = ROOT) -> str:
+    return resolve_git_commit(root=root)
+
+
+def get_git_tree_sha(commit_sha: str, root: Path = ROOT) -> str:
+    res = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{commit_sha}^{{tree}}"],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if res.returncode != 0:
+        raise _git_error(
+            f"Failed to resolve source tree for commit '{commit_sha}'",
+            res.stderr,
+        )
+    tree_sha = res.stdout.strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", tree_sha):
+        raise RuntimeError(f"Resolved invalid source tree SHA '{tree_sha}'")
+    return tree_sha
+
+
+def list_git_tree_entries(commit_sha: str, root: Path = ROOT) -> list[dict[str, str]]:
+    res = subprocess.run(
+        ["git", "ls-tree", "-r", "-z", "--full-tree", commit_sha],
+        cwd=root,
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if res.returncode != 0:
+        raise _git_error(
+            f"Failed to list files for commit '{commit_sha}'",
+            res.stderr.decode("utf-8", errors="replace"),
+        )
+
+    entries: list[dict[str, str]] = []
+    for raw_entry in res.stdout.split(b"\0"):
+        if not raw_entry:
+            continue
+        try:
+            metadata, raw_path = raw_entry.split(b"\t", 1)
+            mode, object_type, object_sha = metadata.decode("ascii").split()
+            rel_path = raw_path.decode("utf-8")
+        except (UnicodeDecodeError, ValueError) as exc:
+            raise RuntimeError(f"Failed to parse Git tree entry: {exc}") from exc
+        entries.append(
+            {
+                "path": rel_path,
+                "mode": mode,
+                "object_type": object_type,
+                "object_sha": object_sha,
+            }
+        )
+    return entries
+
+
+def read_git_blob(blob_sha: str, root: Path = ROOT) -> bytes:
+    res = subprocess.run(
+        ["git", "cat-file", "blob", blob_sha],
+        cwd=root,
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if res.returncode != 0:
+        raise _git_error(
+            f"Failed to read Git blob '{blob_sha}'",
+            res.stderr.decode("utf-8", errors="replace"),
+        )
+    return res.stdout
+
+
+def is_git_dirty(root: Path = ROOT) -> bool:
+    res = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=normal"],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if res.returncode != 0:
+        raise _git_error("Failed to inspect Git working tree", res.stderr)
+    return bool(res.stdout.strip())
 
 
 def get_self_hash() -> str:
@@ -156,66 +242,106 @@ def get_self_hash() -> str:
         return "unknown"
 
 
-def build_bundle(output_dir: Path, ref_commit: str = "", allow_dirty: bool = False, created_at_utc: str = "") -> dict:
+def build_bundle(
+    output_dir: Path,
+    ref_commit: str = "",
+    allow_dirty: bool = False,
+    created_at_utc: str = "",
+    *,
+    root: Path = ROOT,
+) -> dict:
+    files_list = []
+    errors = []
+
+    try:
+        dirty = is_git_dirty(root)
+    except Exception as exc:
+        errors.append(str(exc))
+        return {"passed": False, "errors": errors, "manifest": {}}
+    if dirty and not allow_dirty:
+        errors.append(
+            "Git repository contains uncommitted changes. "
+            "Use --allow-dirty only for an explicit development check; "
+            "working-tree changes are never included in the bundle."
+        )
+        return {"passed": False, "errors": errors, "manifest": {}}
+
+    try:
+        requested_ref = ref_commit or "HEAD"
+        commit_sha = resolve_git_commit(ref_commit, root)
+        tree_sha = get_git_tree_sha(commit_sha, root)
+        tree_entries = list_git_tree_entries(commit_sha, root)
+    except Exception as exc:
+        errors.append(str(exc))
+        return {"passed": False, "errors": errors, "manifest": {}}
+
     if output_dir.exists():
         shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True)
 
-    files_list = []
-    errors = []
-
-    dirty = is_git_dirty()
-    if dirty and not allow_dirty:
-        errors.append("Git repository contains uncommitted changes. Commit or stash them, or use --allow-dirty.")
-        return {"passed": False, "errors": errors, "manifest": {}}
-
-    commit_sha = ref_commit if ref_commit else get_git_commit()
-
-    try:
-        res = subprocess.run(
-            ["git", "ls-files"],
-            cwd=ROOT,
-            check=True,
-            text=True,
-            stdout=subprocess.PIPE,
-        )
-        tracked = [line.strip() for line in res.stdout.splitlines() if line.strip()]
-    except Exception as e:
-        errors.append(f"Failed to list git tracked files: {e}")
-        return {"passed": False, "errors": errors, "manifest": {}}
-
-    for rel_path in tracked:
-        file_path = ROOT / rel_path
+    for entry in tree_entries:
+        rel_path = entry["path"]
 
         if not is_allowed_file(rel_path):
             continue
 
-        if not rel_path.startswith("tests/"):
-            marker_errors = check_private_markers(file_path)
-            if marker_errors:
-                errors.extend(marker_errors)
+        path_parts = Path(rel_path).parts
+        if rel_path.startswith("/") or ".." in path_parts:
+            errors.append(f"Git tree contains unsafe bundle path: {rel_path}")
+            continue
+        if entry["object_type"] != "blob":
+            errors.append(
+                f"Allowed bundle path is not a Git blob: {rel_path} "
+                f"({entry['object_type']})"
+            )
+            continue
+        if entry["mode"] == "120000":
+            errors.append(f"Symlinks are prohibited in the host review bundle: {rel_path}")
+            continue
+
+        try:
+            content = read_git_blob(entry["object_sha"], root)
+        except Exception as exc:
+            errors.append(f"{rel_path}: {exc}")
+            continue
 
         dest_path = output_dir / rel_path
         dest_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file_path, dest_path)
+        dest_path.write_bytes(content)
+        dest_path.chmod(0o755 if entry["mode"] == "100755" else 0o644)
 
-        h = hashlib.sha256()
-        h.update(file_path.read_bytes())
-        file_hash = h.hexdigest()
+        if not rel_path.startswith("tests/"):
+            marker_errors = check_private_markers(dest_path)
+            if marker_errors:
+                errors.extend(f"{rel_path}: {error}" for error in marker_errors)
+
+        file_hash = hashlib.sha256(content).hexdigest()
 
         files_list.append({
             "path": rel_path,
             "sha256": file_hash,
-            "bytes": file_path.stat().st_size
+            "bytes": len(content),
+            "git_blob_sha": entry["object_sha"],
+            "git_mode": entry["mode"],
         })
 
     files_list.sort(key=lambda x: x["path"])
 
-    timestamp = created_at_utc if created_at_utc else datetime.datetime.utcnow().isoformat() + "Z"
+    timestamp = (
+        created_at_utc
+        if created_at_utc
+        else datetime.datetime.now(datetime.timezone.utc)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
     manifest = {
         "schema_version": "host-review-bundle-manifest-v1",
         "source_commit": commit_sha,
+        "source_ref": requested_ref,
+        "source_tree": tree_sha,
+        "source_materialization": "git_object_database",
+        "working_tree_changes_included": False,
         "git_dirty": dirty,
         "created_at_utc": timestamp,
         "claim_boundary": "host-review only; no platform acceptance, hosted leaderboard operation, or external validation.",
@@ -247,37 +373,54 @@ def build_bundle(output_dir: Path, ref_commit: str = "", allow_dirty: bool = Fal
     return {"passed": len(errors) == 0, "errors": errors, "manifest": manifest}
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=str, default="dist/authzbench-saas-host-review")
     parser.add_argument("--ref", type=str, default="")
     parser.add_argument("--check", action="store_true")
-    parser.add_argument("--allow-dirty", action="store_true", help="Allow building bundle with dirty git state")
+    parser.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help=(
+            "Allow an explicit development check from a dirty checkout. "
+            "The bundle still materializes only the exact --ref/HEAD commit."
+        ),
+    )
     parser.add_argument("--created-at-utc", type=str, default="", help="Forced created_at_utc timestamp")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.check:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir) / "authzbench-saas-host-review"
-            result = build_bundle(tmp_path, args.ref, allow_dirty=True, created_at_utc="2026-06-16T00:00:00Z")
+            result = build_bundle(
+                tmp_path,
+                args.ref,
+                allow_dirty=args.allow_dirty,
+                created_at_utc="2026-06-16T00:00:00Z",
+            )
             if not result["passed"]:
                 print("Host review bundle validation FAILED:", file=sys.stderr)
                 for err in result["errors"]:
                     print(f"- {err}", file=sys.stderr)
-                sys.exit(1)
+                return 1
             print("Host review bundle check PASSED (temp build succeeded).")
-            sys.exit(0)
-    else:
-        out_path = Path(args.output)
-        result = build_bundle(out_path, args.ref, allow_dirty=args.allow_dirty, created_at_utc=args.created_at_utc)
-        if not result["passed"]:
-            print("Host review bundle build FAILED:", file=sys.stderr)
-            for err in result["errors"]:
-                print(f"- {err}", file=sys.stderr)
-            sys.exit(1)
-        print(f"Host review bundle successfully built at {args.output}")
-        sys.exit(0)
+            return 0
+
+    out_path = Path(args.output)
+    result = build_bundle(
+        out_path,
+        args.ref,
+        allow_dirty=args.allow_dirty,
+        created_at_utc=args.created_at_utc,
+    )
+    if not result["passed"]:
+        print("Host review bundle build FAILED:", file=sys.stderr)
+        for err in result["errors"]:
+            print(f"- {err}", file=sys.stderr)
+        return 1
+    print(f"Host review bundle successfully built at {args.output}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

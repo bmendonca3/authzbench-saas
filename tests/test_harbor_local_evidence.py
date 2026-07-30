@@ -65,6 +65,18 @@ class HarborLocalEvidenceTests(unittest.TestCase):
         result = self.write_and_validate(valid_evidence())
         self.assertTrue(result["passed"], result)
 
+    def test_checked_in_smoke_is_source_bound_historical(self) -> None:
+        result = validate_harbor_local_evidence(DEFAULT_EVIDENCE_PATH)
+
+        self.assertTrue(result["passed"], result)
+        payload = json.loads(DEFAULT_EVIDENCE_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(
+            payload["evidence_status"],
+            "historical_source_bound_smoke",
+        )
+        self.assertFalse(payload["current_claim_eligible"])
+        self.assertTrue(payload["requires_rerun_before_current_claim"])
+
     def test_rejects_parity_overclaim(self) -> None:
         payload = valid_evidence()
         payload["parity_verified"] = True

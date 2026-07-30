@@ -79,6 +79,7 @@
     "python3 scripts/validate_harbor_adapter_templates.py",
     "python3 scripts/validate_harbor_integration.py",
     "python3 scripts/check_harbor_local_execution.py",
+    "python3 scripts/validate_harbor_compatibility_state.py",
     "python3 scripts/validate_leaderboard_submission.py --submission 'leaderboard_submissions/**/*.json' --require-source-summary",
     "artifact/run-public-validation.sh",
     "python3 scripts/validate_v1_readiness.py --allow-incomplete --public-view --expected-output artifact/expected-output/v1-readiness-public-view.json",

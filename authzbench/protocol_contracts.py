@@ -8,7 +8,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from .core import build_context, load_app, replay_request, resolve_templates, stable_json_sha256
+from .core import build_context, load_app, load_json, replay_request, resolve_templates, stable_json_sha256
 from .score import _contains_subset, _evidence_requirement_matches
 from .validate_manifests import validate_manifest
 
@@ -16,9 +16,9 @@ from .validate_manifests import validate_manifest
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCHEMA_PATH = REPOSITORY_ROOT / "schemas/blinded-control-evidence-v2.schema.json"
 SCHEMA_BUNDLE_VERSION = "blinded-control-evidence-v2-draft"
-EVIDENCE_CONTRACT_VERSION = "evidence-requirements-v2-draft"
+EVIDENCE_CONTRACT_VERSION = "evidence-requirements-v2-deny-then-bypass"
 SCHEMA_STATUS = "draft-non-promotable"
-EXPECTED_SCHEMA_CANONICAL_SHA256 = "4442c9fddc8f10ceb35912dff789037746d857ea4c1ceabca3b13b104ab4a4f1"
+EXPECTED_SCHEMA_CANONICAL_SHA256 = "7e05321d4d2de25acd49f190a6670bed7a2243b502cf984d8920b5240df5bc07"
 REQUIRED_SCHEMA_DEFINITIONS = {
     "controlVerification",
     "evidenceItem",
@@ -31,33 +31,10 @@ REQUIRED_SCHEMA_DEFINITIONS = {
 }
 
 
-class DuplicateJsonKeyError(ValueError):
-    pass
-
-
-class NonFiniteJsonNumberError(ValueError):
-    pass
-
-
-def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in result:
-            raise DuplicateJsonKeyError(f"duplicate JSON key: {key}")
-        result[key] = value
-    return result
-
-
 def load_json_without_duplicate_keys(path: Path) -> Any:
-    def reject_constant(value: str) -> Any:
-        raise NonFiniteJsonNumberError(f"non-finite JSON number: {value}")
+    """Compatibility wrapper for the shared strict JSON loader."""
 
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(
-            handle,
-            object_pairs_hook=_reject_duplicate_keys,
-            parse_constant=reject_constant,
-        )
+    return load_json(path)
 
 
 def validate_schema_bundle(schema: Any) -> list[dict[str, str]]:
@@ -344,16 +321,34 @@ def validate_participant_submission_v2(submission: Any) -> list[dict[str, str]]:
 
 
 def _evidence_requirement_findings(task: dict[str, Any], path: str) -> list[dict[str, str]]:
+    if task.get("evidence_contract_version") != EVIDENCE_CONTRACT_VERSION:
+        version_findings = [
+            _finding(
+                "evidence_contract_version_invalid",
+                path,
+                f"evidence_contract_version must equal {EVIDENCE_CONTRACT_VERSION!r}",
+            )
+        ]
+    else:
+        version_findings = []
     requirements = task.get("evidence_requirements")
     if not isinstance(requirements, list) or not requirements:
-        return [
+        return version_findings + [
             _finding(
                 "evidence_contract_missing",
                 path,
                 "vulnerable task requires a non-empty evidence_requirements list",
             )
         ]
-    findings: list[dict[str, str]] = []
+    findings: list[dict[str, str]] = list(version_findings)
+    if len(requirements) < 2:
+        findings.append(
+            _finding(
+                "evidence_chain_too_short",
+                path,
+                "vulnerable task requires at least a negative-control step and final bypass step",
+            )
+        )
     indexes: list[int] = []
     names: list[str] = []
     for position, requirement in enumerate(requirements):
@@ -436,6 +431,37 @@ def _evidence_requirement_findings(task: dict[str, Any], path: str) -> list[dict
                 "evidence_requirement_names_invalid",
                 path,
                 "requirement names must be unique",
+            )
+        )
+    pre_final_statuses = [
+        requirement.get("status")
+        for requirement in requirements[:-1]
+        if isinstance(requirement, dict)
+    ]
+    if not any(
+        isinstance(status, int)
+        and not isinstance(status, bool)
+        and not 200 <= status < 300
+        for status in pre_final_statuses
+    ):
+        findings.append(
+            _finding(
+                "evidence_negative_control_missing",
+                path,
+                "a pre-final evidence step must observe a non-2xx authorization control",
+            )
+        )
+    final_status = requirements[-1].get("status") if isinstance(requirements[-1], dict) else None
+    if (
+        not isinstance(final_status, int)
+        or isinstance(final_status, bool)
+        or not 200 <= final_status < 300
+    ):
+        findings.append(
+            _finding(
+                "evidence_final_bypass_invalid",
+                path,
+                "the final evidence step must be a successful 2xx bypass proof",
             )
         )
     return findings

@@ -5,9 +5,12 @@
   "review_lanes": [
     {
       "lane": "Application security",
+      "registry_lane_id": "appsec",
       "review_status": "complete",
       "review_date": "<YYYY-MM-DD>",
+      "reviewed_commit_sha": "<40-character lowercase commit SHA>",
       "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
+      "overall_disposition": "<accept, accept_with_minor_changes, or reject>",
       "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
       "questions_reviewed": [
         "Do the public tasks exercise recognizable SaaS authorization boundaries rather than synthetic-only quirks?",
@@ -17,6 +20,9 @@
       ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
+        "docs/reviews/appsec-review-packet.md",
+        "docs/reviews/schemas/appsec-review.schema.json",
+        "docs/reviews/external-review-response.template.json",
         "docs/task-quality-matrix.md",
         "docs/task-quality-rubric.md",
         "docs/claims-and-evidence.md",
@@ -36,22 +42,32 @@
     },
     {
       "lane": "Benchmark/evals methodology",
+      "registry_lane_id": "benchmark_evals",
       "review_status": "complete",
       "review_date": "<YYYY-MM-DD>",
+      "reviewed_commit_sha": "<40-character lowercase commit SHA>",
       "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
+      "overall_disposition": "<accept, accept_with_minor_changes, or reject>",
       "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
       "questions_reviewed": [
         "Does the evidence support the stated claim boundary?",
         "Are public-split diagnostics separated from private-holdout leaderboard claims?",
         "Are repeated-run ranges presented as descriptive evidence rather than statistical certainty?",
-        "Are stale 44-task, frozen 46-task, historical 49-task, and stale 54-task and current 60-task baselines separated clearly?"
+        "Are stale 44-task, frozen 46-task, historical 49-task, stale 54-task and 60-task, and current 63-task evidence separated clearly?",
+        "Is it explicit that the current 63-task model and tool rows are offline policy-v2 rescores of saved full-split submissions rather than fresh repeated model execution under policy v2?",
+        "Does the draft 17-cluster contract define defensible semantic clusters and cluster-disjoint split rules, and what analysis should determine the minimum discriminating task and cluster counts?"
       ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
+        "docs/reviews/benchmark-methodology-review-packet.md",
+        "docs/reviews/schemas/evals-review.schema.json",
+        "docs/reviews/external-review-response.template.json",
         "docs/benchmark-spec.md",
         "docs/scoring-and-submissions.md",
+        "docs/kaggle-benchmark-design-contract.md",
         "docs/baseline-credibility.md",
         "docs/baseline-variance-analysis.md",
+        "artifact/scored-cohort-contract.v1.json",
         "baselines/baseline-registry.json"
       ],
       "disposition": "<findings-or-no_findings>",
@@ -67,9 +83,12 @@
     },
     {
       "lane": "AI-agent/tooling",
+      "registry_lane_id": "agent_tooling",
       "review_status": "complete",
       "review_date": "<YYYY-MM-DD>",
+      "reviewed_commit_sha": "<40-character lowercase commit SHA>",
       "reviewer_role_scope": "<role and scope only; omit private identity unless permission is granted>",
+      "overall_disposition": "<accept, accept_with_minor_changes, or reject>",
       "claim_boundary_impact": "<how this review changes, confirms, or narrows the supported AuthZBench-SaaS claim boundary>",
       "questions_reviewed": [
         "Are no-tools model baselines and live HTTP tool-agent baselines compared only where comparison is fair?",
@@ -79,6 +98,9 @@
       ],
       "artifacts_reviewed": [
         "docs/reviews/external-review-packet.md",
+        "docs/reviews/agent-tooling-review-packet.md",
+        "docs/reviews/schemas/agent-tooling-review.schema.json",
+        "docs/reviews/external-review-response.template.json",
         "docs/agent-evaluator-kit.md",
         "docs/scoring-and-submissions.md",
         "docs/boundary-reasoning-calibration-study.md",
@@ -102,6 +124,8 @@
     "Do not include private reviewer identity unless permission is granted.",
     "Do not include private holdout manifests, task IDs, private routes, private seeds, raw private outputs, captures, credentials, or local absolute paths.",
     "Replace embedded unresolved markers such as TBD, TODO, pending, unknown, n/a, and angle-bracket placeholders with concrete review facts.",
-    "Accepted and unresolved decisions must point to a tracked follow-up artifact or existing commit SHA."
+    "An unresolved decision keeps its lane pending and cannot satisfy strict completion.",
+    "Accepted findings require committed post-review remediation and final source review; a pre-existing file is not remediation evidence.",
+    "All three formal lanes and the separate SaaS/product-security lane must bind to one frozen reviewed commit whose mandatory source trees match the current candidate."
   ]
 }

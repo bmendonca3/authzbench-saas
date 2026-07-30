@@ -1,7 +1,8 @@
 {
   "adapter_version": "0.1.0",
   "blocked": false,
-  "evidence_status": "harbor_adapter_smoke",
+  "current_claim_eligible": false,
+  "evidence_status": "historical_stale",
   "generated_at": "2026-06-12T16:34:57.231196Z",
   "harbor_execution_verified": true,
   "harbor_results": {
@@ -55,7 +56,9 @@
   "private_artifacts_tracked": false,
   "public_claim_boundary": "This is local Harbor adapter smoke evidence only. It does not claim Harbor platform acceptance, Kaggle acceptance, hosted public leaderboard readiness, SaaS-provider validation, external review, or third-party submissions.",
   "raw_harbor_jobs_tracked": false,
+  "requires_rerun_before_current_claim": true,
   "schema_version": "harbor-adapter-smoke-v1",
+  "stale_reason": "This six-task local smoke has no exact benchmark source binding and its checked-in generated dataset no longer validates against the current task/scorer source state.",
   "task_count": 6,
   "task_ids": [
     "tok_cross_tenant_secret_read",

@@ -8,6 +8,10 @@ results/
 captures/
 tasks_private/holdout/
 docs/reviews/panel-logs/
+# Controlled per-task private-review responses contain private pack/task
+# identifiers and remain local to the reviewer environment. Only aggregate,
+# public-safe projections may be tracked.
+private-review-responses/
 harbor-jobs/
 .harbor/
 **/harbor-jobs/

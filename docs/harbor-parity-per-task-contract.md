@@ -29,8 +29,8 @@ schema `harbor-parity-experiment-v1`. Required fields:
 
 - `schema_version` (must equal `harbor-parity-experiment-v1`)
 - `evidence_status` (one of `current`, `historical_backcompat`,
-  `blocked`; new live evidence is `current` or `blocked` if Harbor CLI
-  is unavailable)
+  `historical_stale`, or `blocked`; new live evidence is `current` or
+  `blocked` if Harbor CLI is unavailable)
 - `parity_methodology` (must be `per_task_pairing` for new live
   evidence)
 - `parity_verified` (false when per-task pairing has not been computed
@@ -72,21 +72,22 @@ schema `harbor-parity-experiment-v1`. Required fields:
 
 ## Current state
 
-The current `artifact/harbor-parity-experiment.json` records a completed local
+The retained `artifact/harbor-parity-experiment.json` records a historical
 six-task public empty-findings experiment with
-`evidence_status=current`, `parity_methodology=per_task_pairing`, and
-`parity_verified=true`. All six per-task native scores match Harbor rewards.
-This is scoped local parity, not full 63-task/model parity or platform
-acceptance. Harbor CLI discovery in a fresh checkout may still be false even
-though the redacted run evidence remains tracked.
+`evidence_status=historical_stale`,
+`parity_methodology=per_task_pairing`, and `parity_verified=true`. All six
+per-task native scores matched Harbor rewards in that past run. It is not
+current-source compatibility, full 63-task/model parity, or platform
+acceptance. A fresh exact-source run is required before a current claim.
 
 The historical aggregate-means file is preserved separately for back-compat
 with the pre per-task reward extraction era.
 
 ## What v1 release evidence requires
 
-- The live `artifact/harbor-parity-experiment.json` must be
-  `evidence_status=current` and `parity_methodology=per_task_pairing`.
+- A newly generated live `artifact/harbor-parity-experiment.json` must be
+  `evidence_status=current`, exact-source bound, and
+  `parity_methodology=per_task_pairing`.
 - `parity_verified` should be `true` when a real Harbor run completes
   and the per-task pairing matches within `reward_tolerance`.
 - The historical file may be kept for traceability but does not

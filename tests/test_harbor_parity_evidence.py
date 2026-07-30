@@ -17,14 +17,18 @@ Covers:
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from scripts import run_harbor_parity_experiment as parity_runner
 from scripts.validate_harbor_parity_experiment import validate_parity_experiment
 from scripts.validate_harbor_adapter_metadata import validate_adapter_metadata
 from authzbench_harbor.schemas import (
@@ -72,18 +76,34 @@ def _make_task_pairing_payload(
     match_count = per_task_match_count if per_task_match_count is not None else sum(
         1 for v in per_task_match.values() if v
     )
+    harbor_mean = sum(harbor_rewards.values()) / len(harbor_rewards)
+    native_mean = sum(native_scores.values()) / len(native_scores)
 
     return {
         "schema_version": PARITY_EXPERIMENT_SCHEMA_VERSION,
         "evidence_status": evidence_status,
         "public_claim_boundary": "test",
         "parity_verified": parity_verified,
+        "current_claim_eligible": (
+            parity_verified if evidence_status == "current" else False
+        ),
+        "requires_rerun_before_current_claim": (
+            not parity_verified if evidence_status == "current" else True
+        ),
         "parity_methodology": methodology,
         "reward_tolerance": reward_tolerance,
         "required_match_rate": required_match_rate,
         "parity_match_threshold": 1.0,
-        "harbor_results": {"harbor_run_id": "run-1", "reward_mean": 1.0},
+        "harbor_results": {
+            "harbor_run_id": "run-1",
+            "n_total_trials": len(task_ids),
+            "n_completed_trials": len(task_ids),
+            "n_errored_trials": 0,
+            "reward_mean": harbor_mean,
+        },
         "native_authzbench_results": {tid: {"score": native_scores[tid]} for tid in task_ids},
+        "harbor_reward_mean": harbor_mean,
+        "native_mean_score": native_mean,
         "harbor_per_task_rewards": harbor_rewards,
         "native_per_task_scores": native_scores,
         "per_task_match": per_task_match,
@@ -452,6 +472,140 @@ class TestValidateParityExperiment(unittest.TestCase):
             self.assertFalse(result["passed"])
             self.assertTrue(any("per_task_match_rate" in e for e in result["errors"]))
 
+    # --- P0 adversarial evidence-integrity checks -----------------------
+
+    def test_duplicate_task_ids_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload()
+            data["task_ids"] = ["task1", "task1"]
+            data["task_count"] = 2
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("duplicate task_ids" in e for e in result["errors"]), result)
+
+    def test_per_task_maps_require_exact_task_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload()
+            data["harbor_per_task_rewards"]["unknown-task"] = 1.0
+            data["native_authzbench_results"]["unknown-task"] = {"score": 1.0}
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(result["passed"])
+            self.assertTrue(
+                any("harbor_per_task_rewards keys must exactly match task_ids" in e for e in result["errors"]),
+                result,
+            )
+            self.assertTrue(
+                any("native_authzbench_results keys must exactly match task_ids" in e for e in result["errors"]),
+                result,
+            )
+
+    def test_non_finite_rewards_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload()
+            data["harbor_per_task_rewards"]["task1"] = float("nan")
+            data["harbor_reward_mean"] = float("nan")
+            data["harbor_results"]["reward_mean"] = float("nan")
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(result["passed"])
+            self.assertTrue(
+                any(
+                    "finite number" in error or "non-finite JSON number" in error
+                    for error in result["errors"]
+                ),
+                result,
+            )
+
+    def test_duplicate_json_key_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "parity.json"
+            path.write_text(
+                '{"schema_version":"harbor-parity-experiment-v1",'
+                '"schema_version":"harbor-parity-experiment-v1"}',
+                encoding="utf-8",
+            )
+
+            result = validate_parity_experiment(path)
+
+        self.assertFalse(result["passed"], result)
+        self.assertTrue(
+            any("duplicate JSON key: schema_version" in error for error in result["errors"]),
+            result,
+        )
+
+    def test_task_and_trial_counts_must_be_exact(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload()
+            data["task_count"] = 3
+            data["harbor_results"]["n_total_trials"] = 3
+            data["harbor_results"]["n_completed_trials"] = 3
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("task_count" in e and "task_ids" in e for e in result["errors"]), result)
+            self.assertTrue(any("n_total_trials" in e and "task_count" in e for e in result["errors"]), result)
+
+    def test_verified_parity_rejects_errored_trials(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload()
+            data["harbor_results"]["n_completed_trials"] = 1
+            data["harbor_results"]["n_errored_trials"] = 1
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("zero errored trials" in e for e in result["errors"]), result)
+
+    def test_declared_means_are_recomputed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload()
+            data["native_mean_score"] = 0.25
+            data["harbor_reward_mean"] = 0.75
+            data["harbor_results"]["reward_mean"] = 0.5
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("native_mean_score" in e and "recomputed" in e for e in result["errors"]), result)
+            self.assertTrue(any("harbor_reward_mean" in e and "recomputed" in e for e in result["errors"]), result)
+
+    def test_current_false_parity_is_recomputed_and_cannot_hide_a_match(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload(parity_verified=False)
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertFalse(result["passed"])
+            self.assertTrue(any("parity_verified" in e and "recomputed value is True" in e for e in result["errors"]), result)
+
+    def test_current_false_parity_with_honest_disagreement_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload(
+                parity_verified=False,
+                reward_overrides={"task2": 0.0},
+                per_task_match={"task1": True, "task2": False},
+                per_task_disagreements=["task2"],
+                per_task_match_count=1,
+                match_rate=0.5,
+            )
+            path = self._write_parity(tmp, data)
+            result = validate_parity_experiment(path)
+            self.assertTrue(result["passed"], result)
+
+    def test_current_claim_eligibility_is_recomputed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload()
+            data["current_claim_eligible"] = False
+            data["requires_rerun_before_current_claim"] = True
+            path = self._write_parity(tmp, data)
+
+            result = validate_parity_experiment(path)
+
+            self.assertFalse(result["passed"], result)
+            self.assertTrue(
+                any("current_claim_eligible" in error for error in result["errors"]),
+                result,
+            )
+
     # --- T20: aggregate historical evidence does not require per-task ----
 
     def test_aggregate_historical_omits_per_task_fields(self) -> None:
@@ -474,6 +628,34 @@ class TestValidateParityExperiment(unittest.TestCase):
             path = self._write_parity(tmp, data)
             result = validate_parity_experiment(path)
             self.assertTrue(result["passed"], f"errors: {result['errors']}")
+
+    def test_historical_stale_per_task_evidence_preserves_result_but_is_ineligible(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload(evidence_status="historical_stale")
+            data["current_claim_eligible"] = False
+            data["requires_rerun_before_current_claim"] = True
+            data["stale_reason"] = "benchmark source changed after this local run"
+            path = self._write_parity(tmp, data)
+
+            result = validate_parity_experiment(path)
+
+            self.assertTrue(result["passed"], result)
+            self.assertTrue(result["parity_verified"])
+
+    def test_historical_stale_requires_explicit_ineligibility(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            data = _make_task_pairing_payload(evidence_status="historical_stale")
+            data.pop("current_claim_eligible")
+            data.pop("requires_rerun_before_current_claim")
+            path = self._write_parity(tmp, data)
+
+            result = validate_parity_experiment(path)
+
+            self.assertFalse(result["passed"], result)
+            self.assertTrue(
+                any("current_claim_eligible=false" in error for error in result["errors"]),
+                result,
+            )
 
     # --- Item 28: validator does not silently default methodology -----
 
@@ -511,6 +693,29 @@ class TestValidateParityExperiment(unittest.TestCase):
         self.assertIn("per_task_pairing", result.stdout)
         self.assertIn("aggregate_means", result.stdout)
 
+    def test_runner_rejects_new_aggregate_means_evidence_before_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "parity.json"
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/run_harbor_parity_experiment.py",
+                    "--parity-methodology",
+                    "aggregate_means",
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=ROOT,
+                timeout=30,
+            )
+            output_exists = output.exists()
+
+        self.assertEqual(result.returncode, 2, result)
+        self.assertIn("historical validation compatibility only", result.stderr)
+        self.assertFalse(output_exists)
+
     # --- Validator constants exposed via schemas -----------------------
 
     def test_schema_constants(self) -> None:
@@ -518,7 +723,151 @@ class TestValidateParityExperiment(unittest.TestCase):
         self.assertEqual(REQUIRED_MATCH_RATE, 1.0)
         self.assertIn("current", PARITY_EVIDENCE_STATUS_VALUES)
         self.assertIn("historical_backcompat", PARITY_EVIDENCE_STATUS_VALUES)
+        self.assertIn("historical_stale", PARITY_EVIDENCE_STATUS_VALUES)
         self.assertIn("blocked", PARITY_EVIDENCE_STATUS_VALUES)
+
+
+class TestHarborParityRunnerIntegrity(unittest.TestCase):
+    @staticmethod
+    def _write_job_result(path: Path, run_id: str) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(
+                {
+                    "id": run_id,
+                    "n_total_trials": 1,
+                    "stats": {
+                        "n_completed_trials": 1,
+                        "n_errored_trials": 0,
+                        "evals": {"oracle": {"metrics": [{"mean": 1.0}]}},
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    @staticmethod
+    def _write_trial(job_dir: Path, name: str, task_name: str, reward: object) -> None:
+        trial_path = job_dir / name / "result.json"
+        trial_path.parent.mkdir(parents=True, exist_ok=True)
+        trial_path.write_text(
+            json.dumps(
+                {
+                    "id": name,
+                    "task_name": task_name,
+                    "verifier_result": {"rewards": {"reward": reward}},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    def test_run_harbor_selects_only_the_newly_created_job(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp)
+            (dataset_dir / "run_authzbench_saas.yaml").write_text("tasks: []\n", encoding="utf-8")
+            old_result = dataset_dir / "harbor-jobs" / "zzz-old" / "result.json"
+            self._write_job_result(old_result, "old-run")
+
+            def fake_run(*args: object, **kwargs: object) -> SimpleNamespace:
+                new_result = dataset_dir / "harbor-jobs" / "aaa-new" / "result.json"
+                self._write_job_result(new_result, "new-run")
+                return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+            with patch.object(parity_runner.subprocess, "run", side_effect=fake_run):
+                result = parity_runner._run_harbor(dataset_dir, ["harbor"])
+
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result["harbor_run_id"], "new-run")
+        self.assertTrue(str(result["job_dir"]).endswith("aaa-new"))
+
+    def test_runner_rejects_duplicate_manifest_task_ids(self) -> None:
+        task_ids, error = parity_runner._manifest_task_ids(
+            {
+                "task_count": 2,
+                "tasks": [{"id": "task1"}, {"id": "task1"}],
+            }
+        )
+        self.assertEqual(task_ids, [])
+        self.assertIsInstance(error, str)
+        self.assertIn("duplicate task ids", error)
+
+    def test_runner_rejects_inexact_harbor_summary_counts(self) -> None:
+        error = parity_runner._harbor_summary_error(
+            {
+                "harbor_run_id": "run-1",
+                "n_total_trials": 3,
+                "n_completed_trials": 3,
+                "n_errored_trials": 0,
+                "reward_mean": 1.0,
+            },
+            2,
+        )
+        self.assertIsInstance(error, str)
+        self.assertIn("exactly match dataset task_count", error)
+
+    def test_runner_rejects_native_scoring_errors(self) -> None:
+        error = parity_runner._native_results_error(
+            ["task1"],
+            {"task1": {"score": 0.0, "error": "scorer crashed"}},
+        )
+        self.assertIsInstance(error, str)
+        self.assertIn("scoring error", error)
+
+    def test_run_harbor_rejects_ambiguous_new_jobs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dataset_dir = Path(tmp)
+            (dataset_dir / "run_authzbench_saas.yaml").write_text("tasks: []\n", encoding="utf-8")
+
+            def fake_run(*args: object, **kwargs: object) -> SimpleNamespace:
+                self._write_job_result(
+                    dataset_dir / "harbor-jobs" / "new-one" / "result.json",
+                    "new-one",
+                )
+                self._write_job_result(
+                    dataset_dir / "harbor-jobs" / "new-two" / "result.json",
+                    "new-two",
+                )
+                return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+            with patch.object(parity_runner.subprocess, "run", side_effect=fake_run):
+                result = parity_runner._run_harbor(dataset_dir, ["harbor"])
+
+        self.assertIsInstance(result, str)
+        self.assertIn("exactly one newly created", result)
+
+    def test_trial_collection_rejects_unknown_and_duplicate_task_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            job_dir = Path(tmp)
+            self._write_trial(job_dir, "trial-1", "authzbench-saas/task1", 1.0)
+            self._write_trial(job_dir, "trial-2", "authzbench-saas/unknown", 1.0)
+            result = parity_runner._collect_harbor_trial_rewards(
+                job_dir,
+                ["task1", "task2"],
+            )
+            self.assertIsInstance(result, str)
+            self.assertIn("unknown trial task key", result)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            job_dir = Path(tmp)
+            self._write_trial(job_dir, "trial-1", "authzbench-saas/task1", 1.0)
+            self._write_trial(job_dir, "trial-2", "authzbench-saas/task1", 1.0)
+            result = parity_runner._collect_harbor_trial_rewards(
+                job_dir,
+                ["task1", "task2"],
+            )
+            self.assertIsInstance(result, str)
+            self.assertIn("duplicate trial task key", result)
+
+    def test_trial_collection_rejects_non_finite_reward(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            job_dir = Path(tmp)
+            self._write_trial(job_dir, "trial-1", "authzbench-saas/task1", float("inf"))
+            result = parity_runner._collect_harbor_trial_rewards(job_dir, ["task1"])
+            self.assertIsInstance(result, str)
+            self.assertTrue(
+                "finite numeric reward" in result or "non-finite JSON number" in result,
+                result,
+            )
 
 
 class TestValidateAdapterMetadata(unittest.TestCase):
@@ -545,15 +894,52 @@ class TestValidateAdapterMetadata(unittest.TestCase):
     def test_real_metadata_with_all_required_fields_passes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "metadata.json"
-            data = {
-                "schema_version": "harbor-adapter-metadata-v1",
-                "evidence_status": "implementation_target",
-                "public_claim_boundary": "No Harbor acceptance claimed.",
-                "adapter_version": "0.1.0",
-            }
+            data = json.loads(
+                (ROOT / "artifact" / "harbor-adapter-metadata.json").read_text(
+                    encoding="utf-8"
+                )
+            )
             path.write_text(json.dumps(data))
             result = validate_adapter_metadata(path)
             self.assertTrue(result["passed"], f"errors: {result['errors']}")
+
+    def test_real_metadata_rejects_live_http_as_supported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "metadata.json"
+            data = json.loads(
+                (ROOT / "artifact" / "harbor-adapter-metadata.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            data["supported_lanes"].append("live_http_tool_agent")
+            path.write_text(json.dumps(data))
+
+            result = validate_adapter_metadata(path)
+
+            self.assertFalse(result["passed"], result)
+            self.assertIn(
+                "supported_lanes must contain only the implemented no_tools lane",
+                result["errors"],
+            )
+
+    def test_real_metadata_rejects_positive_external_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "metadata.json"
+            data = json.loads(
+                (ROOT / "artifact" / "harbor-adapter-metadata.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            data["hosted_execution_verified"] = True
+            path.write_text(json.dumps(data))
+
+            result = validate_adapter_metadata(path)
+
+            self.assertFalse(result["passed"], result)
+            self.assertIn(
+                "hosted_execution_verified must be explicitly false in local adapter metadata",
+                result["errors"],
+            )
 
     def test_private_path_in_metadata_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

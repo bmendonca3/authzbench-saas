@@ -40,22 +40,24 @@ def run_privacy_check() -> bool:
             cwd=ROOT,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
+            check=False,
         )
-        if res.returncode == 0:
-            output = res.stdout.strip()
-            if output:
-                print("ERROR: private/raw artifact paths are tracked in git:", file=sys.stderr)
-                print(output, file=sys.stderr)
-                return False
-            print("PASS: Privacy check (no private/raw paths tracked)\n")
-            return True
-        else:
-            print(f"Warning: git ls-files failed: {res.stderr.strip()}", file=sys.stderr)
-            return True
-    except Exception as e:
-        print(f"Warning: Encountered exception running git ls-files: {e}", file=sys.stderr)
+        if res.returncode != 0:
+            detail = res.stderr.strip() or "no error output"
+            print(f"ERROR: git ls-files failed: {detail}", file=sys.stderr)
+            return False
+
+        output = res.stdout.strip()
+        if output:
+            print("ERROR: private/raw artifact paths are tracked in git:", file=sys.stderr)
+            print(output, file=sys.stderr)
+            return False
+        print("PASS: Privacy check (no private/raw paths tracked)\n")
         return True
+    except Exception as e:
+        print(f"ERROR: Encountered exception running git ls-files: {e}", file=sys.stderr)
+        return False
 
 
 def main():

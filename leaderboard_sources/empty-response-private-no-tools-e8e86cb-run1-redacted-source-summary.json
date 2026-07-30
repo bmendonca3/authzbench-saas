@@ -24,6 +24,7 @@
   "control_false_report_rate": 0.0,
   "control_task_count": 12,
   "denial_control_task_count": 6,
+  "evidence_status": "stale_after_score_policy_v3",
   "executed_tool_probe_total": 0,
   "exploit_proven_success_rate": 0.0,
   "exploit_proven_task_count": 0,
@@ -52,6 +53,7 @@
   "public_task_count": 0,
   "raw_private_artifacts_tracked": false,
   "redacted_private_holdout_source": true,
+  "requires_rerun_before_current_comparison": true,
   "run_count": 1,
   "run_id": "empty-response-private-no-tools-e8e86cb-run1-redacted",
   "runner_integrity": {

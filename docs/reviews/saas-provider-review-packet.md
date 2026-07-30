@@ -1,9 +1,12 @@
 # SaaS-Provider / Product-Security Review Packet
 
-Status: ready-to-send packet for SaaS-provider or product-security
-reviewers. No SaaS-provider validation is claimed until findings or
-explicit no-finding dispositions are recorded in
-`docs/reviews/external-review-summary.md`.
+Status: local public-safe handoff candidate for SaaS-provider or
+product-security reviewers, refreshed from base commit
+`acb6434c4bb25cce53a1a9f4eb31c869986743ca` with evidence through
+2026-07-28. It has not been sent. Freeze and record the final review commit
+before a reviewer starts. No SaaS-provider validation is claimed until a real
+public-safe response is retained as a dedicated tracked review artifact and
+the claim/evidence surface is updated.
 
 ## Purpose
 
@@ -123,9 +126,24 @@ A reviewer should mark an app or vulnerability family as
 
 ## Submission
 
-Submit the review form to `docs/reviews/review-registry.json` and a
-per-lane summary to `docs/reviews/external-review-summary.md`. Do not
-include per-task private contents.
+Return the completed public-safe form to the maintainer. Retain the accepted
+records in `docs/reviews/saas-product-security-review-registry.json`, whose
+closed record shape is
+`docs/reviews/schemas/saas-product-security-review.schema.json`. Cite the
+validated registry from `docs/claims-and-evidence.md` before changing the
+supported claim boundary.
+
+Do not put this response in `docs/reviews/review-registry.json`; that file is
+the historical/internal review registry. Do not silently add it to
+`docs/reviews/external-review-registry.json`, which currently models exactly
+the three independent AppSec, benchmark/evals, and agent/tooling lanes. Validate
+the pending structure with
+`python3 scripts/validate_saas_product_security_review.py`; after real records
+exist, run `python3 scripts/validate_v2_external_validation.py
+--require-complete`. The combined gate requires the same frozen reviewed commit
+for all four lanes and rejects blocking/rejected/source-drifted evidence.
+Until it passes, EXT-004 and the SaaS-validation claim remain unresolved. Do
+not include per-task private contents.
 
 ## Explicit Non-Claims
 

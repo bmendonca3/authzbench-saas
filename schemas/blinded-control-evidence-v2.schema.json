@@ -133,7 +133,7 @@
           "type": "string"
         },
         "evidence_contract_version": {
-          "const": "evidence-requirements-v2-draft"
+          "const": "evidence-requirements-v2-deny-then-bypass"
         },
         "isolation_profile": {
           "const": "unactivated-draft"

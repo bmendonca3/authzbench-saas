@@ -97,5 +97,7 @@ intake form.
 ## Submission
 
 Submit the review form to
-`docs/reviews/review-registry.json` and a per-lane summary to
+the `agent_tooling` lane's `per_task_records` in
+`docs/reviews/external-review-registry.json`, then copy the public-safe lane
+disposition to `docs/reviews/external-review-summary.json` and
 `docs/reviews/external-review-summary.md`.

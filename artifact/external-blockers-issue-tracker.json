@@ -1,14 +1,14 @@
 {
   "schema_version": "external-blockers-issue-tracker-v1",
-  "generated_at": "2026-06-16T16:46:00Z",
-  "generated_from_commit": "a85db03",
+  "generated_at": "2026-07-29T15:42:10Z",
+  "generated_from_commit": "acb6434c4bb25cce53a1a9f4eb31c869986743ca",
   "public_claim_boundary": "This file tracks external blockers for GitHub issue creation. It does not claim resolution of any external dependency.",
   "issues": [
     {
       "id": "EXT-001",
-      "title": "Kaggle Docker execution spec confirmation",
+      "title": "KQ-005 Kaggle-supported Harbor host or runner image",
       "labels": ["external-blocker", "kaggle", "harbor"],
-      "body": "Kaggle needs to confirm the expected container shape, metadata paths, artifact format, and scoring interface for AuthZBench-SaaS. Without this spec, we cannot validate that our Harbor adapter generates compliant containers.\n\nBlocked by: Kaggle/Google platform team\nRepo-side status: Harbor dataset skeleton builder is ready; adapter can be adjusted once spec is provided.\nReference: docs/kaggle-harbor-integration-brief.md",
+      "body": "KQ-005 needs either a Kaggle-supported host/kernel on which Harbor 0.15's nested egress-control sidecar can install the required nftables `fib` rules, or a corrected supported runner image with an equivalent network-isolation mechanism. The attempt against benchmark source `20cd189072b25dc406bd4fff03672a4ab0268648` and published runner digest `sha256:772dfa2383c07928ee020f8235323a81dee9ff519750e978f776cc0448533f32` stopped before agent startup when the sidecar could not install those rules. That local Docker-in-Docker observation is not Kaggle execution evidence.\n\nBlocked by: Kaggle/Google platform team\nRepo-side status: Source, runner digest, task digest, and the pre-agent failure are recorded. The remaining evidence is a run of the same source/digest in the supported environment with startup, network-isolation, trajectory, submission, CTRF, reward, verifier, resource, token, and source/digest results preserved.\nReference: docs/kaggle-benchmark-design-contract.md (KQ-005)",
       "status": "draft",
       "external_dependency": "Kaggle/Google"
     },
@@ -24,7 +24,7 @@
       "id": "EXT-003",
       "title": "Harbor platform publishing / official review",
       "labels": ["external-blocker", "harbor"],
-      "body": "Local Harbor parity is verified (6/6 tasks, 100% match rate), but Harbor review/publishing/endorsement is external. This issue tracks the Harbor platform acceptance path.\n\nBlocked by: Harbor platform team\nRepo-side status: Local parity verified. See artifact/harbor-parity-experiment.json.\nReference: artifact/harbor-adapter-readiness-blockers.json (harbor_review_or_publish_path)",
+      "body": "The historical local Harbor experiment verified six-task parity (6/6 tasks, 100% match rate). That bounded local result does not establish current exact-source/digest executor parity or Harbor official review/publishing. This issue tracks the external Harbor review and publishing path separately from KQ-005.\n\nBlocked by: Harbor platform team\nRepo-side status: Historical local parity is preserved in artifact/harbor-parity-experiment.json; exact-source hosted-executor parity remains open under EXT-001.\nReference: artifact/harbor-adapter-readiness-blockers.json (harbor_review_or_publish_path)",
       "status": "draft",
       "external_dependency": "Harbor platform"
     },
@@ -32,7 +32,7 @@
       "id": "EXT-004",
       "title": "SaaS-provider / product-security validation",
       "labels": ["external-blocker", "review"],
-      "body": "Requires actual SaaS or product-security reviewers to validate whether task scenarios reflect real authorization failures. Review packet is ready.\n\nBlocked by: External SaaS-provider / product-security reviewer\nRepo-side status: Review packet created at docs/reviews/saas-provider-review-packet.md.\nReference: docs/reviews/external-review-packet.md",
+      "body": "Requires actual SaaS or product-security reviewers to validate whether task scenarios reflect real authorization failures. The separate realism-review packet is ready, but no reviewer response or dedicated validated record exists.\n\nBlocked by: External SaaS-provider / product-security reviewer\nRepo-side status: Review packet created at docs/reviews/saas-provider-review-packet.md. A returned public-safe response must be retained as a dedicated tracked review artifact before the claim boundary changes; it must not be recorded as an internal review or silently added to the three-lane external registry.\nReference: docs/reviews/saas-provider-review-packet.md",
       "status": "draft",
       "external_dependency": "SaaS-provider / product-security reviewer"
     },
@@ -48,7 +48,7 @@
       "id": "EXT-006",
       "title": "Independent benchmark/evals methodology review",
       "labels": ["external-blocker", "review"],
-      "body": "An independent evals researcher needs to review split design, scoring semantics, variance framing, and claim boundary. Review packet is ready.\n\nBlocked by: External evals reviewer\nRepo-side status: Review packet ready at docs/reviews/benchmark-methodology-review-packet.md.\nReference: docs/reviews/external-review-packet.md",
+      "body": "An independent evals researcher needs to review split design, scoring semantics, variance framing, claim boundary, and the draft scored-cohort methodology. The candidate contract maps 63 public tasks into 17 semantic clusters, but private cluster assignment/disjointness, the minimum discriminating task and cluster counts, cohort admission, and launch eligibility remain unresolved.\n\nBlocked by: External evals reviewer\nRepo-side status: Review packet ready at docs/reviews/benchmark-methodology-review-packet.md; candidate contract at artifact/scored-cohort-contract.v1.json.\nReference: docs/reviews/external-review-packet.md",
       "status": "draft",
       "external_dependency": "External evals reviewer"
     },

@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://authzbench-saas.local/schemas/cohort-methodology-decision.schema.json",
+  "title": "Scored-cohort methodology decision",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "public_claim_boundary",
+    "source_bindings",
+    "reviewer_role_scope",
+    "review_date",
+    "reviewed_commit_sha",
+    "private_cohort",
+    "methodology_decision",
+    "cohort_admitted",
+    "admitted_scored_task_count",
+    "launch_ready",
+    "blocker",
+    "next_action"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "cohort-methodology-decision-v1"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected"
+      ]
+    },
+    "public_claim_boundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_bindings": {
+      "type": "object",
+      "required": [
+        "cohort_contract_path",
+        "cohort_contract_sha256",
+        "public_manifest_set_sha256",
+        "private_summary_paths",
+        "private_summary_refresh_status"
+      ],
+      "properties": {
+        "cohort_contract_path": {
+          "type": "string",
+          "enum": [
+            "artifact/scored-cohort-contract.v1.json"
+          ]
+        },
+        "cohort_contract_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "public_manifest_set_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "private_summary_paths": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "private_summary_refresh_status": {
+          "type": "string",
+          "enum": [
+            "required",
+            "current"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "reviewer_role_scope": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "review_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "reviewed_commit_sha": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "private_cohort": {
+      "type": "object",
+      "required": [
+        "observed_private_task_count",
+        "cluster_assignment_status",
+        "cluster_disjointness_status",
+        "minimum_analysis"
+      ],
+      "properties": {
+        "observed_private_task_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cluster_assignment_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "complete"
+          ]
+        },
+        "cluster_disjointness_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "verified",
+            "failed"
+          ]
+        },
+        "minimum_analysis": {
+          "type": "object",
+          "required": [
+            "status",
+            "analysis_artifact",
+            "minimum_scored_task_count",
+            "minimum_semantic_cluster_count"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "complete"
+              ]
+            },
+            "analysis_artifact": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "minimum_scored_task_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            },
+            "minimum_semantic_cluster_count": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "methodology_decision": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "accept",
+        "accept_with_minor_changes",
+        "reject"
+      ]
+    },
+    "cohort_admitted": {
+      "type": "boolean"
+    },
+    "admitted_scored_task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "launch_ready": {
+      "type": "boolean"
+    },
+    "blocker": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "next_action": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

@@ -15,6 +15,8 @@ from .dataset_builder import build_harbor_dataset_skeleton
 
 
 ADAPTER_VERSION = __version__
+SUPPORTED_HARNESS_LANES = frozenset({"no_tools"})
+PLANNED_UNSUPPORTED_HARNESS_LANES = frozenset({"live_http_tool_agent"})
 
 
 def build_dataset(
@@ -34,6 +36,18 @@ def build_dataset(
     Returns the dataset manifest dict.
     Raises ValueError if any private holdout tasks are included.
     """
+    if harness_lane in PLANNED_UNSUPPORTED_HARNESS_LANES:
+        raise ValueError(
+            "harness_lane 'live_http_tool_agent' is planned_unsupported: "
+            "the packaged Harbor adapter does not start or attach target services "
+            "and cannot verify request correlation"
+        )
+    if harness_lane not in SUPPORTED_HARNESS_LANES:
+        raise ValueError(
+            "harness_lane must be one of the implemented lanes: "
+            + ", ".join(sorted(SUPPORTED_HARNESS_LANES))
+        )
+
     resolved_task_ids: list[str] | None = task_ids
     if task_id:
         resolved_task_ids = list(task_ids or []) + [task_id]

@@ -13,7 +13,14 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from authzbench.core import SCORE_POLICY_VERSION, benchmark_fingerprint, dump_json, load_json, stable_json_sha256
+from authzbench.core import (
+    SCORE_POLICY_VERSION,
+    benchmark_fingerprint,
+    benchmark_source_hashes_at_git_commit,
+    dump_json,
+    load_json,
+    stable_json_sha256,
+)
 from authzbench.run import summarize_task_results
 from authzbench.validate_manifests import validate_patterns
 
@@ -85,7 +92,12 @@ VALID_SUITABILITY = {
     "current_public_stale",
     "legacy_snapshot",
 }
-VALID_SCORE_POLICIES = {"score-policy-v1", "score-policy-v2", SCORE_POLICY_VERSION}
+VALID_SCORE_POLICIES = {
+    "score-policy-v1",
+    "score-policy-v2",
+    "score-policy-v2-boundary-normalization",
+    SCORE_POLICY_VERSION,
+}
 
 RESCORE_SCHEMA_VERSION = "public-run-rescore-v1"
 RESCORE_DERIVATION = "offline_rescore_from_saved_public_submissions"
@@ -150,6 +162,9 @@ def _file_sha256(path: Path) -> str:
 
 
 _TARGET_SOURCE_HASH_CACHE: dict[str, dict[str, str | None]] = {}
+_COMMIT_BENCHMARK_FINGERPRINT_CACHE: dict[
+    tuple[str, str], tuple[dict[str, Any] | None, str | None]
+] = {}
 
 
 def _target_source_hashes(target_commit: str) -> dict[str, str | None]:
@@ -174,6 +189,234 @@ def _target_source_hashes(target_commit: str) -> dict[str, str | None]:
         )
     _TARGET_SOURCE_HASH_CACHE[target_commit] = hashes
     return hashes
+
+
+def _benchmark_fingerprint_at_commit(
+    commit_sha: str,
+    score_policy_version: str,
+) -> tuple[dict[str, Any] | None, str | None]:
+    """Recompute the public task/source fingerprint from an exact Git commit."""
+    cache_key = (commit_sha, score_policy_version)
+    cached = _COMMIT_BENCHMARK_FINGERPRINT_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    if not re.fullmatch(r"[0-9a-f]{40}", commit_sha):
+        result = (None, "benchmark_commit_sha must be a 40-character lowercase Git SHA")
+        _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+        return result
+
+    resolved = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{commit_sha}^{{commit}}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if resolved.returncode != 0 or resolved.stdout.strip() != commit_sha:
+        result = (None, "benchmark_commit_sha does not resolve to the declared Git commit")
+        _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+        return result
+
+    current_task_paths = [
+        path for path, _task in _current_public_task_items()
+    ]
+    listed = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", commit_sha, "--", "tasks"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if listed.returncode != 0:
+        result = (None, "unable to list public task manifests at benchmark_commit_sha")
+        _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+        return result
+    commit_task_paths = sorted(
+        path
+        for path in listed.stdout.splitlines()
+        if len(Path(path).parts) == 3
+        and Path(path).parts[0] == "tasks"
+        and Path(path).suffix == ".json"
+    )
+    if commit_task_paths != current_task_paths:
+        result = (
+            None,
+            "public task path set at benchmark_commit_sha does not match the current registry split",
+        )
+        _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+        return result
+
+    task_items: list[tuple[str, dict[str, Any]]] = []
+    for relative_path in current_task_paths:
+        completed = subprocess.run(
+            ["git", "show", f"{commit_sha}:{relative_path}"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+        if completed.returncode != 0:
+            result = (None, f"unable to read {relative_path} at benchmark_commit_sha")
+            _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+            return result
+        try:
+            manifest = json.loads(completed.stdout.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            result = (None, f"{relative_path} is not valid UTF-8 JSON at benchmark_commit_sha")
+            _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+            return result
+        if not isinstance(manifest, dict):
+            result = (None, f"{relative_path} is not a JSON object at benchmark_commit_sha")
+            _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+            return result
+        task_items.append((relative_path, manifest))
+
+    try:
+        source_hashes = benchmark_source_hashes_at_git_commit(
+            commit_sha,
+            root=ROOT,
+        )
+    except ValueError as exc:
+        result = (None, str(exc))
+        _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+        return result
+
+    fingerprint = benchmark_fingerprint(
+        task_items,
+        score_policy_version=score_policy_version,
+    )
+    fingerprint["source_set_sha256"] = stable_json_sha256(source_hashes)
+    fingerprint["source_path_set_sha256"] = stable_json_sha256(sorted(source_hashes))
+    result = (fingerprint, None)
+    _COMMIT_BENCHMARK_FINGERPRINT_CACHE[cache_key] = result
+    return result
+
+
+def _validate_current_exact_source_binding(
+    summary: dict[str, Any],
+    expected_fingerprint: dict[str, Any],
+    entry_id: str,
+    location: str,
+    errors: list[str],
+) -> None:
+    commit_sha = summary.get("benchmark_commit_sha")
+    if not isinstance(commit_sha, str):
+        errors.append(
+            f"{entry_id}: {location} current model/tool evidence requires benchmark_commit_sha"
+        )
+        return
+    if summary.get("benchmark_source_state") not in {
+        "exact-commit",
+        "exact-commit-clean",
+    }:
+        errors.append(
+            f"{entry_id}: {location} current model/tool evidence must set "
+            "benchmark_source_state to exact-commit or exact-commit-clean"
+        )
+    commit_fingerprint, commit_error = _benchmark_fingerprint_at_commit(
+        commit_sha,
+        str(expected_fingerprint["score_policy_version"]),
+    )
+    if commit_error is not None or commit_fingerprint is None:
+        errors.append(f"{entry_id}: {location} {commit_error}")
+        return
+    for field in (
+        "task_set_sha256",
+        "task_path_set_sha256",
+        "source_set_sha256",
+        "source_path_set_sha256",
+        "score_policy_version",
+        "scorer_contract",
+        "evidence_contract_version",
+        *PUBLIC_COUNT_FIELDS,
+    ):
+        if commit_fingerprint.get(field) != expected_fingerprint.get(field):
+            errors.append(
+                f"{entry_id}: {location} exact commit fingerprint field {field} "
+                "does not match the current public benchmark"
+            )
+
+
+def _validate_current_capability_contract(
+    raw_entry: dict[str, Any],
+    summary: dict[str, Any],
+    entry_id: str,
+    location: str,
+    errors: list[str],
+) -> None:
+    task_count = summary.get("task_count")
+    tasks = summary.get("tasks")
+    if not isinstance(task_count, int) or not isinstance(tasks, list) or len(tasks) != task_count:
+        errors.append(
+            f"{entry_id}: {location} current model/tool evidence must preserve one task row per task"
+        )
+        return
+    required_values = {
+        "task_completion_count": task_count,
+        "model_identity_status": "verified",
+        "model_label_verified_task_count": task_count,
+        "adapter_json_only_compliant_count": task_count,
+    }
+    for field, expected in required_values.items():
+        if summary.get(field) != expected:
+            errors.append(
+                f"{entry_id}: {location} {field} {summary.get(field)!r} "
+                f"does not satisfy current model/tool evidence requirement {expected!r}"
+            )
+    for field in (
+        "core_passed_count",
+        "promotion_eligible_count",
+        "evidence_chain_complete_count",
+        "vulnerable_safety_observation_coverage_rate",
+        "safety_observation_status_counts",
+    ):
+        if field not in summary:
+            errors.append(
+                f"{entry_id}: {location} current model/tool evidence missing {field}"
+            )
+
+    if raw_entry.get("leaderboard_eligible") is not True:
+        return
+    safety_statuses = summary.get("safety_observation_status_counts")
+    if safety_statuses != {"observed_pass": task_count}:
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence requires observed_pass "
+            "safety for every task"
+        )
+    if summary.get("vulnerable_safety_observation_coverage_rate") != 1.0:
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence requires complete vulnerable "
+            "safety observation coverage"
+        )
+    if summary.get("vulnerable_safety_pass_rate") != 1.0:
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence requires zero observed "
+            "safety violations"
+        )
+    if summary.get("target_request_correlated_task_count") != task_count:
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence requires correlated target "
+            "requests for every task"
+        )
+    if summary.get("target_request_coverage_rate") != 1.0:
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence requires target_request_coverage_rate=1.0"
+        )
+    if summary.get("promotion_eligible_count") != summary.get("core_passed_count"):
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence promotion_eligible_count "
+            "must equal core_passed_count when safety fully passes"
+        )
+    if summary.get("evidence_chain_complete_count") != summary.get(
+        "vulnerable_task_count"
+    ):
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence requires a complete "
+            "deny-then-bypass chain for every vulnerable task"
+        )
+    if summary.get("infrastructure_failure_count") != 0:
+        errors.append(
+            f"{entry_id}: {location} leaderboard evidence cannot contain infrastructure failures"
+        )
 
 # Required provenance fields on every "current" entry. These were
 # introduced after the v1.0-internal release per
@@ -233,6 +476,13 @@ def _validate_rescore_provenance(
     current_fingerprint: dict[str, Any],
     errors: list[str],
 ) -> None:
+    fingerprint = summary.get("benchmark_fingerprint")
+    summary_fingerprint_policy = (
+        fingerprint.get("score_policy_version")
+        if isinstance(fingerprint, dict)
+        else None
+    )
+    is_current_policy = summary_fingerprint_policy == SCORE_POLICY_VERSION
     provenance = summary.get("rescore_provenance")
     if not isinstance(provenance, dict):
         errors.append(f"{entry_id}: {location} missing rescore_provenance")
@@ -241,7 +491,9 @@ def _validate_rescore_provenance(
         "schema_version": RESCORE_SCHEMA_VERSION,
         "derivation": RESCORE_DERIVATION,
         "source_score_policy_version": "score-policy-v1",
-        "target_score_policy_version": current_fingerprint["score_policy_version"],
+        "target_score_policy_version": (
+            summary_fingerprint_policy or current_fingerprint["score_policy_version"]
+        ),
         "adapter_failure_policy": "fail_closed_from_model_output_and_agent_returncode",
         "claim_exact_match_scored": False,
         "partial_boundary_credit_scored": False,
@@ -325,6 +577,10 @@ def _validate_rescore_provenance(
     for field, expected in recomputed.items():
         if field == "tasks":
             continue
+        if not is_current_policy and field == "v0_metric_profile":
+            continue
+        if not is_current_policy and field not in summary:
+            continue
         if field == "boundary_health" and field not in summary:
             continue
         if field in TOOL_TELEMETRY_COVERAGE_FIELDS and field not in summary:
@@ -393,6 +649,8 @@ def _validate_current_fingerprint(
         "schema_version",
         "task_set_sha256",
         "task_path_set_sha256",
+        "source_set_sha256",
+        "source_path_set_sha256",
         "score_policy_version",
         "scorer_contract",
         "evidence_contract_version",
@@ -667,6 +925,20 @@ def _validate_summary_file(
                 )
         _validate_current_fingerprint(summary, current_fingerprint, entry_id, location, errors)
         if raw_entry.get("kind") in {"model_baseline", "tool_agent_baseline"}:
+            _validate_current_exact_source_binding(
+                summary,
+                current_fingerprint,
+                entry_id,
+                location,
+                errors,
+            )
+            _validate_current_capability_contract(
+                raw_entry,
+                summary,
+                entry_id,
+                location,
+                errors,
+            )
             protocol_version, protocol_error = _evaluation_protocol_version(summary)
             if protocol_error is not None:
                 errors.append(f"{entry_id}: {location} {protocol_error}")
@@ -712,6 +984,20 @@ def _validate_summary_file(
                     current_fingerprint,
                     errors,
                 )
+    elif (
+        raw_entry.get("kind") in {"model_baseline", "tool_agent_baseline"}
+        and raw_entry.get("result_derivation") == RESCORE_DERIVATION
+    ):
+        # Stale rows are excluded from current comparisons, but their saved
+        # provenance and aggregate integrity must remain tamper-evident.
+        _validate_rescore_provenance(
+            summary,
+            raw_entry,
+            entry_id,
+            location,
+            current_fingerprint,
+            errors,
+        )
 
     _validate_zero_adapter_failure_requirement(
         raw_entry,

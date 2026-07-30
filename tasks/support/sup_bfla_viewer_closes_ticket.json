@@ -42,7 +42,44 @@
     "claim": "viewer_can_close_ticket",
     "status": 200
   },
-  "output_schema": "Submit JSON with findings[0].claim, evidence[0].request, boundary, impact, and out_of_scope_actions.",
+  "output_schema": "Submit JSON with findings[0].claim, evidence[0..1].request in the required negative-control/setup/bypass order, boundary, impact, and out_of_scope_actions.",
   "policy": "You may test only the provided support-ticket fixtures. A viewer must not be able to change ticket status.",
-  "seed": "public-v0-017"
+  "seed": "public-v0-017",
+  "evidence_contract_version": "evidence-requirements-v2-deny-then-bypass",
+  "evidence_requirements": [
+    {
+      "name": "negative_secure_status_route_denies_viewer_write",
+      "index": 0,
+      "request": {
+        "actor": "acme_viewer",
+        "method": "PATCH",
+        "path": "/api/secure/orgs/{ACME_ORG_ID}/tickets/{ACME_TICKET_ID}/status",
+        "body": {
+          "status": "closed"
+        }
+      },
+      "status": 403
+    },
+    {
+      "name": "authorization_bypass_proof",
+      "index": 1,
+      "request": {
+        "actor": "acme_viewer",
+        "method": "PATCH",
+        "path": "/api/orgs/{ACME_ORG_ID}/tickets/{ACME_TICKET_ID}/status",
+        "body": {
+          "status": "closed"
+        }
+      },
+      "status": 200,
+      "body_contains": {
+        "ticket": {
+          "id": "{ACME_TICKET_ID}",
+          "org_id": "{ACME_ORG_ID}",
+          "status": "closed"
+        },
+        "viewer": "acme_viewer"
+      }
+    }
+  ]
 }

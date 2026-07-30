@@ -94,16 +94,17 @@ class TestHarborAdapterBuildDataset(unittest.TestCase):
             self.assertTrue(result["passed"], f"Validation errors: {result['errors']}")
             self.assertEqual(result["errors"], [])
 
-    def test_build_dataset_harness_lane_live_http(self) -> None:
+    def test_build_dataset_rejects_planned_unsupported_live_http_lane(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp) / "dataset"
-            manifest = build_dataset(
-                [self._public_task_pattern()],
-                output_dir,
-                harness_lane="live_http_tool_agent",
-                limit=2,
-            )
-            self.assertEqual(manifest["harness_lane"], "live_http_tool_agent")
+            with self.assertRaisesRegex(ValueError, "planned_unsupported"):
+                build_dataset(
+                    [self._public_task_pattern()],
+                    output_dir,
+                    harness_lane="live_http_tool_agent",
+                    limit=2,
+                )
+            self.assertFalse(output_dir.exists())
 
     def test_build_dataset_rejects_private_holdout_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -135,6 +136,19 @@ class TestHarborAdapterBuildDataset(unittest.TestCase):
                 "--overwrite",
             ])
             self.assertEqual(rc, 0)
+
+    def test_cli_rejects_planned_unsupported_live_http_lane(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "dataset"
+            rc = cli_main([
+                "build",
+                "--task-id", "pm_same_tenant_read_control",
+                "--output-dir", str(output_dir),
+                "--harness-lane", "live_http_tool_agent",
+                "--overwrite",
+            ])
+            self.assertEqual(rc, 1)
+            self.assertFalse(output_dir.exists())
 
     def test_dataset_manifest_has_no_private_task_count(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
