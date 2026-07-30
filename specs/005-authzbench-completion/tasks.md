@@ -11,56 +11,56 @@ local implementation work, but remains open until its named evidence exists.
   benchmark-integrity audit findings into this packet.
 - [x] **T003** Restore canonical dependency-free execution of all 57
   scored-cohort mutation tests through `unittest discover`.
-- [ ] **T004** Add the requirements checklist and converge the traceability
+- [x] **T004** Add the requirements checklist and converge the traceability
   table against actual post-change evidence.
 
 ## Phase 1 — Review And Methodology Contracts
 
-- [ ] **T005** Make the combined external-review gate reject rejected,
+- [x] **T005** Make the combined external-review gate reject rejected,
   unresolved, blocking, malformed, mixed-SHA, or source-drifted evidence.
-- [ ] **T006** Bind all three formal lanes and the separate SaaS/product-
+- [x] **T006** Bind all three formal lanes and the separate SaaS/product-
   security lane to one real frozen SHA and mandatory lane source trees, not
   reviewer-optional file lists.
-- [ ] **T007** Require accepted remediation evidence to be a descendant
+- [x] **T007** Require accepted remediation evidence to be a descendant
   post-review commit that changes the cited path.
-- [ ] **T008** Add focused combined-gate tests for structural pending, strict
+- [x] **T008** Add focused combined-gate tests for structural pending, strict
   pending, coherence, reject, unresolved, mixed SHA, source drift, remediation,
   and SaaS separation.
-- [ ] **T009** Complete intake/packet/template transformation documentation,
+- [x] **T009** Complete intake/packet/template transformation documentation,
   reviewed-SHA and no-redistribution/conflict declarations, and combined-gate
   instructions.
-- [ ] **T010** Repair the private-review protocol with a separate untracked
+- [x] **T010** Repair the private-review protocol with a separate untracked
   controlled-response schema and aggregate-only public projection; prove
   private pack/task IDs cannot enter tracked public registries.
-- [ ] **T011** Add a versioned cohort-methodology decision schema/template/
+- [x] **T011** Add a versioned cohort-methodology decision schema/template/
   validator with explicit private cluster assignment, disjointness, numeric
   minimum analysis, reviewer decision, admission, and launch state.
 
 ## Phase 2 — Benchmark Integrity
 
-- [ ] **T012** Reject duplicate JSON keys and non-finite numbers in manifest,
+- [x] **T012** Reject duplicate JSON keys and non-finite numbers in manifest,
   submission, evidence, registry, and review input boundaries.
-- [ ] **T013** Bind the task-oracle audit to exact manifest/source digests,
+- [x] **T013** Bind the task-oracle audit to exact manifest/source digests,
   correct vulnerable/control classification, evidence requirements, and
   deterministic regeneration; add adversarial tests.
-- [ ] **T014** Close or accurately narrow the exploit-evidence contract gap for
+- [x] **T014** Close or accurately narrow the exploit-evidence contract gap for
   all vulnerable task families; version any scorer/manifest semantic change.
-- [ ] **T015** Replace self-reported safety credit with observable evidence or
+- [x] **T015** Replace self-reported safety credit with observable evidence or
   explicitly version and narrow the safety-score claim.
-- [ ] **T016** Harden Harbor dataset/parity validation so corrupted task,
+- [x] **T016** Harden Harbor dataset/parity validation so corrupted task,
   solution, config, digest, and expected-output changes fail.
-- [ ] **T017** Make Harbor capability metadata truthful: do not claim live HTTP
+- [x] **T017** Make Harbor capability metadata truthful: do not claim live HTTP
   tool support where the generated adapter cannot execute it.
-- [ ] **T018** Bind benchmark fingerprints to source/scorer/policy/task digests
+- [x] **T018** Bind benchmark fingerprints to source/scorer/policy/task digests
   and reject fake/nonexistent source SHAs.
-- [ ] **T019** Repair reference/no-tools runner modes and clarify the blinded
+- [x] **T019** Repair reference/no-tools runner modes and clarify the blinded
   evaluator’s actual isolation boundary.
 - [ ] **T020** Mark obsolete six-task/older Harbor smoke artifacts historical
   and validate the current three-task pilot as the active compatibility
   artifact.
-- [ ] **T021** Reconcile current public baseline provenance, fixed-seed/no-
+- [x] **T021** Reconcile current public baseline provenance, fixed-seed/no-
   generator limitations, and contamination-resistant claim boundaries.
-- [ ] **T022** Convert stale private overlap/count summaries into a
+- [x] **T022** Convert stale private overlap/count summaries into a
   source-bound private-maintainer refresh gate without reading or publishing
   private bodies.
 
@@ -71,7 +71,7 @@ local implementation work, but remains open until its named evidence exists.
   tracked output writes.
 - [x] **T024** Package README, LICENSE, lockfile, and Harbor module in the
   runtime image; add focused reproduction tests.
-- [ ] **T025** Materialize host-review bundles from the exact requested Git ref
+- [x] **T025** Materialize host-review bundles from the exact requested Git ref
   and validate that materialized content, with explicit dirty-development and
   clean-release modes.
 - [ ] **T026** Add a safe Docker build context and verify clean container/runtime
