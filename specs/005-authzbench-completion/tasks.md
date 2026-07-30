@@ -76,9 +76,9 @@ local implementation work, but remains open until its named evidence exists.
   clean-release modes.
 - [ ] **T026** Add a safe Docker build context and verify clean container/runtime
   behavior when Docker is available.
-- [ ] **T027** Align supported Python, install instructions, package metadata,
+- [x] **T027** Align supported Python, install instructions, package metadata,
   CI matrix, and reviewer walkthrough.
-- [ ] **T028** Align Kaggle rules with the repository MIT license and repair
+- [x] **T028** Align Kaggle rules with the repository MIT license and repair
   citation/contribution/changelog/release metadata.
 - [ ] **T029** Supersede stale host ledgers and artifact indexes with current
   63/48/111 and KQ-005 truth while retaining historical evidence.
