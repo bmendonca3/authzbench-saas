@@ -11,7 +11,7 @@ from typing import Any
 
 try:
     import tomllib
-except ModuleNotFoundError:  # Python 3.10 compatibility
+except ModuleNotFoundError:  # defensive fallback; 3.11+ always has tomllib
     tomllib = None
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -104,9 +104,10 @@ def _load_toml(path: Path) -> dict[str, Any]:
             raise ValueError(f"{path}: expected TOML object")
         return data
 
-    # The project supports Python 3.10, where tomllib is unavailable. This
-    # fallback deliberately parses the builder's constrained TOML surface:
-    # tables, arrays of tables, JSON-compatible scalars, and arrays.
+    # The declared minimum is Python 3.11, where tomllib is standard; this
+    # fallback is defensive cover for stripped environments. It deliberately
+    # parses the builder's constrained TOML surface: tables, arrays of
+    # tables, JSON-compatible scalars, and arrays.
     root: dict[str, Any] = {}
     current: dict[str, Any] = root
     for line_number, raw_line in enumerate(

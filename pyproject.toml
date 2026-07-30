@@ -7,7 +7,7 @@ name = "authzbench-saas"
 version = "0.0.1"
 description = "Benchmark scaffold for AI agents testing multi-tenant SaaS authorization."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { file = "LICENSE" }
 authors = [{ name = "bmendonca3" }]
 keywords = ["ai-agents", "benchmark", "authorization", "appsec", "saas", "security"]

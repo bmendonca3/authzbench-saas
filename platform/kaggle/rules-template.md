@@ -67,7 +67,7 @@ Participants must submit:
 - **Private Split Rows**: Host-controlled or maintainer-operated private runs can become `private-candidate` or `private-eligible` rows under a future host pilot after evidence, replay, false-positive, and custody gates pass. This repository does not currently claim hosted leaderboard operation.
 
 ## 13. License and Disclosure Terms
-- Benchmark code and public tasks are licensed under the repository Apache 2.0 license.
+- Benchmark code and public tasks are licensed under the repository MIT license.
 - Participant submissions and evidence remain the property of the participant, but the host is granted a non-exclusive license to run, score, and audit the submission for leaderboard operation.
 
 ## 14. Incident Response Contact Path

@@ -381,7 +381,7 @@ For a detailed claim ledger, see
 
 Prerequisites:
 
-- Python 3.10+
+- Python 3.11+
 - Git
 - Docker and Docker Compose for live HTTP targets or container smoke checks;
   container smoke also needs registry access if its runner image is not already
