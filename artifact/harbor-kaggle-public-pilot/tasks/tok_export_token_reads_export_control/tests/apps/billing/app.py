@@ -292,6 +292,7 @@ class Handler(BaseHTTPRequestHandler):
             method=method,
             path=urlparse(self.path).path,
             status=response["status"],
+            request_body=body,
             response_body=response["body"],
             run_id=self.headers.get("x-authzbench-run-id"),
             agent_id=self.headers.get("x-authzbench-agent-id"),

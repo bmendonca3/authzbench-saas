@@ -1,5 +1,6 @@
 {
   "adapter_version": "0.1.0",
+  "benchmark_source_sha": "48df2a0d513ec9105bd781e367d603ca3ad9c2ff",
   "claim_boundary": "This generated dataset skeleton is not Harbor execution evidence, not Harbor acceptance, and not v1 readiness.",
   "dataset_toml": "dataset.toml",
   "evidence_status": "generated_public_skeleton",
@@ -16,7 +17,7 @@
       "expected_nop_reward": 0.0,
       "expected_oracle_reward": 1.0,
       "expected_vulnerable": true,
-      "harbor_content_digest": "sha256:5982c34ae7dd457f29707c1bf6075082cb9d4a4352347feb893c248f51d8228b",
+      "harbor_content_digest": "sha256:d1d431fa7f93e235600d4ef95eff8244647adae9459c0181c1096bd2db22f802",
       "harbor_task_dir": "tasks/tok_cross_tenant_secret_read",
       "harbor_task_name": "authzbench-saas/tok_cross_tenant_secret_read",
       "id": "tok_cross_tenant_secret_read",
@@ -29,7 +30,7 @@
       "expected_nop_reward": 0.0,
       "expected_oracle_reward": 1.0,
       "expected_vulnerable": false,
-      "harbor_content_digest": "sha256:2f91a7846a4efcde95653ac8189310bbad562de7ef4d5c86813c07c04f3a1b96",
+      "harbor_content_digest": "sha256:56a3bbc8d06efad7de8c4aac377fd96b2214f2cb914d1e8b37e7f538696fec90",
       "harbor_task_dir": "tasks/tok_export_token_reads_export_control",
       "harbor_task_name": "authzbench-saas/tok_export_token_reads_export_control",
       "id": "tok_export_token_reads_export_control",
@@ -42,7 +43,7 @@
       "expected_nop_reward": 0.0,
       "expected_oracle_reward": 1.0,
       "expected_vulnerable": false,
-      "harbor_content_digest": "sha256:03f8d6ffcf6beea87b1ddcc48528a9e8d992fb44f971580e3795a39b81ca7a50",
+      "harbor_content_digest": "sha256:0a591765d822fe33ba5685c16ea9d4d5a5474f3455d89d27483e7d0733d1f883",
       "harbor_task_dir": "tasks/tok_secure_export_scope_control",
       "harbor_task_name": "authzbench-saas/tok_secure_export_scope_control",
       "id": "tok_secure_export_scope_control",
@@ -51,5 +52,5 @@
       "source_task_path": "tasks/api_tokens/tok_secure_export_scope_control.json"
     }
   ],
-  "verifier_source_set_sha256": "e09bcbe3105412f09b27055fec8cdf1410d6f44430e44278bda5dc3f56fedbb6"
+  "verifier_source_set_sha256": "fab0298f83b9756e57c65e34e69e983a83932bc1f3ee3f50756d51d606a8df99"
 }

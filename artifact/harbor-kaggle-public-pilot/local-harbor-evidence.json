@@ -1,59 +1,70 @@
 {
-  "schema_version": "authzbench-harbor-local-evidence-v2",
-  "evidence_status": "historical_stale_requires_rebuild",
-  "current_claim_eligible": false,
-  "requires_rebuild_before_current_claim": true,
-  "stale_reason": "The checked-in three-task dataset no longer matches the current canonical task/scorer source set. Historical NOP/Oracle results are retained, but the dataset must be rebuilt and rerun before a current compatibility claim.",
-  "generated_at": "2026-07-24T11:00:40-07:00",
-  "claim_boundary": "Local Harbor 0.13.2 NOP/Oracle and current-starter compatibility evidence only; not Kaggle-hosted execution, Model Proxy evidence, platform acceptance, independent review, or launch evidence.",
-  "runtime": {
-    "harbor_version": "0.13.2",
-    "environment": "docker",
-    "n_concurrent": 1,
-    "max_retries": 0,
-    "raw_jobs_retained_outside_repository": true,
-    "job_roots_redacted": true,
-    "verifier_source_set_sha256": "e09bcbe3105412f09b27055fec8cdf1410d6f44430e44278bda5dc3f56fedbb6"
-  },
-  "manifest_contract": {
-    "format": "dataset-authors-digest-tasks",
-    "task_count": 3,
-    "harbor_add_version": "0.13.2",
-    "digest_match_count": 3,
-    "all_digests_match": true,
-    "publish_attempted": false
-  },
   "artifact_contract": {
-    "trial_log_inspected": true,
+    "agent_artifact_note": "NOP emits no agent submission; deterministic Oracle writes the benchmark submission. Model Proxy evidence is tracked separately.",
     "ctrf_inspected": true,
-    "score_json_inspected": true,
-    "reward_json_inspected": true,
-    "result_json_inspected": true,
     "oracle_submission_inspected": true,
-    "agent_artifact_note": "NOP emits no agent submission; deterministic Oracle writes the benchmark submission. Model Proxy evidence is tracked separately."
+    "result_json_inspected": true,
+    "reward_json_inspected": true,
+    "score_json_inspected": true,
+    "trial_log_inspected": true
   },
+  "benchmark_source_sha": "48df2a0d513ec9105bd781e367d603ca3ad9c2ff",
+  "claim_boundary": "Local Harbor 0.13.2 NOP/Oracle and current-starter compatibility evidence only; not Kaggle-hosted execution, Model Proxy evidence, platform acceptance, independent review, or launch evidence.",
+  "current_claim_eligible": true,
+  "dataset_manifest_sha256": "d6a9e12ced056e0b26576aa3161b8e3de207b78f6f438dd2d088d7ccde27137b",
+  "evidence_status": "current_source_compatible",
+  "execution_verified_at": "2026-07-31T11:57:05-07:00",
   "fresh_current_starter_validation": {
-    "total_runs": 6,
     "completed_runs": 6,
+    "ctrf_count": 6,
     "errored_runs": 0,
     "nop_zero_count": 3,
     "oracle_one_count": 3,
-    "trial_log_count": 6,
-    "ctrf_count": 6
+    "total_runs": 6,
+    "trial_log_count": 6
+  },
+  "generated_at": "2026-07-31T11:57:05-07:00",
+  "harbor_run_ids": [
+    "43d181f8-785e-4e79-ace2-05137a73b4d1",
+    "6beeb6f0-a301-4566-92e3-1a90557a904e",
+    "004dc2de-5f74-4347-ba51-d1915d5f25a8",
+    "f7765d40-6b14-4eb7-97e0-032199e0336b",
+    "689f4e24-e6ce-43bf-8e1b-b82fd21c5e56",
+    "66a58c16-d019-4a28-a12e-528310fc3a55"
+  ],
+  "manifest_contract": {
+    "all_digests_match": true,
+    "digest_match_count": 3,
+    "format": "dataset-authors-digest-tasks",
+    "harbor_add_version": "0.13.2",
+    "publish_attempted": false,
+    "task_count": 3
   },
   "prior_repeat_matrix": {
-    "total_cells": 12,
     "completed_cells": 12,
     "errored_cells": 0,
+    "repeats_per_agent": 2,
     "retries": 0,
-    "repeats_per_agent": 2
+    "total_cells": 12
   },
+  "requires_rebuild_before_current_claim": false,
+  "run_config_sha256": "db39c9dc7c3a7f36f0a01083fb8de50ea4dad7208553778606e1474b497f0e76",
+  "runtime": {
+    "environment": "docker",
+    "harbor_version": "0.13.2",
+    "job_roots_redacted": true,
+    "max_retries": 0,
+    "n_concurrent": 1,
+    "raw_jobs_retained_outside_repository": true,
+    "verifier_source_set_sha256": "fab0298f83b9756e57c65e34e69e983a83932bc1f3ee3f50756d51d606a8df99"
+  },
+  "schema_version": "authzbench-harbor-local-evidence-v2",
   "tasks": [
     {
-      "task_id": "tok_cross_tenant_secret_read",
+      "fresh_nop_reward": 0.0,
+      "fresh_oracle_reward": 1.0,
+      "harbor_content_digest": "sha256:d1d431fa7f93e235600d4ef95eff8244647adae9459c0181c1096bd2db22f802",
       "pilot_behavior": "vulnerable",
-      "task_checksum": "fef391268f64d1dd78b89d113c83ec8fbffbba007ce4cc0bcae330b66a057050",
-      "harbor_content_digest": "sha256:5982c34ae7dd457f29707c1bf6075082cb9d4a4352347feb893c248f51d8228b",
       "prior_nop_rewards": [
         0.0,
         0.0
@@ -62,14 +73,14 @@
         1.0,
         1.0
       ],
-      "fresh_nop_reward": 0.0,
-      "fresh_oracle_reward": 1.0
+      "task_checksum": "4669803b7277c9ee5e807f78c7f30137a8ff3a6fc38e22fdfc8b498293b3eebf",
+      "task_id": "tok_cross_tenant_secret_read"
     },
     {
-      "task_id": "tok_export_token_reads_export_control",
+      "fresh_nop_reward": 0.0,
+      "fresh_oracle_reward": 1.0,
+      "harbor_content_digest": "sha256:56a3bbc8d06efad7de8c4aac377fd96b2214f2cb914d1e8b37e7f538696fec90",
       "pilot_behavior": "authorized_allow",
-      "task_checksum": "9ab0efd0a958e7d03af18f6387ba2c75261dc2ac3109b8db9e0756f87da630bf",
-      "harbor_content_digest": "sha256:2f91a7846a4efcde95653ac8189310bbad562de7ef4d5c86813c07c04f3a1b96",
       "prior_nop_rewards": [
         0.0,
         0.0
@@ -78,14 +89,14 @@
         1.0,
         1.0
       ],
-      "fresh_nop_reward": 0.0,
-      "fresh_oracle_reward": 1.0
+      "task_checksum": "fc95e75b402ff9df74b4514e08572f98abbadfcd18981904b459ce50016fc216",
+      "task_id": "tok_export_token_reads_export_control"
     },
     {
-      "task_id": "tok_secure_export_scope_control",
+      "fresh_nop_reward": 0.0,
+      "fresh_oracle_reward": 1.0,
+      "harbor_content_digest": "sha256:0a591765d822fe33ba5685c16ea9d4d5a5474f3455d89d27483e7d0733d1f883",
       "pilot_behavior": "secure_denial",
-      "task_checksum": "54794633781f776d62c03599748a1da626705f09458b23e113227e2fa8dac650",
-      "harbor_content_digest": "sha256:03f8d6ffcf6beea87b1ddcc48528a9e8d992fb44f971580e3795a39b81ca7a50",
       "prior_nop_rewards": [
         0.0,
         0.0
@@ -94,8 +105,8 @@
         1.0,
         1.0
       ],
-      "fresh_nop_reward": 0.0,
-      "fresh_oracle_reward": 1.0
+      "task_checksum": "ae6ce98892266f336ef12cd1e8d111474749d1ef6bc87a4463333e44d2319798",
+      "task_id": "tok_secure_export_scope_control"
     }
   ]
 }

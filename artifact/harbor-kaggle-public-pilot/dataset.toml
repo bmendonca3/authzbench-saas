@@ -13,12 +13,12 @@ name = "bmendonca3"
 
 [[tasks]]
 name = "authzbench-saas/tok_cross_tenant_secret_read"
-digest = "sha256:5982c34ae7dd457f29707c1bf6075082cb9d4a4352347feb893c248f51d8228b"
+digest = "sha256:d1d431fa7f93e235600d4ef95eff8244647adae9459c0181c1096bd2db22f802"
 
 [[tasks]]
 name = "authzbench-saas/tok_export_token_reads_export_control"
-digest = "sha256:2f91a7846a4efcde95653ac8189310bbad562de7ef4d5c86813c07c04f3a1b96"
+digest = "sha256:56a3bbc8d06efad7de8c4aac377fd96b2214f2cb914d1e8b37e7f538696fec90"
 
 [[tasks]]
 name = "authzbench-saas/tok_secure_export_scope_control"
-digest = "sha256:03f8d6ffcf6beea87b1ddcc48528a9e8d992fb44f971580e3795a39b81ca7a50"
+digest = "sha256:0a591765d822fe33ba5685c16ea9d4d5a5474f3455d89d27483e7d0733d1f883"

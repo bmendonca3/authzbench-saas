@@ -22,7 +22,7 @@ for path in (Path('/logs/artifacts/reward.txt'), Path('/logs/verifier/reward.txt
     path.write_text('0.0\n')
 ctrf = {
     'results': {
-        'tool': {'name': 'authzbench-saas', 'version': 'score-policy-v2'},
+        'tool': {'name': 'authzbench-saas', 'version': 'score-policy-v3'},
         'summary': {'tests': 1, 'passed': 0, 'failed': 1, 'skipped': 0, 'pending': 0, 'other': 0, 'start': 0, 'stop': 0},
         'tests': [{'name': 'authorization-verifier::' + str(task.get('id')), 'status': 'failed', 'duration': 0, 'start': 0, 'stop': 0, 'retries': 0, 'file_path': 'tests/test.sh'}],
     }
@@ -59,7 +59,7 @@ passed = bool(score.get('passed')) and reward == 1.0
 status = 'passed' if passed else 'failed'
 ctrf = {
     'results': {
-        'tool': {'name': 'authzbench-saas', 'version': 'score-policy-v2'},
+        'tool': {'name': 'authzbench-saas', 'version': 'score-policy-v3'},
         'summary': {'tests': 1, 'passed': int(passed), 'failed': int(not passed), 'skipped': 0, 'pending': 0, 'other': 0, 'start': 0, 'stop': 0},
         'tests': [{'name': 'authorization-verifier::' + str(task.get('id')), 'status': status, 'duration': 0, 'start': 0, 'stop': 0, 'retries': 0, 'file_path': 'tests/test.sh'}],
     }
