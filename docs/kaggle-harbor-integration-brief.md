@@ -99,16 +99,28 @@ These items cannot be completed without Kaggle/Harbor platform decisions:
 
 The June 25, 2026 Kaggle email requested an organization account and benchmark
 share through a published setup document, followed by a Harbor-compatible
-port. The maintainer reported on June 26 that the document denied access, and
-no later reply was found in the full thread as of July 10.
+port. The maintainer reported on June 26, July 10, and July 16 that the
+document denied account access. On July 22, 2026, Nicholas Kang (Kaggle)
+replied with a NEW onboarding document and the Harbor starter-template
+repository (`Kaggle/kaggle-benchmark-harbor-starter-template`) and opened a
+Google Chat space to continue there — effectively superseding the inaccessible
+published document and pointing to the host-managed Docker/Harbor onboarding
+path. As of July 31, 2026 the maintainer has not yet posted in that Chat space.
 
 Current public Kaggle tooling also documents a `kaggle b` task workflow that
-produces task and run files for leaderboard construction. Before creating or
-sharing external resources, Kaggle should confirm which path applies here:
+produces task and run files for leaderboard construction. The remaining items
+to confirm with Kaggle (in the Chat space) are:
 
-1. the organization/share workflow from the email;
-2. the public `kaggle b init`, task push, run, and download workflow; or
-3. a host-managed Docker/Harbor onboarding path that combines both.
+1. the exact Harbor executor/host contract — the published `harbor-git-v1`
+   image (Harbor 0.15) fails before agent startup on a local Docker-in-Docker
+   host because its egress-control sidecar cannot install nftables `fib`
+   rules — i.e., the supported environment or corrected image;
+2. the 0.13.2→0.15 reconciliation for task content digests, `task.toml`
+   schema, and the `bash -c` exec shim (the current pilot is verified at
+   0.13.2);
+3. whether the new onboarding document's organization-request step supersedes
+   the older organization/share workflow, and which account to use; and
+4. the engagement pathway (Consult/advisory vs a dedicated FDE assignment).
 
 This is an operational clarification request, not evidence of acceptance. The
 repo-side package remains ready for technical review while organization

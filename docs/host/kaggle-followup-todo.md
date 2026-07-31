@@ -7,24 +7,40 @@ Status: current working ledger for the June 2026 Google/Kaggle AuthZBench-SaaS t
 - Ivan Leo's June 25, 2026 note asks for a Kaggle organization account and benchmark share in the correct format before Kaggle can start porting toward a Harbor-compatible hosted spec.
 - Kaggle expects the organization/setup step to take about 24 hours for approval after submission.
 - Kaggle can then review how to port AuthZBench-SaaS toward a Harbor-compatible spec for hosting.
-- Latest Gmail scope checked on July 12, 2026: exact subject and term searches,
-  Google/Kaggle sender-domain searches, sent mail, recent mail, spam, and trash.
-- Latest inbound actionable message: Ivan's June 25, 2026 follow-up. Meg's
-  later message in the same thread is a reaction, not a new request.
-- Latest outbound message: the July 10 follow-up that linked draft PR #79,
-  described the repo-side Harbor evidence, preserved non-acceptance boundaries,
-  and asked whether the current `kaggle b` workflow supersedes the inaccessible
-  organization/share document. No later received reply was found in the thread,
-  recent Google/Kaggle mail, spam, or trash.
+- Latest Gmail scope checked on July 31, 2026 (full 16-message thread re-read):
+  exact subject and term searches, Google/Kaggle sender-domain searches, sent
+  mail, recent mail, spam, and trash.
+- Latest inbound actionable message: Nicholas Kang (Nick), July 22, 2026 —
+  apologized for the delay, pointed to a new onboarding document and the Harbor
+  starter-template repository, and added the maintainer to a Google Chat space
+  for faster communication ("let's chat there to help you get unblocked
+  quickest"). This supersedes the older published setup document that denied
+  account access. Meg's June 25 message in the thread is a reaction, not a new
+  request.
+- Latest outbound message: the July 16 follow-up (third access-blocker note),
+  which reported the setup link now redirects to Google sign-in, described the
+  deterministic tamper-checkable run bundle and draft versioned evidence
+  contract, and again asked whether the organization/share instructions still
+  apply or whether the current `kaggle b` / Harbor workflow has replaced that
+  step. The July 10 follow-up (linking draft PR #79) preceded it.
+- The maintainer has NOT yet posted in the Google Chat space Nick created
+  (verified July 31, 2026); the thread has been idle on the email side since
+  Nick's July 22 reply.
 
-## Access blocker already reported
+## Access blocker reported, then superseded by Kaggle's July 22 reply
 
-The June 26 and July 10 replies reported that the published setup document
-denied access to the signed-in account. They asked Kaggle to grant access,
-identify the correct account, or confirm whether the current public `kaggle b`
-task workflow supersedes the older organization/share document. Do not send
-another duplicate follow-up without a new reply, new platform evidence, or
-explicit user direction.
+The June 26, July 10, and July 16 replies reported that the published setup
+document denied access to the signed-in account (brian.mendonca6@gmail.com) and
+asked Kaggle to grant access, identify the correct account, or confirm whether
+the current public `kaggle b` task workflow supersedes the older
+organization/share document. Nick's July 22, 2026 reply effectively answered
+this by supplying a NEW onboarding document and the Harbor starter-template
+repository and by opening a Google Chat space, rather than granting access to
+the old document. The old document's access blocker is therefore treated as
+moot/superseded; the operative onboarding path is the new document + starter
+repo + Chat space. The "new reply" condition that previously gated further
+contact has been satisfied — the next action is to engage in the Chat space
+(still requiring explicit user authorization before any external send).
 
 ## Repo-Verified Current State
 
@@ -45,16 +61,22 @@ explicit user direction.
 4. Use draft PR #79 at its current exact head as the remotely inspectable
    integration candidate. Superseded drafts #77 and #78 are already closed and
    linked to #79.
-5. Wait for a Kaggle reply or new platform evidence before drafting another
-   follow-up. Any future message should preserve the non-acceptance boundaries
-   and ask for one concrete onboarding path plus host-specific Docker/scorer
-   differences.
+5. A Kaggle reply was received (Nick, July 22, 2026) opening a Google Chat
+   space. The next action is to post there (after explicit user authorization),
+   preserving the non-acceptance boundaries and asking for the concrete
+   unblocking inputs: the exact Harbor 0.15 executor/host contract (the local
+   Docker-in-Docker egress-sidecar nftables `fib` failure), the 0.13.2→0.15
+   digest/schema/exec-shim reconciliation, the current organization-creation
+   step, and the Consult-vs-FDE pathway. Refresh the 3-task pilot evidence and
+   this ledger first so the message cites only current claims.
 
 ## Verification ledger
 
-- Gmail thread audit: 14-message AuthZBench-SaaS thread read in full; the latest
-  outbound message is the July 10 follow-up and no later received reply was
-  found as of July 12.
+- Gmail thread audit: 16-message AuthZBench-SaaS thread re-read in full on
+  July 31, 2026; the latest outbound message is the July 16 follow-up and the
+  latest inbound is Nick's July 22, 2026 reply (new onboarding doc + starter
+  repo + Google Chat space). (The earlier July 12 audit had recorded 14
+  messages, latest outbound July 10, no later reply — now superseded.)
 - Remote integration candidate: draft PR #79 at publication HEAD
   `1f73633587021c23f3a4774cf8d1de6ef66b6f58`; exact-head Public validation and
   Host presentation checks passed in GitHub Actions run `29216958371`.
@@ -70,8 +92,10 @@ explicit user direction.
 
 ## Remaining approval gates
 
-- Do not send another follow-up until the user explicitly authorizes the exact
-  message and the duplicate-send check confirms there is new value.
+- Do not post the Chat-space message (or any follow-up) until the user
+  explicitly authorizes the exact message. Nick's July 22 reply satisfies the
+  prior "new reply" condition; the remaining gate is explicit send authorization
+  plus a current (rebuilt) pilot so the message cites only current claims.
 - Do not create/share the Kaggle organization benchmark package until the user explicitly approves the external setup step.
 - Do not open a PR or publish a package until the user explicitly asks.
 - Do not call the host-review package frozen until exact-head validation, privacy checks, and CI pass on a clean candidate commit.
