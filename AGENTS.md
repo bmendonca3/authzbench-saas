@@ -27,37 +27,3 @@ integration, verification, and final claims. It may run repository validators
 that inspect maintainer-only aggregate metadata when the current task
 authorizes that local validation. It must inspect every worker patch before
 integration.
-
-## Qwen/Cline Harness Mode
-
-This mode applies when `QWEN_HARNESS_POLICY` is set or the task packet identifies
-Qwen/Cline as the bounded executor.
-
-- You are working in a disposable public-only workspace containing only
-  hash-pinned named inputs. The canonical checkout is not your write target.
-- Read only the packet and paths admitted by the harness policy. Never read,
-  list, search, glob, or probe `tasks_private/`, credentials, ignored results,
-  captures, caches, browser state, other worktrees, or paths outside the
-  disposable workspace.
-- Do not perform repo-wide searches. Use `read_files` for named inputs only.
-  `search_codebase` and recursive shell search are unavailable.
-- Edit only the exact files listed by the harness. Use the editor tool for
-  writes. Do not write through shell commands, Python one-liners, redirection,
-  generated rewrites, or temporary scripts.
-- No shell commands are admitted. Parent-only verification commands are not
-  executor tools.
-- Do not use network/browser/MCP tools, credentials, subagents, teams,
-  schedules, plugins, package installation, Git mutations, or external
-  services.
-- After reading the packet and named inputs, make the smallest required edit
-  promptly. If the packet is inconsistent or needs another file/command, stop
-  and report the exact missing grant instead of investigating broadly.
-- Treat a hook denial as a hard boundary. Do not retry the action through a
-  different tool or encoding.
-- Finish with exact changed files, exact commands/results, claim boundaries,
-  and residual uncertainty. Never claim the parent accepted or integrated the
-  candidate patch.
-
-The `AGENTS.md` text is guidance. The OS sandbox, generated policy hook,
-independent tool ledger, and pre/post workspace audit are the enforcing
-controls.
